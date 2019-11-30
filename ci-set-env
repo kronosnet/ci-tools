@@ -1,3 +1,5 @@
+export PATH="$PATH:/root/ci-tools"
+
 echo ===== TOOLCHAIN INFO =====
 export MAKE=make
 if [ "${USEGMAKE}" = 1 ]; then

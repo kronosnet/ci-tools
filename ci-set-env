@@ -1,0 +1,20 @@
+echo ===== TOOLCHAIN INFO =====
+export MAKE=make
+if [ "${USEGMAKE}" = 1 ]; then
+ export MAKE=gmake
+fi
+$MAKE --version || true
+
+if [ -z "$compiler" ]; then
+ compiler=gcc
+fi
+$compiler --version || true
+ld --version || true
+export CC=$compiler
+
+if [ -z "$python" ]; then
+ python=python3
+fi
+python=`which $python`
+$python --version || true
+export PYTHON=$python

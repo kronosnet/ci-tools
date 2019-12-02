@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -e
+
+if [ -n "$install" ] && [ "$install" = 1 ]; then
+ rm -rf /srv/$DEST/${ghprbActualCommit}/
+ $MAKE install
+ echo "https://ci.kronosnet.org/job/$JOB_NAME/$BUILD_NUMBER/consoleFull" > /srv/$DEST/${ghprbActualCommit}/.build-info
+fi

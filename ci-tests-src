@@ -7,5 +7,6 @@ if [ -z "$CHECKS" ]; then
 fi
 
 for i in $CHECKS; do
+ echo "$MAKE $i DISTCHECK_CONFIGURE_FLAGS="$DISTROCONFOPTS" || (find . -name "*test-suite.log" -exec cat {} \; ; false)"
  $MAKE $i DISTCHECK_CONFIGURE_FLAGS="$DISTROCONFOPTS" || (find . -name "*test-suite.log" -exec cat {} \; ; false)
 done

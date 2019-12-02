@@ -3,6 +3,7 @@
 set -e
 
 if [ -f ./autogen.sh ]; then
+ echo "./autogen.sh"
  ./autogen.sh
 fi
 

@@ -3,7 +3,9 @@
 set -e
 
 if [ -n "$install" ] && [ "$install" = 1 ]; then
+ echo rm -rf /srv/$DEST/${ghprbActualCommit}/
  rm -rf /srv/$DEST/${ghprbActualCommit}/
+ echo "$MAKE install"
  $MAKE install
  echo "https://ci.kronosnet.org/job/$JOB_NAME/$BUILD_NUMBER/consoleFull" > /srv/$DEST/${ghprbActualCommit}/.build-info
 fi

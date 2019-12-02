@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ -z "$CHECKS" ]; then
+ CHECKS="check distcheck $EXTRACHECKS"
+fi
+
+for i in $CHECKS; do
+ $MAKE $i DISTCHECK_CONFIGURE_FLAGS="$DISTROCONFOPTS" || (find . -name "*test-suite.log" -exec cat {} \; ; false)
+done

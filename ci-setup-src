@@ -11,7 +11,7 @@ if [ -f ./configure ]; then
  if [ "$DEST" = "pcmk" ]; then
   ./configure $DISTROCONFOPTS
  else
-  ./configure --prefix=/srv/$DEST/${ghprbActualCommit}/ --exec-prefix=/srv/DEST/${ghprbActualCommit} $DISTROCONFOPTS
+  ./configure --prefix=/srv/$DEST/${ghprbActualCommit}/ --exec-prefix=/srv/$DEST/${ghprbActualCommit} $DISTROCONFOPTS
  fi
 fi
 

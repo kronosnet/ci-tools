@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -ev
+
+. /root/ci-tools/ci-set-env
+ci-build-info
+ci-setup-src
+ci-build-src
+ci-tests-src
+ci-install-src

@@ -2,5 +2,17 @@
 
 set -ev
 
-echo "$MAKE"
-$MAKE
+build="$1"
+
+case $build in
+ coverity)
+ ;;
+ rpm)
+  echo "$MAKE rpm"
+  $MAKE rpm
+ ;;
+ *)
+  echo "$MAKE"
+  $MAKE
+ ;;
+esac

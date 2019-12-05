@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -ev
+
 echo ===== PACKAGE LIST =====
 # BSD
 if which pkg > /dev/null 2>&1; then

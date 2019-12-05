@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+set -ev
 
 if [ -n "$install" ] && [ "$install" = 1 ]; then
  echo rm -rf /srv/$DEST/${ghprbActualCommit}/

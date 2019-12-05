@@ -2,14 +2,9 @@
 
 set -ev
 
-build="$1"
-
 . /root/ci-tools/ci-set-env
 ci-build-info
 ci-setup-src
-ci-build-src $build
-# build is empty if we are doing a standard build
-if [ -z "$build" ]; then
- ci-tests-src
- ci-install-src
-fi
+ci-build-src
+ci-tests-src
+ci-install-src

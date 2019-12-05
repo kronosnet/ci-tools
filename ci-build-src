@@ -2,8 +2,6 @@
 
 set -ev
 
-build="$1"
-
 case $build in
  coverity)
  ;;

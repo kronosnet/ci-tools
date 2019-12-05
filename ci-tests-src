@@ -2,6 +2,14 @@
 
 set -ev
 
+if [ -n "$CHECKS" ] && [ "$CHECKS" = "crosscompile" ]; then
+ if [ "$(find . -print -type f -exec file {} \; | grep ELF | grep $ARCH | wc -l)" = 0 ]; then
+  echo "Crosscompilation test failed. Unable to find any $ARCH binaries"
+  exit 1
+ fi
+ exit 0
+fi
+
 if [ -z "$CHECKS" ]; then
  CHECKS="check distcheck $EXTRACHECKS"
 fi

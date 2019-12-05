@@ -13,8 +13,8 @@ if [ -f ./configure ]; then
   echo "./configure $DISTROCONFOPTS"
   ./configure $DISTROCONFOPTS
  else
-  echo "./configure --prefix=/srv/$DEST/${ghprbActualCommit}/ --exec-prefix=/srv/$DEST/${ghprbActualCommit} $DISTROCONFOPTS"
-  ./configure --prefix=/srv/$DEST/${ghprbActualCommit}/ --exec-prefix=/srv/$DEST/${ghprbActualCommit} $DISTROCONFOPTS
+  echo "./configure --prefix=/srv/$DEST/${ghprbActualCommit}/ --exec-prefix=/srv/$DEST/${ghprbActualCommit}/ $DISTROCONFOPTS"
+  ./configure --prefix=/srv/$DEST/${ghprbActualCommit}/ --exec-prefix=/srv/$DEST/${ghprbActualCommit}/ $DISTROCONFOPTS
  fi
 fi
 

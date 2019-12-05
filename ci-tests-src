@@ -2,6 +2,14 @@
 
 set -ev
 
+case $build in
+ rpm)
+  exit 0
+  ;;
+ *)
+  ;;
+esac
+
 if [ -n "$CHECKS" ] && [ "$CHECKS" = "crosscompile" ]; then
  if [ "$(find . -print -type f -exec file {} \; | grep ELF | grep $ARCH | wc -l)" = 0 ]; then
   echo "Crosscompilation test failed. Unable to find any $ARCH binaries"

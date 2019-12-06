@@ -2,6 +2,17 @@
 
 set -ev
 
+cleanlibqb() {
+ # libqb test suite will leave craft behind in case of failures
+ # make sure to clean before and after the test run
+ if [ "$DEST" = libqb ]; then
+  if [ -d "/dev/shm" ]; then
+   find /dev/shm -type d -name qb-test\* |xargs rm -rf
+  fi
+  rm -rf /tmp/libqb-*
+ fi
+}
+
 case $build in
  rpm)
   exit 0
@@ -48,6 +59,8 @@ if [ -n "$CHECKS" ] && [ "$CHECKS" = "crosscompile" ]; then
  exit 0
 fi
 
+cleanlibqb
+
 if [ -z "$CHECKS" ]; then
  CHECKS="check distcheck $EXTRACHECKS"
 fi
@@ -56,3 +69,5 @@ for i in $CHECKS; do
  echo "$MAKE $i DISTCHECK_CONFIGURE_FLAGS="$DISTROCONFOPTS" || (find . -name "*test-suite.log" -exec cat {} \; ; false)"
  $MAKE $i DISTCHECK_CONFIGURE_FLAGS="$DISTROCONFOPTS" || (find . -name "*test-suite.log" -exec cat {} \; ; false)
 done
+
+cleanlibqb

@@ -7,9 +7,9 @@ cleanlibqb() {
  # make sure to clean before and after the test run
  if [ "$DEST" = qb ]; then
   if [ -d "/dev/shm" ]; then
-   find /dev/shm -type d -name qb-test\* |xargs rm -rf
+   find /dev/shm -type d -name qb-test\* | xargs rm -rf
   fi
-  rm -rf /tmp/libqb-*
+  find /tmp -type d -name libqb\* | xargs rm -rf
  fi
 }
 
@@ -59,13 +59,12 @@ if [ -n "$CHECKS" ] && [ "$CHECKS" = "crosscompile" ]; then
  exit 0
 fi
 
-cleanlibqb
-
 if [ -z "$CHECKS" ]; then
  CHECKS="check distcheck $EXTRACHECKS"
 fi
 
 for i in $CHECKS; do
+ cleanlibqb
  echo "$MAKE $i DISTCHECK_CONFIGURE_FLAGS="$DISTROCONFOPTS" || (find . -name "*test-suite.log" -exec cat {} \; ; false)"
  $MAKE $i DISTCHECK_CONFIGURE_FLAGS="$DISTROCONFOPTS" || (find . -name "*test-suite.log" -exec cat {} \; ; false)
 done

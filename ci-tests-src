@@ -5,7 +5,7 @@ set -ev
 cleanlibqb() {
  # libqb test suite will leave craft behind in case of failures
  # make sure to clean before and after the test run
- if [ "$DEST" = libqb ]; then
+ if [ "$DEST" = qb ]; then
   if [ -d "/dev/shm" ]; then
    find /dev/shm -type d -name qb-test\* |xargs rm -rf
   fi

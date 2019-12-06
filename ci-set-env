@@ -1,5 +1,9 @@
 export PATH="$PATH:/root/ci-tools"
 
+if [ -d /opt/coverity/bin ]; then
+ export PATH=/opt/coverity/bin:$PATH
+fi
+
 echo ===== TOOLCHAIN INFO =====
 export MAKE=make
 if [ "${USEGMAKE}" = 1 ]; then
@@ -20,3 +24,10 @@ fi
 python=`which $python`
 $python --version || true
 export PYTHON=$python
+
+echo ===== SOURCE TREE INFO =====
+
+export TARGET=${ghprbActualCommit}
+if [ "${ghprbPullId}" != 1 ]; then
+ export TARGET="origin/${ghprbTargetBranch}"
+fi

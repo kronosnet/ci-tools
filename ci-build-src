@@ -4,6 +4,14 @@ set -ev
 
 case $build in
  coverity)
+  echo "cov-build --dir=./cov $MAKE"
+  cov-build --dir=./cov $MAKE
+  echo "cov-analyze --dir=./cov --wait-for-license $covoptions"
+  cov-analyze --dir=./cov --wait-for-license $covoptions
+  echo "cov-format-errors --dir=./cov --json-output-v7 cov.json"
+  cov-format-errors --dir=./cov --json-output-v7 cov.json
+  echo "cov-format-errors --dir=./cov --emacs-style > cov.txt"
+  cov-format-errors --dir=./cov --emacs-style > cov.txt
  ;;
  rpm)
   echo "$MAKE rpm"

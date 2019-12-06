@@ -7,7 +7,7 @@ cleanlibqb() {
  # make sure to clean before and after the test run
  if [ "$DEST" = qb ]; then
   if [ -d "/dev/shm" ]; then
-   find /dev/shm -type d -name qb-test\* | xargs rm -rf
+   find /dev/shm -type d -name qb-\* | xargs rm -rf
   fi
   find /tmp -type d -name libqb\* | xargs rm -rf
  fi

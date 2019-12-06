@@ -31,3 +31,4 @@ export TARGET=${ghprbActualCommit}
 if [ "${ghprbPullId}" != 1 ]; then
  export TARGET="origin/${ghprbTargetBranch}"
 fi
+echo TARGET $TARGET

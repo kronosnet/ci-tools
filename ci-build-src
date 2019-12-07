@@ -5,7 +5,7 @@ set -ev
 case $build in
  coverity)
   echo "cov-build --dir=./cov $MAKE"
-  cov-build --dir=./cov $MAKE
+  cov-build --dir=./cov $MAKE $MAKEOPTS
   echo "cov-analyze --dir=./cov --wait-for-license $covoptions"
   cov-analyze --dir=./cov --wait-for-license $covoptions
   echo "cov-format-errors --dir=./cov --json-output-v7 cov.json"
@@ -15,10 +15,10 @@ case $build in
  ;;
  rpm)
   echo "$MAKE rpm"
-  $MAKE rpm
+  $MAKE $MAKEOPTS rpm
  ;;
  *)
   echo "$MAKE"
-  $MAKE
+  $MAKE $MAKEOPTS
  ;;
 esac

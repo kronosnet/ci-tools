@@ -76,8 +76,8 @@ fi
 
 for i in $CHECKS; do
  cleanlibqb
- echo "$MAKE $i DISTCHECK_CONFIGURE_FLAGS="$DISTROCONFOPTS" || (find . -name "*test-suite.log" -exec cat {} \; ; false)"
- $MAKE $i DISTCHECK_CONFIGURE_FLAGS="$DISTROCONFOPTS" || (find . -name "*test-suite.log" -exec cat {} \; ; false)
+ echo "$MAKE $MAKEOPTS $i DISTCHECK_CONFIGURE_FLAGS="$DISTROCONFOPTS" || (find . -name "*test-suite.log" -exec cat {} \; ; false)"
+ $MAKE $MAKEOPTS $i DISTCHECK_CONFIGURE_FLAGS="$DISTROCONFOPTS" || (find . -name "*test-suite.log" -exec cat {} \; ; false)
 done
 
 cleanlibqb

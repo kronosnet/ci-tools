@@ -4,8 +4,8 @@ set -ev
 
 case $build in
  coverity)
-  echo "cov-build --dir=./cov $MAKE $MAKEOPTS"
-  cov-build --dir=./cov $MAKE $MAKEOPTS
+  echo "cov-build --dir=./cov $MAKE $MAKECOVOPTS"
+  cov-build --dir=./cov $MAKE $MAKECOVOPTS
   echo "cov-analyze --dir=./cov --wait-for-license $covoptions"
   cov-analyze --dir=./cov --wait-for-license $covoptions
   echo "cov-format-errors --dir=./cov --json-output-v7 cov.json"
@@ -14,8 +14,8 @@ case $build in
   cov-format-errors --dir=./cov --emacs-style > cov.txt
  ;;
  rpm)
-  echo "$MAKE $MAKEOPTS rpm"
-  $MAKE $MAKEOPTS rpm
+  echo "$MAKE $MAKERPMOPTS rpm"
+  $MAKE $MAKERPMOPTS rpm
  ;;
  *)
   echo "$MAKE $MAKEOPTS"

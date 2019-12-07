@@ -5,7 +5,7 @@ set -ev
 if [ -n "$install" ] && [ "$install" = 1 ]; then
  echo rm -rf /srv/$DEST/${ghprbActualCommit}/
  rm -rf /srv/$DEST/${ghprbActualCommit}/
- echo "$MAKE $MAKEOPTS install"
- $MAKE $MAKEOPTS install
+ echo "$MAKE $MAKEINSTALLOPTS install"
+ $MAKE $MAKEINSTALLOPTS install
  echo "https://ci.kronosnet.org/job/$JOB_NAME/$BUILD_NUMBER/consoleFull" > /srv/$DEST/${ghprbActualCommit}/.build-info
 fi

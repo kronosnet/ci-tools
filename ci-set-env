@@ -76,3 +76,8 @@ else
   KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/stable1-proposed/latest/
  fi
 fi
+
+export KNET_REPO
+export KNET_REPO_PATH
+export LIBQB_REPO
+export LIBQB_REPO_PATH

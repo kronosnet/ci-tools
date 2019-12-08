@@ -62,6 +62,10 @@ case $build in
   ;;
 esac
 
+if [ -n "$CHECKS" ] && [ "$CHECKS" = "nochecks" ]; then
+ exit 0
+fi
+
 if [ -n "$CHECKS" ] && [ "$CHECKS" = "crosscompile" ]; then
  if [ "$(find . -print -type f -exec file {} \; | grep ELF | grep $ARCH | wc -l)" = 0 ]; then
   echo "Crosscompilation test failed. Unable to find any $ARCH binaries"

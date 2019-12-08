@@ -15,7 +15,7 @@ cleanbr() {
 
 # always restore BaseOS libqb-devel
 removerpmdeps() {
- cleabr
+ cleanbr
  if [ -n "$(which zypper 2>/dev/null)" ]; then
   zypper install -y libqb-devel
  fi
@@ -26,7 +26,7 @@ removerpmdeps() {
 }
 
 installrpmdeps() {
- cleabr
+ cleanbr
  if [ -n "$(which zypper 2>/dev/null)" ]; then
   zypper addrepo $KNET_REPO_PATH knet-build || removerpmdeps 1
   zypper modifyrepo -e -f -G knet-build || removerpmdeps 1

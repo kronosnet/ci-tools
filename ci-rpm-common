@@ -1,14 +1,18 @@
+export REMOVERPMS="libnozzle1 libknet1 libqb corosynclib 'libcorosync*'"
+
 cleanbr() {
  if [ -n "$(which zypper 2>/dev/null)" ]; then
-  zypper remove -y libnozzle1 libknet1 libqb || true
+  zypper remove -y $REMOVERPMS || true
   zypper removerepo knet-build || true
   zypper removerepo libqb-build || true
+  zypper removerepo corosync-build || true
   zypper clean
  fi
  if [ -n "$(which yum 2>/dev/null)" ]; then
-  yum erase -y libnozzle1 libknet1 libqb || true
+  yum erase -y $REMOVERPMS || true
   rm -rf /etc/yum.repos.d/knet-build.repo || true
   rm -rf /etc/yum.repos.d/libqb-build.repo || true
+  rm -f /etc/yum.repos.d/corosync-build.repo || true
   yum clean all
  fi
 }
@@ -34,6 +38,8 @@ installrpmdeps() {
    zypper addrepo $LIBQB_REPO_PATH libqb-build || removerpmdeps 1
    zypper modifyrepo -e -f -G libqb-build || removerpmdeps 1
   fi
+  zypper addrepo $COROSYNC_REPO_PATH corosync-build || removerpmdeps 1
+  zypper modifyrepo -e -f -G corosync-build || removerpmdeps 1
   zypper install -y $RPMDEPS || removerpmdeps 1
  fi
  if [ -n "$(which yum 2>/dev/null)" ]; then
@@ -41,6 +47,7 @@ installrpmdeps() {
   if [ -n "$LIBQB_REPO" ]; then
    wget -O /etc/yum.repos.d/libqb-build.repo $LIBQB_REPO || removerpmdeps 1
   fi
+  wget -O /etc/yum.repos.d/corosync-build.repo $COROSYNC_REPO || removerpmdeps 1
   yum install -y $RPMDEPS || removerpmdeps 1
  fi
 }

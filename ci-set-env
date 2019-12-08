@@ -45,9 +45,11 @@ if [ "$build" != "rpm" ]; then
  # from sources
  if [ "$TARGET" = "origin/master" ]; then
   KNET_INSTALL_PATH=/srv/knet/origin/master/
-  QB_INSTALL_PATH=/srv/qb/origin/master
+  QB_INSTALL_PATH=/srv/qb/origin/master/
+  COROSYNC_INSTALL_PATH=/srv/corosync/origin/master/
  else
   KNET_INSTALL_PATH=/srv/knet/origin/stable1-proposed/
+  COROSYNC_INSTALL_PATH=/srv/corosync/origin/camelback/
  fi
 
  KNET_LIB=$(ls -1 $KNET_INSTALL_PATH | grep lib)
@@ -65,15 +67,25 @@ if [ "$build" != "rpm" ]; then
   echo using libqb as provided by OS
  fi
  PKG_CONFIG_PATH=$QB_CONFIG_PATH pkg-config --modversion libqb
+
+ COROSYNC_LIB=$(ls -1 $COROSYNC_INSTALL_PATH | grep lib)
+ COROSYNC_CONFIG_PATH=$COROSYNC_INSTALL_PATH/$COROSYNC_LIB/pkgconfig
+ export EXTERNAL_CONFIG_PATH=$EXTERNAL_CONFIG_PATH:$COROSYNC_CONFIG_PATH
+ echo corosync build info: $(cat $COROSYNC_INSTALL_PATH/.build-info)
+ PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH pkg-config --modversion corosync
 else
  if [ "${GIT_BRANCH}" = "origin/master" ]; then
   KNET_REPO=https://kronosnet.org/builds/knet-master-${NODE_NAME}.repo
   KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/master/latest/
   LIBQB_REPO=https://kronosnet.org/builds/libqb-master-${NODE_NAME}.repo
   LIBQB_REPO_PATH=https://kronosnet.org/builds/libqb/${NODE_NAME}/master/latest/
+  COROSYNC_REPO=https://kronosnet.org/builds/corosync-master-${NODE_NAME}.repo
+  COROSYNC_REPO_PATH=https://kronosnet.org/builds/corosync/${NODE_NAME}/master/latest/
  else
   KNET_REPO=https://kronosnet.org/builds/knet-stable1-proposed-${NODE_NAME}.repo
   KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/stable1-proposed/latest/
+  COROSYNC_REPO=https://kronosnet.org/builds/corosync-camelback-${NODE_NAME}.repo
+  COROSYNC_REPO_PATH=https://kronosnet.org/builds/corosync/${NODE_NAME}/camelback/latest/
  fi
 fi
 
@@ -81,3 +93,5 @@ export KNET_REPO
 export KNET_REPO_PATH
 export LIBQB_REPO
 export LIBQB_REPO_PATH
+export COROSYNC_REPO
+export COROSYNC_REPO_PATH

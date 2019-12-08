@@ -10,11 +10,10 @@ fi
 if [ -f ./configure ]; then
  # workaround bug in pacemaker test suite
  if [ "$DEST" = "pcmk" ]; then
-  echo "./configure $DISTROCONFOPTS"
-  ./configure $DISTROCONFOPTS
+  echo "./configure $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
+  ./configure $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
  else
-  echo "./configure --prefix=/srv/$DEST/${ghprbActualCommit}/ --exec-prefix=/srv/$DEST/${ghprbActualCommit}/ $DISTROCONFOPTS"
-  ./configure --prefix=/srv/$DEST/${ghprbActualCommit}/ --exec-prefix=/srv/$DEST/${ghprbActualCommit}/ $DISTROCONFOPTS
+  echo "./configure --prefix=/srv/$DEST/${ghprbActualCommit}/ --exec-prefix=/srv/$DEST/${ghprbActualCommit}/ $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
+  ./configure --prefix=/srv/$DEST/${ghprbActualCommit}/ --exec-prefix=/srv/$DEST/${ghprbActualCommit}/ $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
  fi
 fi
-

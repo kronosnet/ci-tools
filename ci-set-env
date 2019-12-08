@@ -27,8 +27,43 @@ export PYTHON=$python
 
 echo ===== SOURCE TREE INFO =====
 
-export TARGET=${ghprbActualCommit}
+if [ -z "${ghprbActualCommit}" ]; then
+ export TARGET=${GIT_BRANCH}
+else
+ export TARGET=${ghprbActualCommit}
+fi
 if [ -n "${ghprbPullId}" ] && [ "${ghprbPullId}" != 1 ]; then
  export TARGET="origin/${ghprbTargetBranch}"
 fi
 echo TARGET $TARGET
+
+# rpm builds should use standard packages
+if [ "$build" != "rpm" ]; then
+ echo ===== PKG_CONFIG_PATH info =====
+
+ # origin/master should use all master branches built
+ # from sources
+ if [ "$TARGET" = "origin/master" ]; then
+  KNET_INSTALL_PATH=/srv/knet/origin/master/
+  QB_INSTALL_PATH=/srv/qb/origin/master
+ else
+  KNET_INSTALL_PATH=/srv/knet/origin/stable1-proposed/
+ fi
+
+ KNET_LIB=$(ls -1 $KNET_INSTALL_PATH | grep lib)
+ KNET_CONFIG_PATH=$KNET_INSTALL_PATH/$KNET_LIB/pkgconfig
+ export EXTERNAL_CONFIG_PATH=$KNET_CONFIG_PATH
+ echo libknet build info: $(cat $KNET_INSTALL_PATH/.build-info)
+ PKG_CONFIG_PATH=$KNET_CONFIG_PATH pkg-config --modversion libknet
+
+ if [ -n "$QB_INSTALL_PATH" ]; then
+  QB_LIB=$(ls -1 $QB_INSTALL_PATH | grep lib)
+  QB_CONFIG_PATH=$QB_INSTALL_PATH/$QB_LIB/pkgconfig
+  echo libqb build info: $(cat $QB_INSTALL_PATH/.build-info)
+  export EXTERNAL_CONFIG_PATH=$EXTERNAL_CONFIG_PATH:$QB_CONFIG_PATH
+ else
+  echo using libqb as provided by OS
+ fi
+ PKG_CONFIG_PATH=$QB_CONFIG_PATH pkg-config --modversion libqb
+
+fi

@@ -2,6 +2,8 @@
 
 set -ev
 
+. /root/ci-tools/ci-rpm-common
+
 case $build in
  coverity)
   echo "cov-build --dir=./cov $MAKE $MAKECOVOPTS"

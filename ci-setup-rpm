@@ -4,9 +4,6 @@ set -ev
 
 . /root/ci-tools/ci-rpm-common
 
-# always make sure we have no random rpm around
-removerpmdeps 0 || true
-
 if [ "$build" = rpm ]; then
  if [ -n "$RPMDEPS" ]; then
   echo "Installing rpm deps: $RPMDEPS"

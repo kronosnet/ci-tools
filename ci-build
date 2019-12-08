@@ -3,6 +3,7 @@
 set -ev
 
 . /root/ci-tools/ci-set-env
+. /root/ci-tools/ci-rpm-common
 ci-build-info
 ci-setup-src
 ci-build-src

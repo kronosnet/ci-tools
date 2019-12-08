@@ -71,7 +71,7 @@ else
   KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/master/latest/
   LIBQB_REPO=https://kronosnet.org/builds/libqb-master-${NODE_NAME}.repo
   LIBQB_REPO_PATH=https://kronosnet.org/builds/libqb/${NODE_NAME}/master/latest/
- else 
+ else
   KNET_REPO=https://kronosnet.org/builds/knet-stable1-proposed-${NODE_NAME}.repo
   KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/stable1-proposed/latest/
  fi

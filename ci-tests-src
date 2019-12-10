@@ -91,20 +91,14 @@ if [ -z "$CHECKS" ]; then
  if [ "$DEST" = pcmk1 ] && [ "${NODE_NAME}" != centos-6-x86-64 ]; then
   CHECKS="check distcheck $EXTRACHECKS"
  else
-  CHECKS="check $EXTRACHECKS"
+  CHECKS="$EXTRACHECKS"
  fi
-fi
-
-if [ "$DEST" = pcmk1 ]; then
- EXIT="removerpmdeps 1"
-else
- EXIT=false
 fi
 
 for i in $CHECKS; do
  cleanlibqb
- echo "$MAKE $MAKETESTOPTS $i DISTCHECK_CONFIGURE_FLAGS="$DISTROCONFOPTS" PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH || (find . -name "*test-suite.log" -exec cat {} \; ; $EXIT)"
- $MAKE $MAKETESTOPTS $i DISTCHECK_CONFIGURE_FLAGS="$DISTROCONFOPTS" PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH || (find . -name "*test-suite.log" -exec cat {} \; ; $EXIT)
+ echo "$MAKE $MAKETESTOPTS $i DISTCHECK_CONFIGURE_FLAGS="$DISTROCONFOPTS" PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH || (find . -name "*test-suite.log" -exec cat {} \; ; false)"
+ $MAKE $MAKETESTOPTS $i DISTCHECK_CONFIGURE_FLAGS="$DISTROCONFOPTS" PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH || (find . -name "*test-suite.log" -exec cat {} \; ; false)
 done
 
 cleanlibqb

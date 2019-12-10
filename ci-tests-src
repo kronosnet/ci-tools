@@ -24,6 +24,13 @@ fasextratests() {
  fi
 }
 
+pcmkextratests() {
+ # pacemaker extra tests
+ if [ "$DEST" = pcmk ]; then
+  ./cts/cts-regression -V
+ fi
+}
+
 case $build in
  rpm)
   exit 0
@@ -74,11 +81,6 @@ if [ -n "$CHECKS" ] && [ "$CHECKS" = "crosscompile" ]; then
  exit 0
 fi
 
-if [ -n "$CUSTOMCHECK" ]; then
- echo "$CUSTOMCHECK"
- $CUSTOMCHECK
-fi
-
 if [ -z "$CHECKS" ]; then
  CHECKS="check distcheck $EXTRACHECKS"
 fi
@@ -91,3 +93,4 @@ done
 
 cleanlibqb
 fasextratests
+pcmkextratests

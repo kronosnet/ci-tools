@@ -75,6 +75,7 @@ if [ -n "$CHECKS" ] && [ "$CHECKS" = "crosscompile" ]; then
 fi
 
 if [ -n "$CUSTOMCHECK" ]; then
+ echo "$CUSTOMCHECK"
  $CUSTOMCHECK
 fi
 

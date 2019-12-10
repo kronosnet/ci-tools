@@ -52,6 +52,12 @@ if [ "$build" != "rpm" ]; then
   COROSYNC_INSTALL_PATH=/srv/corosync/origin/camelback/
  fi
 
+ # pacemake special casing
+ # pacemaker 2.0 should build against libqb master and corosync camelback
+ if [ "$DEST" = "pcmk" ] && [ "$TARGET" = "origin/2.0" ]; then
+  QB_INSTALL_PATH=/srv/qb/origin/master/
+ fi
+
  KNET_LIB=$(ls -1 $KNET_INSTALL_PATH | grep lib)
  KNET_CONFIG_PATH=$KNET_INSTALL_PATH/$KNET_LIB/pkgconfig
  export EXTERNAL_CONFIG_PATH=$KNET_CONFIG_PATH

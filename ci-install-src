@@ -5,6 +5,14 @@ set -ev
 if [ -n "$install" ] && [ "$install" = 1 ]; then
  echo rm -rf /srv/$DEST/${ghprbActualCommit}/
  rm -rf /srv/$DEST/${ghprbActualCommit}/
+ if [ "$DEST" = "pcmk" ]; then
+  echo "./configure --prefix=/srv/$DEST/${ghprbActualCommit}/ --exec-prefix=/srv/$DEST/${ghprbActualCommit}/ --sysconfdir="/srv/$DEST/${ghprbActualCommit}/etc" --with-initdir="/srv/$DEST/${ghprbActualCommit}/etc/init.d" --with-ocfdir="/srv/$DEST/${ghprbActualCommit}/usr/lib/ocf"  --with-systemdsystemunitdir="/srv/$DEST/${ghprbActualCommit}/usr/lib/systemd/system" $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
+  ./configure --prefix=/srv/$DEST/${ghprbActualCommit}/ --exec-prefix=/srv/$DEST/${ghprbActualCommit}/ --sysconfdir="/srv/$DEST/${ghprbActualCommit}/etc" --with-initdir="/srv/$DEST/${ghprbActualCommit}/etc/init.d" --with-ocfdir="/srv/$DEST/${ghprbActualCommit}/usr/lib/ocf"  --with-systemdsystemunitdir="/srv/$DEST/${ghprbActualCommit}/usr/lib/systemd/system" $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
+  echo "$MAKE clean"
+  $MAKE clean
+  echo "$MAKE $MAKEOPTS"
+  $MAKE $MAKEOPTS
+ fi
  echo "$MAKE $MAKEINSTALLOPTS install"
  $MAKE $MAKEINSTALLOPTS install
  echo "https://ci.kronosnet.org/job/$JOB_NAME/$BUILD_NUMBER/consoleFull" > /srv/$DEST/${ghprbActualCommit}/.build-info

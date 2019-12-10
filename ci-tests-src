@@ -74,6 +74,10 @@ if [ -n "$CHECKS" ] && [ "$CHECKS" = "crosscompile" ]; then
  exit 0
 fi
 
+if [ -n "$CUSTOMCHECK" ]; then
+ $CUSTOMCHECK
+fi
+
 if [ -z "$CHECKS" ]; then
  CHECKS="check distcheck $EXTRACHECKS"
 fi

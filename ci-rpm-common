@@ -32,22 +32,30 @@ removerpmdeps() {
 installrpmdeps() {
  cleanbr
  if [ -n "$(which zypper 2>/dev/null)" ]; then
-  zypper addrepo $KNET_REPO_PATH knet-build || removerpmdeps 1
-  zypper modifyrepo -e -f -G knet-build || removerpmdeps 1
+  if [ -n "$KNET_REPO_PATH" ]; then
+   zypper addrepo $KNET_REPO_PATH knet-build || removerpmdeps 1
+   zypper modifyrepo -e -f -G knet-build || removerpmdeps 1
+  fi
   if [ -n "$LIBQB_REPO_PATH" ]; then
    zypper addrepo $LIBQB_REPO_PATH libqb-build || removerpmdeps 1
    zypper modifyrepo -e -f -G libqb-build || removerpmdeps 1
   fi
-  zypper addrepo $COROSYNC_REPO_PATH corosync-build || removerpmdeps 1
-  zypper modifyrepo -e -f -G corosync-build || removerpmdeps 1
+  if [ -n "$COROSYNC_REPO_PATH"]; then
+   zypper addrepo $COROSYNC_REPO_PATH corosync-build || removerpmdeps 1
+   zypper modifyrepo -e -f -G corosync-build || removerpmdeps 1
+  fi
   zypper install -y $RPMDEPS || removerpmdeps 1
  fi
  if [ -n "$(which yum 2>/dev/null)" ]; then
-  wget -O /etc/yum.repos.d/knet-build.repo $KNET_REPO || removerpmdeps 1
+  if [ -n "$KNET_REPO" ]; then
+   wget -O /etc/yum.repos.d/knet-build.repo $KNET_REPO || removerpmdeps 1
+  fi
   if [ -n "$LIBQB_REPO" ]; then
    wget -O /etc/yum.repos.d/libqb-build.repo $LIBQB_REPO || removerpmdeps 1
   fi
-  wget -O /etc/yum.repos.d/corosync-build.repo $COROSYNC_REPO || removerpmdeps 1
+  if [ -n "$COROSYNC_REPO" ]; then
+   wget -O /etc/yum.repos.d/corosync-build.repo $COROSYNC_REPO || removerpmdeps 1
+  fi
   yum install -y $RPMDEPS || removerpmdeps 1
  fi
 }

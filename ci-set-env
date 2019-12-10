@@ -58,13 +58,21 @@ if [ "$build" != "rpm" ]; then
   QB_INSTALL_PATH=/srv/qb/origin/master/
  fi
 
- KNET_LIB=$(ls -1 $KNET_INSTALL_PATH | grep lib)
- KNET_CONFIG_PATH=$KNET_INSTALL_PATH/$KNET_LIB/pkgconfig
- export EXTERNAL_CONFIG_PATH=$KNET_CONFIG_PATH
- echo libknet build info: $(cat $KNET_INSTALL_PATH/.build-info)
- PKG_CONFIG_PATH=$KNET_CONFIG_PATH pkg-config --modversion libknet
+ if [ "$DEST" = "pcmk1" ]; then
+  KNET_INSTALL_PATH=""
+  QB_INSTALL_PATH=""
+  COROSYNC_INSTALLPATH=""
+ fi
 
- if [ -n "$QB_INSTALL_PATH" ]; then
+ if [ -n "$KNET_INSTALL_PATH" ] && [ -d "$KNET_INSTALL_PATH" ]; then
+  KNET_LIB=$(ls -1 $KNET_INSTALL_PATH | grep lib)
+  KNET_CONFIG_PATH=$KNET_INSTALL_PATH/$KNET_LIB/pkgconfig
+  export EXTERNAL_CONFIG_PATH=$KNET_CONFIG_PATH
+  echo libknet build info: $(cat $KNET_INSTALL_PATH/.build-info)
+  PKG_CONFIG_PATH=$KNET_CONFIG_PATH pkg-config --modversion libknet
+ fi
+
+ if [ -n "$QB_INSTALL_PATH" ] && [ -d "QB_INSTALL_PATH" ]; then
   QB_LIB=$(ls -1 $QB_INSTALL_PATH | grep lib)
   QB_CONFIG_PATH=$QB_INSTALL_PATH/$QB_LIB/pkgconfig
   echo libqb build info: $(cat $QB_INSTALL_PATH/.build-info)
@@ -74,11 +82,13 @@ if [ "$build" != "rpm" ]; then
  fi
  PKG_CONFIG_PATH=$QB_CONFIG_PATH pkg-config --modversion libqb
 
- COROSYNC_LIB=$(ls -1 $COROSYNC_INSTALL_PATH | grep lib)
- COROSYNC_CONFIG_PATH=$COROSYNC_INSTALL_PATH/$COROSYNC_LIB/pkgconfig
- export EXTERNAL_CONFIG_PATH=$EXTERNAL_CONFIG_PATH:$COROSYNC_CONFIG_PATH
- echo corosync build info: $(cat $COROSYNC_INSTALL_PATH/.build-info)
- PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH pkg-config --modversion corosync
+ if [ -n "$COROSYNC_INSTALL_PATH" ] && [ -d "$COROSYNC_INSTALL_PATH" ]; then
+  COROSYNC_LIB=$(ls -1 $COROSYNC_INSTALL_PATH | grep lib)
+  COROSYNC_CONFIG_PATH=$COROSYNC_INSTALL_PATH/$COROSYNC_LIB/pkgconfig
+  export EXTERNAL_CONFIG_PATH=$EXTERNAL_CONFIG_PATH:$COROSYNC_CONFIG_PATH
+  echo corosync build info: $(cat $COROSYNC_INSTALL_PATH/.build-info)
+  PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH pkg-config --modversion corosync
+ fi
 else
  if [ "${GIT_BRANCH}" = "origin/master" ]; then
   KNET_REPO=https://kronosnet.org/builds/knet-master-${NODE_NAME}.repo

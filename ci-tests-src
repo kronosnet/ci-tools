@@ -2,6 +2,8 @@
 
 set -ev
 
+. /root/ci-tools/ci-rpm-common
+
 cleanlibqb() {
  # libqb test suite will leave craft behind in case of failures
  # make sure to clean before and after the test run
@@ -28,6 +30,9 @@ pcmkextratests() {
  # pacemaker extra tests
  if [ "$DEST" = pcmk ]; then
   ./cts/cts-regression -V
+ fi
+ if [ "$DEST" = pcmk1 ]; then
+  ./BasicSanity.sh -V || || removerpmdeps 1
  fi
 }
 
@@ -82,7 +87,11 @@ if [ -n "$CHECKS" ] && [ "$CHECKS" = "crosscompile" ]; then
 fi
 
 if [ -z "$CHECKS" ]; then
- CHECKS="check distcheck $EXTRACHECKS"
+ if [ "$DEST" = pcmk1 ] && [ "${NODE_NAME}" != centos-6-x86-64 ]; then
+  CHECKS="check distcheck $EXTRACHECKS"
+ else
+  CHECKS="check $EXTRACHECKS"
+ fi
 fi
 
 for i in $CHECKS; do

@@ -1,4 +1,4 @@
-export REMOVERPMS="libnozzle1 libknet1 libqb corosynclib 'libcorosync*'"
+export REMOVERPMS="libnozzle1 libknet1 libqb corosynclib 'libcorosync*' resource-agents"
 
 cleanbr() {
  if [ -n "$(which zypper 2>/dev/null)" ]; then

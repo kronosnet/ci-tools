@@ -26,7 +26,13 @@ case $build in
   fi
  ;;
  *)
-  echo "$MAKE $MAKEOPTS"
-  $MAKE $MAKEOPTS
+  if [ "$DEST" = pcmk1 ]; then
+   echo "$MAKE $MAKEOPTS"
+   $MAKE $MAKEOPTS || removerpmdeps 1
+   removerpmdeps 0
+  else
+   echo "$MAKE $MAKEOPTS"
+   $MAKE $MAKEOPTS
+  fi
  ;;
 esac

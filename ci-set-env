@@ -61,7 +61,7 @@ if [ "$build" != "rpm" ]; then
  if [ "$DEST" = "pcmk1" ]; then
   KNET_INSTALL_PATH=""
   QB_INSTALL_PATH=""
-  COROSYNC_INSTALLPATH=""
+  COROSYNC_INSTALL_PATH=""
  fi
 
  if [ -n "$KNET_INSTALL_PATH" ] && [ -d "$KNET_INSTALL_PATH" ]; then

@@ -93,6 +93,13 @@ else
   COROSYNC_REPO=https://kronosnet.org/builds/corosync-camelback-${NODE_NAME}.repo
   COROSYNC_REPO_PATH=https://kronosnet.org/builds/corosync/${NODE_NAME}/camelback/latest/
  fi
+
+ # pacemake special casing
+ # pacemaker 2.0 should build against libqb master and corosync camelback
+ if [ "$DEST" = "pcmk" ] && [ "${GIT_BRANCH}" = "origin/2.0" ]; then
+  LIBQB_REPO=https://kronosnet.org/builds/libqb-master-${NODE_NAME}.repo
+  LIBQB_REPO_PATH=https://kronosnet.org/builds/libqb/${NODE_NAME}/master/latest/
+ fi
 fi
 
 export KNET_REPO

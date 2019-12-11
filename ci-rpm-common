@@ -1,4 +1,4 @@
-export REMOVERPMS="libnozzle1 libknet1 libqb corosynclib 'libcorosync*' resource-agents"
+export REMOVERPMS="libnozzle1 libknet1 libqb corosynclib 'libcorosync*' resource-agents libpacemaker-devel pacemaker-libs-devel pacemaker-schemas"
 
 cleanbr() {
  if [ -n "$(which zypper 2>/dev/null)" ]; then
@@ -6,13 +6,15 @@ cleanbr() {
   zypper removerepo knet-build || true
   zypper removerepo libqb-build || true
   zypper removerepo corosync-build || true
+  zypper removerepo pcmk-build || true
   zypper clean
  fi
  if [ -n "$(which yum 2>/dev/null)" ]; then
   yum erase -y $REMOVERPMS || true
   rm -rf /etc/yum.repos.d/knet-build.repo || true
   rm -rf /etc/yum.repos.d/libqb-build.repo || true
-  rm -f /etc/yum.repos.d/corosync-build.repo || true
+  rm -rf /etc/yum.repos.d/corosync-build.repo || true
+  rm -rf /etc/yum.repos.d/pcmk-build.repo || true
   yum clean all
  fi
 }
@@ -40,9 +42,13 @@ installrpmdeps() {
    zypper addrepo $LIBQB_REPO_PATH libqb-build || removerpmdeps 1
    zypper modifyrepo -e -f -G libqb-build || removerpmdeps 1
   fi
-  if [ -n "$COROSYNC_REPO_PATH"]; then
+  if [ -n "$COROSYNC_REPO_PATH" ]; then
    zypper addrepo $COROSYNC_REPO_PATH corosync-build || removerpmdeps 1
    zypper modifyrepo -e -f -G corosync-build || removerpmdeps 1
+  fi
+  if [ -n "$PCMK_REPO_PATH" ]; then
+   zypper addrepo $PCMK_REPO_PATH pcmk-build || removerpmdeps 1
+   zypper modifyrepo -e -f -G pcmk-build || removerpmdeps 1
   fi
   zypper install -y $RPMDEPS || removerpmdeps 1
  fi
@@ -55,6 +61,9 @@ installrpmdeps() {
   fi
   if [ -n "$COROSYNC_REPO" ]; then
    wget -O /etc/yum.repos.d/corosync-build.repo $COROSYNC_REPO || removerpmdeps 1
+  fi
+  if [ -n "$PCMK_REPO" ]; then
+   wget -O /etc/yum.repos.d/pcmk-build.repo $PCMK_REPO || removerpmdeps 1
   fi
   yum install -y $RPMDEPS || removerpmdeps 1
  fi

@@ -70,7 +70,7 @@ if [ "$build" != "rpm" ]; then
   sbd|booth)
    # booth and sbd only have a master branch, but they need
    # different settings when building against pcmk master or 2.0
-   if [ -n "${pcmkver}" ] && [ "${pcmkver}" = "origin/2.0" ]; then
+   if [ -n "${pcmkver}" ] && [ "${pcmkver}" = "2.0" ]; then
     PCMK_INSTALL_PATH=/srv/pcmk/origin/2.0/
     KNET_INSTALL_PATH=/srv/knet/origin/stable1-proposed/
     COROSYNC_INSTALL_PATH=/srv/corosync/origin/camelback/
@@ -156,7 +156,7 @@ else
   sbd|booth)
    # booth and sbd only have a master branch, but they need
    # different settings when building against pcmk master or 2.0
-   if [ -n "${pcmkver}" ] && [ "${pcmkver}" = "origin/2.0" ]; then
+   if [ -n "${pcmkver}" ] && [ "${pcmkver}" = "2.0" ]; then
     KNET_REPO=https://kronosnet.org/builds/knet-stable1-proposed-${NODE_NAME}.repo
     KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/stable1-proposed/latest/
     COROSYNC_REPO=https://kronosnet.org/builds/corosync-camelback-${NODE_NAME}.repo

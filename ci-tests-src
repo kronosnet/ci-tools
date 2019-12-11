@@ -92,10 +92,10 @@ if [ -n "$CHECKS" ] && [ "$CHECKS" = "crosscompile" ]; then
 fi
 
 if [ -z "$CHECKS" ]; then
- if [ "$DEST" = pcmk1 ] && [ "${NODE_NAME}" != centos-6-x86-64 ]; then
-  CHECKS="check distcheck $EXTRACHECKS"
- else
+ if [ "$DEST" = pcmk1 ] && [ "${NODE_NAME}" = centos-6-x86-64 ]; then
   CHECKS="$EXTRACHECKS"
+ else
+  CHECKS="check distcheck $EXTRACHECKS"
  fi
 fi
 

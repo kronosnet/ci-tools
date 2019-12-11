@@ -42,9 +42,8 @@ case $build in
   exit 0
   ;;
  coverity)
-  if [ -n "${pcmkver}" ]; then
-   pcmk=$(basename ${pcmkver})
-   DEST=$DEST/pcmk-$pcmk/
+  if [ -n "$extraver" ]; then
+   DEST=$DEST/$extraver/
   fi
   echo "===== CURRENT COVERITY SCAN ERRORS ====="
   cat cov.txt

@@ -1,0 +1,199 @@
+#!/bin/bash
+
+set -e
+
+trap cleanup EXIT
+
+cleanup() {
+	[ -n "$TMPDIR" ] && rm -rf $TMPDIR
+}
+
+TMPDIR=$(mktemp -d /tmp/jnodemgmtXXXXXX)
+
+getnodelist() {
+	rm -rf $TMPDIR/nodelist.json
+	wget -O $TMPDIR/nodelist.json "http://ci.kronosnet.org/computer/api/json?pretty=true" > /dev/null 2>&1
+	nodelist="$(cat $TMPDIR/nodelist.json | jq '.computer' | grep displayName | sed -e 's/.*": "//g' -e 's/",//g' |grep -v ^master$)"
+	rm -rf $TMPDIR/nodelist.json
+}
+
+getjoblist() {
+	joblist="$(jcli list-jobs 2> /dev/null)"
+}
+
+delnodefromjob() {
+	job="$1"
+	node="$2"
+
+	jcli get-job $job > $TMPDIR/${job}.xml 2>/dev/null
+
+	xmlstarlet ed \
+		--net \
+		--inplace \
+		--delete "/matrix-project/axes/hudson.matrix.LabelAxis/values/string[contains(text(),'$node')]" \
+		$TMPDIR/${job}.xml
+
+	cat $TMPDIR/${job}.xml | jcli update-job $job
+
+	rm -rf $TMPDIR/${job}.xml
+}
+
+delnodefromalljobs() {
+	node="$1"
+
+	for i in $joblist; do
+		delnodefromjob $i $node
+	done
+}
+
+addnodetojob() {
+	job="$1"
+	node="$2"
+
+	jcli get-job $job > $TMPDIR/${job}.xml 2>/dev/null
+
+	xmlstarlet ed \
+		--net \
+		--inplace \
+		--insert "/matrix-project/axes/hudson.matrix.LabelAxis/values/string[1]" \
+		--type elem \
+		--name string \
+		--value $node \
+		$TMPDIR/${job}.xml
+
+	cat $TMPDIR/${job}.xml | jcli update-job $job
+
+	rm -rf $TMPDIR/${job}.xml
+}
+
+addnodetoalljobs() {
+	node="$1"
+	rpm=no
+	clang=yes
+	packager=""
+	voting=no
+	oldbuilds=no
+
+	labels=$(jcli get-node $node | grep label | sed -e 's/<label>//g' -e 's/<\/label>//g')
+
+	echo $labels
+
+	for i in $labels; do
+		case $i in
+			rpm)
+				rpm=yes
+				;;
+			noclang)
+				clang=no
+				;;
+			yum|zypper|apt|freebsd)
+				packager=$i
+				;;
+			voting)
+				voting=yes
+				;;
+			stable|unstable)
+				updater=$i
+				;;
+			rhel7*|centos-7*)
+				oldbuilds=yes
+				;;
+		esac
+	done
+	echo rpm $rpm clang $clang packager $packager voting $voting
+	echo $joblist
+	localjoblist=""
+	for i in $joblist; do
+		addjob=0
+		case $i in
+			all-weekly|build-rpm-repos|reinstall-all-manual|reconnect-all-nodes)
+				echo Skipping global job $i
+				;;
+			*after-merge|*github-pr-builder|*covscan*|*crosscompile*)
+				echo Skipping hook job $i
+				;;
+			update-all-ci-tools)
+				echo Adding updating job $i
+				addjob=1
+				;;
+			update-all-${packager}-${updater})
+				echo Adding updating job $i
+				addjob=1
+				;;
+			update-all*|update-freebsd-devel)
+				echo Skipping updating job $i
+				;;
+			*clang)
+				if [ $clang == yes ]; then
+					echo Adding to clang job $i
+					addjob=1
+				else
+					echo Skipping clang job $i
+				fi
+				;;
+			*rpms)
+				if [ $rpm == yes ]; then
+					echo Adding to rpm job $i
+					addjob=1
+				else
+					echo Skipping rpm job $i
+				fi
+				;;
+			*needle*|pacemaker1*)
+				if [ $oldbuilds == yes ]; then
+					echo Adding oldbuilds to job $i
+					addjob=1
+				else
+					echo Skipping oldbuilds job $i
+				fi
+				;;
+			*-nonvoting)
+				if [ $voting == no ]; then
+					echo Adding to nonvoting job $i
+					addjob=1
+				else
+					echo Skipping nonvoting job $i
+				fi
+				;;
+			*-voting)
+				if [ $voting == yes ]; then
+					echo Adding to voting job $i
+					addjob=1
+				else
+					echo Skipping voting job $i
+				fi
+				;;
+			*flatiron*)
+				echo Skipping voting job $i
+				;;
+			*)
+				echo Adding leftover $i
+				addjob=1
+				;;
+		esac
+		if [ $addjob == 1 ]; then
+			localjoblist="$localjoblist $i"
+		fi
+	done
+	echo $localjoblist
+	for i in $localjoblist; do
+		addnodetojob $i $node
+	done
+}
+
+action=$1
+node=$2
+
+getjoblist
+getnodelist
+
+case $action in
+	del)
+		delnodefromalljobs $node
+	;;
+	add)
+		addnodetoalljobs $node
+	;;
+esac
+
+exit 0

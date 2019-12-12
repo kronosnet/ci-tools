@@ -1,0 +1,7 @@
+#!/bin/sh
+
+java \
+	-jar $HOME/ci-tools/jenkins-cli.jar \
+	-ssh -user fabbione -i $HOME/.ssh/id_rsa \
+	-s https://ci.kronosnet.org/ \
+	"$@"

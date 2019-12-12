@@ -20,3 +20,5 @@ for node in $nodelist; do
 	disrecon $node &
 	sleep 2
 done
+
+rm -rf $tempfile

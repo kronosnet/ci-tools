@@ -1,0 +1,115 @@
+#!/bin/bash
+
+set -e
+
+project="$1"
+branch="$2"
+if [ -n "$3" ]; then
+ extraverdir="/$3"
+ extraver="-$3"
+fi
+
+if [ -z "$project" ]; then
+	echo "no project specificed"
+	exit 1
+fi
+
+if [ -z "$branch" ]; then
+	echo "no branch specificed"
+	exit 1
+fi
+
+echo "Purting 0 byte files"
+find /srv/rpmrepos/ -type f -size 0 -print -delete
+
+echo "Purging empty dirs"
+find /srv/rpmrepos/ -type d -empty -print -delete
+
+echo "Updating all rpm repos for project: $project branch: $branch extraver: $3"
+
+cd /srv/rpmrepos/$project/
+
+for i in $(ls); do
+	cd /srv/rpmrepos/$project/
+	echo "Processing $i"
+
+	cd $i
+
+	toplevelbranch=$(basename $branch)${extraver}
+	rm -f ${toplevelbranch}
+	ln -sf ${branch}${extraverdir} ${toplevelbranch}
+
+	cd $toplevelbranch
+
+	# createrepo on latest and update symlinks
+	lastbuild="$(ls -1 | sort -n | tail -n 1)"
+	echo "Last build detected: $lastbuild"
+	cd $lastbuild
+	createrepo .
+	cd ..
+	rm -f latest
+	ln -sf $lastbuild latest
+
+	# remove old builds (keep last 5)
+	builds="$(ls -1 | grep -v latest | sort -n)"
+	numbuilds="$(echo "$builds" | wc -l)"
+	if [ "$numbuilds" -gt 5 ]; then
+		purgenum=$((numbuilds - 5))
+		candidates="$(echo "$builds" | head -n $purgenum)"
+		for x in $candidates; do
+			echo "Removing old build: $x"
+			rm -rf $x
+		done
+	fi
+done
+
+# generate repo files
+cd /srv/rpmrepos/
+
+cat > /srv/rpmrepos/opensuse-readme.repo << EOF
+OpenSUSE users, please browse the knet/ folder for appropriate builds for your deployment.
+You can use zypper to enable those repositories.
+
+For example use the following command to add the repository:
+zypper add https://kronosnet.org/builds/knet/opensuse-tumbleweed-x86-64/master/latest/ knet
+
+and to enable and autorefresh:
+zypper mr -e -f -G knet
+
+please be aware the repositories are not signed.
+EOF
+
+for i in $(ls |grep -v repo); do
+	# project level
+	cd $i
+
+	for x in $(ls |grep -v opensuse); do
+		# builder level
+		cd $x
+
+		for b in $(ls |grep -v origin); do
+
+		echo "Creating $i-$b-$x repo file"
+cat > /srv/rpmrepos/$i-$b-$x.repo << EOF
+[$i-$b-$x]
+name=$i-$b-$x
+baseurl=https://kronosnet.org/builds/$i/$x/$b/latest/
+repo_gpgcheck=0
+enabled=1
+gpgcheck=0
+metadata_expire=1d
+skip_if_unavailable=True
+EOF
+
+		done
+
+		cd - >/dev/null 2>&1
+	done
+
+	cd .. >/dev/null 2>&1
+done
+
+cd /srv/rpmrepos/
+rsync -av --progress --delete-after . www.kronosnet.org:~kronosnet/kronosnet/builds/.
+
+exit 0

@@ -1,0 +1,82 @@
+#!/bin/bash
+
+set -e
+
+function print_usage() {
+	echo "$(basename $0)"
+	echo ""
+	echo "usage:"
+	echo ""
+	echo "$(basename $0) [options]"
+	echo ""
+	echo "Options:"
+	echo " -h                           print this help text"
+	echo " -d                           enable ansible debug (-vvv)"
+	echo " -w                           wipe all src/build dirs and start fresh"
+}
+
+function generate_ansible_cfg {
+	echo "[defaults]" > ansible.cfg
+	echo "callback_plugins = plugins/" >> ansible.cfg
+	echo "inventory = ansible-inventory" >> ansible.cfg
+	echo "forks = 70" >> ansible.cfg
+	echo "timeout = 30" >> ansible.cfg
+	echo "generated ansible config:"
+	echo "========================="
+	cat ansible.cfg
+	echo "========================="
+	echo ""
+}
+
+# parse command line options
+
+while getopts "hdw" optflag; do
+	case "$optflag" in
+	d)
+		ansibledebug="-vvv"
+		;;
+	w)
+		extravars="wipecode=yes $extravars"
+		;;
+	h)
+		print_usage
+		exit 0
+		;;
+	\?|:)
+		print_usage
+		exit 1
+		;;
+	esac
+done
+
+if ! which ansible >/dev/null 2>&1; then
+	echo "ERROR: missing ansible binary from PATH"
+	exit 1
+fi
+
+if ! which ansible-playbook >/dev/null 2>&1; then
+	echo "ERROR: missing ansible-playbook binary from PATH"
+	exit 1
+fi
+
+# automatic update ansible-config
+if [ -f ansible.cfg.manual ]; then
+	cp ansible.cfg.manual ansible.cfg
+else
+	generate_ansible_cfg
+fi
+
+if [ ! -f ansible-inventory ]; then
+	echo "ERROR: missing ansible-inventory file"
+	exit 1
+fi
+
+echo "Checking connectivity to nodes"
+echo ""
+
+ansible all -f 500 -m ping || exit 1
+echo ""
+
+ansible-playbook ${ansibledebug} site.yml --extra-vars "$extravars testresdir=\"${testresdir}\""
+
+exit 0

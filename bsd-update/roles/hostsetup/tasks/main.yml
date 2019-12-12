@@ -1,0 +1,65 @@
+- name: update packages
+  shell: pkg upgrade -y
+
+- name: install packages
+  shell: pkg install -y git gcc automake autoconf autotools pkgconf openssl111 nss liblz4 lzo2 lzma bzip2 libxml2 libqb doxygen groff dbus net-snmp gmake curl jq check py36-pexpect py36-pycurl py36-suds-jurko py36-requests py36-boto py36-google-api-python-client libxslt glib docbook-xsl libltdl e2fsprogs-libuuid libxslt ncurses bison byacc flex help2man gnutls inkscape asciidoc getopt p5-Locale-gettext openipmi zstd py36-keystoneauth1 py36-python-keystoneclient py36-python-novaclient
+
+- name: clean workspace
+  shell: rm -rf /srv/workspace/*
+
+- name: check pre-upgrade status
+  stat: path=/root/.pre_upgrade_done
+  register: preupgrade
+
+- meta: end_play
+  when: preupgrade.stat.exists == False
+
+- name: install kernel
+  shell: cd /usr/src && make installkernel
+
+- name: reboot after kernel install
+  shell: sleep 2 && /sbin/shutdown -r +1
+  async: 0
+  poll: 0
+  ignore_errors: true
+  register: rebootkernel
+
+- name: wait for servers to come back after reboot
+  local_action: wait_for host={{ ansible_ssh_host }} state=started delay=90 timeout=300
+  when: rebootkernel.changed
+
+- name: update config files
+  shell: mergemaster -a
+
+- name: install userland
+  shell: cd /usr/src && make installworld
+
+- name: reboot after userland install
+  shell: sleep 2 && /sbin/shutdown -r +1
+  async: 0
+  poll: 0
+  ignore_errors: true
+  register: rebootuserland
+
+- name: wait for servers to come back after reboot
+  local_action: wait_for host={{ ansible_ssh_host }} state=started delay=90 timeout=300
+  when: rebootuserland.changed
+
+- name: clean old files
+  shell: cd /usr/src && make BATCH_DELETE_OLD_FILES=yes delete-old delete-old-libs
+
+- name: reboot after config updates and old files removal
+  shell: sleep 2 && /sbin/shutdown -r +1
+  async: 0
+  poll: 0
+  ignore_errors: true
+  register: rebootlast
+
+- name: wait for servers to come back after reboot
+  local_action: wait_for host={{ ansible_ssh_host }} state=started delay=90 timeout=300
+  when: rebootlast.changed
+
+- name: clear pre upgrade status
+  file:
+    path: /root/.pre_upgrade_done
+    state: absent

@@ -1,0 +1,12 @@
+---
+# top level playbook
+# Install all build depedencies and keep hosts updated
+# clone/build/install code
+# run tests
+#
+
+- name: Install and build everything
+  hosts: bsdnodes
+
+  roles:
+    - hostsetup

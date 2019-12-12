@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -e
+
+rm -f /root/.pre_upgrade_done
+svn update --accept theirs-full /usr/src
+cd /usr/src && make -j 8 buildworld buildkernel
+touch /root/.pre_upgrade_done
+getent group haclient >/dev/null || pw groupadd haclient
+getent passwd hacluster >/dev/null || pw useradd hacluster -g haclient -s /nonexistent -c "cluster user"

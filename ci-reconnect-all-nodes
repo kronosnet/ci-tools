@@ -2,6 +2,12 @@
 
 set -e
 
+trap cleanup EXIT
+
+cleanup() {
+	[ -n "$tempfile" ] && rm -rf $tempfile
+}
+
 tempfile=$(mktemp /tmp/XXXXXXXX.json)
 
 wget -O $tempfile "http://ci.kronosnet.org/computer/api/json?pretty=true"
@@ -12,5 +18,3 @@ for node in $nodelist; do
 	echo disconnecting node $node
 	./jcli disconnect-node $node
 done
-
-rm -rf $tempfile

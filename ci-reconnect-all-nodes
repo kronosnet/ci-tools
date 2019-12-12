@@ -7,18 +7,13 @@ tempfile=$(mktemp /tmp/XXXXXXXX.json)
 wget -O $tempfile "http://ci.kronosnet.org/computer/api/json?pretty=true"
 
 nodelist="$(cat $tempfile | jq '.computer' | grep displayName | sed -e 's/.*": "//g' -e 's/",//g' |grep -v ^master$)"
-
-disrecon() {
-	node=$1
-	echo disconnecting node $node
-	./jcli disconnect-node $node
-	echo reconnecting node $node
-	./jcli connect-node $node
-}
+reconnectlist="$(echo $nodelist | sed -e 's/ /,/g')"
 
 for node in $nodelist; do
-	disrecon $node &
-	sleep 2
+	echo disconnecting node $node
+	./jcli disconnect-node $node
 done
+
+./jcli connect-node $reconnectlist
 
 rm -rf $tempfile

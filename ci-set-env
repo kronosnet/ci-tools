@@ -1,8 +1,36 @@
+echo ===== JENKINS JOB INFO =====
+
+echo "Build started by: ${JOB_BASE_NAME}"
+
+JOBNAME=$(echo ${JOB_BASE_NAME}  | sed -e 's/=.*//g')
+
+case $JOBNAME in
+ *covscan)
+  export build=coverity
+ ;;
+ *rpms)
+  export build=rpm
+ ;;
+ *crosscompile*)
+  export build=crosscompile
+ ;;
+esac
+
+if [ -n "$build" ]; then
+ echo "$build detected from jenkins job name"
+else
+ echo "normal build detected from jenkins job name"
+fi
+
+echo ===== PATH INFO =====
+
 export PATH="$PATH:/root/ci-tools"
 
 if [ -d /opt/coverity/bin ]; then
  export PATH=/opt/coverity/bin:$PATH
 fi
+
+echo PATH: $PATH
 
 echo ===== TOOLCHAIN INFO =====
 export MAKE=make

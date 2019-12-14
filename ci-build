@@ -2,8 +2,6 @@
 
 set -ev
 
-echo "Build started by: ${JOB_BASE_NAME}"
-
 . /root/ci-tools/ci-set-env
 ci-build-info
 ci-setup-rpm

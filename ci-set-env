@@ -17,7 +17,7 @@ case $JOBNAME in
 esac
 
 if [ -n "$build" ]; then
- echo "$build detected from jenkins job name"
+ echo "$build build detected from jenkins job name"
 else
  echo "normal build detected from jenkins job name"
 fi

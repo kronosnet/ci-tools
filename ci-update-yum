@@ -1,0 +1,99 @@
+#!/bin/sh
+
+set -ev
+
+#JOBNAME=$(echo ${JOB_BASE_NAME}  | sed -e 's/=.*//g')
+
+#case ${JOBNAME} in
+# *unstable)
+#  upgrade=dup
+#  ;;
+# *stable)
+#  upgrade=update
+#  ;;
+#esac
+
+yum clean all
+
+# Enable OpenStack repos for fence-agents build dependencies
+case "${NODE_NAME}" in
+ rhel*x86*|rhel*power*)
+  rpm -qa | grep rhos-release || yum install -y http://rhos-release.virt.bos.redhat.com/repos/rhos-release/rhos-release-latest.noarch.rpm
+  RHELVER=$(echo $NODE_NAME | sed -e 's/rhel//g' -e  's/z-.*//g' | cut --characters 1-1,2-2 --output-delimiter '.')
+  echo "Detected RHEL version: $RHELVER"
+ ;;
+ centos-7*)
+  yum install -y centos-release-openstack-stein
+ ;;
+esac
+
+case "${NODE_NAME}" in
+ rhel7*x86*|rhel7*power*)
+  rhos-release 14
+ ;;
+ rhel8*x86*|rhel8*power*)
+  rhos-release 15
+ ;;
+esac
+
+# Disable repos that don´t exist or are "bad"
+case "${NODE_NAME}" in
+ rhel7*power*)
+  yum-config-manager --save --setopt=rhelosp-14.0-optools-puddle.skip_if_unavailable=true
+  yum-config-manager --save --setopt=rhelosp-ceph-3-mon.skip_if_unavailable=true
+  yum-config-manager --save --setopt=rhelosp-ceph-3-osd.skip_if_unavailable=true
+  yum-config-manager --save --setopt=rhelosp-ceph-3-tools.skip_if_unavailable=true
+  yum-config-manager --save --setopt=rhelosp-rhel-${RHELVER}-ha.skip_if_unavailable=true
+  yum-config-manager --save --setopt=rhelosp-rhel-${RHELVER}-server.skip_if_unavailable=true
+ ;;
+ rhel8*x86*|rhel8*power*)
+  yum-config-manager --save --setopt=rhosp-rhel-8.1-appstream.enabled=0
+ ;;
+esac
+
+# not all yum based distro have python3, deal with it
+if [ -z "$python" ]; then
+ python=python3
+fi
+
+yum -y update
+
+EXTRADEPS=""
+
+# Install special case packages
+yum -y install python-devel || yum -y install platform-python-devel
+yum -y install libzstd-devel publican || true
+if [ "${NODE_NAME}" != centos-6-x86-64 ]; then
+ yum -y install systemd-python || yum -y install python3-systemd
+ EXTRADEPS="systemd-devel $EXTRADEPS"
+fi
+# available only on ppc
+yum -y install libservicelog-devel || true
+
+# pcs builds only on recent distros
+case "${NODE_NAME}" in
+ fedora*|opensuse*|rhel8*)
+  EXTRADEPS="ruby ruby-devel rubygems fontconfig liberation-sans-fonts overpass-fonts npm rpmdevtools $EXTRADEPS"
+ ;;
+esac
+
+# available only with python3
+if [ "$python" = python3 ]; then
+ EXTRADEPS="execstack python3-pexpect python3-pycurl python3-suds python3-requests openwsman-python3 python3-boto3 python3-google-api-client python3-setuptools $EXTRADEPS"
+else
+ EXTRADEPS="pexpect openwsman-python python-suds python2-google-api-client python-requests $EXTRADEPS"
+ if [ "$epel" = new ]; then
+  EXTRADEPS="python-boto3 python-s3transfer $EXTRADEPS"
+ else
+  EXTRADEPS="python2-boto3 $EXTRADEPS"
+ fi
+fi
+
+# OpenStack packages
+EXTRADEPS="${python}-keystoneclient ${python}-keystoneauth1 ${python}-novaclient $EXTRADEPS"
+
+yum -y install make git gcc clang automake libtool autoconf valgrind lksctp-tools-devel nss-devel openssl-devel zlib-devel lz4-devel lzo-devel xz-devel bzip2-devel libqb-devel libxml2-devel rpm-build doxygen groff dbus-devel net-snmp-devel libcgroup-devel curl jq check-devel time libxslt glib2-devel docbook-style-xsl libtool-ltdl-devel libuuid-devel libxslt-devel pam-devel ncurses-devel bison byacc flex help2man gnutls-devel inkscape asciidoc dbus-devel OpenIPMI-devel libnl3-devel libaio-devel perl libnet-devel libvirt-devel $EXTRADEPS
+
+getent group haclient >/dev/null || groupadd -r haclient -g 189
+getent passwd hacluster >/dev/null || useradd -r -g haclient -u 189 -s /sbin/nologin -c "cluster user" hacluster
+rm -rf /srv/workspace/*

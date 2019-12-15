@@ -2,7 +2,9 @@
 
 set -ev
 
-case ${JOB_BASE_NAME} in
+JOBNAME=$(echo ${JOB_BASE_NAME}  | sed -e 's/=.*//g')
+
+case ${JOBNAME} in
  *unstable)
   upgrade=dup
   ;;

@@ -2,12 +2,11 @@
 
 set -ev
 
+upgrade=update
+
 case ${JOB_BASE_NAME} in
  *unstable)
   upgrade=dup
-  ;;
- *stable)
-  upgrade=update
   ;;
 esac
 

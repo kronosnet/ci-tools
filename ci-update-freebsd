@@ -9,3 +9,10 @@ pkg install -y git gcc automake autoconf autotools pkgconf openssl111 nss liblz4
 getent group haclient >/dev/null || pw groupadd haclient
 getent passwd hacluster >/dev/null || pw useradd hacluster -g haclient -s /nonexistent -c "cluster user"
 rm -rf /srv/workspace/*
+
+case ${JOB_BASE_NAME} in
+ *unstable*)
+  cd $HOME/ci-tools/bsd-update
+  ./run-update
+  ;;
+esac

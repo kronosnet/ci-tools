@@ -2,17 +2,6 @@
 
 set -ev
 
-#JOBNAME=$(echo ${JOB_BASE_NAME}  | sed -e 's/=.*//g')
-
-#case ${JOBNAME} in
-# *unstable)
-#  upgrade=dup
-#  ;;
-# *stable)
-#  upgrade=update
-#  ;;
-#esac
-
 yum clean all
 
 # Enable OpenStack repos for fence-agents build dependencies

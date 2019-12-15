@@ -1,5 +1,5 @@
 - name: package upgrade
-  shell: $HOME/ci-tools/ci-update-freebsd
+  shell: $HOME/ci-tools/ci-update-freebsd devel
 
 - name: check pre-upgrade status
   stat: path=/root/.pre_upgrade_done

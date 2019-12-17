@@ -7,9 +7,11 @@ set -ev
 cleanlibqb() {
  # libqb test suite will leave craft behind in case of failures
  # make sure to clean before and after the test run
+ # this code works because we do NOT allow multiple builds of libqb
+ # in parallel!
  if [ "$DEST" = qb ]; then
   if [ -d "/dev/shm" ]; then
-   find /dev/shm -type d -name qb-\* | xargs rm -rf
+   find /dev/shm -name qb-\*-test\* | xargs rm -rf
   fi
   find /tmp -type d -name libqb\* | xargs rm -rf
  fi

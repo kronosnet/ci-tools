@@ -2,6 +2,8 @@
 
 set -ev
 
+$HOME/ci-tools/ci-update-common
+
 if [ -z "$1" ]; then
  freebsd-update --not-running-from-cron fetch
  freebsd-update --not-running-from-cron install || true
@@ -11,4 +13,3 @@ pkg upgrade -y
 pkg install -y git gcc automake autoconf autotools pkgconf openssl111 nss liblz4 lzo2 lzma bzip2 libxml2 libqb doxygen groff dbus net-snmp gmake curl jq check py36-pexpect py36-pycurl py36-suds-jurko py36-requests py36-boto3 py36-google-api-python-client libxslt glib docbook-xsl libltdl e2fsprogs-libuuid libxslt ncurses bison byacc flex help2man gnutls inkscape asciidoc getopt p5-Locale-gettext openipmi zstd py36-keystoneauth1 py36-python-keystoneclient py36-python-novaclient
 getent group haclient >/dev/null || pw groupadd haclient
 getent passwd hacluster >/dev/null || pw useradd hacluster -g haclient -s /nonexistent -c "cluster user"
-rm -rf /srv/workspace/*

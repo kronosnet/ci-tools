@@ -2,6 +2,8 @@
 
 set -ev
 
+$HOME/ci-tools/ci-update-common
+
 yum clean all
 
 # Enable OpenStack repos for fence-agents build dependencies
@@ -91,4 +93,3 @@ yum -y install make git gcc clang automake libtool autoconf valgrind lksctp-tool
 
 getent group haclient >/dev/null || groupadd -r haclient -g 189
 getent passwd hacluster >/dev/null || useradd -r -g haclient -u 189 -s /sbin/nologin -c "cluster user" hacluster
-rm -rf /srv/workspace/*

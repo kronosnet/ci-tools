@@ -2,6 +2,8 @@
 
 set -ev
 
+$HOME/ci-tools/ci-update-common
+
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update --allow-releaseinfo-change || apt-get update
@@ -18,4 +20,3 @@ fi
 apt-get -y clean
 getent group haclient >/dev/null || addgroup --system haclient
 getent passwd hacluster >/dev/null || adduser --system --ingroup haclient --gecos "cluster user" --no-create-home hacluster
-rm -rf /srv/workspace/*

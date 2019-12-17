@@ -2,7 +2,7 @@
 
 set -ev
 
-. /root/ci-tools/ci-rpm-common
+. $HOME/ci-tools/ci-rpm-common
 
 cleanlibqb() {
  # libqb test suite will leave craft behind in case of failures

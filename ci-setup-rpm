@@ -2,7 +2,7 @@
 
 set -ev
 
-. /root/ci-tools/ci-rpm-common
+. $HOME/ci-tools/ci-rpm-common
 
 if [ "$build" = rpm ] || [ "$DEST" = pcmk1 ]; then
  if [ -n "$RPMDEPS" ]; then

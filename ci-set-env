@@ -24,7 +24,7 @@ fi
 
 echo ===== PATH INFO =====
 
-export PATH="$PATH:/root/ci-tools"
+export PATH="$PATH:$HOME/ci-tools"
 
 if [ -d /opt/coverity/bin ]; then
  export PATH=/opt/coverity/bin:$PATH

@@ -2,6 +2,8 @@
 
 set -ev
 
+cd /root
+
 rm -rf /srv/workspace/*
 # the test job can only clean up to a certain point
 # this is more likely to avoid qb leaks

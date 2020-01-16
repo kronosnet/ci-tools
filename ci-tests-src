@@ -73,19 +73,18 @@ case $build in
 
   exit $ret
   ;;
+ crosscompile)
+  if [ "$(find . -print -type f -exec file {} \; | grep ELF | grep $ARCH | wc -l)" = 0 ]; then
+   echo "Crosscompilation test failed. Unable to find any $ARCH binaries"
+   exit 1
+  fi
+  exit 0
+  ;;
  *)
   ;;
 esac
 
 if [ -n "$CHECKS" ] && [ "$CHECKS" = "nochecks" ]; then
- exit 0
-fi
-
-if [ -n "$CHECKS" ] && [ "$CHECKS" = "crosscompile" ]; then
- if [ "$(find . -print -type f -exec file {} \; | grep ELF | grep $ARCH | wc -l)" = 0 ]; then
-  echo "Crosscompilation test failed. Unable to find any $ARCH binaries"
-  exit 1
- fi
  exit 0
 fi
 

@@ -2,6 +2,8 @@
 
 set -ev
 
+cd /root
+
 $HOME/ci-tools/ci-update-common
 
 yum clean all

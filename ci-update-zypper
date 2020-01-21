@@ -2,6 +2,8 @@
 
 set -ev
 
+cd /root
+
 $HOME/ci-tools/ci-update-common
 
 JOBNAME=$(echo ${JOB_BASE_NAME}  | sed -e 's/=.*//g')

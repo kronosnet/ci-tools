@@ -43,6 +43,16 @@ if [ -z "$compiler" ]; then
  compiler=gcc
 fi
 $compiler --version || true
+
+case "$compiler" in
+*gcc)
+echo === implicit options/values with gcc ===
+ { $compiler -Q --help=common || true; } | grep -e '-[Wf]'
+;;
+*)
+;;
+esac
+
 ld --version || true
 export CC=$compiler
 

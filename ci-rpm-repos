@@ -19,7 +19,7 @@ if [ -z "$branch" ]; then
 	exit 1
 fi
 
-echo "Purting 0 byte files"
+echo "Purging 0 byte files"
 find /srv/rpmrepos/ -type f -size 0 -print -delete
 
 echo "Purging empty dirs"

@@ -122,7 +122,7 @@ if [ "$build" != "rpm" ]; then
   export EXTERNAL_CONFIG_PATH=$KNET_CONFIG_PATH
   export EXTERNAL_LD_LIBRARY_PATH=$KNET_INSTALL_PATH/$KNET_LIB/
   echo libknet build info: $(cat $KNET_INSTALL_PATH/.build-info)
-  PKG_CONFIG_PATH=$KNET_CONFIG_PATH pkg-config --modversion libknet
+  PKG_CONFIG_PATH=$KNET_CONFIG_PATH pkg-config --modversion libknet || true
  fi
 
  if [ -n "$QB_INSTALL_PATH" ] && [ -d "$QB_INSTALL_PATH" ]; then
@@ -131,7 +131,7 @@ if [ "$build" != "rpm" ]; then
   export EXTERNAL_CONFIG_PATH=$EXTERNAL_CONFIG_PATH:$QB_CONFIG_PATH
   export EXTERNAL_LD_LIBRARY_PATH=$EXTERNAL_LD_LIBRARY_PATH:$QB_INSTALL_PATH/$QB_LIB/
   echo libqb build info: $(cat $QB_INSTALL_PATH/.build-info)
-  PKG_CONFIG_PATH=$QB_CONFIG_PATH pkg-config --modversion libqb
+  PKG_CONFIG_PATH=$QB_CONFIG_PATH pkg-config --modversion libqb || true
  else
   echo using libqb as provided by OS
  fi
@@ -142,7 +142,7 @@ if [ "$build" != "rpm" ]; then
   export EXTERNAL_CONFIG_PATH=$EXTERNAL_CONFIG_PATH:$COROSYNC_CONFIG_PATH
   export EXTERNAL_LD_LIBRARY_PATH=$EXTERNAL_LD_LIBRARY_PATH:$COROSYNC_INSTALL_PATH/$COROSYNC_LIB/
   echo corosync build info: $(cat $COROSYNC_INSTALL_PATH/.build-info)
-  PKG_CONFIG_PATH=$COROSYNC_CONFIG_PATH pkg-config --modversion corosync
+  PKG_CONFIG_PATH=$COROSYNC_CONFIG_PATH pkg-config --modversion corosync || true
  fi
 
  if [ -n "$PCMK_INSTALL_PATH" ] && [ -d "$PCMK_INSTALL_PATH" ]; then
@@ -155,7 +155,7 @@ if [ "$build" != "rpm" ]; then
   export EXTERNAL_CONFIG_PATH=$EXTERNAL_CONFIG_PATH:$PCMK_CONFIG_PATH
   export EXTERNAL_LD_LIBRARY_PATH=$EXTERNAL_LD_LIBRARY_PATH:$PCMK_INSTALL_PATH/$PCMK_LIB/
   echo pacemaker build info: $(cat $PCMK_INSTALL_PATH/.build-info)
-  PKG_CONFIG_PATH=$PCMK_CONFIG_PATH pkg-config --modversion pacemaker
+  PKG_CONFIG_PATH=$PCMK_CONFIG_PATH pkg-config --modversion pacemaker || true
  fi
 
 else

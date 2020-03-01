@@ -58,7 +58,7 @@ class CallbackModule(CallbackBase):
 
     def _format_output(self, output):
         # Strip unicode
-        if type(output) == str:
+        if type(output) == bytes:
             output = output.encode(sys.getdefaultencoding(), 'replace')
 
         # If output is a dict

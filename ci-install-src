@@ -2,7 +2,7 @@
 
 set -ev
 
-if [ -n "$install" ] && [ "$install" = 1 ]; then
+if [ -n "$install" ] && [ "$install" = 1 ] && [ "x$build" != "xcoverity" ]; then
  echo rm -rf /srv/$DEST/${ghprbActualCommit}/
  rm -rf /srv/$DEST/${ghprbActualCommit}/
  if [ "$DEST" = "pcmk" ]; then

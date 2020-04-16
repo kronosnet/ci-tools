@@ -20,14 +20,14 @@ case "${NODE_NAME}" in
  ;;
 esac
 
-case "${NODE_NAME}" in
- rhel7*x86*|rhel7*power*)
-  rhos-release 14
- ;;
- rhel8*x86*|rhel8*power*)
-  rhos-release 15
- ;;
-esac
+#case "${NODE_NAME}" in
+# rhel7*x86*|rhel7*power*)
+#  rhos-release 14
+# ;;
+# rhel8*x86*|rhel8*power*)
+#  rhos-release 15
+# ;;
+#esac
 
 # Disable repos that don´t exist or are "bad"
 case "${NODE_NAME}" in

@@ -33,7 +33,7 @@ removerpmdeps() {
 
 installrpmdeps() {
 
- if [ "x$bootstrap" = "x1"]; then
+ if [ "x$bootstrap" = "x1" ]; then
   ret="true"
  else
   ret="removerpmdeps 1"

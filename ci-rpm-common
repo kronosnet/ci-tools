@@ -32,38 +32,45 @@ removerpmdeps() {
 }
 
 installrpmdeps() {
+
+ if [ "x$bootstrap" = "x1"]; then
+  ret="true"
+ else
+  ret="removerpmdeps 1"
+ fi
+
  cleanbr
  if [ -n "$(which zypper 2>/dev/null)" ]; then
   if [ -n "$KNET_REPO_PATH" ]; then
-   zypper addrepo $KNET_REPO_PATH knet-build || removerpmdeps 1
-   zypper modifyrepo -e -f -G knet-build || removerpmdeps 1
+   zypper addrepo $KNET_REPO_PATH knet-build || $ret
+   zypper modifyrepo -e -f -G knet-build || $ret
   fi
   if [ -n "$LIBQB_REPO_PATH" ]; then
-   zypper addrepo $LIBQB_REPO_PATH libqb-build || removerpmdeps 1
-   zypper modifyrepo -e -f -G libqb-build || removerpmdeps 1
+   zypper addrepo $LIBQB_REPO_PATH libqb-build || $ret
+   zypper modifyrepo -e -f -G libqb-build || $ret
   fi
   if [ -n "$COROSYNC_REPO_PATH" ]; then
-   zypper addrepo $COROSYNC_REPO_PATH corosync-build || removerpmdeps 1
-   zypper modifyrepo -e -f -G corosync-build || removerpmdeps 1
+   zypper addrepo $COROSYNC_REPO_PATH corosync-build || $ret
+   zypper modifyrepo -e -f -G corosync-build || $ret
   fi
   if [ -n "$PCMK_REPO_PATH" ]; then
-   zypper addrepo $PCMK_REPO_PATH pcmk-build || removerpmdeps 1
-   zypper modifyrepo -e -f -G pcmk-build || removerpmdeps 1
+   zypper addrepo $PCMK_REPO_PATH pcmk-build || $ret
+   zypper modifyrepo -e -f -G pcmk-build || $ret
   fi
   zypper install -y $RPMDEPS || removerpmdeps 1
  fi
  if [ -n "$(which yum 2>/dev/null)" ]; then
   if [ -n "$KNET_REPO" ]; then
-   wget -O /etc/yum.repos.d/knet-build.repo $KNET_REPO || removerpmdeps 1
+   wget -O /etc/yum.repos.d/knet-build.repo $KNET_REPO || $ret
   fi
   if [ -n "$LIBQB_REPO" ]; then
-   wget -O /etc/yum.repos.d/libqb-build.repo $LIBQB_REPO || removerpmdeps 1
+   wget -O /etc/yum.repos.d/libqb-build.repo $LIBQB_REPO || $ret
   fi
   if [ -n "$COROSYNC_REPO" ]; then
-   wget -O /etc/yum.repos.d/corosync-build.repo $COROSYNC_REPO || removerpmdeps 1
+   wget -O /etc/yum.repos.d/corosync-build.repo $COROSYNC_REPO || $ret
   fi
   if [ -n "$PCMK_REPO" ]; then
-   wget -O /etc/yum.repos.d/pcmk-build.repo $PCMK_REPO || removerpmdeps 1
+   wget -O /etc/yum.repos.d/pcmk-build.repo $PCMK_REPO || $ret
   fi
   yum install -y $RPMDEPS || removerpmdeps 1
  fi

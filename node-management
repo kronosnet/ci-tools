@@ -139,6 +139,14 @@ addnodetoalljobs() {
 					echo Skipping rpm job $i
 				fi
 				;;
+			*pcs*)
+				if [ $oldbuilds == yes ]; then
+					echo Skipping oldbuilds job $i
+				else
+					echo Adding oldbuilds to job $i
+					addjob=1
+				fi
+				;;
 			*needle*|pacemaker1*)
 				if [ $oldbuilds == yes ]; then
 					echo Adding oldbuilds to job $i

@@ -39,9 +39,6 @@ case "${NODE_NAME}" in
   yum-config-manager --save --setopt=rhelosp-rhel-${RHELVER}-ha.skip_if_unavailable=true
   yum-config-manager --save --setopt=rhelosp-rhel-${RHELVER}-server.skip_if_unavailable=true
  ;;
- rhel8*x86*|rhel8*power*)
-  yum-config-manager --save --setopt=rhosp-rhel-8.1-appstream.enabled=0
- ;;
 esac
 
 # not all yum based distro have python3, deal with it

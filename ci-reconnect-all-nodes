@@ -18,7 +18,11 @@ nodelist="$(cat $tempfile | jq '.computer' | grep displayName | sed -e 's/.*": "
 
 for node in $nodelist; do
 	echo disconnecting node $node
-	./jcli disconnect-node $node
+	n=0
+	while [ ! $(./jcli disconnect-node $node) ] && [ "$n" -lt 5 ]; do
+		echo "Retrying disconnect"
+		n=$(expr $n + 1)
+	done
 done
 
 if [ -n "$connect" ]; then

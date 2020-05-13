@@ -7,3 +7,4 @@ rm -rf /srv/workspace/*
 # this is more likely to avoid qb leaks
 rm -rf /dev/shm/qb*
 rm -rf /tmp/libqb*
+rm -rf /tmp/booth-tests*

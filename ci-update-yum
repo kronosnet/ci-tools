@@ -18,6 +18,9 @@ case "${NODE_NAME}" in
  centos-7*)
   yum install -y centos-release-openstack-stein
  ;;
+ centos-8*)
+  yum install -y centos-release-openstack-ussuri
+ ;;
 esac
 
 #case "${NODE_NAME}" in
@@ -62,7 +65,7 @@ yum -y install libservicelog-devel || true
 
 # pcs builds only on recent distros
 case "${NODE_NAME}" in
- fedora*|rhel8*)
+ fedora*|rhel8*|centos-8*)
   EXTRADEPS="ruby ruby-devel rubygems fontconfig liberation-sans-fonts overpass-fonts npm rpmdevtools $EXTRADEPS"
  ;;
 esac

@@ -17,6 +17,7 @@ case "${NODE_NAME}" in
  ;;
  centos-7*)
   yum install -y centos-release-openstack-stein
+  EXTRAOPTS="--skip-broken"
  ;;
  centos-8*)
   yum install -y centos-release-openstack-ussuri
@@ -49,7 +50,7 @@ if [ -z "$python" ]; then
  python=python3
 fi
 
-yum -y update
+yum -y $EXTRAOPTS update
 
 EXTRADEPS=""
 

@@ -55,9 +55,10 @@ yum -y $EXTRAOPTS update
 EXTRADEPS=""
 
 # Install special case packages
-yum -y install python-devel || yum -y install platform-python-devel
-yum -y install libzstd-devel || true
-yum -y install publican || true
+for i in python-devel python3-devel platform-python-devel libzstd-devel publican; do
+ yum -y install $i || true
+done
+
 if [ "${NODE_NAME}" != centos-6-x86-64 ]; then
  yum -y install systemd-python || yum -y install python3-systemd
  EXTRADEPS="systemd-devel $EXTRADEPS"

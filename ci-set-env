@@ -105,6 +105,12 @@ if [ "$build" != "rpm" ]; then
    COROSYNC_INSTALL_PATH=""
    PCMK_INSTALL_PATH=""
    ;;
+  corosync)
+   # corosync supports both knet stable and knet master
+   # we need to test build both
+   if [ -n "${knetver}" ] && [ "${knetver}" = "stable1-proposed" ]; then
+    KNET_INSTALL_PATH=/srv/knet/origin/stable1-proposed/
+   fi
   sbd|booth)
    # booth and sbd only have a master branch, but they need
    # different settings when building against pcmk master or 2.0
@@ -191,6 +197,13 @@ else
    PCMK_REPO=""
    PCMK_REPO_PATH=""
    ;;
+  corosync)
+   # corosync supports both knet stable and knet master
+   # we need to test build both
+   if [ -n "${knetver}" ] && [ "${knetver}" = "stable1-proposed" ]; then
+    KNET_REPO=https://kronosnet.org/builds/knet-stable1-proposed-${NODE_NAME}.repo
+    KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/stable1-proposed/latest/
+   fi
   sbd|booth)
    # booth and sbd only have a master branch, but they need
    # different settings when building against pcmk master or 2.0

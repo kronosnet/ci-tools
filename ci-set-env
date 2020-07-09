@@ -108,8 +108,8 @@ if [ "$build" != "rpm" ]; then
   corosync)
    # corosync supports both knet stable and knet master
    # we need to test build both
-   if [ -n "${knetver}" ] && [ "${knetver}" = "stable1-proposed" ]; then
-    KNET_INSTALL_PATH=/srv/knet/origin/stable1-proposed/
+   if [ -n "${knetver}" ]; then
+    KNET_INSTALL_PATH=/srv/knet/origin/${knetver}/
    fi
    ;;
   sbd|booth)
@@ -201,9 +201,9 @@ else
   corosync)
    # corosync supports both knet stable and knet master
    # we need to test build both
-   if [ -n "${knetver}" ] && [ "${knetver}" = "stable1-proposed" ]; then
-    KNET_REPO=https://kronosnet.org/builds/knet-stable1-proposed-${NODE_NAME}.repo
-    KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/stable1-proposed/latest/
+   if [ -n "${knetver}" ]; then
+    KNET_REPO=https://kronosnet.org/builds/knet-${knetver}-${NODE_NAME}.repo
+    KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/${knetver}/latest/
    fi
    ;;
   sbd|booth)

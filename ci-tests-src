@@ -98,7 +98,7 @@ if [ "$DEST" = pcs ]; then
  fi
  mkdir -p "$(pwd)/../pcs-virtenv"
  $PYTHON -m venv --system-site-packages "$(pwd)/../pcs-virtenv"
- . ./"$(pwd)/../pcs-virtenv"/bin/activate
+ . "$(pwd)/../pcs-virtenv"/bin/activate
  PYTHONUSERBASE="$(pwd)/../pcs-virtenv" pip3 install --upgrade --user -r requirements.txt
  make bundle_pyagentx_local
  make get_lxml_stubs

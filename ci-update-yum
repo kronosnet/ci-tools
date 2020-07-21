@@ -71,6 +71,9 @@ case "${NODE_NAME}" in
  fedora*|rhel8*|centos-8*)
   EXTRADEPS="ruby ruby-devel rubygems fontconfig liberation-sans-fonts overpass-fonts npm rpmdevtools $EXTRADEPS"
  ;;
+ opensuse*)
+  EXTRADEPS="ruby ruby-devel fontconfig liberation-fonts npm rpmdevtools $EXTRADEPS"
+ ;;
 esac
 
 # available only with python3

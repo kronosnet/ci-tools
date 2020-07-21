@@ -92,6 +92,24 @@ if [ -n "$CHECKS" ] && [ "$CHECKS" = "nochecks" ]; then
  exit 0
 fi
 
+if [ "$DEST" = pcs ]; then
+ if [ -d "$(pwd)/../pcs-virtenv" ]; then
+  rm -rf "$(pwd)/../pcs-virtenv"
+ fi
+ mkdir -p "$(pwd)/../pcs-virtenv"
+ $PYTHON -m venv --system-site-packages "$(pwd)/../pcs-virtenv"
+ . ./"$(pwd)/../pcs-virtenv"/bin/activate
+ PYTHONUSERBASE="$(pwd)/../pcs-virtenv" pip3 install --upgrade --user -r requirements.txt
+ make bundle_pyagentx_local
+ make get_lxml_stubs
+ # not critical if we cannot clean up or deactivate
+ deactivate
+ if [ -d "$(pwd)/../pcs-virtenv" ]; then
+  rm -rf "$(pwd)/../pcs-virtenv"
+ fi
+ exit 0
+fi
+
 if [ -z "$CHECKS" ]; then
  if [ "$DEST" = pcmk1 ] && [ "${NODE_NAME}" = centos-6-x86-64 ]; then
   CHECKS="$EXTRACHECKS"

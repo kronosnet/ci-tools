@@ -102,6 +102,14 @@ if [ "$DEST" = pcs ]; then
  PYTHONUSERBASE="$(pwd)/../pcs-virtenv" pip3 install --upgrade --user -r requirements.txt
  make bundle_pyagentx_local
  make get_lxml_stubs
+ # we need to use the python venv version of python to run the tests
+ sed -i -e 's/python3/env python/' ./pcs_test/pcs_for_tests
+ # run tests
+ env python pcs_test/suite.py -v --vanilla --tier0
+ env python pcs_test/suite.py -v --vanilla --tier1
+ make mypy
+ make pylint
+ make black_check
  # not critical if we cannot clean up or deactivate
  deactivate
  if [ -d "$(pwd)/../pcs-virtenv" ]; then

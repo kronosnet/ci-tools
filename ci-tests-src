@@ -110,6 +110,7 @@ if [ "$DEST" = pcs ]; then
  make mypy
  make pylint
  make black_check
+ make -C pcsd/test/
  # not critical if we cannot clean up or deactivate
  deactivate
  if [ -d "$(pwd)/../pcs-virtenv" ]; then

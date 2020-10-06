@@ -14,6 +14,8 @@ case $build in
   cov-format-errors --dir=./cov --json-output-v7 cov.json
   echo "cov-format-errors --dir=./cov --emacs-style > cov.txt"
   cov-format-errors --dir=./cov --emacs-style > cov.txt
+  echo "cov-format-errors --dir=./cov --html-output cov.html"
+  cov-format-errors --dir=./cov --html-output cov.html
  ;;
  rpm)
   if [ -n "$RPMDEPS" ]; then

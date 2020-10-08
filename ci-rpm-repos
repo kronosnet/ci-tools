@@ -19,18 +19,20 @@ if [ -z "$branch" ]; then
 	exit 1
 fi
 
+rpmdir=/srv/publish/rpmrepos
+
 echo "Purging 0 byte files"
-find /srv/rpmrepos/ -type f -size 0 -print -delete
+find $rpmdir/ -type f -size 0 -print -delete
 
 echo "Purging empty dirs"
-find /srv/rpmrepos/ -type d -empty -print -delete
+find $rpmdir/ -type d -empty -print -delete
 
 echo "Updating all rpm repos for project: $project branch: $branch extraver: $3"
 
-cd /srv/rpmrepos/$project/
+cd $rpmdir/$project/
 
 for i in $(ls); do
-	cd /srv/rpmrepos/$project/
+	cd $rpmdir/$project/
 	echo "Processing $i"
 
 	cd $i
@@ -64,9 +66,9 @@ for i in $(ls); do
 done
 
 # generate repo files
-cd /srv/rpmrepos/
+cd $rpmdir/
 
-cat > /srv/rpmrepos/opensuse-readme.repo << EOF
+cat > $rpmdir/opensuse-readme.repo << EOF
 OpenSUSE users, please browse the knet/ folder for appropriate builds for your deployment.
 You can use zypper to enable those repositories.
 
@@ -90,7 +92,7 @@ for i in $(ls |grep -v repo); do
 		for b in $(ls |grep -v origin); do
 
 		echo "Creating $i-$b-$x repo file"
-cat > /srv/rpmrepos/$i-$b-$x.repo << EOF
+cat > $rpmdir/$i-$b-$x.repo << EOF
 [$i-$b-$x]
 name=$i-$b-$x
 baseurl=https://kronosnet.org/builds/$i/$x/$b/latest/
@@ -109,7 +111,7 @@ EOF
 	cd .. >/dev/null 2>&1
 done
 
-cd /srv/rpmrepos/
+cd $rpmdir/
 rsync -av --progress --delete-after . www.kronosnet.org:~kronosnet/kronosnet/builds/.
 
 exit 0

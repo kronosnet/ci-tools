@@ -23,13 +23,16 @@ for i in $(ls); do
 	cd $covdir/$project/
 	echo "Processing $i"
 
+	cd $i
+
 	if [ -d new ]; then
 		cd new
-		if [ ! -f index.html ]; then
-			ln -sf cov-index.html index.html
-		fi
+		rm -f index.html
+		ln -sf cov-index.html index.html
 		cd -
 	fi
+
+	cd -
 
 	# remove old builds (keep last 20)
 	builds="$(ls -1 | sort -n)"

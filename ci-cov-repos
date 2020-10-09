@@ -1,0 +1,50 @@
+#!/bin/bash
+
+set -e
+
+project="$1"
+
+if [ -z "$project" ]; then
+	echo "no project specificed"
+	exit 1
+fi
+
+covdir=/srv/publish/cov
+
+echo "Purging 0 byte files"
+find $covdir/ -type f -size 0 -print -delete
+
+echo "Purging empty dirs"
+find $covdir/ -type d -empty -print -delete
+
+cd $covdir/$project/
+
+for i in $(ls); do
+	cd $covdir/$project/
+	echo "Processing $i"
+
+	if [ -d new ]; then
+		cd new
+		if [ ! -f index.html ]; then
+			ln -sf cov.html index.html
+		fi
+		cd -
+	fi
+
+	# remove old builds (keep last 20)
+	builds="$(ls -1 | sort -n)"
+	numbuilds="$(echo "$builds" | wc -l)"
+	if [ "$numbuilds" -gt 20 ]; then
+		purgenum=$((numbuilds - 20))
+		candidates="$(echo "$builds" | head -n $purgenum)"
+		for x in $candidates; do
+			echo "Removing old build: $x"
+			rm -rf $x
+		done
+	fi
+done
+
+cd $covdir/
+rsync -av --progress --delete-after . www.kronosnet.org:~kronosnet/kronosnet/coverity/.
+
+exit 0

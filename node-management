@@ -131,20 +131,20 @@ addnodetoalljobs() {
 					echo Skipping clang job $i
 				fi
 				;;
-			*rpms)
-				if [ $rpm == yes ]; then
-					echo Adding to rpm job $i
-					addjob=1
-				else
-					echo Skipping rpm job $i
-				fi
-				;;
 			*pcs*)
 				if [ $oldbuilds == yes ]; then
 					echo Skipping oldbuilds job $i
 				else
 					echo Adding oldbuilds to job $i
 					addjob=1
+				fi
+				;;
+			*rpms)
+				if [ $rpm == yes ]; then
+					echo Adding to rpm job $i
+					addjob=1
+				else
+					echo Skipping rpm job $i
 				fi
 				;;
 			*needle*|pacemaker1*)

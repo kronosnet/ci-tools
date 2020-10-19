@@ -110,8 +110,8 @@ if [ "$DEST" = pcs ]; then
  # we need to use the python venv version of python to run the tests
  sed -i -e 's/python3/env python/' ./pcs_test/pcs_for_tests
  # run tests
- python pcs_test/suite.py -v --vanilla --tier0
- python pcs_test/suite.py -v --vanilla --tier1
+ $PYTHON pcs_test/suite.py -v --vanilla --tier0
+ #$PYTHON pcs_test/suite.py -v --vanilla --tier1
  make mypy
  make pylint
  make black_check

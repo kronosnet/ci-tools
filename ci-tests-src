@@ -104,7 +104,7 @@ if [ "$DEST" = pcs ]; then
  . "$(pwd)/.venv"/bin/activate
  export PATH="$(pwd)/.venv"/bin/:$PATH
  PYTHONUSERBASE="$(pwd)/.venv" pip3 install --upgrade pip
- PYTHONUSERBASE="$(pwd)/.venv" pip3 install --upgrade --user -r requirements.txt
+ PYTHONUSERBASE="$(pwd)/.venv" pip3 install --upgrade --user --no-use-pep517 -r requirements.txt
  make bundle_pyagentx_local
  make get_lxml_stubs
  # we need to use the python venv version of python to run the tests

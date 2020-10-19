@@ -96,28 +96,30 @@ if [ -n "$CHECKS" ] && [ "$CHECKS" = "nochecks" ]; then
 fi
 
 if [ "$DEST" = pcs ]; then
- if [ -d "$(pwd)/../pcs-virtenv" ]; then
-  rm -rf "$(pwd)/../pcs-virtenv"
+ if [ -d "$(pwd)/.venv" ]; then
+  rm -rf "$(pwd)/.venv"
  fi
- mkdir -p "$(pwd)/../pcs-virtenv"
- $PYTHON -m venv --system-site-packages "$(pwd)/../pcs-virtenv"
- . "$(pwd)/../pcs-virtenv"/bin/activate
- PYTHONUSERBASE="$(pwd)/../pcs-virtenv" pip3 install --upgrade --user -r requirements.txt
+ mkdir -p "$(pwd)/.venv"
+ $PYTHON -m venv --system-site-packages "$(pwd)/.venv"
+ . "$(pwd)/.venv"/bin/activate
+ export PATH="$(pwd)/.venv"/bin/:$PATH
+ PYTHONUSERBASE="$(pwd)/.venv" pip3 install --upgrade pip
+ PYTHONUSERBASE="$(pwd)/.venv" pip3 install --upgrade --user -r requirements.txt
  make bundle_pyagentx_local
  make get_lxml_stubs
  # we need to use the python venv version of python to run the tests
  sed -i -e 's/python3/env python/' ./pcs_test/pcs_for_tests
  # run tests
- env python pcs_test/suite.py -v --vanilla --tier0
- env python pcs_test/suite.py -v --vanilla --tier1
+ python pcs_test/suite.py -v --vanilla --tier0
+ python pcs_test/suite.py -v --vanilla --tier1
  make mypy
  make pylint
  make black_check
  make -C pcsd/test/
  # not critical if we cannot clean up or deactivate
  deactivate
- if [ -d "$(pwd)/../pcs-virtenv" ]; then
-  rm -rf "$(pwd)/../pcs-virtenv"
+ if [ -d "$(pwd)/.venv" ]; then
+  rm -rf "$(pwd)/.venv"
  fi
  exit 0
 fi

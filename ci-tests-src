@@ -96,6 +96,10 @@ if [ -n "$CHECKS" ] && [ "$CHECKS" = "nochecks" ]; then
 fi
 
 if [ "$DEST" = pcs ]; then
+ if [ -z "$python" ]; then
+  python=python3
+ fi
+ export PYTHON=$python
  if [ -d "$(pwd)/.venv" ]; then
   rm -rf "$(pwd)/.venv"
  fi

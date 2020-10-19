@@ -111,8 +111,6 @@ if [ "$DEST" = pcs ]; then
  PYTHONUSERBASE="$(pwd)/.venv" pip3 install --upgrade --user --no-use-pep517 -r requirements.txt
  make bundle_pyagentx_local
  make get_lxml_stubs
- # we need to use the python venv version of python to run the tests
- sed -i -e 's/python3/env python/' ./pcs_test/pcs_for_tests
  # run tests
  $PYTHON pcs_test/suite.py -v --vanilla --tier0
  #$PYTHON pcs_test/suite.py -v --vanilla --tier1

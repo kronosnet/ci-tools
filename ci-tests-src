@@ -117,7 +117,16 @@ if [ "$DEST" = pcs ]; then
  make mypy
  make pylint
  make black_check
- make -C pcsd/test/
+ cd pcsd
+ mkdir -p .bundle
+ echo '---' > .bundle/config
+ echo 'BUNDLE_FROZEN: "true"' >> .bundle/config
+ echo 'BUNDLE_PATH: "vendor/bundle"' >> .bundle/config
+ echo 'BUNDLE_DISABLE_SHARED_GEMS: "1"' >> .bundle/config
+ bundle
+ mv vendor/bundle/ruby/*/* vendor/bundle/ruby/
+ make -C test/
+ cd ..
  # not critical if we cannot clean up or deactivate
  deactivate
  if [ -d "$(pwd)/.venv" ]; then

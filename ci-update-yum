@@ -73,6 +73,13 @@ case "${NODE_NAME}" in
  ;;
 esac
 
+case "${NODE_NAME}" in
+ rhel8*|centos-8*)
+  EXTRADEPS="python3-setuptools_scm $EXTRADEPS"
+ ;;
+esac
+
+
 # available only with python3
 if [ "$python" = python3 ]; then
  EXTRADEPS="execstack python3-pexpect python3-pycurl python3-suds python3-requests openwsman-python3 python3-boto3 python3-google-api-client python3-setuptools $EXTRADEPS"

@@ -89,6 +89,7 @@ if [ "$build" != "rpm" ]; then
  QDEVICE_INSTALL_PATH=/srv/qdevice/origin/master/
  SBD_INSTALL_PATH=/srv/sbd/origin/master/
  FAS_INSTALL_PATH=/srv/fas/origin/master/
+ RAS_INSTALL_PATH=/srv/ras/origin/master/
 
  # origin/master should use all master branches built
  # from sources
@@ -213,6 +214,19 @@ if [ "$build" != "rpm" ]; then
   PKG_CONFIG_PATH=$FAS_CONFIG_PATH pkg-config --modversion fence-agents || true
  fi
 
+ if [ -n "$RAS_INSTALL_PATH" ] && [ -d "$RAS_INSTALL_PATH" ]; then
+  if [ -d $RAS_INSTALL_PATH/lib64 ]; then
+   RAS_LIB=lib64
+  else
+   RAS_LIB=lib
+  fi
+  RAS_CONFIG_PATH=$RAS_INSTALL_PATH/share/pkgconfig
+  export EXTERNAL_CONFIG_PATH=$EXTERNAL_CONFIG_PATH:$RAS_CONFIG_PATH
+  export EXTERNAL_LD_LIBRARY_PATH=$EXTERNAL_LD_LIBRARY_PATH:$RAS_INSTALL_PATH/$RAS_LIB/
+  echo resource-agents build info: $(cat $RAS_INSTALL_PATH/.build-info)
+  PKG_CONFIG_PATH=$RAS_CONFIG_PATH pkg-config --modversion fence-agents || true
+ fi
+
 else
 
  LIBQB_REPO=https://kronosnet.org/builds/libqb-master-${NODE_NAME}.repo
@@ -224,8 +238,8 @@ else
  SBD_REPO=https://kronosnet.org/builds/sbd-master-pcmk-master-${NODE_NAME}.repo
  SBD_REPO_PATH=https://kronosnet.org/builds/sbd/${NODE_NAME}/master-pcmk-master/latest/
 
- FAS_REPO=https://kronosnet.org/builds/fence-agents-master-${NODE_NAME}.repo
- FAS_REPO_PATH=https://kronosnet.org/builds/fence-agents/${NODE_NAME}/master/latest/
+ RAS_REPO=https://kronosnet.org/builds/resource-agents-master-${NODE_NAME}.repo
+ RAS_REPO_PATH=https://kronosnet.org/builds/resource-agents/${NODE_NAME}/master/latest/
 
  if [ "${GIT_BRANCH}" = "origin/master" ]; then
   KNET_REPO=https://kronosnet.org/builds/knet-master-${NODE_NAME}.repo
@@ -260,6 +274,8 @@ else
    SBD_REPO_PATH=""
    FAS_REPO=""
    FAS_REPO_PATH=""
+   RAS_REPO=""
+   RAS_REPO_PATH=""
    ;;
   corosync)
    # corosync supports both knet stable and knet master
@@ -301,3 +317,5 @@ export SBD_REPO
 export SBD_REPO_PATH
 export FAS_REPO
 export FAS_REPO_PATH
+export RAS_REPO
+export RAS_REPO_PATH

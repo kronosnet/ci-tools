@@ -107,6 +107,12 @@ if [ "$DEST" = pcs ]; then
  $PYTHON -m venv --system-site-packages "$(pwd)/.venv"
  . "$(pwd)/.venv"/bin/activate
  export PATH="$(pwd)/.venv"/bin/:$PATH
+ echo "./autogen.sh"
+ ./autogen.sh
+ ./configure \
+	--enable-local-build \
+	--enable-dev-tests \
+	$DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
  make check
  # not critical if we cannot clean up or deactivate
  deactivate

@@ -16,10 +16,4 @@ if [ -f ./configure ]; then
   echo "./configure --prefix=/srv/$DEST/${ghprbActualCommit}/ --exec-prefix=/srv/$DEST/${ghprbActualCommit}/ $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
   ./configure --prefix=/srv/$DEST/${ghprbActualCommit}/ --exec-prefix=/srv/$DEST/${ghprbActualCommit}/ $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
  fi
- if [ "$DEST" = "pcs" ]; then
-  ./configure \
-	  --enable-local-build \
-	  --enable-dev-tests \
-	  $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
- fi
 fi

@@ -109,6 +109,10 @@ if [ "$DEST" = pcs ]; then
  export PATH="$(pwd)/.venv"/bin/:$PATH
  echo "./autogen.sh"
  ./autogen.sh
+ echo ./configure \
+	--enable-local-build \
+	--enable-dev-tests \
+	$DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
  ./configure \
 	--enable-local-build \
 	--enable-dev-tests \

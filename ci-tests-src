@@ -104,7 +104,7 @@ if [ "$DEST" = pcs ]; then
   rm -rf "$(pwd)/.venv"
  fi
  mkdir -p "$(pwd)/.venv"
- $PYTHON -m venv --system-site-packages "$(pwd)/.venv"
+ $PYTHON -m venv "$(pwd)/.venv"
  . "$(pwd)/.venv"/bin/activate
  export PATH="$(pwd)/.venv"/bin/:$PATH
  echo "./autogen.sh"

@@ -168,7 +168,7 @@ if [ "$build" != "rpm" ]; then
   QDEVICE_CONFIG_PATH=$QDEVICE_INSTALL_PATH/share/pkgconfig
   export EXTERNAL_CONFIG_PATH=$EXTERNAL_CONFIG_PATH:$QDEVICE_CONFIG_PATH
   export EXTERNAL_LD_LIBRARY_PATH=$EXTERNAL_LD_LIBRARY_PATH:$QDEVICE_INSTALL_PATH/$QDEVICE_LIB/
-  echo corosync build info: $(cat $QDEVICE_INSTALL_PATH/.build-info)
+  echo corosync-qdevice build info: $(cat $QDEVICE_INSTALL_PATH/.build-info)
   PKG_CONFIG_PATH=$QDEVICE_CONFIG_PATH pkg-config --modversion corosync-qdevice || true
  fi
 
@@ -185,10 +185,29 @@ if [ "$build" != "rpm" ]; then
   PKG_CONFIG_PATH=$PCMK_CONFIG_PATH pkg-config --modversion pacemaker || true
  fi
 
+ if [ -n "$SBD_INSTALL_PATH" ] && [ -d "$SBD_INSTALL_PATH" ]; then
+  if [ -d $SBD_INSTALL_PATH/lib64 ]; then
+   SBD_LIB=lib64
+  else
+   SBD_LIB=lib
+  fi
+  SBD_CONFIG_PATH=$SBD_INSTALL_PATH/share/pkgconfig
+  export EXTERNAL_CONFIG_PATH=$EXTERNAL_CONFIG_PATH:$SBD_CONFIG_PATH
+  export EXTERNAL_LD_LIBRARY_PATH=$EXTERNAL_LD_LIBRARY_PATH:$SBD_INSTALL_PATH/$SBD_LIB/
+  echo sbd build info: $(cat $SBD_INSTALL_PATH/.build-info)
+  PKG_CONFIG_PATH=$SBD_CONFIG_PATH pkg-config --modversion sbd || true
+ fi
+
 else
 
  LIBQB_REPO=https://kronosnet.org/builds/libqb-master-${NODE_NAME}.repo
  LIBQB_REPO_PATH=https://kronosnet.org/builds/libqb/${NODE_NAME}/master/latest/
+
+ QDEVICE_REPO=https://kronosnet.org/builds/corosync-qdevice-master-${NODE_NAME}.repo
+ QDEVICE_REPO_PATH=https://kronosnet.org/builds/corosync-qdevice/${NODE_NAME}/master/latest/
+
+ SBD_REPO=https://kronosnet.org/builds/sbd-master-pcmk-master-${NODE_NAME}.repo
+ SBD_REPO_PATH=https://kronosnet.org/builds/sbd/${NODE_NAME}/master-pcmk-master/latest/
 
  if [ "${GIT_BRANCH}" = "origin/master" ]; then
   KNET_REPO=https://kronosnet.org/builds/knet-master-${NODE_NAME}.repo
@@ -217,6 +236,10 @@ else
    COROSYNC_REPO_PATH=""
    PCMK_REPO=""
    PCMK_REPO_PATH=""
+   QDEVICE_REPO=""
+   QDEVICE_REPO_PATH=""
+   SBD_REPO=""
+   SBD_REPO_PATH=""
    ;;
   corosync)
    # corosync supports both knet stable and knet master
@@ -226,7 +249,7 @@ else
     KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/${knetver}/latest/
    fi
    ;;
-  sbd|booth)
+  sbd|booth|pcs)
    # booth and sbd only have a master branch, but they need
    # different settings when building against pcmk master or 2.0
    if [ -n "${pcmkver}" ] && [ "${pcmkver}" = "2.0" ]; then
@@ -236,6 +259,8 @@ else
     COROSYNC_REPO_PATH=https://kronosnet.org/builds/corosync/${NODE_NAME}/camelback/latest/
     PCMK_REPO=https://kronosnet.org/builds/pacemaker-2.0-${NODE_NAME}.repo
     PCMK_REPO_PATH=https://kronosnet.org/builds/pacemaker/${NODE_NAME}/2.0/latest/
+    SBD_REPO=https://kronosnet.org/builds/sbd-master-pcmk-2.0-${NODE_NAME}.repo
+    SBD_REPO_PATH=https://kronosnet.org/builds/sbd/${NODE_NAME}/master-pcmk-2.0/latest/
    fi
    ;;
  esac
@@ -250,3 +275,7 @@ export COROSYNC_REPO
 export COROSYNC_REPO_PATH
 export PCMK_REPO
 export PCMK_REPO_PATH
+export QDEVICE_REPO
+export QDEVICE_REPO_PATH
+export SBD_REPO
+export SBD_REPO_PATH

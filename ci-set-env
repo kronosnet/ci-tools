@@ -87,6 +87,7 @@ if [ "$build" != "rpm" ]; then
 
  # those projects only have master branch
  QDEVICE_INSTALL_PATH=/srv/qdevice/origin/master/
+ SBD_INSTALL_PATH=/srv/sbd/origin/master/
 
  # origin/master should use all master branches built
  # from sources

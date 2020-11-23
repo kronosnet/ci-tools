@@ -107,26 +107,7 @@ if [ "$DEST" = pcs ]; then
  $PYTHON -m venv --system-site-packages "$(pwd)/.venv"
  . "$(pwd)/.venv"/bin/activate
  export PATH="$(pwd)/.venv"/bin/:$PATH
- PYTHONUSERBASE="$(pwd)/.venv" pip3 install --upgrade pip
- PYTHONUSERBASE="$(pwd)/.venv" pip3 install --upgrade --user --no-use-pep517 -r requirements.txt
- make bundle_pyagentx_local
- make get_lxml_stubs
- # run tests
- $PYTHON pcs_test/suite.py -v --vanilla --tier0
- #$PYTHON pcs_test/suite.py -v --vanilla --tier1
- make mypy
- make pylint
- make black_check
- cd pcsd
- mkdir -p .bundle
- echo '---' > .bundle/config
- echo 'BUNDLE_FROZEN: "true"' >> .bundle/config
- echo 'BUNDLE_PATH: "vendor/bundle"' >> .bundle/config
- echo 'BUNDLE_DISABLE_SHARED_GEMS: "1"' >> .bundle/config
- bundle
- mv vendor/bundle/ruby/*/* vendor/bundle/ruby/
- make -C test/
- cd ..
+ make check
  # not critical if we cannot clean up or deactivate
  deactivate
  if [ -d "$(pwd)/.venv" ]; then

@@ -101,7 +101,7 @@ case "${NODE_NAME}" in
  ;;
 esac
 
-yum -y install make git gcc clang automake libtool autoconf valgrind lksctp-tools-devel nss-devel openssl-devel zlib-devel lz4-devel lzo-devel xz-devel bzip2-devel libqb-devel libxml2-devel rpm-build doxygen groff dbus-devel net-snmp-devel libcgroup-devel curl jq check-devel time libxslt glib2-devel docbook-style-xsl libtool-ltdl-devel libuuid-devel libxslt-devel pam-devel ncurses-devel bison byacc flex help2man gnutls-devel inkscape asciidoc dbus-devel OpenIPMI-devel libnl3-devel libaio-devel perl libnet-devel libvirt-devel $EXTRADEPS
+yum -y install make git gcc clang automake libtool autoconf valgrind lksctp-tools-devel nss-devel openssl-devel zlib-devel lz4-devel lzo-devel xz-devel bzip2-devel libqb-devel libxml2-devel rpm-build doxygen groff dbus-devel net-snmp-devel libcgroup-devel curl jq check-devel time libxslt glib2-devel docbook-style-xsl libtool-ltdl-devel libuuid-devel libxslt-devel pam-devel ncurses-devel bison byacc flex help2man gnutls-devel inkscape asciidoc dbus-devel OpenIPMI-devel libnl3-devel libaio-devel perl libnet-devel libvirt-devel psmisc $EXTRADEPS
 
 getent group haclient >/dev/null || groupadd -r haclient -g 189
 getent passwd hacluster >/dev/null || useradd -r -g haclient -u 189 -s /sbin/nologin -c "cluster user" hacluster

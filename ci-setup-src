@@ -2,6 +2,12 @@
 
 set -ev
 
+# we cannot setup pcs source code here
+# it needs to be within venv in testing
+if [ "$DEST" = "pcs" ]; then
+ exit 0
+fi
+
 if [ -f ./autogen.sh ]; then
  echo "./autogen.sh"
  ./autogen.sh

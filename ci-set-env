@@ -110,6 +110,10 @@ if [ "$build" != "rpm" ]; then
    QB_INSTALL_PATH=""
    COROSYNC_INSTALL_PATH=""
    PCMK_INSTALL_PATH=""
+   QDEVICE_INSTALL_PATH=""
+   SBD_INSTALL_PATH=""
+   FAS_INSTALL_PATH=""
+   RAS_INSTALL_PATH=""
    ;;
   corosync)
    # corosync supports both knet stable and knet master

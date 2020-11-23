@@ -85,13 +85,15 @@ if [ "$build" != "rpm" ]; then
  # exceptions below
  QB_INSTALL_PATH=/srv/qb/origin/master/
 
+ # those projects only have master branch
+ QDEVICE_INSTALL_PATH=/srv/qdevice/origin/master/
+
  # origin/master should use all master branches built
  # from sources
  if [ "$TARGET" = "origin/master" ]; then
   KNET_INSTALL_PATH=/srv/knet/origin/master/
   COROSYNC_INSTALL_PATH=/srv/corosync/origin/master/
   PCMK_INSTALL_PATH=/srv/pcmk/origin/master/
-  QDEVICE_INSTALL_PATH=/srv/qdevice/origin/master/
  else
   KNET_INSTALL_PATH=/srv/knet/origin/stable1-proposed/
   COROSYNC_INSTALL_PATH=/srv/corosync/origin/camelback/

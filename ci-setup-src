@@ -20,12 +20,13 @@ if [ -f ./configure ]; then
   ./configure $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
  else
   installpath=/srv/$DEST/${ghprbActualCommit}
-  case sbd|booth)
-	  installpath=${installpath}-pcmk-${pcmkver}/
-	  ;;
-       *)
-	  installpath=${installpath}/
-	  ;;
+  case "$DEST" in
+   sbd|booth)
+    installpath=${installpath}-pcmk-${pcmkver}/
+    ;;
+   *)
+    installpath=${installpath}/
+    ;;
   esac
   echo "./configure --prefix=$installpath --exec-prefix=$installpath $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
   ./configure --prefix=$installpath --exec-prefix=$installpath $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH

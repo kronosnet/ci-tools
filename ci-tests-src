@@ -120,6 +120,7 @@ if [ "$DEST" = pcs ]; then
 	--enable-destructive-tests \
 	$DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
  make check
+ make distcheck DISTCHECK_CONFIGURE_FLAGS="--enable-local-build --enable-dev-tests --enable-destructive-tests $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
  # not critical if we cannot clean up or deactivate
  deactivate
  if [ -d "$(pwd)/.venv" ]; then

@@ -87,7 +87,7 @@ if [ "$build" != "rpm" ]; then
 
  # those projects only have master branch
  QDEVICE_INSTALL_PATH=/srv/qdevice/origin/master/
- SBD_INSTALL_PATH=/srv/sbd/origin/master/
+ SBD_INSTALL_PATH=/srv/sbd/origin/master-pcmk-${pcmkver}/
  FAS_INSTALL_PATH=/srv/fas/origin/master/
  RAS_INSTALL_PATH=/srv/ras/origin/master/
 
@@ -239,8 +239,8 @@ else
  QDEVICE_REPO=https://kronosnet.org/builds/corosync-qdevice-master-${NODE_NAME}.repo
  QDEVICE_REPO_PATH=https://kronosnet.org/builds/corosync-qdevice/${NODE_NAME}/master/latest/
 
- SBD_REPO=https://kronosnet.org/builds/sbd-master-pcmk-master-${NODE_NAME}.repo
- SBD_REPO_PATH=https://kronosnet.org/builds/sbd/${NODE_NAME}/master-pcmk-master/latest/
+ SBD_REPO=https://kronosnet.org/builds/sbd-master-pcmk-${pcmkver}-${NODE_NAME}.repo
+ SBD_REPO_PATH=https://kronosnet.org/builds/sbd/${NODE_NAME}/master-pcmk-${pcmkver}/latest/
 
  RAS_REPO=https://kronosnet.org/builds/resource-agents-master-${NODE_NAME}.repo
  RAS_REPO_PATH=https://kronosnet.org/builds/resource-agents/${NODE_NAME}/master/latest/
@@ -299,8 +299,6 @@ else
     COROSYNC_REPO_PATH=https://kronosnet.org/builds/corosync/${NODE_NAME}/camelback/latest/
     PCMK_REPO=https://kronosnet.org/builds/pacemaker-2.0-${NODE_NAME}.repo
     PCMK_REPO_PATH=https://kronosnet.org/builds/pacemaker/${NODE_NAME}/2.0/latest/
-    SBD_REPO=https://kronosnet.org/builds/sbd-master-pcmk-2.0-${NODE_NAME}.repo
-    SBD_REPO_PATH=https://kronosnet.org/builds/sbd/${NODE_NAME}/master-pcmk-2.0/latest/
    fi
    ;;
  esac

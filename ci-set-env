@@ -228,7 +228,7 @@ if [ "$build" != "rpm" ]; then
   export EXTERNAL_CONFIG_PATH=$EXTERNAL_CONFIG_PATH:$RAS_CONFIG_PATH
   export EXTERNAL_LD_LIBRARY_PATH=$EXTERNAL_LD_LIBRARY_PATH:$RAS_INSTALL_PATH/$RAS_LIB/
   echo resource-agents build info: $(cat $RAS_INSTALL_PATH/.build-info)
-  PKG_CONFIG_PATH=$RAS_CONFIG_PATH pkg-config --modversion fence-agents || true
+  PKG_CONFIG_PATH=$RAS_CONFIG_PATH pkg-config --modversion resource-agents || true
  fi
 
 else

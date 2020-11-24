@@ -75,6 +75,10 @@ if [ -n "${ghprbPullId}" ] && [ "${ghprbPullId}" != 1 ]; then
 fi
 echo TARGET $TARGET
 
+if [ -z "${pcmkver}" ]; then
+ export pcmkver=master
+fi
+
 # rpm builds should use standard packages
 if [ "$build" != "rpm" ]; then
  echo ===== PKG_CONFIG_PATH info =====
@@ -90,6 +94,7 @@ if [ "$build" != "rpm" ]; then
  SBD_INSTALL_PATH=/srv/sbd/origin/master-pcmk-${pcmkver}/
  FAS_INSTALL_PATH=/srv/fas/origin/master/
  RAS_INSTALL_PATH=/srv/ras/origin/master/
+ BOOTH_INSTALL_PATH=/srv/booth/origin/master-pcmk-${pcmkver}/
 
  # origin/master should use all master branches built
  # from sources
@@ -114,6 +119,7 @@ if [ "$build" != "rpm" ]; then
    SBD_INSTALL_PATH=""
    FAS_INSTALL_PATH=""
    RAS_INSTALL_PATH=""
+   BOOTH_INSTALL_PATH=""
    ;;
   corosync)
    # corosync supports both knet stable and knet master
@@ -231,6 +237,13 @@ if [ "$build" != "rpm" ]; then
   PKG_CONFIG_PATH=$RAS_CONFIG_PATH pkg-config --modversion resource-agents || true
  fi
 
+ if [ -n "$BOOTH_INSTALL_PATH" ] && [ -d "$BOOTH_INSTALL_PATH" ]; then
+  BOOTH_CONFIG_PATH=$BOOTH_INSTALL_PATH/share/pkgconfig
+  export EXTERNAL_CONFIG_PATH=$EXTERNAL_CONFIG_PATH:$BOOTH_CONFIG_PATH
+  echo booth build info: $(cat $BOOTH_INSTALL_PATH/.build-info)
+  PKG_CONFIG_PATH=$BOOTH_CONFIG_PATH pkg-config --modversion booth || true
+ fi
+
 else
 
  LIBQB_REPO=https://kronosnet.org/builds/libqb-master-${NODE_NAME}.repo
@@ -244,6 +257,9 @@ else
 
  RAS_REPO=https://kronosnet.org/builds/resource-agents-master-${NODE_NAME}.repo
  RAS_REPO_PATH=https://kronosnet.org/builds/resource-agents/${NODE_NAME}/master/latest/
+
+ BOOTH_REPO=https://kronosnet.org/builds/booth-master-pcmk-${pcmkver}-${NODE_NAME}.repo
+ BOOTH_REPO_PATH=https://kronosnet.org/builds/booth/${NODE_NAME}/master-pcmk-${pcmkver}/latest/
 
  if [ "${GIT_BRANCH}" = "origin/master" ]; then
   KNET_REPO=https://kronosnet.org/builds/knet-master-${NODE_NAME}.repo
@@ -280,6 +296,8 @@ else
    FAS_REPO_PATH=""
    RAS_REPO=""
    RAS_REPO_PATH=""
+   BOOTH_REPO=""
+   BOOTH_REPO_PATH=""
    ;;
   corosync)
    # corosync supports both knet stable and knet master
@@ -321,3 +339,5 @@ export FAS_REPO
 export FAS_REPO_PATH
 export RAS_REPO
 export RAS_REPO_PATH
+export BOOTH_REPO
+export BOOTH_REPO_PATH

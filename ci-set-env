@@ -75,10 +75,6 @@ if [ -n "${ghprbPullId}" ] && [ "${ghprbPullId}" != 1 ]; then
 fi
 echo TARGET $TARGET
 
-if [ -z "${pcmkver}" ]; then
- export pcmkver=master
-fi
-
 # rpm builds should use standard packages
 if [ "$build" != "rpm" ]; then
  echo ===== PKG_CONFIG_PATH info =====
@@ -89,24 +85,30 @@ if [ "$build" != "rpm" ]; then
  # exceptions below
  QB_INSTALL_PATH=/srv/qb/origin/master/
 
+ # origin/master should use all master branches built
+ # from sources
+ if [ "$TARGET" = "origin/master" ]; then
+  KNET_INSTALL_PATH=/srv/knet/origin/master/
+  COROSYNC_INSTALL_PATH=/srv/corosync/origin/master/
+  if [ -z "${pcmkver}" ]; then
+   export pcmkver=master
+  fi
+ else
+  KNET_INSTALL_PATH=/srv/knet/origin/stable1-proposed/
+  COROSYNC_INSTALL_PATH=/srv/corosync/origin/camelback/
+  if [ -z "${pcmkver}" ]; then
+   export pcmkver=2.0
+  fi
+ fi
+
+ PCMK_INSTALL_PATH=/srv/pcmk/origin/${pcmkver}/
+
  # those projects only have master branch
  QDEVICE_INSTALL_PATH=/srv/qdevice/origin/master/
  SBD_INSTALL_PATH=/srv/sbd/origin/master-pcmk-${pcmkver}/
  FAS_INSTALL_PATH=/srv/fas/origin/master/
  RAS_INSTALL_PATH=/srv/ras/origin/master/
  BOOTH_INSTALL_PATH=/srv/booth/origin/master-pcmk-${pcmkver}/
-
- # origin/master should use all master branches built
- # from sources
- if [ "$TARGET" = "origin/master" ]; then
-  KNET_INSTALL_PATH=/srv/knet/origin/master/
-  COROSYNC_INSTALL_PATH=/srv/corosync/origin/master/
-  PCMK_INSTALL_PATH=/srv/pcmk/origin/master/
- else
-  KNET_INSTALL_PATH=/srv/knet/origin/stable1-proposed/
-  COROSYNC_INSTALL_PATH=/srv/corosync/origin/camelback/
-  PCMK_INSTALL_PATH=/srv/pcmk/origin/2.0/
- fi
 
  case $DEST in
   pcmk1|corosync-flatiron|corosync-needle)

@@ -33,19 +33,19 @@ for i in $(ls); do
 	fi
 
 	cd -
-
-	# remove old builds (keep last 20)
-	builds="$(ls -1 | sort -n)"
-	numbuilds="$(echo "$builds" | wc -l)"
-	if [ "$numbuilds" -gt 20 ]; then
-		purgenum=$((numbuilds - 20))
-		candidates="$(echo "$builds" | head -n $purgenum)"
-		for x in $candidates; do
-			echo "Removing old build: $x"
-			rm -rf $x
-		done
-	fi
 done
+
+# remove old builds (keep last 20)
+builds="$(ls -1 | sort -n)"
+numbuilds="$(echo "$builds" | wc -l)"
+if [ "$numbuilds" -gt 20 ]; then
+	purgenum=$((numbuilds - 20))
+	candidates="$(echo "$builds" | head -n $purgenum)"
+	for x in $candidates; do
+		echo "Removing old build: $x"
+		rm -rf $x
+	done
+fi
 
 cd $covdir/
 rsync -av --progress --delete-after . www.kronosnet.org:~kronosnet/kronosnet/coverity/.

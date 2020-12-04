@@ -130,14 +130,10 @@ if [ "$DEST" = pcs ]; then
 fi
 
 if [ -z "$CHECKS" ]; then
- if [ "$DEST" = pcmk1 ] && [ "${NODE_NAME}" = centos-6-x86-64 ]; then
-  CHECKS="$EXTRACHECKS"
+ if [ "${NODE_NAME}" = debian-unstable-sparc64 ]; then
+  CHECKS="check $EXTRACHECKS"
  else
-  if [ "${NODE_NAME}" = debian-unstable-sparc64 ]; then
-   CHECKS="check $EXTRACHECKS"
-  else
-   CHECKS="check distcheck $EXTRACHECKS"
-  fi
+  CHECKS="check distcheck $EXTRACHECKS"
  fi
 fi
 

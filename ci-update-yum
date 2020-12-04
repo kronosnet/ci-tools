@@ -59,10 +59,9 @@ for i in python-devel python3-devel platform-python-devel libzstd-devel publican
  yum -y install $i || true
 done
 
-if [ "${NODE_NAME}" != centos-6-x86-64 ]; then
- yum -y install systemd-python || yum -y install python3-systemd
- EXTRADEPS="systemd-devel $EXTRADEPS"
-fi
+yum -y install systemd-python || yum -y install python3-systemd
+EXTRADEPS="systemd-devel $EXTRADEPS"
+
 # available only on ppc
 yum -y install libservicelog-devel || true
 

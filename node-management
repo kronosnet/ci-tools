@@ -31,9 +31,9 @@ delnodefromjob() {
 		--net \
 		--inplace \
 		--delete "/matrix-project/axes/hudson.matrix.LabelAxis/values/string[contains(text(),'$node')]" \
-		$TMPDIR/${job}.xml
+		$TMPDIR/${job}.xml 2>/dev/null
 
-	cat $TMPDIR/${job}.xml | ./jcli update-job $job
+	cat $TMPDIR/${job}.xml | ./jcli update-job $job 2>/dev/null
 
 	rm -rf $TMPDIR/${job}.xml
 }
@@ -59,9 +59,9 @@ addnodetojob() {
 		--type elem \
 		--name string \
 		--value $node \
-		$TMPDIR/${job}.xml
+		$TMPDIR/${job}.xml 2>/dev/null
 
-	cat $TMPDIR/${job}.xml | ./jcli update-job $job
+	cat $TMPDIR/${job}.xml | ./jcli update-job $job 2>/dev/null
 
 	rm -rf $TMPDIR/${job}.xml
 }
@@ -74,7 +74,7 @@ addnodetoalljobs() {
 	voting=no
 	oldbuilds=no
 
-	labels=$(./jcli get-node $node | grep label | sed -e 's/<label>//g' -e 's/<\/label>//g')
+	labels=$(./jcli get-node $node 2>/dev/null | grep label | sed -e 's/<label>//g' -e 's/<\/label>//g')
 
 	echo $labels
 

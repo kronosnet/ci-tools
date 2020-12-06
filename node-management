@@ -210,6 +210,23 @@ addnodetoalljobs() {
 	done
 }
 
+listnodejobs()
+{
+	node="$1"
+
+	mkdir -p $TMPDIR/jobs
+
+	for job in $joblist; do
+		./jcli get-job $job > $TMPDIR/jobs/${job}.xml 2>/dev/null
+	done
+
+	cd $TMPDIR/jobs 2>/dev/null
+	grep -l $node *.xml | sed -e 's/.xml//g'
+	cd - >/dev/null
+
+	rm -rf $TMPDIR/jobs
+}
+
 action=$1
 node=$2
 
@@ -222,6 +239,9 @@ case $action in
 	;;
 	add)
 		addnodetoalljobs $node
+	;;
+	list)
+		listnodejobs $node
 	;;
 esac
 

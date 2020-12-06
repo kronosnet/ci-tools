@@ -132,20 +132,41 @@ addnodetoalljobs() {
 				fi
 				;;
 			*pcs*)
-				if [ $oldbuilds == yes ]; then
-					echo Skipping oldbuilds job $i
-				else
-					echo Adding oldbuilds to job $i
-					addjob=1
-				fi
+				case $i in
+					*rpms)
+						if [ $rpm == yes ]; then
+							if [ $oldbuilds == yes ]; then
+								echo Skipping oldbuilds job $i
+							else
+								echo Adding oldbuilds to job $i
+								addjob=1
+							fi
+						fi
+						;;
+					*)
+						if [ $oldbuilds == yes ]; then
+							echo Skipping oldbuilds job $i
+						else
+							echo Adding oldbuilds to job $i
+							addjob=1
+						fi
+					;;
+				esac
 				;;
 			*rpms)
-				if [ $rpm == yes ]; then
-					echo Adding to rpm job $i
-					addjob=1
-				else
-					echo Skipping rpm job $i
-				fi
+				case $i in
+					*pcs*)
+						echo Skipping rpm job $i - managed separately
+					;;
+					*)
+						if [ $rpm == yes ]; then
+							echo Adding to rpm job $i
+							addjob=1
+						else
+							echo Skipping rpm job $i
+						fi
+					;;
+				esac
 				;;
 			*needle*|pacemaker1*)
 				if [ $oldbuilds == yes ]; then

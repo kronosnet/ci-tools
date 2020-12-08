@@ -243,6 +243,14 @@ case $action in
 	list)
 		listnodejobs $node
 	;;
+	add-to-job-list)
+		shift
+		shift
+		jobs=$@
+		for job in $jobs; do
+			addnodetojob $job $node
+		done
+	;;
 esac
 
 exit 0

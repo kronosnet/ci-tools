@@ -86,7 +86,7 @@ if [ "$build" != "rpm" ]; then
  QB_INSTALL_PATH=/srv/qb/origin/master/
 
  # Latest Pacemaker release branch
- PCMK_RELEASE=2.0
+ PCMK_RELEASE=2.1
 
  # origin/master should use all master branches built
  # from sources

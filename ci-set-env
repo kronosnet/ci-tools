@@ -56,7 +56,10 @@ esac
 ld --version || true
 export CC=$compiler
 
-if [ -z "$python" ] || [ "$DEST" = "pcmk" ]; then
+if [ -z "$python" ]; then
+ python=python3
+fi
+if [ "$python" = "python2" ] && [ "$DEST" = "pcmk" ]; then
  python=python3
 fi
 python=`which $python`

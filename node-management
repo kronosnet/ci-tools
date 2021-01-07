@@ -176,9 +176,6 @@ addnodetoalljobs() {
 					echo Skipping oldbuilds job $i
 				fi
 				;;
-			*flatiron*)
-				echo Skipping voting job $i
-				;;
 			*-nonvoting)
 				if [ $voting == no ]; then
 					echo Adding to nonvoting job $i

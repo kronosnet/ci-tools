@@ -117,7 +117,7 @@ if [ "$build" != "rpm" ]; then
  BOOTH_INSTALL_PATH=/srv/booth/origin/master-pcmk-${pcmkver}/
 
  case $DEST in
-  corosync-flatiron|corosync-needle)
+  corosync-needle)
    # old branches should only use system provided rpm to build
    KNET_INSTALL_PATH=""
    QB_INSTALL_PATH=""
@@ -285,7 +285,7 @@ else
  fi
 
  case $DEST in
-  corosync-flatiron|corosync-needle)
+  corosync-needle)
    # old branches should only use system provided rpm to build
    KNET_REPO=""
    KNET_REPO_PATH=""

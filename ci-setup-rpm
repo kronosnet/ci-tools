@@ -4,7 +4,7 @@ set -ev
 
 . $HOME/ci-tools/ci-rpm-common
 
-if [ "$build" = rpm ] || [ "$DEST" = pcmk1 ]; then
+if [ "$build" = "rpm" ]; then
  if [ -n "$RPMDEPS" ]; then
   echo "Installing rpm deps: $RPMDEPS"
   installrpmdeps

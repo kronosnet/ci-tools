@@ -29,10 +29,6 @@ case $build in
  ;;
  *)
   case "$DEST" in
-   pcmk1)
-    echo "$MAKE $MAKEOPTS"
-    $MAKE $MAKEOPTS || removerpmdeps 1
-   ;;
    pcs)
    ;;
    *)

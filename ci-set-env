@@ -88,6 +88,9 @@ if [ "$build" != "rpm" ]; then
  # exceptions below
  QB_INSTALL_PATH=/srv/qb/origin/master/
 
+ # Latest Pacemaker release branch
+ PCMK_RELEASE=2.1
+
  # origin/master should use all master branches built
  # from sources
  if [ "$TARGET" = "origin/master" ]; then
@@ -100,7 +103,7 @@ if [ "$build" != "rpm" ]; then
   KNET_INSTALL_PATH=/srv/knet/origin/stable1-proposed/
   COROSYNC_INSTALL_PATH=/srv/corosync/origin/camelback/
   if [ -z "${pcmkver}" ]; then
-   export pcmkver=2.0
+   export pcmkver="${PCMK_RELEASE}"
   fi
  fi
 
@@ -114,7 +117,7 @@ if [ "$build" != "rpm" ]; then
  BOOTH_INSTALL_PATH=/srv/booth/origin/master-pcmk-${pcmkver}/
 
  case $DEST in
-  pcmk1|corosync-flatiron|corosync-needle)
+  corosync-flatiron|corosync-needle)
    # old branches should only use system provided rpm to build
    KNET_INSTALL_PATH=""
    QB_INSTALL_PATH=""
@@ -135,9 +138,8 @@ if [ "$build" != "rpm" ]; then
    ;;
   sbd|booth|pcs)
    # booth and sbd only have a master branch, but they need
-   # different settings when building against pcmk master or 2.0
-   if [ -n "${pcmkver}" ] && [ "${pcmkver}" = "2.0" ]; then
-    PCMK_INSTALL_PATH=/srv/pcmk/origin/2.0/
+   # different settings when building against pcmk master or release
+   if [ "${pcmkver}" = "${PCMK_RELEASE}" ]; then
     KNET_INSTALL_PATH=/srv/knet/origin/stable1-proposed/
     COROSYNC_INSTALL_PATH=/srv/corosync/origin/camelback/
    fi
@@ -278,12 +280,12 @@ else
   KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/stable1-proposed/latest/
   COROSYNC_REPO=https://kronosnet.org/builds/corosync-camelback-${NODE_NAME}.repo
   COROSYNC_REPO_PATH=https://kronosnet.org/builds/corosync/${NODE_NAME}/camelback/latest/
-  PCMK_REPO=https://kronosnet.org/builds/pacemaker-2.0-${NODE_NAME}.repo
-  PCMK_REPO_PATH=https://kronosnet.org/builds/pacemaker/${NODE_NAME}/2.0/latest/
+  PCMK_REPO="https://kronosnet.org/builds/pacemaker-${PCMK_RELEASE}-${NODE_NAME}.repo"
+  PCMK_REPO_PATH="https://kronosnet.org/builds/pacemaker/${NODE_NAME}/${PCMK_RELEASE}/latest/"
  fi
 
  case $DEST in
-  pcmk1|corosync-flatiron|corosync-needle)
+  corosync-flatiron|corosync-needle)
    # old branches should only use system provided rpm to build
    KNET_REPO=""
    KNET_REPO_PATH=""
@@ -314,14 +316,14 @@ else
    ;;
   sbd|booth|pcs)
    # booth and sbd only have a master branch, but they need
-   # different settings when building against pcmk master or 2.0
-   if [ -n "${pcmkver}" ] && [ "${pcmkver}" = "2.0" ]; then
+   # different settings when building against pcmk master or release
+   if [ "${pcmkver}" = "${PCMK_RELEASE}" ]; then
     KNET_REPO=https://kronosnet.org/builds/knet-stable1-proposed-${NODE_NAME}.repo
     KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/stable1-proposed/latest/
     COROSYNC_REPO=https://kronosnet.org/builds/corosync-camelback-${NODE_NAME}.repo
     COROSYNC_REPO_PATH=https://kronosnet.org/builds/corosync/${NODE_NAME}/camelback/latest/
-    PCMK_REPO=https://kronosnet.org/builds/pacemaker-2.0-${NODE_NAME}.repo
-    PCMK_REPO_PATH=https://kronosnet.org/builds/pacemaker/${NODE_NAME}/2.0/latest/
+    PCMK_REPO=https://kronosnet.org/builds/pacemaker-${PCMK_RELEASE}-${NODE_NAME}.repo
+    PCMK_REPO_PATH=https://kronosnet.org/builds/pacemaker/${NODE_NAME}/${PCMK_RELEASE}/latest/
    fi
    ;;
  esac

@@ -33,10 +33,6 @@ pcmkextratests() {
  if [ "$DEST" = pcmk ]; then
   ./cts/cts-regression -V
  fi
- if [ "$DEST" = pcmk1 ]; then
-  ./BasicSanity.sh -V || removerpmdeps 1
-  removerpmdeps 0
- fi
 }
 
 case $build in

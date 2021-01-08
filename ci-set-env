@@ -78,6 +78,9 @@ if [ -n "${ghprbPullId}" ] && [ "${ghprbPullId}" != 1 ]; then
 fi
 echo TARGET $TARGET
 
+# Latest Pacemaker release branch
+PCMK_RELEASE=2.1
+
 # rpm builds should use standard packages
 if [ "$build" != "rpm" ]; then
  echo ===== PKG_CONFIG_PATH info =====
@@ -87,9 +90,6 @@ if [ "$build" != "rpm" ]; then
  # all projects should build against libqb master
  # exceptions below
  QB_INSTALL_PATH=/srv/qb/origin/master/
-
- # Latest Pacemaker release branch
- PCMK_RELEASE=2.1
 
  # origin/master should use all master branches built
  # from sources

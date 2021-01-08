@@ -44,18 +44,30 @@ installrpmdeps() {
   if [ -n "$KNET_REPO_PATH" ]; then
    zypper addrepo $KNET_REPO_PATH knet-build || $ret
    zypper modifyrepo -e -f -G knet-build || $ret
+   if [ "x$bootstrap" = "x1" ] && ! wget -q -O /dev/null $KNET_REPO_PATH; then
+    zypper removerepo knet-build || true
+   fi
   fi
   if [ -n "$LIBQB_REPO_PATH" ]; then
    zypper addrepo $LIBQB_REPO_PATH libqb-build || $ret
    zypper modifyrepo -e -f -G libqb-build || $ret
+   if [ "x$bootstrap" = "x1" ] && ! wget -q -O /dev/null $LIBQB_REPO_PATH; then
+    zypper removerepo libqb-build || true
+   fi
   fi
   if [ -n "$COROSYNC_REPO_PATH" ]; then
    zypper addrepo $COROSYNC_REPO_PATH corosync-build || $ret
    zypper modifyrepo -e -f -G corosync-build || $ret
+   if [ "x$bootstrap" = "x1" ] && ! wget -q -O /dev/null $COROSYNC_REPO_PATH; then
+    zypper removerepo corosync-build || true
+   fi
   fi
   if [ -n "$PCMK_REPO_PATH" ]; then
    zypper addrepo $PCMK_REPO_PATH pcmk-build || $ret
    zypper modifyrepo -e -f -G pcmk-build || $ret
+   if [ "x$bootstrap" = "x1" ] && ! wget -q -O /dev/null $PCMK_REPO_PATH; then
+    zypper removerepo pcmk-build || true
+   fi
   fi
   zypper install -y $RPMDEPS || removerpmdeps 1
  fi

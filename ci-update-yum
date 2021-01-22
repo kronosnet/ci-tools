@@ -19,7 +19,7 @@ case "${NODE_NAME}" in
   yum install -y centos-release-openstack-stein
   EXTRAOPTS="--skip-broken"
  ;;
- centos-8*)
+ centos-8*|anvil-ci)
   yum install -y centos-release-openstack-ussuri
  ;;
 esac
@@ -67,13 +67,13 @@ yum -y install libservicelog-devel || true
 
 # pcs builds only on recent distros
 case "${NODE_NAME}" in
- fedora*|rhel8*|centos-8*)
+ fedora*|rhel8*|centos-8*|anvil-ci)
   EXTRADEPS="ruby ruby-devel rubygems rubygem-bundler fontconfig liberation-sans-fonts overpass-fonts npm rpmdevtools python3-lxml $EXTRADEPS"
  ;;
 esac
 
 case "${NODE_NAME}" in
- rhel8*|centos-8*)
+ rhel8*|centos-8*|anvil-ci)
   EXTRADEPS="python3-setuptools_scm $EXTRADEPS"
  ;;
 esac

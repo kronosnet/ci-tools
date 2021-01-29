@@ -106,6 +106,9 @@ addnodetoalljobs() {
 	for i in $joblist; do
 		addjob=0
 		case $i in
+			anvil-*)
+				echo Skilling manual job $i
+				;;
 			all-weekly|build-rpm-repos|reinstall-all-manual|reconnect-all-nodes)
 				echo Skipping global job $i
 				;;

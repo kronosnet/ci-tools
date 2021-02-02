@@ -9,7 +9,7 @@
   when: preupgrade.stat.exists == False
 
 - name: install kernel
-  shell: cd /usr/src && make installkernel
+  shell: cd /usr/src && make installkernel KERNCONF=GENERIC-NODEBUG
 
 - name: reboot after kernel install
   shell: sleep 2 && /sbin/shutdown -r +1

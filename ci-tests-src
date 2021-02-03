@@ -93,7 +93,7 @@ fi
 
 if [ "$DEST" = pcs ]; then
  make check
- make distcheck DISTCHECK_CONFIGURE_FLAGS="--enable-local-build --enable-destructive-tests $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
+ make distcheck DISTCHECK_CONFIGURE_FLAGS="--enable-local-build $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
  exit 0
 fi
 

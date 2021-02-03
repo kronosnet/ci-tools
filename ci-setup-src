@@ -15,8 +15,8 @@ if [ -f ./configure ]; then
    ./configure $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
    ;;
   pcs)
-   echo "./configure --enable-local-build --enable-destructive-tests $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
-   ./configure --enable-local-build --enable-destructive-tests $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
+   echo "./configure --enable-local-build $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
+   ./configure --enable-local-build $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
    ;;
   *)
    installpath=/srv/$DEST/${ghprbActualCommit}

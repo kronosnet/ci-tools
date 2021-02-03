@@ -92,36 +92,8 @@ if [ -n "$CHECKS" ] && [ "$CHECKS" = "nochecks" ]; then
 fi
 
 if [ "$DEST" = pcs ]; then
- if [ -z "$python" ]; then
-  python=python3
- fi
- export PYTHON=$python
- if [ -d "$(pwd)/.venv" ]; then
-  rm -rf "$(pwd)/.venv"
- fi
- mkdir -p "$(pwd)/.venv"
- $PYTHON -m venv "$(pwd)/.venv"
- . "$(pwd)/.venv"/bin/activate
- export PATH="$(pwd)/.venv"/bin/:$PATH
- echo "./autogen.sh"
- ./autogen.sh
- echo ./configure \
-	--enable-local-build \
-	--enable-dev-tests \
-	--enable-destructive-tests \
-	$DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
- ./configure \
-	--enable-local-build \
-	--enable-dev-tests \
-	--enable-destructive-tests \
-	$DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
  make check
- make distcheck DISTCHECK_CONFIGURE_FLAGS="--enable-local-build --enable-dev-tests --enable-destructive-tests $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
- # not critical if we cannot clean up or deactivate
- deactivate
- if [ -d "$(pwd)/.venv" ]; then
-  rm -rf "$(pwd)/.venv"
- fi
+ make distcheck DISTCHECK_CONFIGURE_FLAGS="--enable-local-build --enable-destructive-tests $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
  exit 0
 fi
 

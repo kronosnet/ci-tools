@@ -2,12 +2,6 @@
 
 set -ev
 
-# we cannot setup pcs source code here
-# it needs to be within venv in testing
-if [ "$DEST" = "pcs" ]; then
- exit 0
-fi
-
 if [ -f ./autogen.sh ]; then
  echo "./autogen.sh"
  ./autogen.sh
@@ -15,20 +9,27 @@ fi
 
 if [ -f ./configure ]; then
  # workaround bug in pacemaker test suite
- if [ "$DEST" = "pcmk" ]; then
-  echo "./configure $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
-  ./configure $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
- else
-  installpath=/srv/$DEST/${ghprbActualCommit}
-  case "$DEST" in
-   sbd|booth)
-    installpath=${installpath}-pcmk-${pcmkver}/
-    ;;
-   *)
-    installpath=${installpath}/
-    ;;
-  esac
-  echo "./configure --prefix=$installpath --exec-prefix=$installpath $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
-  ./configure --prefix=$installpath --exec-prefix=$installpath $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
- fi
+ case "$DEST" in
+  pcmk)
+   echo "./configure $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
+   ./configure $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
+   ;;
+  pcs)
+   echo "./configure --enable-local-build --enable-destructive-tests $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
+   ./configure --enable-local-build --enable-destructive-tests $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
+   ;;
+  *)
+   installpath=/srv/$DEST/${ghprbActualCommit}
+   case "$DEST" in
+    sbd|booth)
+     installpath=${installpath}-pcmk-${pcmkver}/
+     ;;
+    *)
+     installpath=${installpath}/
+     ;;
+   esac
+   echo "./configure --prefix=$installpath --exec-prefix=$installpath $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
+   ./configure --prefix=$installpath --exec-prefix=$installpath $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
+   ;;
+ esac
 fi

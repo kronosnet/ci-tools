@@ -29,8 +29,6 @@ case $build in
  ;;
  *)
   case "$DEST" in
-   pcs)
-   ;;
    *)
     echo "$MAKE $MAKEOPTS"
     $MAKE $MAKEOPTS

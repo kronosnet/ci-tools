@@ -92,8 +92,16 @@ if [ -n "$CHECKS" ] && [ "$CHECKS" = "nochecks" ]; then
 fi
 
 if [ "$DEST" = pcs ]; then
+ case "${NODE_NAME}" in
+  debian*|ubuntu*)
+   localbuild=""
+   ;;
+  *)
+   localbuild=--enable-local-build
+   ;;
+ esac
  make check
- make distcheck DISTCHECK_CONFIGURE_FLAGS="--enable-local-build $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
+ make distcheck DISTCHECK_CONFIGURE_FLAGS="$localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
  exit 0
 fi
 

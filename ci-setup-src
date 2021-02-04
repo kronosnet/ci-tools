@@ -15,8 +15,16 @@ if [ -f ./configure ]; then
    ./configure $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
    ;;
   pcs)
-   echo "./configure --enable-local-build $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
-   ./configure --enable-local-build $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
+   case "${NODE_NAME}" in
+    debian*|ubuntu*)
+     localbuild=""
+     ;;
+    *)
+     localbuild=--enable-local-build
+     ;;
+   esac
+   echo "./configure $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
+   ./configure $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
    ;;
   *)
    installpath=/srv/$DEST/${ghprbActualCommit}

@@ -19,10 +19,10 @@ case "${NODE_NAME}" in
   yum install -y centos-release-openstack-stein
   EXTRAOPTS="--skip-broken"
  ;;
- centos-8*|anvil-ci)
+ centos-8*|anvil-ci*)
   yum install -y centos-release-openstack-ussuri
  ;;
- anvil-ci)
+ anvil-ci*)
   yum install -y fence-agents-common resource-agents
  ;;
 esac

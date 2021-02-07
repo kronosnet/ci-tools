@@ -1,0 +1,71 @@
+#!/bin/sh
+
+set -e
+
+# build cloud-utils, not available on Centos 8
+rm -rf cloud-utils
+fedpkg co --anonymous cloud-utils
+cd cloud-utils
+fedpkg prep
+rpmbuild --define "_rpmdir $(pwd)" --define "_srcrpmdir $(pwd)" --define "_sourcedir $(pwd)"  -bb cloud-utils.spec
+yum install -y x86_64/*.rpm
+cd ..
+rm -rf cloud-utils
+
+## VIRT SETUP
+
+# enable nested virt
+if [ ! -f /etc/modprobe.d/netsted_virt.conf ] && [ "$(cat /sys/module/kvm_intel/parameters/nested)" = 0 ]; then
+ systemctl stop libvirtd
+ rmmod kvm-intel
+ echo 'options kvm-intel nested=y' > /etc/modprobe.d/netsted_virt.conf
+ modprobe kvm-intel
+fi
+if [ "$(cat /sys/module/kvm_intel/parameters/nested)" = 0 ]; then
+ echo "WARNING!!! FAILED TO ENABLE NESTED VIRTUALIZATION!"
+fi
+
+# setup networking
+systemctl start libvirtd
+systemctl enable libvirtd
+if [ -n "$(virsh net-list --all --name | grep default)" ]; then
+ virsh net-destroy default
+ virsh net-undefine default
+fi
+
+tmpfile=$(mktemp)
+macbase=0
+ifnbase=122
+for i in ifn1 ifn2 bcn1 bcn2 sn1 sn2; do
+ if [ -z "$(virsh net-list --all --name | grep ${i}_bridge1)" ]; then
+  echo "Creating libvirt network interface ${i}_bridge1"
+  uuid=$(uuidgen)
+  cat > $tmpfile << EOF
+<network>
+ <name>${i}_bridge1</name>
+ <uuid>${uuid}</uuid>
+ <bridge name='${i}_bridge1' stp='on' delay='0'/>
+ <domain name='${i}_bridge1'/>
+ <mac address='52:54:${macbase}:e1:ac:a2'/>
+EOF
+  case ${i} in
+   ifn*)
+    cat >> $tmpfile << EOF
+ <forward mode='nat'/>
+ <ip address='192.168.$ifnbase.1' netmask='255.255.255.0'>
+  <dhcp>
+   <range start='192.168.$ifnbase.128' end='192.168.$ifnbase.254'/>
+  </dhcp>
+ </ip>
+EOF
+  ;;
+  esac
+  echo "</network>" >> $tmpfile
+  virsh net-define $tmpfile
+  virsh net-autostart ${i}_bridge1
+  virsh net-start ${i}_bridge1
+ fi
+ macbase=$((macbase + 1))
+ ifnbase=$((ifnbase + 100))
+done
+rm -f $tmpfile

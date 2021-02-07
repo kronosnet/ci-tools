@@ -29,7 +29,7 @@ esac
 
 case "${NODE_NAME}" in
  anvil-ci-bm*)
-  yum install -y qemu-img libvirt virt-install fedpkg
+  yum install -y qemu-img libvirt virt-install fedpkg lftp
   $HOME/ci-tools/ci-setup-anvil-bm
  ;;
 esac

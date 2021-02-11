@@ -1,0 +1,184 @@
+#!/bin/bash
+
+set -e
+
+DEPLOYDIR=/srv/anvil
+TEMPLATESDIR="$HOME/ci-tools/anvil-config-templates"
+SRCURL=https://cloud.centos.org/centos/8-stream/x86_64/images/
+NODES="an-striker01 an-striker02 an-a01n01 an-a01n02 an-a01dr01"
+
+if [ ! -d "$TEMPLATESDIR" ]; then
+ echo "Error, unable to find anvil-config-templates in the current directory"
+ exit 1
+fi
+
+mkdir -p "$DEPLOYDIR/images"
+mkdir -p "$DEPLOYDIR/snapshots"
+mkdir -p "$DEPLOYDIR/configs"
+
+echo "Downloading latest CentoOS 8 Stream cloud image"
+
+cd "$DEPLOYDIR/images"
+
+latestimage=$(lftp -e "cls -1 *Generic*; quit" "$SRCURL" 2>/dev/null | sort -u | tail -n 1)
+
+if [ -z "$latestimage" ]; then
+ echo "Error determining latest CentoOS 8 Stream cloud image"
+ if [ ! -e "CentOS-Stream-GenericCloud-8-latest.qcow2" ]; then
+  echo "No local image found. ABORTING"
+  exit 1
+ fi
+fi
+
+if [ ! -f "$latestimage" ]; then
+ wget -O "$latestimage" "$SRCURL/$latestimage"
+ rm -f "CHECKSUM"
+ wget -O "CHECKSUM" "$SRCURL/CHECKSUM"
+ if [ "$(grep $latestimage "CHECKSUM" | grep ^SHA | sed -e 's#.*= ##g')" != "$(sha256sum "$latestimage" | sed -e 's# .*##g')" ]; then
+  echo "Error! Unable to verify SHA256 for the $latestimage. ABORTING"
+  exit 1
+ else
+  echo "$latestimage SHA256 verified"
+ fi
+ rm -f CentOS-Stream-GenericCloud-8-latest.qcow2
+ ln -sf "$latestimage" "CentOS-Stream-GenericCloud-8-latest.qcow2"
+fi
+
+echo "Destroying old VMs (if any)"
+
+for i in $NODES; do
+ virsh destroy $i || true
+ virsh undefine $i || true
+done
+
+echo "Creating nodes disks"
+
+cd "$DEPLOYDIR/snapshots"
+rm -rf *.qcow2
+for i in $NODES; do
+ qemu-img create -b "$DEPLOYDIR/images/CentOS-Stream-GenericCloud-8-latest.qcow2" -F qcow2 -f qcow2 "$i-vol.qcow2" 200G
+ qemu-img create -f qcow2 "$i-vol2.qcow2" 200G
+done
+
+echo "Genering ssh keys and ssh config"
+
+cd "$DEPLOYDIR/configs"
+
+# sync IP and hostname if necessary
+if [ ! -f "id_rsa" ]; then
+ echo "Generaing ssh keys"
+ ssh-keygen -t rsa -b 4096 -f id_rsa -C testing-key -N "" -q
+ echo ""
+fi
+if [ ! -f $HOME/.ssh/config ]; then
+ cat > $HOME/.ssh/config << EOF
+Host 192.168.122.*
+User root
+StrictHostKeyChecking no
+IdentityFile /srv/anvil/configs/id_rsa
+ForwardX11 no
+
+Host an-*
+User root
+StrictHostKeyChecking no
+IdentityFile /srv/anvil/configs/id_rsa
+ForwardX11 no
+EOF
+fi
+rm -f $HOME/.ssh/known_hosts
+
+# ifn ip network is defined in ci-tools/ci-setup-anvil-bm
+# and ci-tools/anvil-config-templates/ network templates
+echo "Generating VM network configs and updating /etc/hosts"
+if [ ! -f /etc/hosts.anvil ]; then
+ cp /etc/hosts /etc/hosts.anvil
+else
+ cp /etc/hosts.anvil /etc/hosts
+fi
+
+ipbase=2
+for i in $NODES; do
+ IFNIP=192.168.122.$ipbase
+ cat "$TEMPLATESDIR/anvil_striker_net_config.cfg" | \
+  sed \
+   -e "s#@IFNIP@#$IFNIP#g" \
+   > "$DEPLOYDIR/configs/${i}_net_config.cfg"
+  echo "$IFNIP ${i}.alteeve.com ${i}" >> /etc/hosts
+  ipbase=$((ipbase + 1))
+done
+
+echo "Generating cloud-init configs"
+SSHKEY="$(cat $DEPLOYDIR/configs/id_rsa.pub)"
+for i in $NODES; do
+ case $i in
+  *striker*)
+   ANVILPKG="striker"
+  ;;
+  *a01n*)
+   ANVILPKG="node"
+  ;;
+  *dr*)
+   ANVILPKG="dr"
+  ;;
+ esac
+ cat "$TEMPLATESDIR/anvil_cloud_init.cfg" | \
+  sed \
+   -e "s#@HOSTNAME@#${i}#g" \
+   -e "s#@SSHKEY@#${SSHKEY}#g" \
+   -e "s#@ANVILPKG@# - anvil-${ANVILPKG}#g" \
+   > "$DEPLOYDIR/configs/${i}_cloud_init.cfg"
+done
+
+echo "Generating cloud-init metadata and seed images"
+for i in $NODES; do
+  rm -f "$DEPLOYDIR/snapshots/${i}-seed.img"
+  echo "instance-id: $(uuidgen)" > "$DEPLOYDIR/configs/${i}-metadata"
+  cloud-localds -v --network-config="$DEPLOYDIR/configs/${i}_net_config.cfg" "$DEPLOYDIR/snapshots/${i}-seed.img" "$DEPLOYDIR/configs/${i}_cloud_init.cfg" "$DEPLOYDIR/configs/${i}-metadata"
+done
+
+# use uuid for db?
+echo "Creating VMs"
+for i in $NODES; do
+ virt-install --name ${i} \
+  --virt-type kvm --memory 16384 --vcpus 6 \
+  --boot hd,menu=on \
+  --disk path="$DEPLOYDIR/snapshots/${i}-seed.img",device=cdrom \
+  --disk path="$DEPLOYDIR/snapshots/$i-vol.qcow2",device=disk \
+  --disk path="$DEPLOYDIR/snapshots/$i-vol2.qcow2",device=disk \
+  --graphics vnc \
+  --os-type Linux --os-variant centos-stream8 \
+  --network network:ifn1_bridge1 \
+  --network network:ifn1_bridge1 \
+  --network network:bcn1_bridge1 \
+  --network network:bcn1_bridge1 \
+  --network network:sn1_bridge1 \
+  --network network:sn1_bridge1 \
+  --noautoconsole 
+done
+
+echo "Waiting for nodes and cloud-init to complete full init"
+
+bootdone=no
+expected=0
+for i in $NODES; do
+ expected=$((expected + 1))
+done
+
+while [ "$bootdone" = "no" ]; do
+ actual=0
+ for i in $NODES; do
+  status=$(ssh $i cloud-init status 2>/dev/null | awk '{print $NF}')
+  echo "cloud-init status node $i: $status"
+  if [ "$status" = "done" ]; then
+   actual=$((actual + 1))
+  fi
+ done
+ echo "$(date) actual: $actual expected: $expected"
+ if [ "$actual" = "$expected" ]; then
+  bootdone=yes
+ else
+  sleep 10
+ fi
+done
+
+exit 0

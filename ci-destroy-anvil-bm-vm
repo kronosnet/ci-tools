@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+NODES="an-striker01 an-striker02 an-a01n01 an-a01n02 an-a01dr01"
+
+echo "Destroying VMs (if any)"
+
+for i in $NODES; do
+ virsh destroy $i || true
+ virsh undefine $i || true
+done

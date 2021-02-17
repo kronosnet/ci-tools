@@ -23,7 +23,7 @@
   when: rebootkernel.changed
 
 - name: update config files
-  shell: mergemaster -a
+  shell: mergemaster -Ui
 
 - name: install userland
   shell: cd /usr/src && make installworld

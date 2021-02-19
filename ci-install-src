@@ -17,8 +17,8 @@ if [ -n "$install" ] && [ "$install" = 1 ] && [ "x$build" != "xcoverity" ]; then
  if [ "$DEST" = "pcmk" ]; then
   echo "$MAKE clean"
   $MAKE clean
-  echo "./configure --prefix=$installpath --exec-prefix=$installpath --sysconfdir="$installpath/etc" --with-initdir="$installpath/etc/init.d" --with-ocfdir="$installpath/usr/lib/ocf"  --with-systemdsystemunitdir="$installpath/usr/lib/systemd/system" $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
-  ./configure --prefix=$installpath --exec-prefix=$installpath --sysconfdir="$installpath/etc" --with-initdir="$installpath/etc/init.d" --with-ocfdir="$installpath/usr/lib/ocf"  --with-systemdsystemunitdir="$installpath/usr/lib/systemd/system" $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
+  echo "./configure --enable-compat-2.0 --prefix=$installpath --exec-prefix=$installpath --sysconfdir="$installpath/etc" --with-initdir="$installpath/etc/init.d" --with-ocfdir="$installpath/usr/lib/ocf"  --with-systemdsystemunitdir="$installpath/usr/lib/systemd/system" $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
+  ./configure --enable-compat-2.0 --prefix=$installpath --exec-prefix=$installpath --sysconfdir="$installpath/etc" --with-initdir="$installpath/etc/init.d" --with-ocfdir="$installpath/usr/lib/ocf"  --with-systemdsystemunitdir="$installpath/usr/lib/systemd/system" $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
   echo "$MAKE $MAKEOPTS"
   $MAKE $MAKEOPTS
  fi

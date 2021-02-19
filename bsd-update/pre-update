@@ -3,6 +3,8 @@
 set -e
 
 rm -f /root/.pre_upgrade_done
-svn update --accept theirs-full /usr/src
-cd /usr/src && make -j 8 buildworld && make -j 8 buildkernel KERNCONF=GENERIC-NODEBUG
+cd /usr/src
+git pull
+make -j 8 buildworld
+make -j 8 buildkernel KERNCONF=GENERIC-NODEBUG
 touch /root/.pre_upgrade_done

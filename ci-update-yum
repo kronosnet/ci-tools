@@ -22,6 +22,9 @@ case "${NODE_NAME}" in
  centos-8*|anvil-ci*)
   yum install -y centos-release-openstack-ussuri
  ;;
+esac
+
+case "${NODE_NAME}" in
  anvil-ci*)
   yum install -y fence-agents-common resource-agents fedpkg mock wget rpm-build createrepo_c
  ;;

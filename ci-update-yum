@@ -23,13 +23,13 @@ case "${NODE_NAME}" in
   yum install -y centos-release-openstack-ussuri
  ;;
  anvil-ci*)
-  yum install -y fence-agents-common resource-agents
+  yum install -y fence-agents-common resource-agents fedpkg mock wget rpm-build createrepo_c
  ;;
 esac
 
 case "${NODE_NAME}" in
  anvil-ci-bm*)
-  yum install -y qemu-img qemu-kvm libvirt virt-install fedpkg lftp
+  yum install -y qemu-img qemu-kvm libvirt virt-install lftp
   $HOME/ci-tools/ci-setup-anvil-bm
  ;;
 esac

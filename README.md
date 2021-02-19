@@ -1,2 +1,2 @@
 # ci-tools
-custom tools for ci.kronosnet.org
+custom toolset for ci.kronosnet.org

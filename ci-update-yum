@@ -26,7 +26,7 @@ esac
 
 case "${NODE_NAME}" in
  anvil-ci*)
-  yum install -y fence-agents-common resource-agents fedpkg mock wget rpm-build createrepo_c po4a
+  yum install -y fence-agents-common resource-agents fedpkg mock wget rpm-build createrepo_c
  ;;
 esac
 

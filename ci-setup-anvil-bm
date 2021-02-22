@@ -69,3 +69,17 @@ EOF
  ifnbase=$((ifnbase + 100))
 done
 rm -f $tmpfile
+
+firewall-cmd --zone=public --add-service=http
+firewall-cmd --zone=public --add-service=https
+firewall-cmd --zone=public --permanent --add-service=http
+firewall-cmd --zone=public --permanent --add-service=https
+firewall-cmd --reload
+
+if [ -f /etc/httpd/conf.d/welcome.conf ]; then
+ mv /etc/httpd/conf.d/welcome.conf /etc/httpd/
+fi
+
+systemctl enable httpd
+systemctl stop httpd
+systemctl start httpd

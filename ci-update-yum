@@ -32,7 +32,7 @@ esac
 
 case "${NODE_NAME}" in
  anvil-ci-bm*)
-  yum install -y qemu-img qemu-kvm libvirt virt-install lftp
+  yum install -y qemu-img qemu-kvm libvirt virt-install lftp httpd
   $HOME/ci-tools/ci-setup-anvil-bm
  ;;
 esac

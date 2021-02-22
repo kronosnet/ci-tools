@@ -169,6 +169,9 @@ while [ "$bootdone" = "no" ]; do
  for i in $NODES; do
   status=$(ssh $i cloud-init status 2>/dev/null | awk '{print $NF}')
   echo "cloud-init status node $i: $status"
+  if [ "$status" = "error" ]; then
+   exit 1
+  fi
   if [ "$status" = "done" ]; then
    actual=$((actual + 1))
   fi

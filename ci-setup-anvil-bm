@@ -78,10 +78,6 @@ for i in public libvirt; do
 done
 firewall-cmd --reload
 
-if [ -f /etc/httpd/conf.d/welcome.conf ]; then
- mv /etc/httpd/conf.d/welcome.conf /etc/httpd/
-fi
-
 systemctl enable httpd
 systemctl stop httpd
 systemctl start httpd

@@ -70,10 +70,12 @@ EOF
 done
 rm -f $tmpfile
 
-firewall-cmd --zone=public --add-service=http
-firewall-cmd --zone=public --add-service=https
-firewall-cmd --zone=public --permanent --add-service=http
-firewall-cmd --zone=public --permanent --add-service=https
+for i in public libvirt; do
+ for x in http https; do
+  firewall-cmd --zone=$i --add-service=$x
+  firewall-cmd --zone=$i --permanent --add-service=$x
+ done
+done
 firewall-cmd --reload
 
 if [ -f /etc/httpd/conf.d/welcome.conf ]; then

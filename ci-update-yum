@@ -15,6 +15,9 @@ case "${NODE_NAME}" in
   RHELVER=$(echo $NODE_NAME | sed -e 's/rhel//g' -e  's/z-.*//g' | cut --characters 1-1,2-2 --output-delimiter '.')
   echo "Detected RHEL version: $RHELVER"
  ;;
+ centos-7.2*)
+  EXTRAOPTS="--skip-broken"
+ ;;
  centos-7*)
   yum install -y centos-release-openstack-stein
   EXTRAOPTS="--skip-broken"
@@ -100,6 +103,9 @@ fi
 # OpenStack packages
 case "${NODE_NAME}" in
  *s390*)
+ ;;
+ *centos-7.2*)
+  EXTRADEPS="python34"
  ;;
  *)
   EXTRADEPS="${python}-keystoneclient ${python}-keystoneauth1 ${python}-novaclient $EXTRADEPS"

@@ -2,9 +2,29 @@
 
 set -e
 
+VARIANT="$1"
+
+case "$VARIANT" in
+ centos-8-stream)
+  SRCURL=https://cloud.centos.org/centos/8-stream/x86_64/images/
+  NAME="Centos 8 Stream"
+  IMG="GenericCloud"
+  BUILD="centos-8-stream"
+ ;;
+ centos-8)
+  SRCURL=https://cloud.centos.org/centos/8/x86_64/images/
+  NAME="Centos 8"
+  IMG="GenericCloud"
+  BUILD="centos-8"
+ ;;
+ *)
+  echo "Unknown variant"
+  exit 1
+ ;;
+esac
+
 DEPLOYDIR=/srv/anvil
 TEMPLATESDIR="$HOME/ci-tools/anvil-config-templates"
-SRCURL=https://cloud.centos.org/centos/8-stream/x86_64/images/
 NODES="an-striker01 an-striker02 an-a01n01 an-a01n02 an-a01dr01"
 
 if [ ! -d "$TEMPLATESDIR" ]; then
@@ -16,15 +36,15 @@ mkdir -p "$DEPLOYDIR/images"
 mkdir -p "$DEPLOYDIR/snapshots"
 mkdir -p "$DEPLOYDIR/configs"
 
-echo "Downloading latest CentoOS 8 Stream cloud image"
+echo "Downloading latest $NAME cloud image"
 
 cd "$DEPLOYDIR/images"
 
-latestimage=$(lftp -e "cls -1 *Generic*; quit" "$SRCURL" 2>/dev/null | sort -u | tail -n 1)
+latestimage=$(lftp -e "cls -1 *${IMG}*; quit" "$SRCURL" 2>/dev/null | sort -u | tail -n 1)
 
 if [ -z "$latestimage" ]; then
- echo "Error determining latest CentoOS 8 Stream cloud image"
- if [ ! -e "CentOS-Stream-GenericCloud-8-latest.qcow2" ]; then
+ echo "Error determining latest $NAME cloud image"
+ if [ ! -e "${BUILD}-latest.qcow2" ]; then
   echo "No local image found. ABORTING"
   exit 1
  fi
@@ -32,16 +52,8 @@ fi
 
 if [ ! -f "$latestimage" ]; then
  wget -O "$latestimage" "$SRCURL/$latestimage"
- rm -f "CHECKSUM"
- wget -O "CHECKSUM" "$SRCURL/CHECKSUM"
- if [ "$(grep $latestimage "CHECKSUM" | grep ^SHA | sed -e 's#.*= ##g')" != "$(sha256sum "$latestimage" | sed -e 's# .*##g')" ]; then
-  echo "Error! Unable to verify SHA256 for the $latestimage. ABORTING"
-  exit 1
- else
-  echo "$latestimage SHA256 verified"
- fi
- rm -f CentOS-Stream-GenericCloud-8-latest.qcow2
- ln -sf "$latestimage" "CentOS-Stream-GenericCloud-8-latest.qcow2"
+ rm -f "${BUILD}-latest.qcow2"
+ ln -sf "$latestimage" "${BUILD}-latest.qcow2"
 fi
 
 echo "Destroying old VMs (if any)"
@@ -56,7 +68,7 @@ echo "Creating nodes disks"
 cd "$DEPLOYDIR/snapshots"
 rm -rf *.qcow2
 for i in $NODES; do
- qemu-img create -b "$DEPLOYDIR/images/CentOS-Stream-GenericCloud-8-latest.qcow2" -F qcow2 -f qcow2 "$i-vol.qcow2" 200G
+ qemu-img create -b "$DEPLOYDIR/images/${BUILD}-latest.qcow2" -F qcow2 -f qcow2 "$i-vol.qcow2" 200G
  qemu-img create -f qcow2 "$i-vol2.qcow2" 200G
 done
 
@@ -124,6 +136,7 @@ for i in $NODES; do
  cat "$TEMPLATESDIR/anvil_cloud_init.cfg" | \
   sed \
    -e "s#@HOSTNAME@#${i}#g" \
+   -e "s#@BUILD@#${BUILD}#g" \
    -e "s#@SSHKEY@#${SSHKEY}#g" \
    -e "s#@ANVILPKG@# - anvil-${ANVILPKG}#g" \
    > "$DEPLOYDIR/configs/${i}_cloud_init.cfg"

@@ -51,7 +51,7 @@ if [ -z "$latestimage" ]; then
 fi
 
 if [ ! -f "$latestimage" ]; then
- wget --no-check-certificate -O "$latestimage" "$SRCURL/$latestimage"
+ wget -O "$latestimage" "$SRCURL/$latestimage"
  rm -f "${BUILD}-latest.qcow2"
  ln -sf "$latestimage" "${BUILD}-latest.qcow2"
 fi

@@ -12,7 +12,7 @@ TMPDIR=$(mktemp -d /tmp/jnodemgmtXXXXXX)
 
 getnodelist() {
 	rm -rf $TMPDIR/nodelist.json
-	wget -O $TMPDIR/nodelist.json "http://ci.kronosnet.org/computer/api/json?pretty=true" > /dev/null 2>&1
+	wget --no-check-certificate -O $TMPDIR/nodelist.json "http://ci.kronosnet.org/computer/api/json?pretty=true" > /dev/null 2>&1
 	nodelist="$(cat $TMPDIR/nodelist.json | jq '.computer' | grep displayName | sed -e 's/.*": "//g' -e 's/",//g' |grep -v ^master$)"
 	rm -rf $TMPDIR/nodelist.json
 }

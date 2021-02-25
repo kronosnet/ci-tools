@@ -12,7 +12,7 @@ connect="$1"
 
 tempfile=$(mktemp /tmp/XXXXXXXX.json)
 
-wget -O $tempfile "https://ci.kronosnet.org/computer/api/json?pretty=true"
+wget --no-check-certificate -O $tempfile "https://ci.kronosnet.org/computer/api/json?pretty=true"
 
 nodelist="$(cat $tempfile | jq '.computer' | grep displayName | sed -e 's/.*": "//g' -e 's/",//g' |grep -v ^master$)"
 

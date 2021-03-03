@@ -268,7 +268,7 @@ else
  BOOTH_REPO=https://kronosnet.org/builds/booth-master-pcmk-${pcmkver}-${NODE_NAME}.repo
  BOOTH_REPO_PATH=https://kronosnet.org/builds/booth/${NODE_NAME}/master-pcmk-${pcmkver}/latest/
 
- if [ "${GIT_BRANCH}" = "origin/master" ]; then
+ if [ "$TARGET" = "origin/master" ]; then
   KNET_REPO=https://kronosnet.org/builds/knet-master-${NODE_NAME}.repo
   KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/master/latest/
   COROSYNC_REPO=https://kronosnet.org/builds/corosync-master-${NODE_NAME}.repo

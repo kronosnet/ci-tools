@@ -101,7 +101,7 @@ if [ "$DEST" = pcs ]; then
    ;;
  esac
  make check
- make distcheck DISTCHECK_CONFIGURE_FLAGS="$localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
+ make distcheck DISTCHECK_CONFIGURE_FLAGS="--enable-destructive-tests $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
  exit 0
 fi
 

@@ -23,8 +23,8 @@ if [ -f ./configure ]; then
      localbuild=--enable-local-build
      ;;
    esac
-   echo "./configure $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
-   ./configure $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
+   echo "./configure --enable-destructive-tests $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
+   ./configure --enable-destructive-tests $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
    ;;
   *)
    installpath=/srv/$DEST/${ghprbActualCommit}

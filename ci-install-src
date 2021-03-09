@@ -28,6 +28,19 @@ if [ -n "$install" ] && [ "$install" = 1 ] && [ "x$build" != "xcoverity" ]; then
  echo "Creating cross projects symlinks hacks for pcs testing"
  case "$DEST" in
   pcmk)
+   cd $installpath/lib/ocf
+   rm -f lib
+   ln -sf /srv/ras/origin/master/lib/ocf/lib
+   cd resource.d
+   rm -f heartbeat
+   ln -sf /srv/ras/origin/master/lib/ocf/resource.d/heartbeat
+   cd pacemaker
+   rm -f booth-site
+   if [ "${ghprbActualCommit}" = "origin/master" ]; then
+    ln -sf /srv/booth/origin/master-pcmk-master/usr/lib/ocf/resource.d/pacemaker/booth-site
+   else
+    ln -sf /srv/booth/origin/master-pcmk-2.1/usr/lib/ocf/resource.d/pacemaker/booth-site
+   fi
   ;;
   fas)
    cd $installpath/sbin

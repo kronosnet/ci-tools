@@ -25,4 +25,14 @@ if [ -n "$install" ] && [ "$install" = 1 ] && [ "x$build" != "xcoverity" ]; then
  echo "$MAKE $MAKEINSTALLOPTS install"
  $MAKE $MAKEINSTALLOPTS install
  echo "https://ci.kronosnet.org/job/$JOB_NAME/$BUILD_NUMBER/consoleFull" > $installpath/.build-info
+ echo "Creating cross projects symlinks hacks for pcs testing"
+ case "$DEST" in
+  pcmk)
+  ;;
+  fas)
+   cd $installpath/sbin
+   rm -rf fence_xvm
+   ln -sf /srv/fv/origin/master/sbin/fence_xvm
+  ;;
+ esac
 fi

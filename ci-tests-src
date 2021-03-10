@@ -91,7 +91,7 @@ if [ -n "$CHECKS" ] && [ "$CHECKS" = "nochecks" ]; then
  exit 0
 fi
 
-case "$DEST" in)
+case "$DEST" in
  pcs)
   case "${NODE_NAME}" in
    debian*|ubuntu*)

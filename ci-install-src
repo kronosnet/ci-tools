@@ -37,9 +37,9 @@ if [ -n "$install" ] && [ "$install" = 1 ] && [ "x$build" != "xcoverity" ]; then
    cd pacemaker
    rm -f booth-site
    if [ "${ghprbActualCommit}" = "origin/master" ]; then
-    ln -sf /srv/booth/origin/master-pcmk-master/usr/lib/ocf/resource.d/pacemaker/booth-site
+    ln -sf /srv/booth/origin/master-pcmk-master/lib/ocf/resource.d/pacemaker/booth-site
    else
-    ln -sf /srv/booth/origin/master-pcmk-2.1/usr/lib/ocf/resource.d/pacemaker/booth-site
+    ln -sf /srv/booth/origin/master-pcmk-2.1/lib/ocf/resource.d/pacemaker/booth-site
    fi
   ;;
   fas)

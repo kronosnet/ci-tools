@@ -29,15 +29,19 @@ if [ -f ./configure ]; then
   *)
    installpath=/srv/$DEST/${ghprbActualCommit}
    case "$DEST" in
-    sbd|booth)
+    sbd)
      installpath=${installpath}-pcmk-${pcmkver}/
+     ;;
+    booth)
+     installpath=${installpath}-pcmk-${pcmkver}/
+     extraopts="--with-ocfdir=$installpath/lib/ocf"
      ;;
     *)
      installpath=${installpath}/
      ;;
    esac
-   echo "./configure --prefix=$installpath --exec-prefix=$installpath $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
-   ./configure --prefix=$installpath --exec-prefix=$installpath $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
+   echo "./configure --prefix=$installpath --exec-prefix=$installpath $extraopts $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
+   ./configure --prefix=$installpath --exec-prefix=$installpath $extraopts $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
    ;;
  esac
 fi

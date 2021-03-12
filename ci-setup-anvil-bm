@@ -83,7 +83,7 @@ systemctl stop httpd
 systemctl start httpd
 
 if ! grep -q bcn1 /etc/fence_virt.conf; then
- sed -i -e 's#virbr0#bcn1_bridge1#g' /etc/fence_virt.conf
+ sed -i -e 's#virbr0#ifn1_bridge1#g' /etc/fence_virt.conf
 fi
 
 if [ ! -f /etc/cluster/fence_xvm.key ]; then

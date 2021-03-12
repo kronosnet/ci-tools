@@ -81,3 +81,15 @@ firewall-cmd --reload
 systemctl enable httpd
 systemctl stop httpd
 systemctl start httpd
+
+if ! grep -q bcn1 /etc/fence_virt.conf; then
+ sed -i -e 's#virbr0#bcn1_bridge1#g' /etc/fence_virt.conf
+fi
+
+if [ ! -f /etc/cluster/fence_xvm.key ]; then
+ mkdir -p /etc/cluster/
+ dd if=/dev/zero of=/etc/cluster/fence_xvm.key bs=4096 count=1
+fi
+
+systemctl start fence_virtd
+systemctl enable fence_virtd

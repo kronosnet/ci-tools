@@ -76,6 +76,8 @@ for i in public libvirt; do
   firewall-cmd --zone=$i --permanent --add-service=$x
  done
 done
+firewall-cmd --zone=libvirt --add-port=1229/tcp
+firewall-cmd --zone=libvirt --permanent --add-port=1229/tcp
 firewall-cmd --reload
 
 systemctl enable httpd

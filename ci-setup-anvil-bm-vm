@@ -197,4 +197,16 @@ while [ "$bootdone" = "no" ]; do
  fi
 done
 
+cp "$TEMPLATESDIR/anvil_striker_auto.cfg" "$DEPLOYDIR/configs/anvil_striker_auto.cfg"
+for i in $NODES; do
+ for x in $(seq 0 5); do
+  mac="$(ssh $i ifconfig eth$x | grep ether | awk '{print $2}')"
+  sed -i -e 's#@'$i'-eth'$x'@#'$mac'#g' "$DEPLOYDIR/configs/anvil_striker_auto.cfg"
+ done
+done
+
+for i in $NODES; do
+ scp "$DEPLOYDIR/configs/anvil_striker_auto.cfg" ${i}:/tmp/
+done
+
 exit 0

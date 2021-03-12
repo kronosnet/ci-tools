@@ -82,8 +82,12 @@ systemctl enable httpd
 systemctl stop httpd
 systemctl start httpd
 
-if ! grep -q bcn1 /etc/fence_virt.conf; then
- sed -i -e 's#virbr0#ifn1_bridge1#g' /etc/fence_virt.conf
+if ! grep -q ifn1 /etc/fence_virt.conf; then
+ sed -i \
+  -e 's#virbr0#ifn1_bridge1#g' \
+  -e 's#multicast#tcp#g' \
+  -e 's#225.0.0.12#192.168.122.1#g' \
+  /etc/fence_virt.conf
 fi
 
 if [ ! -f /etc/cluster/fence_xvm.key ]; then

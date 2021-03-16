@@ -152,6 +152,14 @@ done
 # use uuid for db?
 echo "Creating VMs"
 for i in $NODES; do
+ netconf="--network network:ifn1_bridge1 --network network:ifn1_bridge1 --network network:bcn1_bridge1 --network network:bcn1_bridge1"
+ case $i in
+  *striker*)
+  ;;
+  *)
+   netconf="$netconf --network network:sn1_bridge1 --network network:sn1_bridge1"
+  ;;
+ esac
  virt-install --name ${i} \
   --virt-type kvm --memory 16384 --vcpus 6 \
   --boot hd,menu=on \
@@ -160,12 +168,7 @@ for i in $NODES; do
   --disk path="$DEPLOYDIR/snapshots/$i-vol2.qcow2",device=disk \
   --graphics vnc \
   --os-type Linux --os-variant centos-stream8 \
-  --network network:ifn1_bridge1 \
-  --network network:ifn1_bridge1 \
-  --network network:bcn1_bridge1 \
-  --network network:bcn1_bridge1 \
-  --network network:sn1_bridge1 \
-  --network network:sn1_bridge1 \
+  $netconf \
   --noautoconsole 
 done
 
@@ -199,7 +202,13 @@ done
 
 cp "$TEMPLATESDIR/anvil_striker_auto.cfg" "$DEPLOYDIR/configs/anvil_striker_auto.cfg"
 for i in $NODES; do
- for x in $(seq 0 5); do
+ ifaces=5
+ case $i in
+  *striker*)
+   ifaces=3
+  ;;
+ esac
+ for x in $(seq 0 $ifaces); do
   mac="$(ssh $i ifconfig eth$x | grep ether | awk '{print $2}')"
   sed -i -e 's#@'$i'-eth'$x'@#'$mac'#g' "$DEPLOYDIR/configs/anvil_striker_auto.cfg"
  done

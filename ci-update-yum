@@ -19,11 +19,11 @@ case "${NODE_NAME}" in
   EXTRAOPTS="--skip-broken"
  ;;
  centos-7*)
-  yum install -y centos-release-openstack-stein
+  yum install -y centos-release-openstack-stein epel-release
   EXTRAOPTS="--skip-broken"
  ;;
  centos-8*|anvil-ci*)
-  yum install -y centos-release-openstack-ussuri
+  yum install -y centos-release-openstack-ussuri epel-release
  ;;
 esac
 

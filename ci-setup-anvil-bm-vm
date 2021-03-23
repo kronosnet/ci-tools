@@ -26,7 +26,9 @@ esac
 DEPLOYDIR=/srv/anvil
 TEMPLATESDIR="$HOME/ci-tools/anvil-config-templates"
 STRIKERS="an-striker01 an-striker02"
-NODES="$STRIKERS an-a01n01 an-a01n02 an-a01dr01"
+NODES="an-a01n01 an-a01n02"
+DRNODES="an-a01dr01"
+ALLNODES="$STRIKERS $NODES $DRNODES"
 
 if [ ! -d "$TEMPLATESDIR" ]; then
  echo "Error, unable to find anvil-config-templates in the current directory"
@@ -59,7 +61,7 @@ fi
 
 echo "Destroying old VMs (if any)"
 
-for i in $NODES; do
+for i in $ALLNODES; do
  virsh destroy $i || true
  virsh undefine $i || true
 done
@@ -68,7 +70,7 @@ echo "Creating nodes disks"
 
 cd "$DEPLOYDIR/snapshots"
 rm -rf *.qcow2
-for i in $NODES; do
+for i in $ALLNODES; do
  qemu-img create -b "$DEPLOYDIR/images/${BUILD}-latest.qcow2" -F qcow2 -f qcow2 "$i-vol.qcow2" 200G
  qemu-img create -f qcow2 "$i-vol2.qcow2" 200G
 done
@@ -110,7 +112,7 @@ else
 fi
 
 ipbase=2
-for i in $NODES; do
+for i in $ALLNODES; do
  IFNIP=192.168.122.$ipbase
  cat "$TEMPLATESDIR/anvil_striker_net_config.cfg" | \
   sed \
@@ -122,7 +124,7 @@ done
 
 echo "Generating cloud-init configs"
 SSHKEY="$(cat $DEPLOYDIR/configs/id_rsa.pub)"
-for i in $NODES; do
+for i in $ALLNODES; do
  case $i in
   *striker*)
    ANVILPKG="striker"
@@ -144,7 +146,7 @@ for i in $NODES; do
 done
 
 echo "Generating cloud-init metadata and seed images"
-for i in $NODES; do
+for i in $ALLNODES; do
   rm -f "$DEPLOYDIR/snapshots/${i}-seed.img"
   echo "instance-id: $(uuidgen)" > "$DEPLOYDIR/configs/${i}-metadata"
   cloud-localds -v --network-config="$DEPLOYDIR/configs/${i}_net_config.cfg" "$DEPLOYDIR/snapshots/${i}-seed.img" "$DEPLOYDIR/configs/${i}_cloud_init.cfg" "$DEPLOYDIR/configs/${i}-metadata"
@@ -152,7 +154,7 @@ done
 
 # use uuid for db?
 echo "Creating VMs"
-for i in $NODES; do
+for i in $ALLNODES; do
  netconf="--network network:ifn1_bridge1 --network network:ifn1_bridge1 --network network:bcn1_bridge1 --network network:bcn1_bridge1"
  case $i in
   *striker*)
@@ -177,13 +179,13 @@ echo "Waiting for nodes and cloud-init to complete full init"
 
 bootdone=no
 expected=0
-for i in $NODES; do
+for i in $ALLNODES; do
  expected=$((expected + 1))
 done
 
 while [ "$bootdone" = "no" ]; do
  actual=0
- for i in $NODES; do
+ for i in $ALLNODES; do
   status=$(ssh $i cloud-init status 2>/dev/null | awk '{print $NF}')
   echo "cloud-init status node $i: $status"
   if [ "$status" = "error" ]; then
@@ -202,7 +204,7 @@ while [ "$bootdone" = "no" ]; do
 done
 
 cp "$TEMPLATESDIR/anvil_striker_auto.cfg" "$DEPLOYDIR/configs/anvil_striker_auto.cfg"
-for i in $NODES; do
+for i in $ALLNODES; do
  ifaces=5
  case $i in
   *striker*)
@@ -226,7 +228,7 @@ done
 export PGPASSWORD=supersecretpassword
 
 for i in $STRIKERS; do
- while [ "$(psql --host=an-striker01 --username=postgres anvil -t -c "SELECT a.host_name, b.variable_value FROM hosts a, variables b WHERE a.host_uuid = b.variable_source_uuid AND b.variable_name = 'system::configured' ORDER BY host_name ASC;" |grep altee | grep 1$ | wc -l)" != 5 ]; do
+ while [ "$(psql --host=an-striker01 --username=postgres anvil -t -c "SELECT a.host_name, b.variable_value FROM hosts a, variables b WHERE a.host_uuid = b.variable_source_uuid AND b.variable_name = 'system::configured' ORDER BY host_name ASC;" |grep altee | grep 1$ | wc -l)" != $expected ]; do
   echo "Waiting for nodes to join the database"
   sleep 10
  done
@@ -239,5 +241,11 @@ for i in $STRIKERS; do
  done
 done
 
+for i in $NODES; do
+ while ! ssh $i pcs status | grep -q Online; do
+  echo "Waiting for pacemaker to be active on the nodes"
+  sleep 10
+ done
+done
 
 exit 0

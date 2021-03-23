@@ -25,7 +25,8 @@ esac
 
 DEPLOYDIR=/srv/anvil
 TEMPLATESDIR="$HOME/ci-tools/anvil-config-templates"
-NODES="an-striker01 an-striker02 an-a01n01 an-a01n02 an-a01dr01"
+STRIKERS="an-striker01 an-striker02"
+NODES="$STRIKERS an-a01n01 an-a01n02 an-a01dr01"
 
 if [ ! -d "$TEMPLATESDIR" ]; then
  echo "Error, unable to find anvil-config-templates in the current directory"
@@ -214,8 +215,29 @@ for i in $NODES; do
  done
 done
 
-for i in $NODES; do
+for i in $STRIKERS; do
  scp "$DEPLOYDIR/configs/anvil_striker_auto.cfg" ${i}:/tmp/
 done
+
+for i in $STRIKERS; do
+ ssh $i striker-auto-initialize-all --config /tmp/anvil_striker_auto.cfg
+done
+
+export PGPASSWORD=supersecretpassword
+
+for i in $STRIKERS; do
+ while [ "$(psql --host=an-striker01 --username=postgres anvil -t -c "SELECT a.host_name, b.variable_value FROM hosts a, variables b WHERE a.host_uuid = b.variable_source_uuid AND b.variable_name = 'system::configured' ORDER BY host_name ASC;" |grep altee | grep 1$ | wc -l)" != 5 ]; do
+  echo "Waiting for nodes to join the database"
+  sleep 10
+ done
+done
+
+for i in $STRIKERS; do
+ while [ "$(psql --host=an-striker01 --username=postgres anvil -t -c "SELECT a.host_name AS node1, b.host_name AS node2, c.host_name AS dr1, d.anvil_name FROM hosts a, hosts b, hosts c, anvils d WHERE a.host_uuid = d.anvil_node1_host_uuid AND b.host_uuid = d.anvil_node2_host_uuid AND c.host_uuid = d.anvil_dr1_host_uuid;" |grep altee | wc -l)" != 1 ]; do
+  echo "Waiting for job to complete"
+  sleep 10
+ done
+done
+
 
 exit 0

@@ -22,7 +22,7 @@ apt-get -y install inkscape publican || true
 if [ -n "$EXTRA_ARCH" ]; then
  dpkg --add-architecture $EXTRA_ARCH
  apt-get update
- apt-get -y install crossbuild-essential-$EXTRA_ARCH libnspr4-dev:$EXTRA_ARCH libnss3-dev:$EXTRA_ARCH libssl-dev:$EXTRA_ARCH zlib1g-dev:$EXTRA_ARCH liblz4-dev:$EXTRA_ARCH liblzo2-dev:$EXTRA_ARCH liblzma-dev:$EXTRA_ARCH libbz2-dev:$EXTRA_ARCH libsctp-dev:$EXTRA_ARCH libnl-3-dev:$EXTRA_ARCH libnl-route-3-dev:$EXTRA_ARCH libzstd-dev:$EXTRA_ARCH
+ apt-get -y install crossbuild-essential-$EXTRA_ARCH libnspr4-dev:$EXTRA_ARCH libnss3-dev:$EXTRA_ARCH libssl-dev:$EXTRA_ARCH libgcrypt-dev:$EXTRA_ARCH zlib1g-dev:$EXTRA_ARCH liblz4-dev:$EXTRA_ARCH liblzo2-dev:$EXTRA_ARCH liblzma-dev:$EXTRA_ARCH libbz2-dev:$EXTRA_ARCH libsctp-dev:$EXTRA_ARCH libnl-3-dev:$EXTRA_ARCH libnl-route-3-dev:$EXTRA_ARCH libzstd-dev:$EXTRA_ARCH
 fi
 apt-get -y clean
 getent group haclient >/dev/null || addgroup --system haclient

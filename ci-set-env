@@ -64,7 +64,9 @@ if [ "$python" = "python2" ] && [ "$DEST" = "pcmk" ]; then
 fi
 python=`which $python`
 $python --version || true
-export PYTHON=$python
+if [ "$DEST" != "pcs" ]; then
+ export PYTHON=$python
+fi
 
 echo ===== SOURCE TREE INFO =====
 

@@ -103,6 +103,7 @@ case "$DEST" in
   esac
   if [ -f .venv/bin/activate ]; then
    . .venv/bin/activate
+   export PATH="$(pwd)/.venv"/bin/:$PATH
   fi
   make check
   make distcheck DISTCHECK_CONFIGURE_FLAGS="--enable-parallel-tests --enable-destructive-tests $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"

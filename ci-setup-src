@@ -26,6 +26,7 @@ if [ -f ./configure ]; then
    rm -rf .venv
    python3 -m venv --system-site-packages .venv
    . .venv/bin/activate
+   export PATH="$(pwd)/.venv"/bin/:$PATH
    echo "./configure --enable-destructive-tests --enable-parallel-tests $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
    ./configure --enable-destructive-tests --enable-parallel-tests $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
    ;;

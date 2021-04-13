@@ -32,6 +32,7 @@ case $build in
    pcs)
     if [ -f .venv/bin/activate ]; then
      . .venv/bin/activate
+     export PATH="$(pwd)/.venv"/bin/:$PATH
     fi
     echo "$MAKE $MAKEOPTS"
     $MAKE stamps/download_python_parallel_tests_deps stamps/download_python_devel_deps || true

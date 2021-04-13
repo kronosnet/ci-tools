@@ -91,10 +91,6 @@ if [ -n "$CHECKS" ] && [ "$CHECKS" = "nochecks" ]; then
  exit 0
 fi
 
-if [ -f .venv/bin/activate ]; then
- source .venv/bin/activate
-fi
-
 case "$DEST" in
  pcs)
   case "${NODE_NAME}" in
@@ -106,7 +102,7 @@ case "$DEST" in
     ;;
   esac
   if [ -f .venv/bin/activate ]; then
-   source .venv/bin/activate
+   . .venv/bin/activate
   fi
   make check
   make distcheck DISTCHECK_CONFIGURE_FLAGS="--enable-parallel-tests --enable-destructive-tests $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"

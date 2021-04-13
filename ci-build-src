@@ -31,10 +31,10 @@ case $build in
   case "$DEST" in
    pcs)
     if [ -f .venv/bin/activate ]; then
-     source .venv/bin/activate
+     . .venv/bin/activate
     fi
     echo "$MAKE $MAKEOPTS"
-    $MAKE stamps/download_python_parallel_tests_deps stamps/download_python_devel_deps
+    $MAKE stamps/download_python_parallel_tests_deps stamps/download_python_devel_deps || true
     $MAKE $MAKEOPTS
     ;;
    *)

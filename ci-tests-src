@@ -101,6 +101,7 @@ case "$DEST" in
     localbuild=--enable-local-build
     ;;
   esac
+  make distcheck DISTCHECK_CONFIGURE_FLAGS="$localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
   if [ -f .venv/bin/activate ]; then
    . .venv/bin/activate
    export PATH="$(pwd)/.venv"/bin/:$PATH

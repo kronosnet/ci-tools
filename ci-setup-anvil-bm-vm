@@ -10,12 +10,13 @@ case "$VARIANT" in
   NAME="Centos 8 Stream"
   IMG="GenericCloud"
   BUILD="centos-8-stream"
+  KVMVAR="centos-stream8"
  ;;
- centos-8)
-  SRCURL=https://cloud.centos.org/centos/8/x86_64/images/
-  NAME="Centos 8"
-  IMG="GenericCloud"
-  BUILD="centos-8"
+ rhel-8)
+  NAME="RHEL 8"
+  BUILD="rhel-8"
+  KVMVAR="rhel8-unknown"
+  CRED="/root/rh-cred"
  ;;
  *)
   echo "Unknown variant"
@@ -39,24 +40,31 @@ mkdir -p "$DEPLOYDIR/images"
 mkdir -p "$DEPLOYDIR/snapshots"
 mkdir -p "$DEPLOYDIR/configs"
 
-echo "Downloading latest $NAME cloud image"
-
 cd "$DEPLOYDIR/images"
 
-latestimage=$(lftp -e "cls -1 *${IMG}*; quit" "$SRCURL" 2>/dev/null | sort -u | tail -n 1)
+if [ -n "$SRCURL" ]; then
+ echo "Downloading latest $NAME cloud image"
 
-if [ -z "$latestimage" ]; then
- echo "Error determining latest $NAME cloud image"
- if [ ! -e "${BUILD}-latest.qcow2" ]; then
-  echo "No local image found. ABORTING"
+ latestimage=$(lftp -e "cls -1 *${IMG}*; quit" "$SRCURL" 2>/dev/null | sort -u | tail -n 1)
+
+ if [ -z "$latestimage" ]; then
+  echo "Error determining latest $NAME cloud image"
+  if [ ! -e "${BUILD}-latest.qcow2" ]; then
+   echo "No local image found. ABORTING"
+   exit 1
+  fi
+ fi
+
+ if [ ! -f "$latestimage" ]; then
+  wget -O "$latestimage" "$SRCURL/$latestimage"
+  rm -f "${BUILD}-latest.qcow2"
+  ln -sf "$latestimage" "${BUILD}-latest.qcow2"
+ fi
+else
+ if [ ! -h "${BUILD}-latest.qcow2" ]; then
+  echo "Unable to find ${BUILD}-latest.qcow2 image in $DEPLOYDIR/images"
   exit 1
  fi
-fi
-
-if [ ! -f "$latestimage" ]; then
- wget -O "$latestimage" "$SRCURL/$latestimage"
- rm -f "${BUILD}-latest.qcow2"
- ln -sf "$latestimage" "${BUILD}-latest.qcow2"
 fi
 
 echo "Destroying old VMs (if any)"
@@ -122,6 +130,19 @@ for i in $ALLNODES; do
   ipbase=$((ipbase + 1))
 done
 
+if [ -n "$CRED" ]; then
+ if [ ! -f "$CRED" ]; then
+  echo "Unable to access $CRED file"
+  exit 1
+ fi
+ ORG=$(cat "$CRED" | grep ORG | awk '{print $2}')
+ KEY=$(cat "$CRED" | grep KEY | awk '{print $2}')
+ if [ -z "$ORG" ] || [ -z "$KEY" ]; then
+  echo "CRED file should contain both KEY and ORG"
+  exit 1
+ fi
+fi
+
 echo "Generating cloud-init configs"
 SSHKEY="$(cat $DEPLOYDIR/configs/id_rsa.pub)"
 for i in $ALLNODES; do
@@ -136,11 +157,13 @@ for i in $ALLNODES; do
    ANVILPKG="dr"
   ;;
  esac
- cat "$TEMPLATESDIR/anvil_cloud_init.cfg" | \
+ cat "$TEMPLATESDIR/anvil_cloud_init_${BUILD}.cfg" | \
   sed \
    -e "s#@HOSTNAME@#${i}#g" \
    -e "s#@BUILD@#${BUILD}#g" \
    -e "s#@SSHKEY@#${SSHKEY}#g" \
+   -e "s#@KEY@#${KEY}#g" \
+   -e "s#@ORG@#${ORG}#g" \
    -e "s#@ANVILPKG@# - anvil-${ANVILPKG}#g" \
    > "$DEPLOYDIR/configs/${i}_cloud_init.cfg"
 done
@@ -170,7 +193,7 @@ for i in $ALLNODES; do
   --disk path="$DEPLOYDIR/snapshots/$i-vol.qcow2",device=disk \
   --disk path="$DEPLOYDIR/snapshots/$i-vol2.qcow2",device=disk \
   --graphics vnc \
-  --os-type Linux --os-variant centos-stream8 \
+  --os-type Linux --os-variant $KVMVAR \
   $netconf \
   --noautoconsole 
 done
@@ -247,5 +270,11 @@ for i in $NODES; do
   sleep 10
  done
 done
+
+if [ -n "$KEY" ]; then
+ for i in $ALLNODES; do
+  ssh $i subscription-manager unregister
+ done
+fi
 
 exit 0

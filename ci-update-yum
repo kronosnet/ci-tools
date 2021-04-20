@@ -22,7 +22,7 @@ case "${NODE_NAME}" in
   yum install -y centos-release-openstack-stein epel-release
   EXTRAOPTS="--skip-broken"
  ;;
- centos-8*|anvil-ci|anvil-ci-bm)
+ centos-8*|anvil-ci-centos*|anvil-ci-bm)
   yum install -y centos-release-openstack-ussuri epel-release
  ;;
 esac

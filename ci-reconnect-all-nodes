@@ -10,11 +10,7 @@ cleanup() {
 
 connect="$1"
 
-tempfile=$(mktemp /tmp/XXXXXXXX.json)
-
-wget -O $tempfile "https://ci.kronosnet.org/computer/api/json?pretty=true"
-
-nodelist="$(cat $tempfile | jq '.computer' | grep displayName | sed -e 's/.*": "//g' -e 's/",//g' |grep -v ^master$)"
+nodelist=$(ls -1 $HOME/nodes)
 
 for node in $nodelist; do
 	echo disconnecting node $node

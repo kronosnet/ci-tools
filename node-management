@@ -11,21 +11,18 @@ cleanup() {
 TMPDIR=$(mktemp -d /tmp/jnodemgmtXXXXXX)
 
 getnodelist() {
-	rm -rf $TMPDIR/nodelist.json
-	wget -O $TMPDIR/nodelist.json "http://ci.kronosnet.org/computer/api/json?pretty=true" > /dev/null 2>&1
-	nodelist="$(cat $TMPDIR/nodelist.json | jq '.computer' | grep displayName | sed -e 's/.*": "//g' -e 's/",//g' |grep -v ^master$)"
-	rm -rf $TMPDIR/nodelist.json
+	nodelist="$(ls -1 $HOME/nodes)"
 }
 
 getjoblist() {
-	joblist="$(./jcli list-jobs 2> /dev/null)"
+	joblist="$(ls -1 $HOME/jobs)"
 }
 
 delnodefromjob() {
 	job="$1"
 	node="$2"
 
-	./jcli get-job $job > $TMPDIR/${job}.xml 2>/dev/null
+	cp $HOME/jobs/$job/config.xml $TMPDIR/${job}.xml
 
 	xmlstarlet ed \
 		--net \
@@ -33,7 +30,7 @@ delnodefromjob() {
 		--delete "/matrix-project/axes/hudson.matrix.LabelAxis/values/string[contains(text(),'$node')]" \
 		$TMPDIR/${job}.xml 2>/dev/null
 
-	cat $TMPDIR/${job}.xml | ./jcli update-job $job 2>/dev/null
+	cat $TMPDIR/${job}.xml > $HOME/jobs/$job/config.xml
 
 	rm -rf $TMPDIR/${job}.xml
 }
@@ -50,7 +47,7 @@ addnodetojob() {
 	job="$1"
 	node="$2"
 
-	./jcli get-job $job > $TMPDIR/${job}.xml 2>/dev/null
+	cp $HOME/jobs/$job/config.xml $TMPDIR/${job}.xml
 
 	xmlstarlet ed \
 		--net \
@@ -61,7 +58,7 @@ addnodetojob() {
 		--value $node \
 		$TMPDIR/${job}.xml 2>/dev/null
 
-	cat $TMPDIR/${job}.xml | ./jcli update-job $job 2>/dev/null
+	cat $TMPDIR/${job}.xml > $HOME/jobs/$job/config.xml
 
 	rm -rf $TMPDIR/${job}.xml
 }
@@ -74,7 +71,7 @@ addnodetoalljobs() {
 	voting=no
 	oldbuilds=no
 
-	labels=$(./jcli get-node $node 2>/dev/null | grep label | sed -e 's/<label>//g' -e 's/<\/label>//g')
+	labels=$(cat $HOME/nodes/$node/config.xml | grep label | sed -e 's/<label>//g' -e 's/<\/label>//g')
 
 	echo $labels
 
@@ -217,7 +214,7 @@ listnodejobs()
 	mkdir -p $TMPDIR/jobs
 
 	for job in $joblist; do
-		./jcli get-job $job > $TMPDIR/jobs/${job}.xml 2>/dev/null
+		cp $HOME/jobs/$job/config.xml $TMPDIR/jobs/${job}.xml 2>/dev/null
 	done
 
 	cd $TMPDIR/jobs 2>/dev/null
@@ -233,6 +230,8 @@ node=$2
 getjoblist
 getnodelist
 
+reloadconfig=1
+
 case $action in
 	del)
 		delnodefromalljobs $node
@@ -242,6 +241,7 @@ case $action in
 	;;
 	list)
 		listnodejobs $node
+		reloadconfig=0
 	;;
 	add-to-job-list)
 		shift
@@ -252,5 +252,9 @@ case $action in
 		done
 	;;
 esac
+
+if [ "$reloadconfig" = "1" ]; then
+	./jcli reload-configuration 2>/dev/null
+fi
 
 exit 0

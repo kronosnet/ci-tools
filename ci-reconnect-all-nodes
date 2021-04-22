@@ -2,12 +2,6 @@
 
 set -e
 
-trap cleanup EXIT
-
-cleanup() {
-	[ -n "$tempfile" ] && rm -rf $tempfile
-}
-
 connect="$1"
 
 nodelist=$(ls -1 $HOME/nodes)

@@ -56,7 +56,7 @@ if [ -n "$SRCURL" ]; then
  fi
 
  if [ ! -f "$latestimage" ]; then
-  wget -O "$latestimage" "$SRCURL/$latestimage"
+  wget -4 -O "$latestimage" "$SRCURL/$latestimage"
   rm -f "${BUILD}-latest.qcow2"
   ln -sf "$latestimage" "${BUILD}-latest.qcow2"
  fi

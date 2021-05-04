@@ -10,11 +10,11 @@ if [ -z "$1" ]; then
  freebsd-update --not-running-from-cron fetch
  freebsd-update --not-running-from-cron install || true
  extrapkgs=""
+ pyver=37
 else
  extrapkgs=""
+ pyver=38
 fi
-
-pyver=37
 
 pkg upgrade -y
 pkg install -y $extrapkgs git gcc automake autoconf autotools pkgconf openssl nss libgcrypt liblz4 lzo2 lzma bzip2 libxml2 libqb doxygen groff dbus net-snmp gmake curl jq check py${pyver}-pexpect py${pyver}-pycurl py${pyver}-suds-jurko py${pyver}-requests py${pyver}-boto3 py${pyver}-google-api-python-client libxslt glib docbook-xsl libltdl e2fsprogs-libuuid libxslt ncurses bison byacc flex help2man gnutls asciidoc getopt p5-Locale-gettext openipmi zstd py${pyver}-keystoneauth1 py${pyver}-python-keystoneclient py${pyver}-python-novaclient

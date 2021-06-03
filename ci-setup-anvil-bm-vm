@@ -311,9 +311,11 @@ for i in $STRIKERS; do
 done
 
 for i in $NODES; do
- while ! ssh $i pcs status | grep -q Online; do
-  echo "Waiting for pacemaker to be active on the nodes"
-  sleep 10
+ for x in $NODES; do
+  while ! ssh $i pcs status | grep Online | grep -q $x; do
+   echo "Waiting for pacemaker to be active on the nodes"
+   sleep 10
+  done
  done
 done
 

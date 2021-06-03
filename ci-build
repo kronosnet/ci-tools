@@ -3,6 +3,11 @@
 set -ev
 
 . $HOME/ci-tools/ci-set-env
+
+if [ "$TARGET" = "origin/gh-pages" ]; then
+	echo "Skipping tests for web page updates"
+	exit 0
+fi
 ci-build-info
 ci-setup-rpm
 ci-setup-src

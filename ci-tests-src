@@ -113,6 +113,11 @@ case "$DEST" in
  booth)
   extraopts="--with-ocfdir=\$$\{prefix\}/lib/ocf"
  ;;
+ knet)
+  if [ -n "$KNETRUST" ] && [ "$KNETRUST" = yes ]; then
+   extraopts="--enable-rust-bindings"
+  fi
+ ;;
 esac
 
 if [ -z "$CHECKS" ]; then

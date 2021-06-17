@@ -33,6 +33,11 @@ if [ -f ./configure ]; then
   *)
    installpath=/srv/$DEST/${ghprbActualCommit}
    case "$DEST" in
+    knet)
+     if [ -n "$KNETRUST" ] && [ "$KNETRUST" = yes ]; then
+      extraopts="--enable-rust-bindings"
+     fi
+     ;;
     sbd)
      installpath=${installpath}-pcmk-${pcmkver}/
      ;;

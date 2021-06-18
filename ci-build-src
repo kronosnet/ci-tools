@@ -39,11 +39,8 @@ case $build in
     $MAKE $MAKEOPTS
     ;;
    *)
-    BACKUPTARGET="$TARGET"
-    TARGET=""
     echo "$MAKE $MAKEOPTS"
     $MAKE $MAKEOPTS
-    TARGET="$BACKUPTARGET"
    ;;
   esac
  ;;

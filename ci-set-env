@@ -71,14 +71,14 @@ fi
 echo ===== SOURCE TREE INFO =====
 
 if [ -z "${ghprbActualCommit}" ]; then
- export TARGET=${GIT_BRANCH}
+ export CITARGET=${GIT_BRANCH}
 else
- export TARGET=${ghprbActualCommit}
+ export CITARGET=${ghprbActualCommit}
 fi
 if [ -n "${ghprbPullId}" ] && [ "${ghprbPullId}" != 1 ]; then
- export TARGET="origin/${ghprbTargetBranch}"
+ export CITARGET="origin/${ghprbTargetBranch}"
 fi
-echo TARGET $TARGET
+echo CITARGET $CITARGET
 
 # Latest Pacemaker release branch
 PCMK_RELEASE=2.1
@@ -95,7 +95,7 @@ if [ "$build" != "rpm" ]; then
 
  # origin/master should use all master branches built
  # from sources
- if [ "$TARGET" = "origin/master" ]; then
+ if [ "$CITARGET" = "origin/master" ]; then
   KNET_INSTALL_PATH=/srv/knet/origin/master/
   COROSYNC_INSTALL_PATH=/srv/corosync/origin/master/
   if [ -z "${pcmkver}" ]; then
@@ -270,7 +270,7 @@ else
  BOOTH_REPO=https://kronosnet.org/builds/booth-master-pcmk-${pcmkver}-${NODE_NAME}.repo
  BOOTH_REPO_PATH=https://kronosnet.org/builds/booth/${NODE_NAME}/master-pcmk-${pcmkver}/latest/
 
- if [ "$TARGET" = "origin/master" ]; then
+ if [ "$CITARGET" = "origin/master" ]; then
   KNET_REPO=https://kronosnet.org/builds/knet-master-${NODE_NAME}.repo
   KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/master/latest/
   COROSYNC_REPO=https://kronosnet.org/builds/corosync-master-${NODE_NAME}.repo

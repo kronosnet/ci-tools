@@ -50,18 +50,18 @@ case $build in
    mkdir -p /srv/covscan/$DEST/$GIT_BRANCH/$extraver/
    mv cov.json cov.txt /srv/covscan/$DEST/$GIT_BRANCH/$extraver/
   else
-   if [ ! -d /srv/covscan/$DEST/$TARGET ]; then
-    echo "WARNING: target branch $TARGET no available for compare. Skipping."
+   if [ ! -d /srv/covscan/$DEST/$CITARGET ]; then
+    echo "WARNING: target branch $CITARGET no available for compare. Skipping."
     exit 0
    fi
-   csdiff -xc --no-color /srv/covscan/$DEST/$TARGET/$extraver/cov.json cov.json > cov.diff
+   csdiff -xc --no-color /srv/covscan/$DEST/$CITARGET/$extraver/cov.json cov.json > cov.diff
    errors="$(cat cov.diff | grep ^Error: | wc -l)"
    if [ "$errors" -ne "0" ]; then
     echo "===== NEW COVERITY SCAN ERRORS FIXED ====="
     cat cov.diff
     echo "===== END NEW COVERITY SCAN ERRORS FIXED ====="
    fi
-   csdiff -c --no-color /srv/covscan/$DEST/$TARGET/$extraver/cov.json cov.json > cov.diff
+   csdiff -c --no-color /srv/covscan/$DEST/$CITARGET/$extraver/cov.json cov.json > cov.diff
    errors="$(cat cov.diff | grep ^Error: | wc -l)"
    if [ "$errors" -ne "0" ]; then
     echo "===== NEW COVERITY SCAN ERRORS DETECTED ====="

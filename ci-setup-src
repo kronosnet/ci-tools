@@ -11,8 +11,8 @@ if [ -f ./configure ]; then
  # workaround bug in pacemaker test suite
  case "$DEST" in
   pcmk)
-   echo "./configure --enable-compat-2.0 $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
-   ./configure --enable-compat-2.0 $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
+   echo "./configure $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
+   ./configure $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
    ;;
   pcs)
    case "${NODE_NAME}" in

@@ -319,6 +319,15 @@ for i in $NODES; do
  done
 done
 
+for i in $NODES $DRNODES; do
+ echo -n "Checking drbd kmod on node $i: "
+ if ! ssh $i modprobe drbd && lsmod 2>/dev/null| grep -q drbd; then
+  echo "Not found!"
+ else
+  echo "found"
+ fi
+done
+
 if [ -n "$KEY" ]; then
  for i in $ALLNODES; do
   ssh $i subscription-manager unregister

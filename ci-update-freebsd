@@ -10,7 +10,7 @@ if [ -z "$1" ]; then
  freebsd-update --not-running-from-cron fetch
  freebsd-update --not-running-from-cron install || true
  extrapkgs=""
- pyver=37
+ pyver=38
 else
  extrapkgs=""
  pyver=38

@@ -2,6 +2,16 @@
 
 set -e
 
+# build cloud-utils, not available on Centos 8
+rm -rf cloud-utils rpmbuild
+fedpkg co --anonymous cloud-utils
+cd cloud-utils
+fedpkg prep
+rpmbuild --define "_rpmdir $(pwd)" --define "_srcrpmdir $(pwd)" --define "_sourcedir $(pwd)"  -bb cloud-utils.spec
+yum install -y x86_64/*.rpm
+cd ..
+rm -rf cloud-utils rpmbuild
+
 ## setup simengine
 # setup Neo4j repo
 rpm --import https://debian.neo4j.com/neotechnology.gpg.key
@@ -12,17 +22,21 @@ baseurl=http://yum.neo4j.com/stable
 enabled=1
 gpgcheck=1
 EOF
-yum install neo4j
+neover=$(yum search --showduplicates neo4j |grep neo4j-3 | sed -e 's#neo4j-##g' -e 's#-1.noarch.*##g' | sort -V | tail -n 1)
+yum install -y neo4j-$neover
 
-# build cloud-utils, not available on Centos 8
-rm -rf cloud-utils
-fedpkg co --anonymous cloud-utils
-cd cloud-utils
-fedpkg prep
-rpmbuild --define "_rpmdir $(pwd)" --define "_srcrpmdir $(pwd)" --define "_sourcedir $(pwd)"  -bb cloud-utils.spec
-yum install -y x86_64/*.rpm
-cd ..
-rm -rf cloud-utils
+dnf -y module remove --all nodejs:10
+dnf -y module reset nodejs
+dnf -y module switch-to nodejs:12
+
+# build Simengine
+rm -rf simegine rpmbuild
+git clone https://github.com/Seneca-CDOT/simengine.git
+cd simengine/rpm/specfiles
+./buildall
+cd -
+yum install -y rpmbuild/RPMS/*/*.rpm
+rm -rf rpmbuild
 
 ## VIRT SETUP
 

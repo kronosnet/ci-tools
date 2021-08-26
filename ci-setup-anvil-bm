@@ -29,7 +29,7 @@ dnf -y module remove --all nodejs:10
 dnf -y module reset nodejs
 dnf -y module switch-to nodejs:12
 
-# build Simengine
+# build Simengine - model is created after libvirt is configured
 rm -rf simegine rpmbuild
 git clone https://github.com/Seneca-CDOT/simengine.git
 cd simengine/rpm/specfiles
@@ -37,6 +37,8 @@ cd simengine/rpm/specfiles
 cd -
 yum install -y rpmbuild/RPMS/*/*.rpm
 rm -rf rpmbuild
+
+systemctl enable simengine-core
 
 ## VIRT SETUP
 
@@ -84,7 +86,19 @@ EOF
   </dhcp>
  </ip>
 EOF
-  ;;
+   ;;
+   bcn1)
+    cat >> $tmpfile << EOF
+ <ip address='10.201.2.1' netmask='255.255.0.0'/>
+ <ip address='10.201.2.2' netmask='255.255.0.0'/>
+ <ip address='10.201.3.1' netmask='255.255.0.0'/>
+ <ip address='10.201.3.2' netmask='255.255.0.0'/>
+ <ip address='10.201.3.3' netmask='255.255.0.0'/>
+ <ip address='10.201.11.1' netmask='255.255.0.0'/>
+ <ip address='10.201.11.2' netmask='255.255.0.0'/>
+ <ip address='10.201.11.3' netmask='255.255.0.0'/>
+EOF
+   ;;
   esac
   echo "</network>" >> $tmpfile
   virsh net-define $tmpfile
@@ -104,6 +118,9 @@ for i in public libvirt; do
 done
 firewall-cmd --zone=libvirt --add-port=1229/tcp
 firewall-cmd --zone=libvirt --permanent --add-port=1229/tcp
+# required by simengine dashboard websocket
+firewall-cmd --zone=public --add-port=8000/tcp
+firewall-cmd --zone=public --permanent --add-port=8000/tcp
 firewall-cmd --reload
 
 systemctl enable httpd
@@ -125,3 +142,9 @@ fi
 
 systemctl start fence_virtd
 systemctl enable fence_virtd
+
+# create model
+systemctl stop simengine-core
+simengine-cli model drop
+
+systemctl start simengine-core

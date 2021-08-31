@@ -30,7 +30,7 @@ dnf -y module reset nodejs
 dnf -y module switch-to nodejs:12
 
 # build Simengine - model is created after libvirt is configured
-rm -rf simegine rpmbuild
+rm -rf simengine rpmbuild
 git clone https://github.com/Seneca-CDOT/simengine.git
 cd simengine/rpm/specfiles
 ./buildall

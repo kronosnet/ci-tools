@@ -37,6 +37,10 @@ for i in $(ls); do
 
 	cd $i
 
+	if [ ! -d ${branch}${extraverdir} ]; then
+		continue
+	fi
+
 	toplevelbranch=$(basename $branch)${extraver}
 	rm -f ${toplevelbranch}
 	ln -sf ${branch}${extraverdir} ${toplevelbranch}

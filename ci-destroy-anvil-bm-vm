@@ -2,6 +2,10 @@
 
 set -e
 
+systemctl stop simengine-core
+simengine-cli model drop
+systemctl start simengine-core
+
 NODES="an-striker01 an-striker02 an-a01n01 an-a01n02 an-a01dr01"
 
 echo "Destroying VMs (if any)"

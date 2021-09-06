@@ -221,15 +221,32 @@ for i in $ALLNODES; do
   cloud-localds -v --network-config="$DEPLOYDIR/configs/${i}_net_config.cfg" "$DEPLOYDIR/snapshots/${i}-seed.img" "$DEPLOYDIR/configs/${i}_cloud_init.cfg" "$DEPLOYDIR/configs/${i}-metadata"
 done
 
-# use uuid for db?
 echo "Creating VMs"
+# those have to match the ports down for Simengine bmc/storage
+vmportbase=20100
+monportbase=20200
+storageportbase=20300
+
 for i in $ALLNODES; do
- netconf="--network network:ifn1_bridge1 --network network:ifn1_bridge1 --network network:bcn1_bridge1 --network network:bcn1_bridge1"
+ netconf="--network network:ifn1_bridge1,model=e1000 --network network:ifn1_bridge1,model=e1000 --network network:bcn1_bridge1,model=e1000 --network network:bcn1_bridge1,model=e1000"
  case $i in
   *striker*)
+   qemu_command_list=()
   ;;
   *)
-   netconf="$netconf --network network:sn1_bridge1 --network network:sn1_bridge1"
+   netconf="$netconf --network network:sn1_bridge1,model=e1000 --network network:sn1_bridge1,model=e1000"
+   qemu_command_list=(
+     "-chardev socket,id=ipmi0,host=localhost,port=$vmportbase,reconnect=2"
+#     "-device ipmi-bmc-extern,id=bmc0,chardev=ipmi0"
+#     "-device isa-ipmi-bt,bmc=bmc0"
+     "-serial mon:tcp::$monportbase,server,telnet,nowait"
+     "-chardev socket,id=simengine-storage-tcp,host=localhost,port=$storageportbase,reconnect=2"
+     "-device virtio-serial"
+     "-device virtserialport,chardev=simengine-storage-tcp,name=systems.cdot.simengine.storage.net"
+   )
+   vmportbase=$((vmportbase + 1))
+   monportbase=$((monportbase + 1))
+   storageportbase=$((storageportbase + 1))
   ;;
  esac
  virt-install --name ${i} \
@@ -241,6 +258,7 @@ for i in $ALLNODES; do
   --graphics vnc \
   --os-type Linux --os-variant $KVMVAR \
   $netconf \
+  --qemu-commandline="${qemu_command_list[*]}" \
   --noautoconsole 
 done
 

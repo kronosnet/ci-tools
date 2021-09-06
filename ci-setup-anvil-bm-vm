@@ -272,6 +272,165 @@ while [ "$bootdone" = "no" ]; do
  fi
 done
 
+## configure SimEngine to model current deployment.
+## this has to be executed _after_ VMs are booted or
+## commands for adding simengine servers/bmcs will fail.
+
+# create model
+systemctl stop simengine-core
+simengine-cli model drop
+
+# based on simengine.git/setup/setup-anvil/model-anvil
+
+# Create 2 outlets, one powers 'an-ups01' another one powers 'an-ups02'
+simengine-cli model create outlet -k1 -x=-861 -y=-171
+simengine-cli model create outlet -k2 -x=-861 -y=351
+# DR
+simengine-cli model create outlet -k=11 -x=-861 -y=-693
+
+# Add 2 UPSs for strikers and nodes
+simengine-cli model create ups -k=3 \
+    --name=an-ups01 \
+    --host=10.201.3.1 \
+    --mask=255.255.0.0 \
+    --port=161 \
+    --interface="bcn1_bridge1" \
+    --serial-number="SVPD4D5QTQ3V" \
+    --mac-address="f2325a5b0824" \
+    -x=-895 -y=-182
+
+simengine-cli model create ups -k=4 \
+    --name=an-ups02 \
+    --host=10.201.3.2 \
+    --mask=255.255.0.0 \
+    --port=161 \
+    --interface="bcn1_bridge1" \
+    --serial-number="8IAIMD9RX6KZ" \
+    --mac-address="8117f9db70d4" \
+    -x=-895 -y=347
+
+# Add 1 UPS for DR node
+simengine-cli model create ups -k=12 \
+    --name=an-ups03 \
+    --host=10.201.3.3 \
+    --mask=255.255.0.0 \
+    --port=161 \
+    --interface="bcn1_bridge1" \
+    --serial-number="129562D8A6DA" \
+    --mac-address="8117f9db70d5" \
+    -x=-895 -y=-704
+
+# Create 2 PDUs for striker and nodes (no PDU for DR)
+simengine-cli model create pdu -k=5 \
+    --name=an-pdu01 \
+    --host=10.201.2.1 \
+    --mask=255.255.0.0 \
+    --port=161 \
+    --interface="bcn1_bridge1" \
+    --serial-number="AQ5AKU1OORAX" \
+    --mac-address="37436ab3c583" \
+    -x=-36 -y=-161
+
+simengine-cli model create pdu -k=6 \
+    --name=an-pdu02 \
+    --host=10.201.2.2 \
+    --mask=255.255.0.0 \
+    --port=161 \
+    --interface="bcn1_bridge1" \
+    --serial-number="95SQW45SVIFX" \
+    --mac-address="b7bc37aa4d83" \
+    -x=-36 -y=567
+
+# Add BMCs for nodes
+# --vmport must be changed to match $SERVER_PORT_PREFIX+$SERVER_IPMI_PORT_PREFIX+$idx in create-vms script
+# --storcli-port must be changed to match $SERVER_PORT_PREFIX+$SERVER_STORAGE_PORT_PREFIX+$idx in create-vms script
+# --password must be updated to match password set during Anvil setup (don't push the updated password to remote!)
+simengine-cli model create server-bmc -k=7 \
+    --domain-name=an-a01n01 \
+    --power-consumption=360 \
+    --no-power-on-ac \
+    --host=10.201.11.1 \
+    --port=623 \
+    --vmport=20100 \
+    --storcli-port=20300 \
+    -x=-162 -y=320 \
+    --interface="bcn1_bridge1" \
+    --user="admin" \
+    --password="Initial1" \
+    --sensor-def="/usr/share/simengine/enginecore/enginecore/model/presets/sensors.json"
+
+simengine-cli model create server-bmc -k=8 \
+    --domain-name=an-a01n02 \
+    --power-consumption=360 \
+    --no-power-on-ac \
+    --host=10.201.11.2 \
+    --port=623 \
+    --vmport=20101 \
+    --storcli-port=20301 \
+    -x=-171 -y=86 \
+    --interface="bcn1_bridge1" \
+    --user="admin" \
+    --password="Initial1" \
+    --sensor-def="/usr/share/simengine/enginecore/enginecore/model/presets/sensors.json"
+
+# DR
+simengine-cli model create server-bmc -k=13 \
+    --domain-name=an-a01dr01 \
+    --power-consumption=360 \
+    --no-power-on-ac \
+    --host=10.201.11.3 \
+    --port=623 \
+    --vmport=20102 \
+    --storcli-port=20302 \
+    -x=-162 -y=-704 \
+    --interface="bcn1_bridge1" \
+    --user="admin" \
+    --password="Initial1" \
+    --sensor-def="/usr/share/simengine/enginecore/enginecore/model/presets/sensors.json"
+
+# Add 2 Striker Servers
+simengine-cli model create server -k=9 \
+    --domain-name=an-striker01 \
+    --power-consumption=240 \
+    --psu-num=1 \
+    -x=738 \
+    -y=101
+
+simengine-cli model create server -k=10 \
+    --domain-name=an-striker02 \
+    --power-consumption=240 \
+    --psu-num=1 \
+    -x=734 \
+    -y=326
+
+### Power Components
+# connect outlets & UPSs
+simengine-cli model power-link -s1 -d3   # {_Mains_}==>[an-ups01]
+simengine-cli model power-link -s2 -d4   # {_Mains_}==>[an-ups02]
+# dr
+simengine-cli model power-link -s11 -d12 # {_Mains_}==>[an-ups03]
+
+# connect ups & pdus
+simengine-cli model power-link -s31 -d5  # [an-ups01]==>[an-pdu01]
+simengine-cli model power-link -s41 -d6  # [an-ups02]==>[an-pdu02]
+
+# Power up servers
+simengine-cli model power-link -s51 -d72 # [an-pdu01]={port-1}=>{psu-2}=>[an-a01n01]
+simengine-cli model power-link -s52 -d82 # [an-pdu01]={port-2}=>{psu-2}=>[an-a01n02]
+
+simengine-cli model power-link -s61 -d71 # [an-pdu02]={port-1}=>{psu-1}=>[an-a01n01]
+simengine-cli model power-link -s62 -d81 # [an-pdu02]={port-2}=>{psu-1}=>[an-a01n02]
+
+# DR
+simengine-cli model power-link -s121 -d131   # [an-ups03]={port-1}==>[an-a01dr01]={psu-1}
+simengine-cli model power-link -s122 -d132   # [an-ups03]={port-2}==>[an-a01dr01]={psu-2}
+
+# Power Up Striker Servers
+simengine-cli model power-link -s58 -d91  # [an-pdu01]={port-8}=>{psu-1}=>[an-striker01]
+simengine-cli model power-link -s68 -d101 # [an-pdu02]={port-8}=>{psu-1}=>[an-striker02]
+
+systemctl start simengine-core
+
 cp "$TEMPLATESDIR/anvil_striker_auto.cfg" "$DEPLOYDIR/configs/anvil_striker_auto.cfg"
 for i in $ALLNODES; do
  ifaces=5

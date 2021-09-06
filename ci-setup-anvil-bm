@@ -124,6 +124,11 @@ firewall-cmd --zone=libvirt --permanent --add-port=1229/tcp
 # required by simengine dashboard websocket
 firewall-cmd --zone=public --add-port=8000/tcp
 firewall-cmd --zone=public --permanent --add-port=8000/tcp
+# required by simengine to access UPS/PDU and BMCs
+firewall-cmd --zone=libvirt --add-port=161/udp
+firewall-cmd --zone=libvirt --permanent --add-port=161/udp
+firewall-cmd --zone=libvirt --add-port=623/udp
+firewall-cmd --zone=libvirt --permanent --add-port=623/udp
 firewall-cmd --reload
 
 systemctl enable httpd

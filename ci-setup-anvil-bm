@@ -24,6 +24,9 @@ gpgcheck=1
 EOF
 neover=$(yum search --showduplicates neo4j |grep neo4j-3 | sed -e 's#neo4j-##g' -e 's#-1.noarch.*##g' | sort -V | tail -n 1)
 yum install -y neo4j-$neover
+systemctl stop neo4j
+systemctl enable neo4j
+systemctl start neo4j
 
 dnf -y module remove --all nodejs:10
 dnf -y module reset nodejs

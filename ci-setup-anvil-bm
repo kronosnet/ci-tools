@@ -145,9 +145,3 @@ fi
 
 systemctl start fence_virtd
 systemctl enable fence_virtd
-
-# create model
-systemctl stop simengine-core
-simengine-cli model drop
-
-systemctl start simengine-core

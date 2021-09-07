@@ -237,8 +237,8 @@ for i in $ALLNODES; do
    netconf="$netconf --network network:sn1_bridge1,model=e1000 --network network:sn1_bridge1,model=e1000"
    qemu_command_list=(
      "-chardev socket,id=ipmi0,host=localhost,port=$vmportbase,reconnect=2"
-#     "-device ipmi-bmc-extern,id=bmc0,chardev=ipmi0"
-#     "-device isa-ipmi-bt,bmc=bmc0"
+     "-device ipmi-bmc-extern,id=bmc0,chardev=ipmi0"
+     "-device isa-ipmi-bt,bmc=bmc0"
      "-serial mon:tcp::$monportbase,server,telnet,nowait"
      "-chardev socket,id=simengine-storage-tcp,host=localhost,port=$storageportbase,reconnect=2"
      "-device virtio-serial"

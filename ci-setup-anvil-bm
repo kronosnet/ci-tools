@@ -81,8 +81,11 @@ git clone https://github.com/Seneca-CDOT/simengine.git
 cd simengine/rpm/specfiles
 ./buildall
 cd -
+rm -f /root/storcli64
+cp simengine/storage-emulation-tests/guest/storcli64 /root
+sed -i -e 's#env python#python3#g' /root/storcli64
 yum install -y rpmbuild/RPMS/*/*.rpm
-rm -rf rpmbuild
+rm -rf simengine rpmbuild
 
 systemctl enable simengine-core
 

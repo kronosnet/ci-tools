@@ -294,6 +294,8 @@ done
 ## this has to be executed _after_ VMs are booted or
 ## commands for adding simengine servers/bmcs will fail.
 
+echo "Building simengine model"
+
 # create model
 systemctl stop simengine-core
 simengine-cli model drop
@@ -449,6 +451,8 @@ simengine-cli model power-link -s68 -d101 # [an-pdu02]={port-8}=>{psu-1}=>[an-st
 
 systemctl start simengine-core
 
+echo "Copying files to nodes"
+
 cp "$TEMPLATESDIR/anvil_striker_auto.cfg" "$DEPLOYDIR/configs/anvil_striker_auto.cfg"
 for i in $ALLNODES; do
  ifaces=5
@@ -463,9 +467,16 @@ for i in $ALLNODES; do
  done
 done
 
+for i in $NODES; do
+ ssh $i mkdir -p /opt/MegaRAID/storcli/
+ scp /root/storcli64 ${i}:/opt/MegaRAID/storcli/storcli64
+done
+
 for i in $STRIKERS; do
  scp "$DEPLOYDIR/configs/anvil_striker_auto.cfg" ${i}:/tmp/
 done
+
+echo "Start anvil deployment / config"
 
 for i in $STRIKERS; do
  ssh $i striker-auto-initialize-all --config /tmp/anvil_striker_auto.cfg

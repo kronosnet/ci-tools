@@ -266,6 +266,8 @@ echo "Waiting for nodes and cloud-init to complete full init"
 
 bootdone=no
 expected=0
+error=0
+
 for i in $ALLNODES; do
  expected=$((expected + 1))
 done
@@ -276,7 +278,12 @@ while [ "$bootdone" = "no" ]; do
   status=$(ssh $i cloud-init status 2>/dev/null | awk '{print $NF}')
   echo "cloud-init status node $i: $status"
   if [ "$status" = "error" ]; then
-   exit 1
+   error=1
+   ALLNODES=$(echo $ALLNODES | sed -e 's#'$i'##g')
+   expected=$((expected - 1))
+   echo "ERROR cloud init log for node $i:"
+   ssh $i cat /var/log/cloud-init-output.log
+   echo "---------------------------"
   fi
   if [ "$status" = "done" ]; then
    actual=$((actual + 1))
@@ -289,6 +296,10 @@ while [ "$bootdone" = "no" ]; do
   sleep 10
  fi
 done
+
+if [ "$error" = "1" ]; then
+ exit 1
+fi
 
 ## configure SimEngine to model current deployment.
 ## this has to be executed _after_ VMs are booted or
@@ -451,7 +462,7 @@ simengine-cli model power-link -s68 -d101 # [an-pdu02]={port-8}=>{psu-1}=>[an-st
 
 systemctl start simengine-core
 
-echo "Copying files to nodes"
+echo "Generating anvil striker auto config"
 
 cp "$TEMPLATESDIR/anvil_striker_auto.cfg" "$DEPLOYDIR/configs/anvil_striker_auto.cfg"
 for i in $ALLNODES; do
@@ -466,6 +477,8 @@ for i in $ALLNODES; do
   sed -i -e 's#@'$i'-eth'$x'@#'$mac'#g' "$DEPLOYDIR/configs/anvil_striker_auto.cfg"
  done
 done
+
+echo "Copying files to nodes"
 
 for i in $NODES; do
  ssh $i mkdir -p /opt/MegaRAID/storcli/

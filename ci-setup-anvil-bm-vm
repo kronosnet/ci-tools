@@ -58,12 +58,12 @@ case "$ANVILSRC" in
  ;;
 esac
 
-DEPLOYDIR=/srv/anvil
+export DEPLOYDIR=/srv/anvil
 TEMPLATESDIR="$HOME/ci-tools/anvil-config-templates"
-STRIKERS="an-striker01 an-striker02"
-NODES="an-a01n01 an-a01n02"
-DRNODES="an-a01dr01"
-ALLNODES="$STRIKERS $NODES $DRNODES"
+export STRIKERS="an-striker01 an-striker02"
+export NODES="an-a01n01 an-a01n02"
+export DRNODES="an-a01dr01"
+export ALLNODES="$STRIKERS $NODES $DRNODES"
 
 if [ ! -d "$TEMPLATESDIR" ]; then
  echo "Error, unable to find anvil-config-templates in the current directory"
@@ -143,6 +143,7 @@ ForwardX11 no
 EOF
 fi
 rm -f $HOME/.ssh/known_hosts
+ssh-keyscan github.com > $HOME/.ssh/known_hosts
 
 # ifn ip network is defined in ci-tools/ci-setup-anvil-bm
 # and ci-tools/anvil-config-templates/ network templates
@@ -478,56 +479,12 @@ for i in $ALLNODES; do
  done
 done
 
-echo "Copying files to nodes"
-
-for i in $NODES; do
- ssh $i mkdir -p /opt/MegaRAID/storcli/
- scp /root/storcli64 ${i}:/opt/MegaRAID/storcli/storcli64
-done
-
-for i in $STRIKERS; do
- scp "$DEPLOYDIR/configs/anvil_striker_auto.cfg" ${i}:/tmp/
-done
-
-echo "Start anvil deployment / config"
-
-for i in $STRIKERS; do
- ssh $i striker-auto-initialize-all --config /tmp/anvil_striker_auto.cfg
-done
-
-export PGPASSWORD=supersecretpassword
-
-for i in $STRIKERS; do
- while [ "$(psql --host=an-striker01 --username=postgres anvil -t -c "SELECT a.host_name, b.variable_value FROM hosts a, variables b WHERE a.host_uuid = b.variable_source_uuid AND b.variable_name = 'system::configured' ORDER BY host_name ASC;" |grep altee | grep 1$ | wc -l)" != $expected ]; do
-  echo "Waiting for nodes to join the database"
-  sleep 10
- done
-done
-
-for i in $STRIKERS; do
- while [ "$(psql --host=an-striker01 --username=postgres anvil -t -c "SELECT a.host_name AS node1, b.host_name AS node2, c.host_name AS dr1, d.anvil_name FROM hosts a, hosts b, hosts c, anvils d WHERE a.host_uuid = d.anvil_node1_host_uuid AND b.host_uuid = d.anvil_node2_host_uuid AND c.host_uuid = d.anvil_dr1_host_uuid;" |grep altee | wc -l)" != 1 ]; do
-  echo "Waiting for job to complete"
-  sleep 10
- done
-done
-
-for i in $NODES; do
- for x in $NODES; do
-  while ! ssh $i pcs status | grep Online | grep -q $x; do
-   echo "Waiting for pacemaker to be active on the nodes"
-   sleep 10
-  done
- done
-done
-
-for i in $NODES $DRNODES; do
- echo -n "Checking drbd kmod on node $i: "
- if ! ssh $i modprobe drbd && lsmod 2>/dev/null| grep -q drbd; then
-  echo "Not found!"
- else
-  echo "found"
- fi
-done
+rm -rf "$DEPLOYDIR/anvil-test-suite"
+cd "$DEPLOYDIR"
+git clone git@github.com:Alteeve/anvil-test-suite.git
+cd anvil-test-suite
+./run-tests
+cd /root/ci-tools
 
 if [ -n "$KEY" ]; then
  for i in $ALLNODES; do

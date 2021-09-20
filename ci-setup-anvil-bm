@@ -43,7 +43,7 @@ echo "module_hotfixes=1" >> /etc/yum.repos.d/root_qemu-local-build.repo
 echo "gpgcheck=0" >> /etc/yum.repos.d/root_qemu-local-build.repo
 cd ..
 
-yum install -y qemu-img qemu-kvm libvirt virt-install lftp httpd fence-virtd-libvirt fence-virtd-tcp postgresql
+yum install -y qemu-img qemu-kvm libvirt virt-install lftp httpd fence-virtd-libvirt fence-virtd-tcp postgresql ansible
 
 # build cloud-utils, not available on Centos 8
 rm -rf cloud-utils rpmbuild

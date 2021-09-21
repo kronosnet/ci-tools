@@ -9,6 +9,9 @@ BREAKPOINT="$4"
 
 [ -z "$BREAKPOINT" ] && BREAKPOINT=none
 
+# fake it when building outside of CI
+[ -z "$BUILD_NUMBER" ] && BUILD_NUMBER=0
+
 case "$BUILD" in
  centos-8-stream)
   SRCURL=https://cloud.centos.org/centos/8-stream/x86_64/images/
@@ -67,6 +70,7 @@ export STRIKERS="an-striker01 an-striker02"
 export NODES="an-a01n01 an-a01n02"
 export DRNODES="an-a01dr01"
 export ALLNODES="$STRIKERS $NODES $DRNODES"
+export PGPASSWORD=supersecretpassword
 
 if [ ! -d "$TEMPLATESDIR" ]; then
  echo "Error, unable to find anvil-config-templates in the current directory"
@@ -486,8 +490,38 @@ rm -rf "$DEPLOYDIR/anvil-test-suite"
 cd "$DEPLOYDIR"
 git clone git@github.com:Alteeve/anvil-test-suite.git
 cd anvil-test-suite
+set +e
 ./run-tests -b $BREAKPOINT
+ret=$?
+set -e
 cd /root/ci-tools
+
+# collecting all build info
+rm -rf $DEPLOYDIR/logs/$BUILD_NUMBER/
+mkdir -p $DEPLOYDIR/logs/$BUILD_NUMBER/
+
+cp $DEPLOYDIR/configs/anvil_striker_auto.cfg $DEPLOYDIR/logs/$BUILD_NUMBER/anvil_striker_auto.cfg
+
+for i in $ALLNODES; do
+ scp ${i}:/var/log/anvil.log $DEPLOYDIR/logs/$BUILD_NUMBER/${i}_anvil.log
+done
+
+for i in $STRIKERS; do
+ pg_dumpall --host=${i} --username=postgres | gzip > $DEPLOYDIR/logs/$BUILD_NUMBER/${i}_anvil.db.gz || true
+done
+
+cd $DEPLOYDIR/logs/
+tar zcvp -f $BUILD_NUMBER.tar.gz $BUILD_NUMBER/
+mkdir -p /var/www/html/testing-logs
+mv $BUILD_NUMBER.tar.gz /var/www/html/testing-logs/
+cd -
+rm -rf $DEPLOYDIR/logs/$BUILD_NUMBER/
+
+echo "Complete anvil logs available here for download: http://anvil-ci-repo.kronosnet.org/testing-logs/$BUILD_NUMBER.tar.gz"
+
+if [ "$ret" != "0" ]; then
+ exit $ret
+fi
 
 if [ -n "$KEY" ]; then
  for i in $ALLNODES; do

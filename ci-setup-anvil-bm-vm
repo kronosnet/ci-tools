@@ -5,7 +5,9 @@ set -e
 BUILD="$1"
 REPOSRC="$2"
 ANVILSRC="$3"
-SKIPTEST="$4"
+BREAKPOINT="$4"
+
+[ -z "$BREAKPOINT" ] && BREAKPOINT=none
 
 case "$BUILD" in
  centos-8-stream)
@@ -480,14 +482,12 @@ for i in $ALLNODES; do
  done
 done
 
-if [ -z "$SKIPTEST" ]; then
- rm -rf "$DEPLOYDIR/anvil-test-suite"
- cd "$DEPLOYDIR"
- git clone git@github.com:Alteeve/anvil-test-suite.git
- cd anvil-test-suite
- ./run-tests
- cd /root/ci-tools
-fi
+rm -rf "$DEPLOYDIR/anvil-test-suite"
+cd "$DEPLOYDIR"
+git clone git@github.com:Alteeve/anvil-test-suite.git
+cd anvil-test-suite
+./run-tests -b $BREAKPOINT
+cd /root/ci-tools
 
 if [ -n "$KEY" ]; then
  for i in $ALLNODES; do

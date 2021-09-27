@@ -79,7 +79,7 @@ case "${NODE_NAME}" in
  ;;
 esac
 # Install special case packages
-for i in $PYTHONDEV python3-setuptools python3-pip python3-rpm-macros platform-python-devel libzstd-devel publican; do
+for i in $PYTHONDEV python3-setuptools python3-pip python3-rpm-macros platform-python-devel libzstd-devel ; do
  yum -y install $i || true
 done
 

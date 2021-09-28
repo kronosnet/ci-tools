@@ -79,7 +79,7 @@ case "${NODE_NAME}" in
  ;;
 esac
 # Install special case packages
-for i in $PYTHONDEV python3-setuptools python3-pip python3-rpm-macros platform-python-devel libzstd-devel publican; do
+for i in $PYTHONDEV python3-setuptools python3-pip python3-rpm-macros platform-python-devel libzstd-devel ; do
  yum -y install $i || true
 done
 
@@ -125,7 +125,7 @@ if [ -n "$KNETRUST" ] && [ "$KNETRUST" = yes ]; then
 	EXTRADEPS="$EXTRADEPS cargo rust bindgen clippy rustfmt"
 fi
 
-yum -y install make git gcc clang automake libtool autoconf annobin-annocheck valgrind lksctp-tools-devel nss-devel openssl-devel libgcrypt-devel zlib-devel lz4-devel lzo-devel xz-devel bzip2-devel libqb-devel libxml2-devel rpm-build doxygen groff dbus-devel net-snmp-devel libcgroup-devel curl jq check-devel time libxslt glib2-devel docbook-style-xsl libtool-ltdl-devel libuuid-devel libxslt-devel pam-devel ncurses-devel bison byacc flex help2man gnutls-devel inkscape asciidoc dbus-devel OpenIPMI-devel libnl3-devel libaio-devel perl libnet-devel libvirt-devel psmisc libcurl-devel libffi-devel libgcrypt-devel libcmocka-devel $EXTRADEPS
+yum -y install make git gcc clang automake libtool autoconf annobin-annocheck valgrind gettext-devel lksctp-tools-devel nss-devel openssl-devel libgcrypt-devel zlib-devel lz4-devel lzo-devel xz-devel bzip2-devel libqb-devel libxml2-devel rpm-build doxygen groff dbus-devel net-snmp-devel libcgroup-devel curl jq check-devel time libxslt glib2-devel docbook-style-xsl libtool-ltdl-devel libuuid-devel libxslt-devel pam-devel ncurses-devel bison byacc flex help2man gnutls-devel inkscape asciidoc dbus-devel OpenIPMI-devel libnl3-devel libaio-devel perl libnet-devel libvirt-devel psmisc libcurl-devel libffi-devel libgcrypt-devel libcmocka-devel $EXTRADEPS
 
 getent group haclient >/dev/null || groupadd -r haclient -g 189
 getent passwd hacluster >/dev/null || useradd -r -g haclient -u 189 -s /sbin/nologin -c "cluster user" hacluster

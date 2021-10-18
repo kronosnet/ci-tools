@@ -83,30 +83,30 @@ mkdir -p "$DEPLOYDIR/configs"
 
 cd "$DEPLOYDIR/images"
 
-if [ -n "$SRCURL" ]; then
- echo "Downloading latest $NAME cloud image"
+#if [ -n "$SRCURL" ]; then
+# echo "Downloading latest $NAME cloud image"
+#
+# latestimage=$(lftp -e "cls -1 *${IMG}*; quit" "$SRCURL" 2>/dev/null | sort -u | tail -n 1)
 
- latestimage=$(lftp -e "cls -1 *${IMG}*; quit" "$SRCURL" 2>/dev/null | sort -u | tail -n 1)
+# if [ -z "$latestimage" ]; then
+#  echo "Error determining latest $NAME cloud image"
+#  if [ ! -e "${BUILD}-latest.qcow2" ]; then
+#   echo "No local image found. ABORTING"
+#   exit 1
+#  fi
+# fi
 
- if [ -z "$latestimage" ]; then
-  echo "Error determining latest $NAME cloud image"
-  if [ ! -e "${BUILD}-latest.qcow2" ]; then
-   echo "No local image found. ABORTING"
-   exit 1
-  fi
- fi
-
- if [ ! -f "$latestimage" ]; then
-  wget -4 -O "$latestimage" "$SRCURL/$latestimage"
-  rm -f "${BUILD}-latest.qcow2"
-  ln -sf "$latestimage" "${BUILD}-latest.qcow2"
- fi
-else
- if [ ! -h "${BUILD}-latest.qcow2" ]; then
-  echo "Unable to find ${BUILD}-latest.qcow2 image in $DEPLOYDIR/images"
-  exit 1
- fi
-fi
+# if [ ! -f "$latestimage" ]; then
+#  wget -4 -O "$latestimage" "$SRCURL/$latestimage"
+#  rm -f "${BUILD}-latest.qcow2"
+#  ln -sf "$latestimage" "${BUILD}-latest.qcow2"
+# fi
+#else
+# if [ ! -h "${BUILD}-latest.qcow2" ]; then
+#  echo "Unable to find ${BUILD}-latest.qcow2 image in $DEPLOYDIR/images"
+#  exit 1
+# fi
+#fi
 
 echo "Destroying old VMs (if any)"
 

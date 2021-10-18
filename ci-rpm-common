@@ -44,28 +44,28 @@ installrpmdeps() {
   if [ -n "$KNET_REPO_PATH" ]; then
    zypper addrepo $KNET_REPO_PATH knet-build || $ret
    zypper modifyrepo -e -f -G knet-build || $ret
-   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $KNET_REPO_PATH; then
+   if [ "x$bootstrap" = "x1" ] && ! wget --no-check-certificate -4 -q -O /dev/null $KNET_REPO_PATH; then
     zypper removerepo knet-build || true
    fi
   fi
   if [ -n "$LIBQB_REPO_PATH" ]; then
    zypper addrepo $LIBQB_REPO_PATH libqb-build || $ret
    zypper modifyrepo -e -f -G libqb-build || $ret
-   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $LIBQB_REPO_PATH; then
+   if [ "x$bootstrap" = "x1" ] && ! wget --no-check-certificate -4 -q -O /dev/null $LIBQB_REPO_PATH; then
     zypper removerepo libqb-build || true
    fi
   fi
   if [ -n "$COROSYNC_REPO_PATH" ]; then
    zypper addrepo $COROSYNC_REPO_PATH corosync-build || $ret
    zypper modifyrepo -e -f -G corosync-build || $ret
-   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $COROSYNC_REPO_PATH; then
+   if [ "x$bootstrap" = "x1" ] && ! wget --no-check-certificate -4 -q -O /dev/null $COROSYNC_REPO_PATH; then
     zypper removerepo corosync-build || true
    fi
   fi
   if [ -n "$PCMK_REPO_PATH" ]; then
    zypper addrepo $PCMK_REPO_PATH pcmk-build || $ret
    zypper modifyrepo -e -f -G pcmk-build || $ret
-   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $PCMK_REPO_PATH; then
+   if [ "x$bootstrap" = "x1" ] && ! wget --no-check-certificate -4 -q -O /dev/null $PCMK_REPO_PATH; then
     zypper removerepo pcmk-build || true
    fi
   fi
@@ -73,16 +73,16 @@ installrpmdeps() {
  fi
  if [ -n "$(which yum 2>/dev/null)" ]; then
   if [ -n "$KNET_REPO" ]; then
-   wget -4 -O /etc/yum.repos.d/knet-build.repo $KNET_REPO || $ret
+   wget --no-check-certificate -4 -O /etc/yum.repos.d/knet-build.repo $KNET_REPO || $ret
   fi
   if [ -n "$LIBQB_REPO" ]; then
-   wget -4 -O /etc/yum.repos.d/libqb-build.repo $LIBQB_REPO || $ret
+   wget --no-check-certificate -4 -O /etc/yum.repos.d/libqb-build.repo $LIBQB_REPO || $ret
   fi
   if [ -n "$COROSYNC_REPO" ]; then
-   wget -4 -O /etc/yum.repos.d/corosync-build.repo $COROSYNC_REPO || $ret
+   wget --no-check-certificate -4 -O /etc/yum.repos.d/corosync-build.repo $COROSYNC_REPO || $ret
   fi
   if [ -n "$PCMK_REPO" ]; then
-   wget -4 -O /etc/yum.repos.d/pcmk-build.repo $PCMK_REPO || $ret
+   wget --no-check-certificate -4 -O /etc/yum.repos.d/pcmk-build.repo $PCMK_REPO || $ret
   fi
   yum install -y $RPMDEPS || removerpmdeps 1
  fi

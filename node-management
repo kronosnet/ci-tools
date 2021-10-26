@@ -143,6 +143,25 @@ addnodetoalljobs() {
 							fi
 						fi
 						;;
+					*pcs-0.10*)
+						# managed manually
+						;;
+					*-nonvoting)
+						if [ $voting == no ]; then
+							echo Adding to nonvoting job $i
+							addjob=1
+						else
+							echo Skipping nonvoting job $i
+						fi
+						;;
+					*-voting)
+						if [ $voting == yes ]; then
+							echo Adding to voting job $i
+							addjob=1
+						else
+							echo Skipping voting job $i
+						fi
+						;;
 					*)
 						if [ $oldbuilds == yes ]; then
 							echo Skipping oldbuilds job $i
@@ -150,7 +169,7 @@ addnodetoalljobs() {
 							echo Adding oldbuilds to job $i
 							addjob=1
 						fi
-					;;
+						;;
 				esac
 				;;
 			*rpms)

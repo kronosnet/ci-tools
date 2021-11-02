@@ -6,8 +6,16 @@ set -ev
 
 case $build in
  coverity)
-  echo "cov-build --dir=./cov $MAKE $MAKECOVOPTS"
-  cov-build --dir=./cov $MAKE $MAKECOVOPTS
+  case "$DEST" in
+   pcs)
+    echo "cov-build --dir=./cov --no-command --fs-capture-search pcs --fs-capture-search pcs_test $MAKECOVOPTS"
+    cov-build --dir=./cov --no-command --fs-capture-search pcs --fs-capture-search pcs_test $MAKECOVOPTS
+   ;;
+   *)
+    echo "cov-build --dir=./cov $MAKE $MAKECOVOPTS"
+    cov-build --dir=./cov $MAKE $MAKECOVOPTS
+   ;;
+  esac
   echo "cov-analyze --dir=./cov --wait-for-license $covoptions"
   cov-analyze --dir=./cov --wait-for-license $covoptions
   echo "cov-format-errors --dir=./cov --json-output-v7 cov.json"

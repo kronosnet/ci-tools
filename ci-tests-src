@@ -30,7 +30,13 @@ fasextratests() {
 
 pcmkextratests() {
  # pacemaker extra tests
- if [ "$DEST" = pcmk ]; then
+ if [ "$DEST" != pcmk ]; then
+  return
+ fi
+
+ if [ "$build" = "rpm" ]; then
+  make -C rpm rpmlint
+ else
   ./cts/cts-regression -V
  fi
 }

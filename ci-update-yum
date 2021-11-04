@@ -178,6 +178,7 @@ yum -y install         \
  perl                  \
  psmisc                \
  rpm-build             \
+ rpmlint               \
  time                  \
  valgrind              \
  xz-devel              \

@@ -125,6 +125,13 @@ if [ -n "$KNETRUST" ] && [ "$KNETRUST" = yes ]; then
 	EXTRADEPS="$EXTRADEPS cargo rust bindgen clippy rustfmt"
 fi
 
+# shellcheck for resource-agents ci/build.sh
+case "${NODE_NAME}" in
+ fedora*)
+  EXTRADEPS="ShellCheck $EXTRADEPS"
+ ;;
+esac
+
 yum -y install         \
  OpenIPMI-devel        \
  annobin-annocheck     \

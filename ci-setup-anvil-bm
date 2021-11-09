@@ -6,6 +6,14 @@ set -e
 rm -rf /root/qemu-local-build
 mkdir -p /root/qemu-local-build
 
+cd qemu-local-build
+rm -rf *debuginfo*
+createrepo .
+yum-config-manager --add-repo file:///$(pwd)
+echo "module_hotfixes=1" >> /etc/yum.repos.d/root_qemu-local-build.repo
+echo "gpgcheck=0" >> /etc/yum.repos.d/root_qemu-local-build.repo
+cd ..
+
 rm -rf edk2 rpmbuild
 fedpkg co --anonymous edk2
 cd edk2

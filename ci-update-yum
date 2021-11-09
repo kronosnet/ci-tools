@@ -79,7 +79,7 @@ case "${NODE_NAME}" in
  ;;
 esac
 # Install special case packages
-for i in $PYTHONDEV python3-setuptools python3-pip python3-rpm-macros platform-python-devel libzstd-devel ; do
+for i in $PYTHONDEV python3-setuptools python3-pip python3-rpm-macros platform-python-devel libzstd-devel libcgroup-devel; do
  yum -y install $i || true
 done
 
@@ -158,7 +158,6 @@ yum -y install         \
  inkscape              \
  jq                    \
  libaio-devel          \
- libcgroup-devel       \
  libcmocka-devel       \
  libcurl-devel         \
  libffi-devel          \

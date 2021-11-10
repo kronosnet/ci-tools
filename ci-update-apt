@@ -24,6 +24,7 @@ apt-get -y install build-essential autoconf libtool-bin make git gcc clang autoc
 apt-get -y install python3-dacite || true
 apt-get -y install python3-distro || true
 apt-get -y install inkscape || true
+apt-get -y install llvm || true
 if [ -n "$EXTRA_ARCH" ]; then
  dpkg --add-architecture $EXTRA_ARCH
  apt-get update

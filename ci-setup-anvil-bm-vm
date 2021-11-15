@@ -69,6 +69,7 @@ TEMPLATESDIR="$HOME/ci-tools/anvil-config-templates"
 export STRIKERS="an-striker01 an-striker02"
 export NODES="an-a01n01 an-a01n02"
 export DRNODES="an-a01dr01"
+export CACHENODES="an-cache"
 export ALLNODES="$STRIKERS $NODES $DRNODES"
 export PGPASSWORD=supersecretpassword
 
@@ -77,7 +78,28 @@ if [ ! -d "$TEMPLATESDIR" ]; then
  exit 1
 fi
 
+if [ -n "$CRED" ]; then
+ if [ ! -f "$CRED" ]; then
+  echo "Unable to access $CRED file"
+  exit 1
+ fi
+ ORG=$(cat "$CRED" | grep ORG | awk '{print $2}')
+ KEY=$(cat "$CRED" | grep KEY | awk '{print $2}')
+ if [ -z "$ORG" ] || [ -z "$KEY" ]; then
+  echo "CRED file should contain both KEY and ORG"
+  exit 1
+ fi
+fi
+
+if [ ! -f "/root/alteeve-key" ]; then
+ echo "Unable to access alteeve-key"
+ exit 1
+fi
+
+AKEY=$(cat /root/alteeve-key)
+
 mkdir -p "$DEPLOYDIR/images"
+mkdir -p "$DEPLOYDIR/cache"
 mkdir -p "$DEPLOYDIR/snapshots"
 mkdir -p "$DEPLOYDIR/configs"
 
@@ -108,22 +130,6 @@ else
  fi
 fi
 
-echo "Destroying old VMs (if any)"
-
-for i in $ALLNODES; do
- virsh destroy $i || true
- virsh undefine $i || true
-done
-
-echo "Creating nodes disks"
-
-cd "$DEPLOYDIR/snapshots"
-rm -rf *.qcow2
-for i in $ALLNODES; do
- qemu-img create -b "$DEPLOYDIR/images/${BUILD}-latest.qcow2" -F qcow2 -f qcow2 "$i-vol.qcow2" 200G
- qemu-img create -f qcow2 "$i-vol2.qcow2" 200G
-done
-
 echo "Genering ssh keys and ssh config"
 
 cd "$DEPLOYDIR/configs"
@@ -134,6 +140,9 @@ if [ ! -f "id_rsa" ]; then
  ssh-keygen -t rsa -b 4096 -f id_rsa -C testing-key -N "" -q
  echo ""
 fi
+
+SSHKEY="$(cat $DEPLOYDIR/configs/id_rsa.pub)"
+
 if [ ! -f $HOME/.ssh/config ]; then
  cat > $HOME/.ssh/config << EOF
 Host 192.168.122.*
@@ -149,8 +158,125 @@ IdentityFile /srv/anvil/configs/id_rsa
 ForwardX11 no
 EOF
 fi
+
 rm -f $HOME/.ssh/known_hosts
 ssh-keyscan github.com > $HOME/.ssh/known_hosts
+
+echo "Destroying old VMs (if any)"
+
+for i in $ALLNODES $CACHENODES; do
+ virsh destroy $i || true
+ virsh undefine $i || true
+done
+
+# update daily cache
+# some code is similar to the one below, but it´s not the same
+echo "Generating daily cache"
+
+updatecache=no
+TODAY=$(date +%F)
+
+cd "$DEPLOYDIR/cache"
+
+if [ ! -f "${BUILD}-latest.qcow2-${TODAY}" ]; then
+ echo "Updating daily cache for ${BUILD} ${TODAY}"
+ rm -f "${BUILD}-latest.qcow2" "${BUILD}-latest.qcow2-*"
+ qemu-img create -b "$DEPLOYDIR/images/${BUILD}-latest.qcow2" -F qcow2 -f qcow2 "${BUILD}-latest.qcow2" 200G
+ cat "$TEMPLATESDIR/anvil_striker_net_config.cfg" | sed -e "s#@IFNIP@#192.168.122.2#g" > an-cache_net_config.cfg
+ cat "$TEMPLATESDIR/anvil_cloud_init_${BUILD}.cfg" | \
+  sed \
+   -e "s#@HOSTNAME@#an-cache#g" \
+   -e "s#@BUILD@#${BUILD}#g" \
+   -e "s#@SSHKEY@#${SSHKEY}#g" \
+   -e "s#@KEY@#${KEY}#g" \
+   -e "s#@ORG@#${ORG}#g" \
+   -e "s#@AKEY@#${AKEY}#g" \
+   -e "s#@ANVIL@#false#g" \
+   -e "s#@ANVILDEPS@#false#g" \
+   -e "s#@ALTEEVE@#false#g" \
+   -e "s#@ALTEEVESTAGING@#false#g" \
+   -e "s#@ANVILPKG@##g" \
+   > "an-cache_cloud_init.cfg"
+  rm -f "an-cache-seed.img"
+  echo "instance-id: $(uuidgen)" > "an-cache-metadata"
+  cloud-localds -v --network-config="an-cache_net_config.cfg" "an-cache-seed.img" "an-cache_cloud_init.cfg" "an-cache-metadata"
+ echo "Done updating daily cache"
+ virt-install --name an-cache \
+  --virt-type kvm --memory 16384 --vcpus 6 \
+  --boot hd,menu=on \
+  --disk path="$DEPLOYDIR/cache/an-cache-seed.img",device=cdrom \
+  --disk path="$DEPLOYDIR/cache/${BUILD}-latest.qcow2",device=disk \
+  --graphics vnc \
+  --os-type Linux --os-variant $KVMVAR \
+  --network network:ifn1_bridge1,model=e1000 \
+  --noautoconsole
+
+ echo "Waiting for nodes and cloud-init to complete full init"
+
+ bootdone=no
+ expected=1
+ error=0
+
+ while [ "$bootdone" = "no" ]; do
+  actual=0
+  for i in 192.168.122.2; do
+   status=$(ssh $i cloud-init status 2>/dev/null | awk '{print $NF}')
+   echo "cloud-init status node $i: $status"
+   if [ "$status" = "error" ]; then
+    error=1
+    expected=$((expected - 1))
+    echo "ERROR cloud init log for node $i:"
+    ssh $i cat /var/log/cloud-init-output.log
+    echo "---------------------------"
+   fi
+   if [ "$status" = "done" ]; then
+    actual=$((actual + 1))
+   fi
+  done
+  echo "$(date) actual: $actual expected: $expected"
+  if [ "$actual" = "$expected" ]; then
+   bootdone=yes
+  else
+   sleep 10
+  fi
+ done
+
+ # cleanup image
+ # allow cloud-init to regenerate anvil/alteeve repos
+ ssh 192.168.122.2 rm -f /etc/yum.repos.d/alteeve* /etc/yum.repos.d/anvil*
+ if [ -n "$KEY" ]; then
+  ssh 192.168.122.2 subscription-manager unregister
+ fi
+
+ if [ "$error" = "1" ]; then
+  virsh destroy an-cache || true
+  virsh undefine an-cache || true
+  exit 1
+ fi
+
+ state=running
+ virsh shutdown an-cache
+ while ([ "$state" != "" ] && [ "$state" == "running" ]); do sleep 5; state=$(virsh dominfo an-cache | grep -w "State:" | awk '{ print $2}'); done;
+ virsh undefine an-cache || true
+
+ touch "${BUILD}-latest.qcow2-${TODAY}"
+ # repeat to make sure known_hosts is clean after caching
+ rm -f $HOME/.ssh/known_hosts
+ ssh-keyscan github.com > $HOME/.ssh/known_hosts
+fi
+
+echo "Creating nodes disks"
+
+cd "$DEPLOYDIR/snapshots"
+rm -rf *.qcow2
+for i in $ALLNODES; do
+ qemu-img create -b "$DEPLOYDIR/cache/${BUILD}-latest.qcow2" -F qcow2 -f qcow2 "$i-vol.qcow2" 200G
+ qemu-img create -f qcow2 "$i-vol2.qcow2" 200G
+done
+
+echo "Genering ssh keys and ssh config"
+
+cd "$DEPLOYDIR/configs"
 
 # ifn ip network is defined in ci-tools/ci-setup-anvil-bm
 # and ci-tools/anvil-config-templates/ network templates
@@ -172,28 +298,7 @@ for i in $ALLNODES; do
   ipbase=$((ipbase + 1))
 done
 
-if [ -n "$CRED" ]; then
- if [ ! -f "$CRED" ]; then
-  echo "Unable to access $CRED file"
-  exit 1
- fi
- ORG=$(cat "$CRED" | grep ORG | awk '{print $2}')
- KEY=$(cat "$CRED" | grep KEY | awk '{print $2}')
- if [ -z "$ORG" ] || [ -z "$KEY" ]; then
-  echo "CRED file should contain both KEY and ORG"
-  exit 1
- fi
-fi
-
-if [ ! -f "/root/alteeve-key" ]; then
- echo "Unable to access alteeve-key"
- exit 1
-fi
-
-AKEY=$(cat /root/alteeve-key)
-
 echo "Generating cloud-init configs"
-SSHKEY="$(cat $DEPLOYDIR/configs/id_rsa.pub)"
 for i in $ALLNODES; do
  case $i in
   *striker*)
@@ -267,7 +372,7 @@ for i in $ALLNODES; do
   --os-type Linux --os-variant $KVMVAR \
   $netconf \
   --qemu-commandline="${qemu_command_list[*]}" \
-  --noautoconsole 
+  --noautoconsole
 done
 
 echo "Waiting for nodes and cloud-init to complete full init"

@@ -38,7 +38,7 @@ fedpkg co --anonymous qemu
 cd qemu
 sed -i -e 's#%dnl.*##g' -e 's#Epoch:.*#Epoch: 20#g' qemu.spec
 fedpkg srpm
-mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild *.src.rpm --resultdir=/root/qemu-local-build
+#mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild *.src.rpm --resultdir=/root/qemu-local-build
 rm -rf /root/qemu-local-build/*debuginfo*
 cd ..
 rm -rf qemu rpmbuild

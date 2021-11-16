@@ -180,7 +180,7 @@ cd "$DEPLOYDIR/cache"
 
 if [ ! -f "${BUILD}-latest.qcow2-${TODAY}" ]; then
  echo "Updating daily cache for ${BUILD} ${TODAY}"
- rm -f "${BUILD}-latest.qcow2" "${BUILD}-latest.qcow2-*"
+ rm -rf "${BUILD}-latest.qcow2*" "an-cache*"
  qemu-img create -b "$DEPLOYDIR/images/${BUILD}-latest.qcow2" -F qcow2 -f qcow2 "${BUILD}-latest.qcow2" 200G
  cat "$TEMPLATESDIR/anvil_striker_net_config.cfg" | sed -e "s#@IFNIP@#192.168.122.2#g" > an-cache_net_config.cfg
  cat "$TEMPLATESDIR/anvil_cloud_init_${BUILD}.cfg" | \
@@ -273,8 +273,6 @@ for i in $ALLNODES; do
  qemu-img create -b "$DEPLOYDIR/cache/${BUILD}-latest.qcow2" -F qcow2 -f qcow2 "$i-vol.qcow2" 200G
  qemu-img create -f qcow2 "$i-vol2.qcow2" 200G
 done
-
-echo "Genering ssh keys and ssh config"
 
 cd "$DEPLOYDIR/configs"
 

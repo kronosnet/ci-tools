@@ -131,9 +131,17 @@ case "${NODE_NAME}" in
  ;;
 esac
 
+# annobin-annocheck is off sync on rhel85 power
+case "${NODE_NAME}" in
+ rhel85*power*)
+ ;;
+ *)
+  EXTRADEPS="annobin-annocheck $EXTRADEPS"
+ ;;
+esac
+
 yum -y install         \
  OpenIPMI-devel        \
- annobin-annocheck     \
  asciidoc              \
  autoconf              \
  automake              \

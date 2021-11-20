@@ -4,6 +4,12 @@ set -e
 
 . $HOME/ci-tools/ci-setup-anvil-vm-env
 
+echo "Destroying VMs (if any)"
+
+for i in $ALLNODES $CACHENODES; do
+ destroy_vm $i
+done
+
 cd "$DEPLOYDIR/images"
 
 if [ -n "$SRCURL" ]; then
@@ -30,13 +36,6 @@ else
   exit 1
  fi
 fi
-
-echo "Destroying old VMs (if any)"
-
-for i in $ALLNODES $CACHENODES; do
- virsh destroy $i || true
- virsh undefine $i || true
-done
 
 # update daily cache
 # some code is similar to the one below, but it´s not the same
@@ -88,7 +87,7 @@ if [ ! -f "${BUILD}-latest.qcow2-${TODAY}" ]; then
 
  while [ "$bootdone" = "no" ]; do
   actual=0
-  for i in 192.168.122.2; do
+  for i in $CACHENODES; do
    status=$(ssh $i cloud-init status 2>/dev/null | awk '{print $NF}')
    echo "cloud-init status node $i: $status"
    if [ "$status" = "error" ]; then
@@ -112,14 +111,10 @@ if [ ! -f "${BUILD}-latest.qcow2-${TODAY}" ]; then
 
  # cleanup image
  # allow cloud-init to regenerate anvil/alteeve repos
- ssh 192.168.122.2 rm -f /etc/yum.repos.d/alteeve* /etc/yum.repos.d/anvil*
- if [ -n "$KEY" ]; then
-  ssh 192.168.122.2 subscription-manager unregister
- fi
+ ssh $CACHENODES rm -f /etc/yum.repos.d/alteeve* /etc/yum.repos.d/anvil*
 
  if [ "$error" = "1" ]; then
-  virsh destroy an-cache || true
-  virsh undefine an-cache || true
+  destroy_vm an-cache
   exit 1
  fi
 

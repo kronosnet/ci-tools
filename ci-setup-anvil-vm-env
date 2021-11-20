@@ -1,12 +1,28 @@
-BUILD="$1"
-REPOSRC="$2"
-ANVILSRC="$3"
+[ -z "$BUILD" ] && BUILD="$1"
+[ -z "$REPOSRC" ] && REPOSRC="$2"
+[ -z "$ANVILSRC" ] && ANVILSRC="$3"
 BREAKPOINT="$4"
 
 [ -z "$BREAKPOINT" ] && BREAKPOINT=none
 
 # fake it when building outside of CI
 [ -z "$BUILD_NUMBER" ] && BUILD_NUMBER=0
+
+# common strategy to cleanup all VMs
+destroy_vm() {
+ vm="$1"
+ ssh $vm subscription-manager unregister || true
+ sleep 2
+ virsh destroy $vm || true
+ virsh undefine $vm || true
+}
+
+cleanup_simengine() {
+ echo "Cleaning up simengine configuration"
+ systemctl stop simengine-core
+ simengine-cli model drop
+ systemctl start simengine-core
+}
 
 case "$BUILD" in
  centos-8-stream)
@@ -19,6 +35,8 @@ case "$BUILD" in
   NAME="RHEL 8"
   KVMVAR="rhel8-unknown"
   CRED="/root/rh-cred"
+ ;;
+ none)
  ;;
  *)
   echo "Unknown build: $BUILD"
@@ -39,6 +57,8 @@ case "$REPOSRC" in
  ;;
  enterprise-staging)
   ALTEEVESTAGING=true
+ ;;
+ none)
  ;;
  *)
   echo "Unknown repo src: $REPOSRC"

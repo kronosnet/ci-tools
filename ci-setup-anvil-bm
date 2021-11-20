@@ -2,12 +2,15 @@
 
 set -e
 
+BUILDDIR=/root
+
+cd $BUILDDIR
+
 # build update qemu-kvm from fedora (required for Simengine bmc support)
-rm -rf /root/qemu-local-build
-mkdir -p /root/qemu-local-build
+rm -rf $BUILDDIR/qemu-local-build
+mkdir -p $BUILDDIR/qemu-local-build
 
 cd qemu-local-build
-rm -rf *debuginfo*
 createrepo .
 yum-config-manager --add-repo file:///$(pwd)
 echo "module_hotfixes=1" >> /etc/yum.repos.d/root_qemu-local-build.repo
@@ -18,8 +21,8 @@ rm -rf edk2 rpmbuild
 fedpkg co --anonymous edk2
 cd edk2
 fedpkg srpm
-mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild *.src.rpm --resultdir=/root/qemu-local-build
-rm -rf /root/qemu-local-build/*debuginfo*
+mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild *.src.rpm --resultdir=$BUILDDIR/qemu-local-build
+rm -rf $BUILDDIR/qemu-local-build/*debuginfo*
 cd ..
 rm -rf edk2 rpmbuild
 
@@ -27,9 +30,9 @@ rm -rf ipxe rpmbuild
 fedpkg co --anonymous ipxe
 cd ipxe
 fedpkg srpm
-mock -r /etc/mock/centos-stream-8-x86_64.cfg --install /root/qemu-local-build/edk2-tools*x86*
-mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild *.src.rpm --resultdir=/root/qemu-local-build --no-clean
-rm -rf /root/qemu-local-build/*debuginfo*
+mock -r /etc/mock/centos-stream-8-x86_64.cfg --install $BUILDDIR/qemu-local-build/edk2-tools*x86*
+mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild *.src.rpm --resultdir=$BUILDDIR/qemu-local-build --no-clean
+rm -rf $BUILDDIR/qemu-local-build/*debuginfo*
 cd ..
 rm -rf ipxe rpmbuild
 
@@ -38,17 +41,14 @@ fedpkg co --anonymous qemu
 cd qemu
 sed -i -e 's#%dnl.*##g' -e 's#Epoch:.*#Epoch: 20#g' qemu.spec
 fedpkg srpm
-#mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild *.src.rpm --resultdir=/root/qemu-local-build
-rm -rf /root/qemu-local-build/*debuginfo*
+#mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild *.src.rpm --resultdir=$BUILDDIR/qemu-local-build
+rm -rf $BUILDDIR/qemu-local-build/*debuginfo*
 cd ..
 rm -rf qemu rpmbuild
 
 cd qemu-local-build
 rm -rf *debuginfo*
 createrepo .
-yum-config-manager --add-repo file:///$(pwd)
-echo "module_hotfixes=1" >> /etc/yum.repos.d/root_qemu-local-build.repo
-echo "gpgcheck=0" >> /etc/yum.repos.d/root_qemu-local-build.repo
 cd ..
 
 yum install -y qemu-img qemu-kvm libvirt virt-install lftp httpd fence-virtd-libvirt fence-virtd-tcp postgresql ansible
@@ -89,9 +89,9 @@ git clone https://github.com/Seneca-CDOT/simengine.git
 cd simengine/rpm/specfiles
 ./buildall
 cd -
-rm -f /root/storcli64
-cp simengine/storage-emulation-tests/guest/storcli64 /root
-sed -i -e 's#env python#python3#g' /root/storcli64
+rm -f $BUILDDIR/storcli64
+cp simengine/storage-emulation-tests/guest/storcli64 $BUILDDIR/
+sed -i -e 's#env python#python3#g' $BUILDDIR/storcli64
 yum install -y rpmbuild/RPMS/*/*.rpm
 rm -rf simengine rpmbuild
 

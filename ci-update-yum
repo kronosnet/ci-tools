@@ -36,7 +36,6 @@ esac
 case "${NODE_NAME}" in
  anvil-ci-bm*)
   EXTRAOPTS="--exclude=neo4j --exclude=cypher-shell"
-  $HOME/ci-tools/ci-setup-anvil-bm
  ;;
 esac
 

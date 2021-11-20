@@ -2,106 +2,7 @@
 
 set -e
 
-BUILD="$1"
-REPOSRC="$2"
-ANVILSRC="$3"
-BREAKPOINT="$4"
-
-[ -z "$BREAKPOINT" ] && BREAKPOINT=none
-
-# fake it when building outside of CI
-[ -z "$BUILD_NUMBER" ] && BUILD_NUMBER=0
-
-case "$BUILD" in
- centos-8-stream)
-  SRCURL=https://cloud.centos.org/centos/8-stream/x86_64/images/
-  NAME="Centos 8 Stream"
-  IMG="GenericCloud"
-  KVMVAR="centos-stream8"
- ;;
- rhel-8)
-  NAME="RHEL 8"
-  KVMVAR="rhel8-unknown"
-  CRED="/root/rh-cred"
- ;;
- *)
-  echo "Unknown build: $BUILD"
-  exit 1
- ;;
-esac
-
-ANVILDEPS=false
-ALTEEVE=false
-ALTEEVESTAGING=false
-
-case "$REPOSRC" in
- ci)
-  ANVILDEPS=true
- ;;
- enterprise)
-  ALTEEVE=true
- ;;
- enterprise-staging)
-  ALTEEVESTAGING=true
- ;;
- *)
-  echo "Unknown repo src: $REPOSRC"
-  exit 1
- ;;
-esac
-
-ANVIL=false
-
-case "$ANVILSRC" in
- ci)
-  ANVIL=true
- ;;
- none)
- ;;
- *)
-  echo "Unknown anvil src: $ANVILSRC"
-  exit 1
- ;;
-esac
-
-export DEPLOYDIR=/srv/anvil
-TEMPLATESDIR="$HOME/ci-tools/anvil-config-templates"
-export STRIKERS="an-striker01 an-striker02"
-export NODES="an-a01n01 an-a01n02"
-export DRNODES="an-a01dr01"
-export CACHENODES="an-cache"
-export ALLNODES="$STRIKERS $NODES $DRNODES"
-export PGPASSWORD=supersecretpassword
-
-if [ ! -d "$TEMPLATESDIR" ]; then
- echo "Error, unable to find anvil-config-templates in the current directory"
- exit 1
-fi
-
-if [ -n "$CRED" ]; then
- if [ ! -f "$CRED" ]; then
-  echo "Unable to access $CRED file"
-  exit 1
- fi
- ORG=$(cat "$CRED" | grep ORG | awk '{print $2}')
- KEY=$(cat "$CRED" | grep KEY | awk '{print $2}')
- if [ -z "$ORG" ] || [ -z "$KEY" ]; then
-  echo "CRED file should contain both KEY and ORG"
-  exit 1
- fi
-fi
-
-if [ ! -f "/root/alteeve-key" ]; then
- echo "Unable to access alteeve-key"
- exit 1
-fi
-
-AKEY=$(cat /root/alteeve-key)
-
-mkdir -p "$DEPLOYDIR/images"
-mkdir -p "$DEPLOYDIR/cache"
-mkdir -p "$DEPLOYDIR/snapshots"
-mkdir -p "$DEPLOYDIR/configs"
+. $HOME/ci-tools/ci-setup-anvil-vm-env
 
 cd "$DEPLOYDIR/images"
 
@@ -129,38 +30,6 @@ else
   exit 1
  fi
 fi
-
-echo "Genering ssh keys and ssh config"
-
-cd "$DEPLOYDIR/configs"
-
-# sync IP and hostname if necessary
-if [ ! -f "id_rsa" ]; then
- echo "Generaing ssh keys"
- ssh-keygen -t rsa -b 4096 -f id_rsa -C testing-key -N "" -q
- echo ""
-fi
-
-SSHKEY="$(cat $DEPLOYDIR/configs/id_rsa.pub)"
-
-if [ ! -f $HOME/.ssh/config ]; then
- cat > $HOME/.ssh/config << EOF
-Host 192.168.122.*
-User root
-StrictHostKeyChecking no
-IdentityFile /srv/anvil/configs/id_rsa
-ForwardX11 no
-
-Host an-*
-User root
-StrictHostKeyChecking no
-IdentityFile /srv/anvil/configs/id_rsa
-ForwardX11 no
-EOF
-fi
-
-rm -f $HOME/.ssh/known_hosts
-ssh-keyscan github.com > $HOME/.ssh/known_hosts
 
 echo "Destroying old VMs (if any)"
 

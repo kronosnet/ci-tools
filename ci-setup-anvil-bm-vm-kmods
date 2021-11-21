@@ -1,0 +1,105 @@
+#!/bin/bash
+
+set -e
+
+. $HOME/ci-tools/ci-setup-anvil-vm-env
+
+echo "Destroying VMs (if any)"
+
+for i in $ALLNODES $CACHENODES; do
+ destroy_vm $i
+done
+
+$HOME/ci-tools/ci-setup-anvil-bm-vm-cache $BUILD none none
+
+echo "Building drbd kmod for ${BUILD} repo: ${REPOSRC} anvil: ${ANVILSRC}"
+
+cd "$DEPLOYDIR/cache"
+rm -f an-cache-vol.qcow2
+
+qemu-img create -b "$DEPLOYDIR/cache/${BUILD}-latest.qcow2" -F qcow2 -f qcow2 "an-cache-vol.qcow2" 200G
+cat "$TEMPLATESDIR/anvil_striker_net_config.cfg" | sed -e "s#@IFNIP@#192.168.122.2#g" > an-cache_net_config.cfg
+cat "$TEMPLATESDIR/anvil_cloud_init_${BUILD}.cfg" | \
+ sed \
+  -e "s#@HOSTNAME@#an-cache#g" \
+  -e "s#@BUILD@#${BUILD}#g" \
+  -e "s#@SSHKEY@#${SSHKEY}#g" \
+  -e "s#@KEY@#${KEY}#g" \
+  -e "s#@ORG@#${ORG}#g" \
+  -e "s#@AKEY@#${AKEY}#g" \
+  -e "s#@ANVIL@#${ANVIL}#g" \
+  -e "s#@ANVILDEPS@#${ANVILDEPS}#g" \
+  -e "s#@ALTEEVE@#${ALTEEVE}#g" \
+  -e "s#@ALTEEVESTAGING@#${ALTEEVESTAGING}#g" \
+  -e "s#@ANVILPKG@# - akmod-drbd#g" \
+  > "an-cache_cloud_init.cfg"
+rm -f "an-cache-seed.img"
+echo "instance-id: $(uuidgen)" > "an-cache-metadata"
+cloud-localds -v --network-config="an-cache_net_config.cfg" "an-cache-seed.img" "an-cache_cloud_init.cfg" "an-cache-metadata"
+
+virt-install --name an-cache \
+ --virt-type kvm --memory 16384 --vcpus 6 \
+ --boot hd,menu=on \
+ --disk path="$DEPLOYDIR/cache/an-cache-seed.img",device=cdrom \
+ --disk path="$DEPLOYDIR/cache/an-cache-vol.qcow2",device=disk \
+ --graphics vnc \
+ --os-type Linux --os-variant $KVMVAR \
+ --network network:ifn1_bridge1,model=e1000 \
+ --noautoconsole
+
+echo "Waiting for nodes and cloud-init to complete full init"
+
+bootdone=no
+expected=1
+error=0
+
+while [ "$bootdone" = "no" ]; do
+ actual=0
+ for i in $CACHENODES; do
+  status=$(ssh $i cloud-init status 2>/dev/null | awk '{print $NF}')
+  echo "cloud-init status node $i: $status"
+  if [ "$status" = "error" ]; then
+   error=1
+   expected=$((expected - 1))
+   echo "ERROR cloud init log for node $i:"
+   ssh $i cat /var/log/cloud-init-output.log
+   echo "---------------------------"
+  fi
+  if [ "$status" = "done" ]; then
+   actual=$((actual + 1))
+  fi
+ done
+ echo "$(date) actual: $actual expected: $expected"
+ if [ "$actual" = "$expected" ]; then
+  bootdone=yes
+ else
+  sleep 10
+ fi
+done
+
+if [ "$error" = "1" ]; then
+ echo "Unable to deploy an-cache vm to build drbd module"
+ destroy_vm an-cache
+ exit 1
+fi
+
+# workaround
+# give the vm enough time to build drbd kmods
+sleep 240
+
+rm -f "${WORKSPACE}/*.rpm"
+scp an-cache:/var/cache/akmods/drbd/*.rpm "${WORKSPACE}/" || error=1
+
+# repeat to make sure known_hosts is clean after caching
+rm -f $HOME/.ssh/known_hosts
+ssh-keyscan github.com > $HOME/.ssh/known_hosts
+
+destroy_vm an-cache
+
+if [ "$error" = "1" ]; then
+ echo "Failed to build drbd kmods"
+else
+ echo "Done building drbd kmods"
+fi
+
+exit $error

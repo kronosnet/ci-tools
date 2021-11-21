@@ -83,18 +83,37 @@ if [ "$error" = "1" ]; then
  exit 1
 fi
 
-# workaround
-# give the vm enough time to build drbd kmods
-sleep 240
+echo "Waiting for akmods to complete build"
 
-rm -f "${WORKSPACE}/*.rpm"
-scp an-cache:/var/cache/akmods/drbd/*.rpm "${WORKSPACE}/" || error=1
+timeout=360
+builddone=no
+
+while [ "$builddone" = no ] && [ "$timeout" -gt 0 ]; do
+ if ! ssh an-cache ls /var/cache/akmods/drbd/*.rpm 2>/dev/null; then
+  echo "build not found, sleeping 10 seconds"
+  sleep 10
+  timeout=$((timeout - 10))
+ else
+  echo "build found"
+  builddone=yes
+ fi
+done
+
+if [ "$builddone" = yes ]; then
+ mkdir -p /var/www/html/kmods/${BUILD}/${REPOSRC}/
+ scp an-cache:/var/cache/akmods/drbd/*.rpm "/var/www/html/kmods/${BUILD}/${REPOSRC}/" || error=1
+ cd /var/www/html/kmods/${BUILD}/${REPOSRC}/
+ createrepo .
+ cd -
+else
+ error=1
+fi
+
+destroy_vm an-cache
 
 # repeat to make sure known_hosts is clean after caching
 rm -f $HOME/.ssh/known_hosts
 ssh-keyscan github.com > $HOME/.ssh/known_hosts
-
-destroy_vm an-cache
 
 if [ "$error" = "1" ]; then
  echo "Failed to build drbd kmods"

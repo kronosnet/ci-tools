@@ -7,9 +7,6 @@ BREAKPOINT="$4"
 
 # fake it when building outside of CI
 [ -z "$BUILD_NUMBER" ] && BUILD_NUMBER=0
-[ -z "$WORKSPACE" ] && WORKSPACE=$(mktemp -d)
-
-mkdir -p $WORKSPACE
 
 # common strategy to cleanup all VMs
 destroy_vm() {

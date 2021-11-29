@@ -216,7 +216,7 @@ fi
 
 if [ -n "$KEY" ]; then
  for i in $ALLNODES; do
-  ssh $i subscription-manager unregister
+  ssh $i subscription-manager unregister || true
  done
 fi
 

@@ -105,6 +105,7 @@ enabled=1
 gpgcheck=0
 metadata_expire=1d
 skip_if_unavailable=True
+module_hotfixes=1
 EOF
 
 		done
@@ -116,6 +117,28 @@ EOF
 done
 
 cd $rpmdir/
+
+for i in master-repo next-stable-repo; do
+	cd $i
+	for x in $(ls); do
+		cd $x
+		createrepo .
+		cd ..
+	done
+	cd ..
+cat > $rpmdir/$i-$x.repo << EOF
+[$i-$x]
+name=$i-$x
+baseurl=https://kronosnet.org/builds/$i/$x/
+repo_gpgcheck=0
+enabled=1
+gpgcheck=0
+metadata_expire=1d
+skip_if_unavailable=True
+module_hotfixes=1
+EOF
+done
+
 rsync -av --progress --delete-after . www.kronosnet.org:~kronosnet/kronosnet/builds/.
 
 exit 0

@@ -121,6 +121,9 @@ cd $rpmdir/
 for i in master-repo next-stable-repo; do
 	cd $i
 	for x in $(ls); do
+		if [ -h "$x" ]; then
+			continue
+		fi
 		cd $x
 		createrepo .
 		cd ..

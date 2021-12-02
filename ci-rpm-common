@@ -7,6 +7,11 @@ cleanbr() {
   zypper removerepo libqb-build || true
   zypper removerepo corosync-build || true
   zypper removerepo pcmk-build || true
+  zypper removerepo qdevice-build || true
+  zypper removerepo sbd-build || true
+  zypper removerepo fas-build || true
+  zypper removerepo ras-build || true
+  zypper removerepo booth-build || true
   zypper clean
  fi
  if [ -n "$(which yum 2>/dev/null)" ]; then
@@ -15,6 +20,11 @@ cleanbr() {
   rm -rf /etc/yum.repos.d/libqb-build.repo || true
   rm -rf /etc/yum.repos.d/corosync-build.repo || true
   rm -rf /etc/yum.repos.d/pcmk-build.repo || true
+  rm -rf /etc/yum.repos.d/qdevice-build.repo || true
+  rm -rf /etc/yum.repos.d/sbd-build.repo || true
+  rm -rf /etc/yum.repos.d/fas-build.repo || true
+  rm -rf /etc/yum.repos.d/ras-build.repo || true
+  rm -rf /etc/yum.repos.d/booth-build.repo || true
   yum clean all
  fi
 }
@@ -69,6 +79,41 @@ installrpmdeps() {
     zypper removerepo pcmk-build || true
    fi
   fi
+  if [ -n "$QDEVICE_REPO_PATH" ]; then
+   zypper addrepo $QDEVICE_REPO_PATH qdevice-build || $ret
+   zypper modifyrepo -e -f -G qdevice-build || $ret
+   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $QDEVICE_REPO_PATH; then
+    zypper removerepo qdevice-build || true
+   fi
+  fi
+  if [ -n "$SBD_REPO_PATH" ]; then
+   zypper addrepo $SBD_REPO_PATH sbd-build || $ret
+   zypper modifyrepo -e -f -G sbd-build || $ret
+   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $SBD_REPO_PATH; then
+    zypper removerepo sbd-build || true
+   fi
+  fi
+  if [ -n "$FAS_REPO_PATH" ]; then
+   zypper addrepo $FAS_REPO_PATH fas-build || $ret
+   zypper modifyrepo -e -f -G fas-build || $ret
+   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $FAS_REPO_PATH; then
+    zypper removerepo fas-build || true
+   fi
+  fi
+  if [ -n "$RAS_REPO_PATH" ]; then
+   zypper addrepo $RAS_REPO_PATH ras-build || $ret
+   zypper modifyrepo -e -f -G ras-build || $ret
+   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $RAS_REPO_PATH; then
+    zypper removerepo ras-build || true
+   fi
+  fi
+  if [ -n "$BOOTH_REPO_PATH" ]; then
+   zypper addrepo $BOOTH_REPO_PATH booth-build || $ret
+   zypper modifyrepo -e -f -G booth-build || $ret
+   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $BOOTH_REPO_PATH; then
+    zypper removerepo booth-build || true
+   fi
+  fi
   zypper install -y $RPMDEPS || removerpmdeps 1
  fi
  if [ -n "$(which yum 2>/dev/null)" ]; then
@@ -83,6 +128,21 @@ installrpmdeps() {
   fi
   if [ -n "$PCMK_REPO" ]; then
    wget -4 -O /etc/yum.repos.d/pcmk-build.repo $PCMK_REPO || $ret
+  fi
+  if [ -n "$QDEVICE_REPO" ]; then
+   wget -4 -O /etc/yum.repos.d/qdevice-build.repo $QDEVICE_REPO || $ret
+  fi
+  if [ -n "$SBD_REPO" ]; then
+   wget -4 -O /etc/yum.repos.d/sbd-build.repo $SBD_REPO || $ret
+  fi
+  if [ -n "$FAS_REPO" ]; then
+   wget -4 -O /etc/yum.repos.d/fas-build.repo $FAS_REPO || $ret
+  fi
+  if [ -n "$RAS_REPO" ]; then
+   wget -4 -O /etc/yum.repos.d/ras-build.repo $RAS_REPO || $ret
+  fi
+  if [ -n "$BOOTH_REPO" ]; then
+   wget -4 -O /etc/yum.repos.d/booth-build.repo $BOOTH_REPO || $ret
   fi
   yum install -y $RPMDEPS || removerpmdeps 1
  fi

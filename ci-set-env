@@ -264,6 +264,9 @@ else
  SBD_REPO=https://kronosnet.org/builds/sbd-master-pcmk-${pcmkver}-${NODE_NAME}.repo
  SBD_REPO_PATH=https://kronosnet.org/builds/sbd/${NODE_NAME}/master-pcmk-${pcmkver}/latest/
 
+ FAS_REPO=https://kronosnet.org/builds/fence-agents-master-${NODE_NAME}.repo
+ FAS_REPO_PATH=https://kronosnet.org/builds/fence-agents-agents/${NODE_NAME}/master/latest/
+
  RAS_REPO=https://kronosnet.org/builds/resource-agents-master-${NODE_NAME}.repo
  RAS_REPO_PATH=https://kronosnet.org/builds/resource-agents/${NODE_NAME}/master/latest/
 

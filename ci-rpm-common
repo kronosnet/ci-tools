@@ -1,4 +1,4 @@
-export REMOVERPMS="libnozzle1 libknet1 libqb* corosynclib libcorosync* resource-agents libpacemaker-devel pacemaker-libs-devel pacemaker-schemas fence-agents fence-agents-common"
+export REMOVERPMS="libnozzle1 libknet1 libqb* corosynclib libcorosync* resource-agents libpacemaker-devel pacemaker-libs-devel pacemaker-schemas fence-agents fence-agents-common corosync-qdevice-devel"
 
 cleanbr() {
  if [ -n "$(which zypper 2>/dev/null)" ]; then

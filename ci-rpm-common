@@ -1,4 +1,4 @@
-export REMOVERPMS="libnozzle1 libknet1 libqb* corosynclib libcorosync* resource-agents libpacemaker-devel pacemaker-libs-devel pacemaker-schemas"
+export REMOVERPMS="libnozzle1 libknet1 libqb* corosynclib libcorosync* resource-agents libpacemaker-devel pacemaker-libs-devel pacemaker-schemas fence-agents fence-agents-common"
 
 cleanbr() {
  if [ -n "$(which zypper 2>/dev/null)" ]; then
@@ -53,63 +53,63 @@ installrpmdeps() {
  if [ -n "$(which zypper 2>/dev/null)" ]; then
   if [ -n "$KNET_REPO_PATH" ]; then
    zypper addrepo $KNET_REPO_PATH knet-build || $ret
-   zypper modifyrepo -e -f -G knet-build || $ret
+   zypper modifyrepo -p 1 -e -f -G knet-build || $ret
    if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $KNET_REPO_PATH; then
     zypper removerepo knet-build || true
    fi
   fi
   if [ -n "$LIBQB_REPO_PATH" ]; then
    zypper addrepo $LIBQB_REPO_PATH libqb-build || $ret
-   zypper modifyrepo -e -f -G libqb-build || $ret
+   zypper modifyrepo -p 1 -e -f -G libqb-build || $ret
    if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $LIBQB_REPO_PATH; then
     zypper removerepo libqb-build || true
    fi
   fi
   if [ -n "$COROSYNC_REPO_PATH" ]; then
    zypper addrepo $COROSYNC_REPO_PATH corosync-build || $ret
-   zypper modifyrepo -e -f -G corosync-build || $ret
+   zypper modifyrepo -p 1 -e -f -G corosync-build || $ret
    if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $COROSYNC_REPO_PATH; then
     zypper removerepo corosync-build || true
    fi
   fi
   if [ -n "$PCMK_REPO_PATH" ]; then
    zypper addrepo $PCMK_REPO_PATH pcmk-build || $ret
-   zypper modifyrepo -e -f -G pcmk-build || $ret
+   zypper modifyrepo -p 1 -e -f -G pcmk-build || $ret
    if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $PCMK_REPO_PATH; then
     zypper removerepo pcmk-build || true
    fi
   fi
   if [ -n "$QDEVICE_REPO_PATH" ]; then
    zypper addrepo $QDEVICE_REPO_PATH qdevice-build || $ret
-   zypper modifyrepo -e -f -G qdevice-build || $ret
+   zypper modifyrepo -p 1 -e -f -G qdevice-build || $ret
    if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $QDEVICE_REPO_PATH; then
     zypper removerepo qdevice-build || true
    fi
   fi
   if [ -n "$SBD_REPO_PATH" ]; then
    zypper addrepo $SBD_REPO_PATH sbd-build || $ret
-   zypper modifyrepo -e -f -G sbd-build || $ret
+   zypper modifyrepo -p 1 -e -f -G sbd-build || $ret
    if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $SBD_REPO_PATH; then
     zypper removerepo sbd-build || true
    fi
   fi
   if [ -n "$FAS_REPO_PATH" ]; then
    zypper addrepo $FAS_REPO_PATH fas-build || $ret
-   zypper modifyrepo -e -f -G fas-build || $ret
+   zypper modifyrepo -p 1 -e -f -G fas-build || $ret
    if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $FAS_REPO_PATH; then
     zypper removerepo fas-build || true
    fi
   fi
   if [ -n "$RAS_REPO_PATH" ]; then
    zypper addrepo $RAS_REPO_PATH ras-build || $ret
-   zypper modifyrepo -e -f -G ras-build || $ret
+   zypper modifyrepo -p 1 -e -f -G ras-build || $ret
    if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $RAS_REPO_PATH; then
     zypper removerepo ras-build || true
    fi
   fi
   if [ -n "$BOOTH_REPO_PATH" ]; then
    zypper addrepo $BOOTH_REPO_PATH booth-build || $ret
-   zypper modifyrepo -e -f -G booth-build || $ret
+   zypper modifyrepo -p 1 -e -f -G booth-build || $ret
    if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $BOOTH_REPO_PATH; then
     zypper removerepo booth-build || true
    fi

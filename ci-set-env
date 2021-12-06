@@ -83,6 +83,18 @@ echo CITARGET $CITARGET
 # Latest Pacemaker release branch
 PCMK_RELEASE=2.1
 
+# origin/master should use all master branches built
+# from sources
+if [ "$CITARGET" = "origin/master" ]; then
+ if [ -z "${pcmkver}" ]; then
+  export pcmkver=master
+ fi
+else
+ if [ -z "${pcmkver}" ]; then
+  export pcmkver="${PCMK_RELEASE}"
+ fi
+fi
+
 # rpm builds should use standard packages
 if [ "$build" != "rpm" ]; then
  echo ===== PKG_CONFIG_PATH info =====
@@ -98,15 +110,9 @@ if [ "$build" != "rpm" ]; then
  if [ "$CITARGET" = "origin/master" ]; then
   KNET_INSTALL_PATH=/srv/knet/origin/master/
   COROSYNC_INSTALL_PATH=/srv/corosync/origin/master/
-  if [ -z "${pcmkver}" ]; then
-   export pcmkver=master
-  fi
  else
   KNET_INSTALL_PATH=/srv/knet/origin/stable1-proposed/
   COROSYNC_INSTALL_PATH=/srv/corosync/origin/camelback/
-  if [ -z "${pcmkver}" ]; then
-   export pcmkver="${PCMK_RELEASE}"
-  fi
  fi
 
  PCMK_INSTALL_PATH=/srv/pcmk/origin/${pcmkver}/

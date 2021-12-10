@@ -31,48 +31,63 @@ echo "Updating all rpm repos for project: $project branch: $branch extraver: $3"
 
 cd $rpmdir/$project/
 
-for i in $(ls); do
-	cd $rpmdir/$project/
-	echo "Processing $i"
+process_pr() {
+	cd $branch
+	for i in $(ls); do
+		echo processing $i
+		cd $i
+		createrepo .
+		cd -
+	done
+	cd -
+	cd $rpmdir/$project/pr
+	find . -maxdepth 0 -type d -ctime +30 -print -delete
+	cd -
+}
 
-	cd $i
+process_publish() {
+	for i in $(ls); do
+		cd $rpmdir/$project/
+		echo "Processing $i"
 
-	if [ ! -d ${branch}${extraverdir} ]; then
-		continue
-	fi
+		cd $i
 
-	toplevelbranch=$(basename $branch)${extraver}
-	rm -f ${toplevelbranch}
-	ln -sf ${branch}${extraverdir} ${toplevelbranch}
+		if [ ! -d ${branch}${extraverdir} ]; then
+			continue
+		fi
 
-	cd $toplevelbranch
+		toplevelbranch=$(basename $branch)${extraver}
+		rm -f ${toplevelbranch}
+		ln -sf ${branch}${extraverdir} ${toplevelbranch}
 
-	# createrepo on latest and update symlinks
-	lastbuild="$(ls -1 | sort -n | tail -n 1)"
-	echo "Last build detected: $lastbuild"
-	cd $lastbuild
-	createrepo .
-	cd ..
-	rm -f latest
-	ln -sf $lastbuild latest
+		cd $toplevelbranch
 
-	# remove old builds (keep last 5)
-	builds="$(ls -1 | grep -v latest | sort -n)"
-	numbuilds="$(echo "$builds" | wc -l)"
-	if [ "$numbuilds" -gt 5 ]; then
-		purgenum=$((numbuilds - 5))
-		candidates="$(echo "$builds" | head -n $purgenum)"
-		for x in $candidates; do
-			echo "Removing old build: $x"
-			rm -rf $x
-		done
-	fi
-done
+		# createrepo on latest and update symlinks
+		lastbuild="$(ls -1 | sort -n | tail -n 1)"
+		echo "Last build detected: $lastbuild"
+		cd $lastbuild
+		createrepo .
+		cd ..
+		rm -f latest
+		ln -sf $lastbuild latest
 
-# generate repo files
-cd $rpmdir/
+		# remove old builds (keep last 5)
+		builds="$(ls -1 | grep -v latest | sort -n)"
+		numbuilds="$(echo "$builds" | wc -l)"
+		if [ "$numbuilds" -gt 5 ]; then
+			purgenum=$((numbuilds - 5))
+			candidates="$(echo "$builds" | head -n $purgenum)"
+			for x in $candidates; do
+				echo "Removing old build: $x"
+				rm -rf $x
+			done
+		fi
+	done
 
-cat > $rpmdir/opensuse-readme.repo << EOF
+	# generate repo files
+	cd $rpmdir/
+
+	cat > $rpmdir/opensuse-readme.repo << EOF
 OpenSUSE users, please browse the knet/ folder for appropriate builds for your deployment.
 You can use zypper to enable those repositories.
 
@@ -85,18 +100,18 @@ zypper mr -e -f -G knet
 please be aware the repositories are not signed.
 EOF
 
-for i in $(ls |grep -v repo); do
-	# project level
-	cd $i
+	for i in $(ls |grep -v repo); do
+		# project level
+		cd $i
 
-	for x in $(ls |grep -v opensuse); do
-		# builder level
-		cd $x
+		for x in $(ls |grep -v opensuse); do
+			# builder level
+			cd $x
 
-		for b in $(ls |grep -v origin); do
+			for b in $(ls |grep -v origin); do
 
-		echo "Creating $i-$b-$x repo file"
-cat > $rpmdir/$i-$b-$x.repo << EOF
+			echo "Creating $i-$b-$x repo file"
+			cat > $rpmdir/$i-$b-$x.repo << EOF
 [$i-$b-$x]
 name=$i-$b-$x
 baseurl=https://kronosnet.org/builds/$i/$x/$b/latest/
@@ -108,28 +123,28 @@ skip_if_unavailable=True
 module_hotfixes=1
 EOF
 
+			done
+
+			cd - >/dev/null 2>&1
 		done
 
-		cd - >/dev/null 2>&1
+		cd .. >/dev/null 2>&1
 	done
 
-	cd .. >/dev/null 2>&1
-done
+	cd $rpmdir/
 
-cd $rpmdir/
-
-for i in master-repo next-stable-repo; do
-	cd $i
-	for x in $(ls); do
-		if [ -h "$x" ]; then
-			continue
-		fi
-		cd $x
-		createrepo .
+	for i in master-repo next-stable-repo; do
+		cd $i
+		for x in $(ls); do
+			if [ -h "$x" ]; then
+				continue
+			fi
+			cd $x
+			createrepo .
+			cd ..
+		done
 		cd ..
-	done
-	cd ..
-cat > $rpmdir/$i-$x.repo << EOF
+		cat > $rpmdir/$i-$x.repo << EOF
 [$i-$x]
 name=$i-$x
 baseurl=https://kronosnet.org/builds/$i/$x/
@@ -140,8 +155,19 @@ metadata_expire=1d
 skip_if_unavailable=True
 module_hotfixes=1
 EOF
-done
+	done
+}
 
+case $branch in
+	pr*)
+		process_pr
+		;;
+	*)
+		process_publish
+		;;
+esac
+
+cd $rpmdir/
 rsync -av --progress --delete-after . www.kronosnet.org:~kronosnet/kronosnet/builds/.
 
 exit 0

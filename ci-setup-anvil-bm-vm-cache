@@ -62,6 +62,8 @@ cat "$TEMPLATESDIR/anvil_cloud_init_${BUILD}.cfg" | \
   -e "s#@KEY@#${KEY}#g" \
   -e "s#@ORG@#${ORG}#g" \
   -e "s#@AKEY@#${AKEY}#g" \
+  -e "s#@PRNUM@#${PRNUM}#g" \
+  -e "s#@PRREPO@#${PRREPO}#g" \
   -e "s#@ANVIL@#false#g" \
   -e "s#@ANVILDEPS@#false#g" \
   -e "s#@ALTEEVE@#false#g" \

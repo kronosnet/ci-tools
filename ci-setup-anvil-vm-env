@@ -47,6 +47,7 @@ esac
 ANVILDEPS=false
 ALTEEVE=false
 ALTEEVESTAGING=false
+PRREPO=false
 
 case "$REPOSRC" in
  ci)
@@ -71,6 +72,10 @@ ANVIL=false
 case "$ANVILSRC" in
  ci)
   ANVIL=true
+ ;;
+ pr*)
+  PRREPO=true
+  PRNUM=$(echo $ANVILSRC | sed -e 's#pr/##g')
  ;;
  none)
  ;;

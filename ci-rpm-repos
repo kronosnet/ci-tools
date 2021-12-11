@@ -46,7 +46,7 @@ process_pr() {
 }
 
 process_publish() {
-	for i in $(ls); do
+	for i in $(ls | grep -v pr); do
 		cd $rpmdir/$project/
 		echo "Processing $i"
 
@@ -100,11 +100,11 @@ zypper mr -e -f -G knet
 please be aware the repositories are not signed.
 EOF
 
-	for i in $(ls |grep -v repo); do
+	for i in $(ls | grep -v repo); do
 		# project level
 		cd $i
 
-		for x in $(ls |grep -v opensuse); do
+		for x in $(ls | grep -v opensuse | grep -v "^pr"); do
 			# builder level
 			cd $x
 

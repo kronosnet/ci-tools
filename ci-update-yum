@@ -203,8 +203,8 @@ case "${NODE_NAME}" in
   wget -O /etc/pki/ca-trust/source/anchors/RH-IT-Root-CA.crt https://password.corp.redhat.com/RH-IT-Root-CA.crt
   wget -O /etc/pki/ca-trust/source/anchors/Eng-CA.crt https://engineering.redhat.com/Eng-CA.crt
   update-ca-trust
-  if [ ! -f /etc/pki/ca-trust/source/anchors/openstack.crt ]; then
-   echo "Install manually the openstack overcloud certificate!"
+  if [ ! -f $HOME/.config/openstack/clouds.yaml ]; then
+   echo "Install manually openstack cloud config!"
    exit 1
   fi
   pip3 uninstall --yes vapor || true

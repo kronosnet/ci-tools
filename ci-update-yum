@@ -199,7 +199,7 @@ yum -y install         \
  $EXTRADEPS
 
 case "${NODE_NAME}" in
- *vapor)
+ *vapor*)
   wget -O /etc/pki/ca-trust/source/anchors/RH-IT-Root-CA.crt https://password.corp.redhat.com/RH-IT-Root-CA.crt
   wget -O /etc/pki/ca-trust/source/anchors/Eng-CA.crt https://engineering.redhat.com/Eng-CA.crt
   update-ca-trust

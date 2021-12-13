@@ -207,12 +207,9 @@ case "${NODE_NAME}" in
    echo "Install manually the openstack overcloud certificate!"
    exit 1
   fi
-  if [ ! -f $HOME/.config/openstack/clouds.yaml ]; then
-   echo "Install manually openstack cloud config!"
-   exit 1
-  fi
-  #pip3 uninstall --yes vapor || true
+  pip3 uninstall --yes vapor || true
   #pip3 --disable-pip-version-check install git+https://gitlab.cee.redhat.com/clusterqe/vapor.git#egg=vapor[colorlog]
+  pip3 --disable-pip-version-check install git+https://gitlab.cee.redhat.com/fdinitto/vapor.git@upstream-ci#egg=vapor[colorlog]
  ;;
 esac
 

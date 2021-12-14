@@ -1,0 +1,34 @@
+#!/bin/bash
+
+action="$1"
+shift
+release="$1"
+shift
+version="$1"
+shift
+tests="$@"
+
+echo "Executing $action for release $release + upstream $version with $tests"
+
+commonoptions="-P osp --osp-cloud rhelha-user --osp-region regionOne --osp-project rhelha"
+commonoptions="$commonoptions --osp-image rhel-${release}.0.x86_64 --flavor rhelha-vapor-node --flavor-workstation rhelha-vapor-workstation"
+commonoptions="$commonoptions -c ${version} -n 3 --verbose --useiscsi -r -s ${release} --useupstreamrepo ${version} --usezstream yes"
+
+case "$action" in
+ del|delete)
+  vapor $commonoptions -D
+ ;;
+ create)
+  vapor $commonoptions -C
+ ;;
+ test)
+  for i in /tmp /var/tmp; do
+   rm -rf $i/tmp* $i/vapor* $i/vedder*
+  done
+  vapor $commonoptions -T -b -t "$tests"
+ ;;
+ *)
+  echo "unknown action: $action"
+  exit 1
+ ;;
+esac

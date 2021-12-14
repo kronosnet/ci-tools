@@ -12,7 +12,7 @@ echo "Executing $action for release $release + upstream $version with $tests"
 
 commonoptions="--nocolorlog -P osp --osp-cloud rhelha-user --osp-region regionOne --osp-project rhelha"
 commonoptions="$commonoptions --osp-image rhel-${release}.0.x86_64 --flavor rhelha-vapor-node --flavor-workstation rhelha-vapor-workstation"
-commonoptions="$commonoptions -c upstreamci -n 3 --verbose --useiscsi -r -s ${release} --useupstreamrepo ${version} --usezstream yes"
+commonoptions="$commonoptions -c upstreamci -n 3 --verbose --useiscsi -r -s ${release} --useupstreamrepo ${version} --usezstream no"
 
 case "$action" in
  del|delete)

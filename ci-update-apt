@@ -13,7 +13,8 @@ apt-get -y dist-upgrade
 apt-get -y autoremove
 apt-get -y install valgrind || true
 if [ "${NODE_NAME}" != debian-unstable-sparc64 ]; then
-	rubydeps="ruby-dev ruby ruby-bundler ruby-backports ruby-daemons ruby-ethon ruby-ffi ruby-eventmachine ruby-json ruby-open4 ruby-sinatra ruby-ruby2-keywords ruby-mustermann ruby-rack ruby-rack-protection ruby-rack-test ruby-sinatra ruby-test-unit thin ruby-webrick"
+	rubydeps="ruby-dev ruby ruby-bundler ruby-backports ruby-daemons ruby-ethon ruby-ffi ruby-eventmachine ruby-json ruby-open4 ruby-sinatra ruby-ruby2-keywords ruby-mustermann ruby-rack ruby-rack-protection ruby-rack-test ruby-sinatra ruby-test-unit thin"
+	apt-get -y install ruby-webrick || true
 fi
 
 if [ -n "$KNETRUST" ] && [ "$KNETRUST" = yes ]; then

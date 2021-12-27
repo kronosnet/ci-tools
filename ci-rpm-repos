@@ -92,7 +92,7 @@ OpenSUSE users, please browse the knet/ folder for appropriate builds for your d
 You can use zypper to enable those repositories.
 
 For example use the following command to add the repository:
-zypper add https://kronosnet.org/builds/knet/opensuse-tumbleweed-x86-64/master/latest/ knet
+zypper add https://kronosnet.org/builds/knet/opensuse-tumbleweed-x86-64/main/latest/ knet
 
 and to enable and autorefresh:
 zypper mr -e -f -G knet
@@ -133,7 +133,7 @@ EOF
 
 	cd $rpmdir/
 
-	for i in master-repo next-stable-repo; do
+	for i in main-repo next-stable-repo; do
 		cd $i
 		for x in $(ls); do
 			if [ -h "$x" ]; then

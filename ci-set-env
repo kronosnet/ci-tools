@@ -83,11 +83,11 @@ echo CITARGET $CITARGET
 # Latest Pacemaker release branch
 PCMK_RELEASE=2.1
 
-# origin/master should use all master branches built
+# origin/main should use all main branches built
 # from sources
-if [ "$CITARGET" = "origin/master" ]; then
+if [ "$CITARGET" = "origin/main" ]; then
  if [ -z "${pcmkver}" ]; then
-  export pcmkver=master
+  export pcmkver=main
  fi
 else
  if [ -z "${pcmkver}" ]; then
@@ -101,15 +101,15 @@ if [ "$build" != "rpm" ]; then
 
  EXTERNAL_LD_LIBRARY_PATH=""
 
- # all projects should build against libqb master
+ # all projects should build against libqb main
  # exceptions below
- QB_INSTALL_PATH=/srv/qb/origin/master/
+ QB_INSTALL_PATH=/srv/qb/origin/main/
 
- # origin/master should use all master branches built
+ # origin/main should use all main branches built
  # from sources
- if [ "$CITARGET" = "origin/master" ]; then
-  KNET_INSTALL_PATH=/srv/knet/origin/master/
-  COROSYNC_INSTALL_PATH=/srv/corosync/origin/master/
+ if [ "$CITARGET" = "origin/main" ]; then
+  KNET_INSTALL_PATH=/srv/knet/origin/main/
+  COROSYNC_INSTALL_PATH=/srv/corosync/origin/main/
  else
   KNET_INSTALL_PATH=/srv/knet/origin/stable1-proposed/
   COROSYNC_INSTALL_PATH=/srv/corosync/origin/camelback/
@@ -117,12 +117,12 @@ if [ "$build" != "rpm" ]; then
 
  PCMK_INSTALL_PATH=/srv/pcmk/origin/${pcmkver}/
 
- # those projects only have master branch
- QDEVICE_INSTALL_PATH=/srv/qdevice/origin/master/
- SBD_INSTALL_PATH=/srv/sbd/origin/master-pcmk-${pcmkver}/
- FAS_INSTALL_PATH=/srv/fas/origin/master/
- RAS_INSTALL_PATH=/srv/ras/origin/master/
- BOOTH_INSTALL_PATH=/srv/booth/origin/master-pcmk-${pcmkver}/
+ # those projects only have main branch
+ QDEVICE_INSTALL_PATH=/srv/qdevice/origin/main/
+ SBD_INSTALL_PATH=/srv/sbd/origin/main-pcmk-${pcmkver}/
+ FAS_INSTALL_PATH=/srv/fas/origin/main/
+ RAS_INSTALL_PATH=/srv/ras/origin/main/
+ BOOTH_INSTALL_PATH=/srv/booth/origin/main-pcmk-${pcmkver}/
 
  case $DEST in
   corosync-needle)
@@ -138,15 +138,15 @@ if [ "$build" != "rpm" ]; then
    BOOTH_INSTALL_PATH=""
    ;;
   corosync)
-   # corosync supports both knet stable and knet master
+   # corosync supports both knet stable and knet main
    # we need to test build both
    if [ -n "${knetver}" ]; then
     KNET_INSTALL_PATH=/srv/knet/origin/${knetver}/
    fi
    ;;
   sbd|booth|pcs)
-   # booth and sbd only have a master branch, but they need
-   # different settings when building against pcmk master or release
+   # booth and sbd only have a main branch, but they need
+   # different settings when building against pcmk main or release
    if [ "${pcmkver}" = "${PCMK_RELEASE}" ]; then
     KNET_INSTALL_PATH=/srv/knet/origin/stable1-proposed/
     COROSYNC_INSTALL_PATH=/srv/corosync/origin/camelback/
@@ -261,31 +261,31 @@ if [ "$build" != "rpm" ]; then
 
 else
 
- LIBQB_REPO=https://kronosnet.org/builds/libqb-master-${NODE_NAME}.repo
- LIBQB_REPO_PATH=https://kronosnet.org/builds/libqb/${NODE_NAME}/master/latest/
+ LIBQB_REPO=https://kronosnet.org/builds/libqb-main-${NODE_NAME}.repo
+ LIBQB_REPO_PATH=https://kronosnet.org/builds/libqb/${NODE_NAME}/main/latest/
 
- QDEVICE_REPO=https://kronosnet.org/builds/corosync-qdevice-master-${NODE_NAME}.repo
- QDEVICE_REPO_PATH=https://kronosnet.org/builds/corosync-qdevice/${NODE_NAME}/master/latest/
+ QDEVICE_REPO=https://kronosnet.org/builds/corosync-qdevice-main-${NODE_NAME}.repo
+ QDEVICE_REPO_PATH=https://kronosnet.org/builds/corosync-qdevice/${NODE_NAME}/main/latest/
 
- SBD_REPO=https://kronosnet.org/builds/sbd-master-pcmk-${pcmkver}-${NODE_NAME}.repo
- SBD_REPO_PATH=https://kronosnet.org/builds/sbd/${NODE_NAME}/master-pcmk-${pcmkver}/latest/
+ SBD_REPO=https://kronosnet.org/builds/sbd-main-pcmk-${pcmkver}-${NODE_NAME}.repo
+ SBD_REPO_PATH=https://kronosnet.org/builds/sbd/${NODE_NAME}/main-pcmk-${pcmkver}/latest/
 
- FAS_REPO=https://kronosnet.org/builds/fence-agents-master-${NODE_NAME}.repo
- FAS_REPO_PATH=https://kronosnet.org/builds/fence-agents/${NODE_NAME}/master/latest/
+ FAS_REPO=https://kronosnet.org/builds/fence-agents-main-${NODE_NAME}.repo
+ FAS_REPO_PATH=https://kronosnet.org/builds/fence-agents/${NODE_NAME}/main/latest/
 
- RAS_REPO=https://kronosnet.org/builds/resource-agents-master-${NODE_NAME}.repo
- RAS_REPO_PATH=https://kronosnet.org/builds/resource-agents/${NODE_NAME}/master/latest/
+ RAS_REPO=https://kronosnet.org/builds/resource-agents-main-${NODE_NAME}.repo
+ RAS_REPO_PATH=https://kronosnet.org/builds/resource-agents/${NODE_NAME}/main/latest/
 
- BOOTH_REPO=https://kronosnet.org/builds/booth-master-pcmk-${pcmkver}-${NODE_NAME}.repo
- BOOTH_REPO_PATH=https://kronosnet.org/builds/booth/${NODE_NAME}/master-pcmk-${pcmkver}/latest/
+ BOOTH_REPO=https://kronosnet.org/builds/booth-main-pcmk-${pcmkver}-${NODE_NAME}.repo
+ BOOTH_REPO_PATH=https://kronosnet.org/builds/booth/${NODE_NAME}/main-pcmk-${pcmkver}/latest/
 
- if [ "$CITARGET" = "origin/master" ]; then
-  KNET_REPO=https://kronosnet.org/builds/knet-master-${NODE_NAME}.repo
-  KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/master/latest/
-  COROSYNC_REPO=https://kronosnet.org/builds/corosync-master-${NODE_NAME}.repo
-  COROSYNC_REPO_PATH=https://kronosnet.org/builds/corosync/${NODE_NAME}/master/latest/
-  PCMK_REPO=https://kronosnet.org/builds/pacemaker-master-${NODE_NAME}.repo
-  PCMK_REPO_PATH=https://kronosnet.org/builds/pacemaker/${NODE_NAME}/master/latest/
+ if [ "$CITARGET" = "origin/main" ]; then
+  KNET_REPO=https://kronosnet.org/builds/knet-main-${NODE_NAME}.repo
+  KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/main/latest/
+  COROSYNC_REPO=https://kronosnet.org/builds/corosync-main-${NODE_NAME}.repo
+  COROSYNC_REPO_PATH=https://kronosnet.org/builds/corosync/${NODE_NAME}/main/latest/
+  PCMK_REPO=https://kronosnet.org/builds/pacemaker-main-${NODE_NAME}.repo
+  PCMK_REPO_PATH=https://kronosnet.org/builds/pacemaker/${NODE_NAME}/main/latest/
  else
   KNET_REPO=https://kronosnet.org/builds/knet-stable1-proposed-${NODE_NAME}.repo
   KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/stable1-proposed/latest/
@@ -318,7 +318,7 @@ else
    BOOTH_REPO_PATH=""
    ;;
   corosync)
-   # corosync supports both knet stable and knet master
+   # corosync supports both knet stable and knet main
    # we need to test build both
    if [ -n "${knetver}" ]; then
     KNET_REPO=https://kronosnet.org/builds/knet-${knetver}-${NODE_NAME}.repo
@@ -326,8 +326,8 @@ else
    fi
    ;;
   sbd|booth|pcs)
-   # booth and sbd only have a master branch, but they need
-   # different settings when building against pcmk master or release
+   # booth and sbd only have a main branch, but they need
+   # different settings when building against pcmk main or release
    if [ "${pcmkver}" = "${PCMK_RELEASE}" ]; then
     KNET_REPO=https://kronosnet.org/builds/knet-stable1-proposed-${NODE_NAME}.repo
     KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/stable1-proposed/latest/

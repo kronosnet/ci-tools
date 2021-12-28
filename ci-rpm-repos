@@ -131,9 +131,6 @@ EOF
 		cd .. >/dev/null 2>&1
 	done
 
-	# temporary disable full repo generation
-	return 0
-
 	cd $rpmdir/
 
 	for i in main-repo next-stable-repo; do

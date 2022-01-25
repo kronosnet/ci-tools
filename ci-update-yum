@@ -192,6 +192,7 @@ yum -y install         \
  psmisc                \
  rpm-build             \
  rpmlint               \
+ rsync                 \
  time                  \
  valgrind              \
  xz-devel              \

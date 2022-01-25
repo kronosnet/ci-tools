@@ -96,6 +96,7 @@ zypper install -y $bundler        \
  rpm-build                        \
  rpmdevtools                      \
  rpmlint                          \
+ rsync                            \
  ruby                             \
  ruby-devel                       \
  systemd-devel                    \

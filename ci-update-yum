@@ -133,7 +133,7 @@ esac
 
 # annobin-annocheck is off sync on rhel85 power
 case "${NODE_NAME}" in
- rhel85*power*)
+ *power*)
  ;;
  *)
   EXTRADEPS="annobin-annocheck $EXTRADEPS"

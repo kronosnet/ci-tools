@@ -195,6 +195,7 @@ yum -y install         \
  rsync                 \
  time                  \
  valgrind              \
+ which                 \
  xz-devel              \
  zlib-devel            \
  $EXTRADEPS

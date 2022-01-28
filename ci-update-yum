@@ -109,7 +109,7 @@ fi
 
 # OpenStack packages
 case "${NODE_NAME}" in
- *s390*)
+ rhel*s390*)
  ;;
  *centos-7.2*)
   EXTRADEPS="python34"

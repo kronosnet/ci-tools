@@ -112,6 +112,9 @@ addnodetoalljobs() {
 			*after-merge|*github-pr-builder|*covscan*|*crosscompile*)
 				echo Skipping hook job $i
 				;;
+			*ha-functional*)
+				echo Skipping functional job $i
+				;;
 			update-all-ci-tools)
 				echo Adding updating job $i
 				addjob=1
@@ -133,6 +136,9 @@ addnodetoalljobs() {
 				;;
 			*pcs*)
 				case $i in
+					*pcs-0.10*)
+						# managed manually
+						;;
 					*rpms)
 						if [ $rpm == yes ]; then
 							if [ $oldbuilds == yes ]; then
@@ -142,9 +148,6 @@ addnodetoalljobs() {
 								addjob=1
 							fi
 						fi
-						;;
-					*pcs-0.10*)
-						# managed manually
 						;;
 					*-nonvoting)
 						if [ $voting == no ]; then

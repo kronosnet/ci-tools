@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 publish=/srv/publish/
 
@@ -9,20 +9,27 @@ sourcedir="$2"
 destdir="$publish/$3"
 transferset="$4"
 
-rsyncopts="-arv --progress --include='*/'"
+mkdir -p "$destdir"
+cd "$destdir"
 
-for i in $transferset; do
-	rsyncopts="$rsyncopts --include='$i'"
-done
-
-rsyncopts="$rsyncopts --exclude '*'"
-
-whoami
-pwd
+case $transferset in
+	rpm)
+		preptar="$(echo cd $sourcedir \&\& rm -f ci-artifacts.tar \&\& find .  -name \"*.rpm\" \| tar -cvf ci-artifacts.tar -T -)"
+	;;
+	cov)
+	;;
+	*)
+		echo "Unknown transfer set"
+		exit 1
+	;;
+esac
 
 mkdir -p "$destdir"
 cd "$destdir"
-rsync $rsyncopts root@"$sourcenode".ci.kronosnet.org:"$sourcedir"/ .
-#find . -type d -print -delete
+
+ssh "$sourcenode".ci.kronosnet.org $preptar
+scp "$sourcenode".ci.kronosnet.org:"$sourcedir"/ci-artifacts.tar  .
+tar -xvpf ci-artifacts.tar
+rm -f ci-artifacts.tar
 
 exit 0

@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -e
+
+publish=/srv/publish/
+
+sourcenode="$1"
+sourcedir="$2"
+destdir="$publish/$3"
+transferset="$4"
+
+rsyncopts="-arv --progress --include='*/'"
+
+for i in $transferset; do
+	rsyncopts="$rsyncopts --include='$i'"
+done
+
+rsyncopts="$rsyncopts --exclude '*'"
+
+whoami
+pwd
+
+mkdir -p "$destdir"
+cd "$destdir"
+rsync $rsyncopts root@"$sourcenode".ci.kronosnet.org:"$sourcedir"/ .
+#find . -type d -print -delete
+
+exit 0

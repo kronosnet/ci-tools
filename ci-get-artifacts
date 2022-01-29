@@ -17,6 +17,7 @@ case $transferset in
 		preptar="$(echo cd $sourcedir \&\& rm -f ci-artifacts.tar \&\& find .  -name \"*.rpm\" \| tar -cvf ci-artifacts.tar -T -)"
 	;;
 	cov)
+		preptar="$(echo cd $sourcedir/cov.html \&\& rm -f ../ci-artifacts.tar \&\& tar -cvf ../ci-artifacts.tar .)"
 	;;
 	*)
 		echo "Unknown transfer set"

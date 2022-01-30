@@ -123,7 +123,7 @@ addnodetoalljobs() {
 				echo Adding updating job $i
 				addjob=1
 				;;
-			update-all*|update-freebsd-devel)
+			update-anvil*|update-all*|update-freebsd-devel)
 				echo Skipping updating job $i
 				;;
 			*clang)

@@ -43,6 +43,9 @@ removerpmdeps() {
 
 installrpmdeps() {
 
+ # temporary workaround
+ bootstrap=1
+
  if [ "x$bootstrap" = "x1" ]; then
   ret="true"
  else

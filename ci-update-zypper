@@ -48,6 +48,7 @@ zypper install -y $bundler        \
  inkscape                         \
  jq                               \
  libaio-devel                     \
+ libblkid-devel                   \
  libbz2-devel                     \
  libcmocka-devel                  \
  libcurl-devel                    \

@@ -165,6 +165,7 @@ yum -y install         \
  inkscape              \
  jq                    \
  libaio-devel          \
+ libblkid-devel        \
  libcmocka-devel       \
  libcurl-devel         \
  libffi-devel          \

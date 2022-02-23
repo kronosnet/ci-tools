@@ -5,6 +5,8 @@ set -ev
 case "$DEST" in
  gfs2-*)
   if [ -n "$REPO" -a -n "$BRANCH" ]; then
+   git config user.email "jenkins@kronosnet.org"
+   git config user.name "Sir Jenkins"
    git remote rm proposed || true
    git remote add proposed "$REPO"
    git fetch proposed

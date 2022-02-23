@@ -52,6 +52,7 @@ case $build in
 
   case "$DEST" in
    gfs2-util*)
+    echo "Complete html report can be found here: https://kronosnet.org/coverity/$DEST/${NODE_NAME}/${BUILD_NUMBER}/"
     exit 0
    ;;
   esac

@@ -2,6 +2,18 @@
 
 set -ev
 
+case "$DEST" in
+ gfs2-*)
+  if [ -n "$REPO" -a -n "$BRANCH" ]; then
+   git remote rm proposed || true
+   git remote add proposed "$REPO"
+   git fetch proposed
+   git checkout origin/main
+   git merge --no-ff "proposed/$BRANCH" -m "Merge PR"
+  fi
+ ;;
+esac
+
 if [ -f ./autogen.sh ]; then
  echo "./autogen.sh"
  ./autogen.sh

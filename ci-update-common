@@ -6,5 +6,6 @@ rm -rf /srv/workspace/*
 # the test job can only clean up to a certain point
 # this is more likely to avoid qb leaks
 rm -rf /dev/shm/qb*
+rm -rf /dev/shm/testvol*
 rm -rf /tmp/libqb*
 rm -rf /tmp/booth-tests*

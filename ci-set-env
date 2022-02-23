@@ -124,7 +124,7 @@ if [ "$build" != "rpm" ]; then
  RAS_INSTALL_PATH=/srv/ras/origin/main/
  BOOTH_INSTALL_PATH=/srv/booth/origin/main-pcmk-${pcmkver}/
 
- case $DEST in
+ case "$DEST" in
   corosync-needle)
    # old branches should only use system provided rpm to build
    KNET_INSTALL_PATH=""
@@ -295,7 +295,7 @@ else
   PCMK_REPO_PATH="https://kronosnet.org/builds/pacemaker/${NODE_NAME}/${PCMK_RELEASE}/latest/"
  fi
 
- case $DEST in
+ case "$DEST" in
   corosync-needle)
    # old branches should only use system provided rpm to build
    KNET_REPO=""

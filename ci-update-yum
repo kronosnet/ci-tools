@@ -214,9 +214,10 @@ case "${NODE_NAME}" in
    echo "Install manually openstack openrc auth config"
    exit 1
   fi
+  yum -y install brewkoji createrepo python38 python38-devel
+  alternatives --set python3 /usr/bin/python3.8
   pip3 uninstall --yes vapor || true
   pip3 --disable-pip-version-check install git+https://gitlab.cee.redhat.com/clusterqe/vapor.git#egg=vapor[colorlog]
-  yum -y install brewkoji createrepo
  ;;
 esac
 

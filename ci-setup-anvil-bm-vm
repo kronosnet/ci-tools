@@ -186,7 +186,6 @@ cd anvil-test-suite
 set +e
 ./run-tests -b $BREAKPOINT
 ret=$?
-set -e
 cd /root/ci-tools
 
 # collecting all build info

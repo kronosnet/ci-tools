@@ -211,14 +211,10 @@ rm -rf $DEPLOYDIR/logs/$BUILD_NUMBER/
 
 echo "Complete anvil logs available here for download: http://anvil-ci-repo.kronosnet.org/testing-logs/$BUILD_NUMBER.tar.gz"
 
-if [ "$ret" != "0" ]; then
- exit $ret
-fi
-
 if [ -n "$KEY" ]; then
  for i in $ALLNODES; do
   ssh $i subscription-manager unregister || true
  done
 fi
 
-exit 0
+exit $ret

@@ -204,8 +204,7 @@ done
 
 cd $DEPLOYDIR/logs/
 tar zcvp -f $BUILD_NUMBER.tar.gz $BUILD_NUMBER/
-mkdir -p /var/www/html/testing-logs
-mv $BUILD_NUMBER.tar.gz /var/www/html/testing-logs/
+scp $BUILD_NUMBER.tar.gz anvil-ci-proxy:/var/www/html/testing-logs/$BUILD_NUMBER.tar.gz
 cd -
 rm -rf $DEPLOYDIR/logs/$BUILD_NUMBER/
 

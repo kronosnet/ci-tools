@@ -106,7 +106,7 @@ addnodetoalljobs() {
 			anvil-*|*pagure*)
 				echo Skipping manual job $i
 				;;
-			all-weekly|build-rpm-repos|reinstall-all-manual|reconnect-all-nodes)
+			all-weekly|build-rpm-repos|reinstall-all-manual|reconnect-all-nodes|get-artifacts)
 				echo Skipping global job $i
 				;;
 			*after-merge|*github-pr-builder|*covscan*|*crosscompile*)

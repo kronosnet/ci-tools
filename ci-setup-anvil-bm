@@ -2,6 +2,9 @@
 
 set -e
 
+# some of those are dups but required to deploy a BM from scratch
+yum install -y fence-agents-common resource-agents fedpkg mock wget rpm-build createrepo_c yum-utils
+
 BUILDDIR=/root
 
 cd $BUILDDIR

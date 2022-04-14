@@ -25,12 +25,6 @@ cd "$DEPLOYDIR/configs"
 
 # ifn ip network is defined in ci-tools/ci-setup-anvil-bm
 # and ci-tools/anvil-config-templates/ network templates
-echo "Generating VM network configs and updating /etc/hosts"
-if [ ! -f /etc/hosts.anvil ]; then
- cp /etc/hosts /etc/hosts.anvil
-else
- cp /etc/hosts.anvil /etc/hosts
-fi
 
 ipbase=2
 for i in $ALLNODES; do
@@ -39,7 +33,6 @@ for i in $ALLNODES; do
   sed \
    -e "s#@IFNIP@#$IFNIP#g" \
    > "$DEPLOYDIR/configs/${i}_net_config.cfg"
-  echo "$IFNIP ${i}.alteeve.com ${i}" >> /etc/hosts
   ipbase=$((ipbase + 1))
 done
 
@@ -208,7 +201,7 @@ scp $BUILD_NUMBER.tar.gz anvil-ci-proxy:/var/www/html/testing-logs/$BUILD_NUMBER
 cd -
 rm -rf $DEPLOYDIR/logs/$BUILD_NUMBER/
 
-echo "Complete anvil logs available here for download: http://anvil-ci-repo.kronosnet.org/testing-logs/$BUILD_NUMBER.tar.gz"
+echo "Complete anvil logs available here for download: http://anvil-ci-repo.ci.alteeve.com/testing-logs/$BUILD_NUMBER.tar.gz"
 
 if [ -n "$KEY" ]; then
  for i in $ALLNODES; do

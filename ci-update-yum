@@ -33,6 +33,7 @@ esac
 case "${NODE_NAME}" in
  anvil-ci-centos-9*)
   yum install -y fence-agents-common resource-agents mock wget rpm-build createrepo_c
+ ;;
  anvil-ci*)
   yum install -y fence-agents-common resource-agents fedpkg mock wget rpm-build createrepo_c
  ;;

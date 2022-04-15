@@ -22,12 +22,17 @@ case "${NODE_NAME}" in
   yum install -y centos-release-openstack-stein epel-release
   EXTRAOPTS="--skip-broken"
  ;;
- centos-8*|anvil-ci-centos*|anvil-ci-bm*)
+ centos-8*|anvil-ci-centos-8*|anvil-ci-bm*)
   yum install -y centos-release-openstack-ussuri epel-release
+ ;;
+ anvil-ci-centos-9*)
+  yum install -y centos-release-openstack-yoga epel-release
  ;;
 esac
 
 case "${NODE_NAME}" in
+ anvil-ci-centos-9*)
+  yum install -y fence-agents-common resource-agents mock wget rpm-build createrepo_c
  anvil-ci*)
   yum install -y fence-agents-common resource-agents fedpkg mock wget rpm-build createrepo_c
  ;;

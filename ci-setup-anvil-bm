@@ -23,6 +23,7 @@ cd ..
 rm -rf edk2 rpmbuild
 fedpkg co --anonymous edk2
 cd edk2
+fedpkg switch-branch f35
 fedpkg srpm
 mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild *.src.rpm --resultdir=$BUILDDIR/qemu-local-build
 rm -rf $BUILDDIR/qemu-local-build/*debuginfo*
@@ -32,6 +33,7 @@ rm -rf edk2 rpmbuild
 rm -rf ipxe rpmbuild
 fedpkg co --anonymous ipxe
 cd ipxe
+fedpkg switch-branch f35
 fedpkg srpm
 mock -r /etc/mock/centos-stream-8-x86_64.cfg --install $BUILDDIR/qemu-local-build/edk2-tools*x86*
 mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild *.src.rpm --resultdir=$BUILDDIR/qemu-local-build --no-clean
@@ -61,6 +63,7 @@ yum install -y qemu-img qemu-kvm libvirt virt-install lftp httpd fence-virtd-lib
 rm -rf cloud-utils rpmbuild
 fedpkg co --anonymous cloud-utils
 cd cloud-utils
+fedpkg switch-branch f35
 fedpkg prep
 rpmbuild --define "_rpmdir $(pwd)" --define "_srcrpmdir $(pwd)" --define "_sourcedir $(pwd)"  -bb cloud-utils.spec
 yum install -y x86_64/*.rpm

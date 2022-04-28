@@ -1,0 +1,31 @@
+TODO List for ci.kronosnet.org
+------------------------------
+
+- CI Maintenance - work do be done on builders
+   [ ] backup VMs
+   [ ] reboot nodes
+   [ ] change dependencies per node vs per global job
+   [ ] review knet-memcheck as voting
+   [ ] fix rpm publishing conditional on rpm build job
+   [ ] pcs covscan
+   [ ] pcs rpm on tumbleweed pending python3.9 switch
+   [ ] ubuntu 22.04
+   [ ] centos-9 s390
+
+
+- CI Roadmap
+  [ ] abidiff check
+  [ ] vapor (functional testing from QE)
+  [ ] crazy net tests
+
+- Add build variable tree per project
+
+- Fix plot to support knet_bench output
+
+- Integrate qdevice + qnetd deployment in CI
+
+- More fine-grained support for knet_bench tests (perf-by-size/perf-by-time)
+
+- Make ipv6 and crypto testing optional
+
+- Improve test coverage for functional testing

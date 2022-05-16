@@ -11,6 +11,7 @@ TODO List for ci.kronosnet.org
    [ ] pcs rpm on tumbleweed pending python3.9 switch
    [ ] ubuntu 22.04
    [ ] centos-9 s390
+   [ ] rhel-8.6
 
 
 - CI Roadmap

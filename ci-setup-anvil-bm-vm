@@ -189,6 +189,8 @@ cp $DEPLOYDIR/configs/anvil_striker_auto.cfg $DEPLOYDIR/logs/$BUILD_NUMBER/anvil
 
 for i in $ALLNODES; do
  scp ${i}:/var/log/anvil.log $DEPLOYDIR/logs/$BUILD_NUMBER/${i}_anvil.log
+ scp ${i}:/var/log/cloud-init.log $DEPLOYDIR/logs/$BUILD_NUMBER/${i}_cloud_init.log
+ scp ${i}:/var/log/cloud-init-output.log $DEPLOYDIR/logs/$BUILD_NUMBER/${i}_cloud_init_output.log
 done
 
 for i in $STRIKERS; do

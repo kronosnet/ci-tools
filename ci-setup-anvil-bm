@@ -3,9 +3,10 @@
 set -e
 
 # some of those are dups but required to deploy a BM from scratch
-yum install -y fence-agents-common resource-agents fedpkg mock wget rpm-build createrepo_c yum-utils
+yum install -y fence-agents-common resource-agents mock wget rpm-build createrepo_c yum-utils
 
 BUILDDIR=/root
+localmirror=$BUILDDIR/fedmirror
 
 cd $BUILDDIR
 
@@ -20,55 +21,85 @@ echo "module_hotfixes=1" >> /etc/yum.repos.d/root_qemu-local-build.repo
 echo "gpgcheck=0" >> /etc/yum.repos.d/root_qemu-local-build.repo
 cd ..
 
-rm -rf edk2 rpmbuild
-fedpkg co --anonymous edk2
-cd edk2
-fedpkg switch-branch f35
-fedpkg srpm
-mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild *.src.rpm --resultdir=$BUILDDIR/qemu-local-build
-rm -rf $BUILDDIR/qemu-local-build/*debuginfo*
-cd ..
-rm -rf edk2 rpmbuild
+srpms="edk2 ipxe qemu cloud-utils"
+echo "Downloading $srpms"
+rm -rf $localmirror
+mkdir -p $localmirror
+cd $localmirror
 
-rm -rf ipxe rpmbuild
-fedpkg co --anonymous ipxe
-cd ipxe
-fedpkg switch-branch f35
-fedpkg srpm
+cat > $localmirror/fedora-src.repo << EOF
+[anvil-fedora-source]
+name=Fedora \$releasever - Source
+metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-source-\$releasever&arch=\$basearch
+enabled=1
+repo_gpgcheck=0
+type=rpm
+gpgcheck=0
+skip_if_unavailable=False
+
+[anvil-updates-source]
+name=Fedora \$releasever - Updates Source
+metalink=https://mirrors.fedoraproject.org/metalink?repo=updates-released-source-f\$releasever&arch=\$basearch
+enabled=1
+repo_gpgcheck=0
+type=rpm
+gpgcheck=0
+skip_if_unavailable=False
+
+[anvil-fedora-modular-source]
+name=Fedora Modular \$releasever - Source
+metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-modular-source-\$releasever&arch=\$basearch
+enabled=1
+repo_gpgcheck=0
+type=rpm
+gpgcheck=0
+skip_if_unavailable=False
+
+[anvil-updates-modular-source]
+name=Fedora Modular \$releasever - Updates Source
+metalink=https://mirrors.fedoraproject.org/metalink?repo=updates-released-modular-source-f\$releasever&arch=\$basearch
+enabled=1
+repo_gpgcheck=0
+type=rpm
+gpgcheck=0
+skip_if_unavailable=False
+EOF
+
+dnf download --source \
+	--config $localmirror/fedora-src.repo \
+	--releasever 35 \
+	--disablerepo="*" \
+	--enablerepo=anvil-fedora-source --enablerepo=anvil-updates-source \
+	--enablerepo=anvil-fedora-modular-source --enablerepo=anvil-updates-modular-source \
+	--installroot=$localmirror/installroot \
+	$srpms
+
+cd $BUILDDIR
+
+mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild $localmirror/edk2*.src.rpm --resultdir=$BUILDDIR/qemu-local-build
+rm -rf $BUILDDIR/qemu-local-build/*debuginfo*
 mock -r /etc/mock/centos-stream-8-x86_64.cfg --install $BUILDDIR/qemu-local-build/edk2-tools*x86*
-mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild *.src.rpm --resultdir=$BUILDDIR/qemu-local-build --no-clean
+mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild $localmirror/ipxe*.src.rpm --resultdir=$BUILDDIR/qemu-local-build --no-clean
 rm -rf $BUILDDIR/qemu-local-build/*debuginfo*
-cd ..
-rm -rf ipxe rpmbuild
+mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild $localmirror/cloud-utils*.src.rpm --resultdir=$BUILDDIR/qemu-local-build
+rm -rf $BUILDDIR/qemu-local-build/*debuginfo*
 
-rm -rf qemu rpmbuild
-fedpkg co --anonymous qemu
-cd qemu
-fedpkg switch-branch f35
-sed -i -e 's#%dnl.*##g' -e 's#Epoch:.*#Epoch: 20#g' -e 's#,jack,#,#g' -e 's#capstone=system#capstone=auto#g' qemu.spec
-fedpkg srpm
-mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild *.src.rpm --resultdir=$BUILDDIR/qemu-local-build
+rm -rf $HOME/rpmbuild
+rpm -i $localmirror/qemu*
+sed -i -e 's#%dnl.*##g' -e 's#Epoch:.*#Epoch: 20#g' -e 's#,jack,#,#g' -e 's#capstone=system#capstone=auto#g' $HOME/rpmbuild/SPECS/qemu.spec
+rpmbuild -bs $HOME/rpmbuild/SPECS/qemu.spec
+mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild $HOME/rpmbuild/SRPMS/qemu*.src.rpm --resultdir=$BUILDDIR/qemu-local-build
 rm -rf $BUILDDIR/qemu-local-build/*debuginfo*
-cd ..
-rm -rf qemu rpmbuild
+
+rm -rf $HOME/rpmbuild
+rm -rf $localmirror
 
 cd qemu-local-build
 rm -rf *debuginfo*
 createrepo .
 cd ..
 
-yum install -y qemu-img qemu-kvm libvirt virt-install lftp httpd fence-virtd-libvirt fence-virtd-tcp postgresql ansible
-
-# build cloud-utils, not available on Centos 8
-rm -rf cloud-utils rpmbuild
-fedpkg co --anonymous cloud-utils
-cd cloud-utils
-fedpkg switch-branch f35
-fedpkg prep
-rpmbuild --define "_rpmdir $(pwd)" --define "_srcrpmdir $(pwd)" --define "_sourcedir $(pwd)"  -bb cloud-utils.spec
-yum install -y x86_64/*.rpm
-cd ..
-rm -rf cloud-utils rpmbuild
+yum install -y qemu-img qemu-kvm libvirt virt-install lftp httpd fence-virtd-libvirt fence-virtd-tcp postgresql ansible cloud-utils cloud-utils-growpart
 
 ## setup simengine
 # setup Neo4j repo

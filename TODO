@@ -9,6 +9,8 @@ TODO List for ci.kronosnet.org
    [ ] fix rpm publishing conditional on rpm build job
    [ ] pcs covscan
    [ ] pcs rpm on tumbleweed pending python3.9 switch
+   [ ] drop fedora 34
+   [ ] add fedora 36
    [ ] ubuntu 22.04
    [ ] centos-9 s390
    [ ] rhel-8.6

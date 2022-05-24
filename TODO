@@ -12,6 +12,7 @@ TODO List for ci.kronosnet.org
    [ ] ubuntu 22.04
    [ ] centos-9 s390
    [ ] rhel-8.6
+   [ ] rhel-9.0 + coverity
 
 
 - CI Roadmap

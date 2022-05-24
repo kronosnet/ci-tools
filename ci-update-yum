@@ -100,7 +100,7 @@ esac
 
 # available only with python3
 if [ "$python" = python3 ]; then
- EXTRADEPS="execstack python3-pexpect python3-pycurl python3-suds python3-requests openwsman-python3 python3-boto3 python3-google-api-client python3-pyroute2 $EXTRADEPS"
+ EXTRADEPS="execstack python3-pexpect python3-pycurl python3-suds python3-requests openwsman-python3 python3-pyroute2 $EXTRADEPS"
 else
  EXTRADEPS="pexpect openwsman-python python-suds python2-google-api-client python-requests $EXTRADEPS"
  if [ "$epel" = new ]; then
@@ -110,15 +110,18 @@ else
  fi
 fi
 
-# OpenStack packages
+# Cloud packages
 case "${NODE_NAME}" in
- rhel*s390*)
+ rhel*s390*|centos*s390*)
  ;;
  *centos-7.2*)
   EXTRADEPS="python34"
  ;;
  *)
   EXTRADEPS="${python}-keystoneclient ${python}-keystoneauth1 ${python}-novaclient $EXTRADEPS"
+  if [ "$python" = python3 ]; then
+    EXTRADEPS="python3-boto3 python3-google-api-client $EXTRADEPS"
+  fi
  ;;
 esac
 

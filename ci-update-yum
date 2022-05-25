@@ -11,7 +11,7 @@ yum clean all
 # Enable OpenStack repos for fence-agents build dependencies
 case "${NODE_NAME}" in
  rhel*x86*|rhel*power*)
-  rpm -qa | grep rhos-release || yum install -y http://rhos-release.virt.bos.redhat.com/repos/rhos-release/rhos-release-latest.noarch.rpm
+  rpm -qa | grep rhos-release || yum install -y http://download.eng.brq.redhat.com/rcm-guest/puddles/OpenStack/rhos-release/rhos-release-latest.noarch.rpm
   RHELVER=$(echo $NODE_NAME | sed -e 's/rhel//g' -e  's/z-.*//g' | cut --characters 1-1,2-2 --output-delimiter '.')
   echo "Detected RHEL version: $RHELVER"
  ;;
@@ -120,14 +120,16 @@ case "${NODE_NAME}" in
  *)
   EXTRADEPS="${python}-keystoneclient ${python}-keystoneauth1 ${python}-novaclient $EXTRADEPS"
   if [ "$python" = python3 ]; then
-    EXTRADEPS="python3-boto3 python3-google-api-client $EXTRADEPS"
+    for i in python3-boto3 python3-google-api-client; do
+      yum -y install $i || true
+    done
   fi
  ;;
 esac
 
 # knet rust bindings
 if [ -n "$KNETRUST" ] && [ "$KNETRUST" = yes ]; then
-	EXTRADEPS="$EXTRADEPS cargo rust bindgen clippy rustfmt"
+  EXTRADEPS="$EXTRADEPS cargo rust bindgen clippy rustfmt"
 fi
 
 # shellcheck for resource-agents ci/build.sh

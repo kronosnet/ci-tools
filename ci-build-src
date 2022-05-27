@@ -32,6 +32,12 @@ case $build in
   cov-format-errors --dir=./cov --html-output cov.html
  ;;
  rpm)
+  case "$DEST" in
+   pcmk)
+    # make sure CI version is alway higher than any distro
+    export SPECVERSION=99
+   ;;
+  esac
   if [ -n "$RPMDEPS" ]; then
    echo "$MAKE $MAKERPMOPTS rpm"
    $MAKE $MAKERPMOPTS rpm || removerpmdeps 1

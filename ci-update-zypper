@@ -11,16 +11,18 @@ JOBNAME=$(echo ${JOB_BASE_NAME}  | sed -e 's/=.*//g')
 case ${JOBNAME} in
  *unstable)
   upgrade=dup
+  glue=cluster-glue-devel
   ;;
  *stable)
   upgrade=update
   bundler=ruby2.5-rubygem-bundler
+  glue=libglue-devel
   ;;
 esac
 
 zypper clean
 zypper $upgrade -y
-zypper install -y $bundler        \
+zypper install -y $bundler $glue  \
  OpenIPMI-devel                   \
  asciidoc                         \
  autoconf                         \
@@ -54,7 +56,6 @@ zypper install -y $bundler        \
  libcurl-devel                    \
  liberation-fonts                 \
  libgcrypt-devel                  \
- libglue-devel                    \
  libgnutls-devel                  \
  liblz4-devel                     \
  libnet-devel                     \

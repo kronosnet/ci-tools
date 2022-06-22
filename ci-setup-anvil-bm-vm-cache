@@ -115,6 +115,8 @@ while [ "$bootdone" = "no" ]; do
 done
 
 # cleanup image
+# centos-9-stream cloud init workaround
+ssh $CACHENODES "grep -q yum_add_repo /etc/cloud/cloud.cfg || sed -i 's/cloud_config_modules:/&\n - yum_add_repo/' /etc/cloud/cloud.cfg"
 # allow cloud-init to regenerate anvil/alteeve repos
 ssh $CACHENODES rm -f /etc/yum.repos.d/alteeve* /etc/yum.repos.d/anvil*
 

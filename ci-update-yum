@@ -31,7 +31,7 @@ case "${NODE_NAME}" in
 esac
 
 case "${NODE_NAME}" in
- anvil-ci-centos-9*|centos-9-x86-64)
+ anvil-ci-centos-9*|centos-9*|rhel9*power9*)
   cd /etc/yum.repos.d/
   rm -rf delorean*.repo
   wget https://trunk.rdoproject.org/centos9/current/delorean.repo

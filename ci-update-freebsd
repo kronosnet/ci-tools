@@ -12,7 +12,7 @@ if [ -z "$1" ]; then
  pyver=38
  extrapkgs="py${pyver}-suds-jurko"
 else
- pyver=38
+ pyver=39
  extrapkgs="py${pyver}-suds"
 fi
 

@@ -26,7 +26,16 @@ case "${NODE_NAME}" in
   yum install -y centos-release-openstack-ussuri epel-release
  ;;
  anvil-ci-centos-9*)
-  yum install -y centos-release-openstack-yoga epel-release
+  yum install -y epel-release
+ ;;
+esac
+
+case "${NODE_NAME}" in
+ anvil-ci-centos-9*|centos-9-x86-64)
+  cd /etc/yum.repos.d/
+  rm -rf delorean*.repo
+  wget https://trunk.rdoproject.org/centos9/current/delorean.repo
+  wget https://trunk.rdoproject.org/centos9-master-preview/delorean-deps.repo
  ;;
 esac
 

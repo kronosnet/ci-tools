@@ -121,7 +121,7 @@ fi
 
 # Cloud packages
 case "${NODE_NAME}" in
- rhel*s390*|centos*s390*|centos*power*)
+ rhel*s390*|rhel9*power*|centos*s390*|centos*power*)
  ;;
  *centos-7.2*)
   EXTRADEPS="python34"

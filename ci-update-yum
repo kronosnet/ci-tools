@@ -109,7 +109,7 @@ esac
 
 # available only with python3
 if [ "$python" = python3 ]; then
- EXTRADEPS="execstack python3-pexpect python3-pycurl python3-suds python3-requests openwsman-python3 python3-pyroute2 $EXTRADEPS"
+ EXTRADEPS="execstack python3-pexpect python3-pycurl python3-suds python3-requests openwsman-python3 python3-pyroute2 python3-httplib2 $EXTRADEPS"
 else
  EXTRADEPS="pexpect openwsman-python python-suds python2-google-api-client python-requests $EXTRADEPS"
  if [ "$epel" = new ]; then

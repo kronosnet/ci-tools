@@ -102,7 +102,7 @@ yum -y install libservicelog-devel || true
 
 # pcs builds only on recent distros
 case "${NODE_NAME}" in
- fedora*|rhel8*|centos-8*|centos-9*|anvil-ci*)
+ fedora*|rhel8*|centos-8*|centos-9*|anvil-ci*|rhel9*)
   EXTRADEPS="ruby ruby-devel rubygems rubygem-bundler fontconfig liberation-sans-fonts overpass-fonts npm rpmdevtools python3-lxml python3-wheel python3-setuptools_scm $EXTRADEPS"
  ;;
 esac

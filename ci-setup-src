@@ -32,13 +32,15 @@ if [ -f ./configure ]; then
    case "${NODE_NAME}" in
     debian*|ubuntu*)
      localbuild=""
+     usesitepackages=--system-site-packages
      ;;
     *)
      localbuild=--enable-local-build
+     usesitepackages=""
      ;;
    esac
    rm -rf .venv
-   python3 -m venv --system-site-packages .venv
+   python3 -m venv $usesitepackages .venv
    . .venv/bin/activate
    export PATH="$(pwd)/.venv"/bin/:$PATH
    python3 -m pip install concurrencytest

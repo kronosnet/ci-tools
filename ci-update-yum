@@ -141,6 +141,12 @@ if [ -n "$KNETRUST" ] && [ "$KNETRUST" = yes ]; then
   EXTRADEPS="$EXTRADEPS cargo rust bindgen clippy rustfmt"
 fi
 
+case "${NODE_NAME}" in
+ rhel9*)
+  EXTRADEPS="$EXTRADEPS rust cargo"
+ ;;
+esac
+
 # shellcheck for resource-agents ci/build.sh
 case "${NODE_NAME}" in
  fedora*)

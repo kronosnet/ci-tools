@@ -103,7 +103,7 @@ yum -y install libservicelog-devel || true
 # pcs builds only on recent distros
 case "${NODE_NAME}" in
  fedora*|rhel8*|centos-8*|centos-9*|anvil-ci*|rhel9*)
-  EXTRADEPS="ruby ruby-devel rubygems rubygem-bundler fontconfig liberation-sans-fonts overpass-fonts npm rpmdevtools python3-lxml python3-wheel python3-setuptools_scm $EXTRADEPS"
+  EXTRADEPS="ruby ruby-devel rubygems rubygem-bundler fontconfig liberation-sans-fonts overpass-fonts npm rpmdevtools python3-lxml python3-wheel python3-setuptools_scm python3-cryptography $EXTRADEPS"
  ;;
 esac
 
@@ -142,7 +142,7 @@ if [ -n "$KNETRUST" ] && [ "$KNETRUST" = yes ]; then
 fi
 
 case "${NODE_NAME}" in
- rhel9*|centos-9*)
+ rhel9*|centos-9*|rhel8*|centos-8*)
   EXTRADEPS="$EXTRADEPS rust cargo"
  ;;
 esac

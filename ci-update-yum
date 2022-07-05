@@ -142,7 +142,7 @@ if [ -n "$KNETRUST" ] && [ "$KNETRUST" = yes ]; then
 fi
 
 case "${NODE_NAME}" in
- rhel9*)
+ rhel9*|centos-9*)
   EXTRADEPS="$EXTRADEPS rust cargo"
  ;;
 esac

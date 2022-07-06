@@ -34,7 +34,7 @@ if [ -f ./configure ]; then
      localbuild=""
      usesitepackages=--system-site-packages
      ;;
-    rhel8*|centos-8*)
+    rhel8*|centos-8*|opensuse-15*)
      localbuild=--enable-local-build
      usesitepackages=--system-site-packages
      ;;

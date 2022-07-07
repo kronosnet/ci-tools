@@ -29,6 +29,11 @@ if [ -f ./configure ]; then
    ./configure $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
    ;;
   pcs)
+
+   sleeptimer=$(( $$ % 240 ))
+   echo "Random sleep: $sleeptimer"
+   sleep $sleeptimer
+
    case "${NODE_NAME}" in
     debian*|ubuntu*)
      localbuild=""

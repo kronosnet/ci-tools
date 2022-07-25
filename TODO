@@ -9,6 +9,7 @@ TODO List for ci.kronosnet.org
    [ ] fix rpm publishing conditional on rpm build job
    [ ] rhel-9.0 coverity for all jobs
    [ ] remove ubuntu 21.10 (EOL)
+   [ ] check disk space on debian-sparc and jenkins host
 
 
 - CI Roadmap

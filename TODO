@@ -7,9 +7,7 @@ TODO List for ci.kronosnet.org
    [ ] change dependencies per node vs per global job
    [ ] review knet-memcheck as voting
    [ ] fix rpm publishing conditional on rpm build job
-   [ ] pcs covscan
-   [ ] pcs rpm on tumbleweed pending python3.9 switch
-   [ ] rhel-9.0 + coverity
+   [ ] rhel-9.0 coverity for all jobs
 
 
 - CI Roadmap

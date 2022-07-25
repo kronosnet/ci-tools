@@ -8,6 +8,7 @@ TODO List for ci.kronosnet.org
    [ ] review knet-memcheck as voting
    [ ] fix rpm publishing conditional on rpm build job
    [ ] rhel-9.0 coverity for all jobs
+   [ ] remove ubuntu 21.10 (EOL)
 
 
 - CI Roadmap

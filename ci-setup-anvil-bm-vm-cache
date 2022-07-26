@@ -53,6 +53,15 @@ echo "Destroying VMs (if any)"
 
 rm -rf "${BUILD}-latest.qcow2*" "an-cache*"
 qemu-img create -b "$DEPLOYDIR/images/${BUILD}-latest.qcow2" -F qcow2 -f qcow2 "${BUILD}-latest.qcow2" 200G
+
+if [ "${BUILD}" = "centos-8-stream" ]; then
+ touch "${BUILD}-latest.qcow2-${TODAY}"
+ # repeat to make sure known_hosts is clean after caching
+ rm -f $HOME/.ssh/known_hosts
+ ssh-keyscan github.com > $HOME/.ssh/known_hosts
+ exit 0
+fi
+
 cat "$TEMPLATESDIR/anvil_striker_net_config.cfg" | sed -e "s#@IFNIP@#192.168.122.2#g" > an-cache_net_config.cfg
 cat "$TEMPLATESDIR/anvil_cloud_init_${BUILD}.cfg" | \
  sed \

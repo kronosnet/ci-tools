@@ -130,6 +130,9 @@ case "$DEST" in
    extraopts="--enable-rust-bindings"
   fi
  ;;
+ gfs2-util*)
+  export TOPTS="--always-clean-testvol"
+ ;;
 esac
 
 if [ -z "$CHECKS" ]; then

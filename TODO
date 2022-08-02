@@ -10,7 +10,6 @@ TODO List for ci.kronosnet.org
    [ ] rhel-9.0 coverity for all jobs
    [ ] check disk space on debian-sparc and jenkins host
 
-
 - CI Roadmap
   [ ] abidiff check
   [ ] vapor (functional testing from QE)

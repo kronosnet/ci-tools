@@ -75,7 +75,7 @@ if [ -f ./configure ]; then
     gfs2-*)
      case "${NODE_NAME}" in
       *x86*)
-       extraopts="--with-testvol=/dev/shm/testvol-$BUILD_NUMBER"
+       extraopts="--with-testvol=/dev/shm/testvol-${BUILD_NUMBER}"
       ;;
      esac
      ;;

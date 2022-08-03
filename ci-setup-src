@@ -72,6 +72,13 @@ if [ -f ./configure ]; then
      installpath=${installpath}-pcmk-${pcmkver}/
      extraopts="--with-ocfdir=$installpath/lib/ocf"
      ;;
+    gfs2-*)
+     case "${NODE_NAME}" in
+      *x86*)
+       extraopts="--with-testvol=/dev/shm/testvol-$BUILD_NUMBER"
+      ;;
+     esac
+     ;;
     *)
      installpath=${installpath}/
      ;;

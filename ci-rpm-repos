@@ -168,6 +168,6 @@ case $branch in
 esac
 
 cd $rpmdir/
-rsync -av --progress --delete-after . www.kronosnet.org:~kronosnet/kronosnet/builds/.
+rsync -av --sparse-block=0 --progress --delete-after . www.kronosnet.org:~kronosnet/kronosnet/builds/.
 
 exit 0

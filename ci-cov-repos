@@ -49,6 +49,6 @@ for x in $(ls); do
 done
 
 cd $covdir/
-rsync -av --progress --delete-after . www.kronosnet.org:~kronosnet/kronosnet/coverity/.
+rsync -av --sparse-block=0 --progress --delete-after . www.kronosnet.org:~kronosnet/kronosnet/coverity/.
 
 exit 0

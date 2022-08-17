@@ -163,6 +163,14 @@ case "${NODE_NAME}" in
  ;;
 esac
 
+# rhel9 language pack
+case "${NODE_NAME}" in
+ rhel9*)
+  EXTRADEPS="glibc-all-langpacks $EXTRADEPS"
+ ;;
+esac
+
+
 yum -y install         \
  OpenIPMI-devel        \
  asciidoc              \

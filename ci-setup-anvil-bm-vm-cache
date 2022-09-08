@@ -133,6 +133,7 @@ virsh shutdown an-cache
 while ([ "$state" != "" ] && [ "$state" == "running" ]); do sleep 5; state=$(virsh dominfo an-cache | grep -w "State:" | awk '{ print $2}'); done;
 virsh undefine an-cache || true
 
+rm -f "${BUILD}-latest.qcow2-*"
 touch "${BUILD}-latest.qcow2-${TODAY}"
 # repeat to make sure known_hosts is clean after caching
 rm -f $HOME/.ssh/known_hosts

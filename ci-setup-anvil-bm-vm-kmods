@@ -102,6 +102,7 @@ while [ "$builddone" = no ] && [ "$timeout" -gt 0 ]; do
 done
 
 if [ "$builddone" = yes ]; then
+ rm -rf temp
  mkdir -p temp
  scp an-cache:/var/cache/akmods/drbd/*.rpm temp/ || error=1
  cd temp
@@ -109,6 +110,7 @@ if [ "$builddone" = yes ]; then
  scp *.rpm anvil-ci-proxy:/var/www/html/kmods/${BUILD}/${REPOSRC}/ || error=1
  ssh anvil-ci-proxy "cd /var/www/html/kmods/${BUILD}/${REPOSRC}/ && createrepo ." || error=1
  cd -
+ rm -rf temp
 else
  error=1
 fi

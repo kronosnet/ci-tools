@@ -44,6 +44,11 @@ case "$BUILD" in
   KVMVAR="rhel8-unknown"
   CRED="/root/rh-cred"
  ;;
+ rhel-9)
+  NAME="RHEL 9"
+  KVMVAR="rhel9-unknown"
+  CRED="/root/rh-cred"
+ ;;
  none)
  ;;
  *)

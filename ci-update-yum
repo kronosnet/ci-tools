@@ -77,7 +77,16 @@ if [ -z "$python" ]; then
  python=python3
 fi
 
-yum -y $EXTRAOPTS update --nobest
+POSTOPTS=""
+case "${NODE_NAME}" in
+ rhel7*|centos-7*|jenkins-jumphost)
+ ;;
+ *)
+  POSTOPTS="--nobest"
+ ;;
+esac
+
+yum -y $EXTRAOPTS update $POSTOPTS
 
 EXTRADEPS=""
 

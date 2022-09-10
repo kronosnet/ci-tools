@@ -51,7 +51,7 @@ cd "$DEPLOYDIR/cache"
 echo "Updating daily cache for ${BUILD} ${TODAY}"
 echo "Destroying VMs (if any)"
 
-rm -rf "${BUILD}-latest.qcow2*" "an-cache*"
+rm -rf ${BUILD}-latest.qcow2* an-cache*
 qemu-img create -b "$DEPLOYDIR/images/${BUILD}-latest.qcow2" -F qcow2 -f qcow2 "${BUILD}-latest.qcow2" 200G
 cat "$TEMPLATESDIR/anvil_striker_net_config.cfg" | sed -e "s#@IFNIP@#192.168.122.2#g" > an-cache_net_config.cfg
 cat "$TEMPLATESDIR/anvil_cloud_init_${BUILD}.cfg" | \
@@ -133,7 +133,6 @@ virsh shutdown an-cache
 while ([ "$state" != "" ] && [ "$state" == "running" ]); do sleep 5; state=$(virsh dominfo an-cache | grep -w "State:" | awk '{ print $2}'); done;
 virsh undefine an-cache || true
 
-rm -f "${BUILD}-latest.qcow2-*"
 touch "${BUILD}-latest.qcow2-${TODAY}"
 # repeat to make sure known_hosts is clean after caching
 rm -f $HOME/.ssh/known_hosts

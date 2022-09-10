@@ -7,8 +7,7 @@ TODO List for ci.kronosnet.org
    [ ] change dependencies per node vs per global job
    [ ] review knet-memcheck as voting
    [ ] fix rpm publishing conditional on rpm build job
-   [ ] rhel-9.0 coverity for all jobs
-   [ ] check disk space on debian-sparc and jenkins host
+   [ ] check disk space on jenkins host
 
 - CI Roadmap
   [ ] abidiff check

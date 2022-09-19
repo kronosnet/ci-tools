@@ -136,16 +136,8 @@ EOF
 	for i in main-repo next-stable-repo; do
 		cd $i
 		for x in $(ls); do
-			if [ -h "$x" ]; then
-				continue
-			fi
-			cd $x
-			createrepo .
-			cd ..
-		done
-		cd ..
-		echo "Creating $i-$x repo file"
-		cat > $rpmdir/$i-$x.repo << EOF
+			echo "Creating $i-$x repo file"
+			cat > $rpmdir/$i-$x.repo << EOF
 [$i-$x]
 name=$i-$x
 baseurl=https://kronosnet.org/builds/$i/$x/
@@ -156,6 +148,14 @@ metadata_expire=1d
 skip_if_unavailable=True
 module_hotfixes=1
 EOF
+			if [ -h "$x" ]; then
+				continue
+			fi
+			cd $x
+			createrepo .
+			cd ..
+		done
+		cd ..
 	done
 }
 

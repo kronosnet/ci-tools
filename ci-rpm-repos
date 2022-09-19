@@ -144,6 +144,7 @@ EOF
 			cd ..
 		done
 		cd ..
+		echo "Creating $i-$x repo file"
 		cat > $rpmdir/$i-$x.repo << EOF
 [$i-$x]
 name=$i-$x

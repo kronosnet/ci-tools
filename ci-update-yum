@@ -250,8 +250,9 @@ case "${NODE_NAME}" in
    echo "Install manually openstack cloud config!"
    exit 1
   fi
-  yum -y install brewkoji createrepo python38 python38-devel
-  alternatives --set python3 /usr/bin/python3.8
+  yum -y module enable python39
+  yum -y install brewkoji createrepo python39 python39-devel python39-pip
+  alternatives --set python3 /usr/bin/python3.9
   pip3 uninstall --yes vapor || true
   pip3  --disable-pip-version-check install --user colorlog "git+https://gitlab.cee.redhat.com/clusterqe/vapor.git@main#egg=vapor"
  ;;

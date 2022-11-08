@@ -254,7 +254,7 @@ case "${NODE_NAME}" in
   yum -y install brewkoji createrepo python39 python39-devel python39-pip
   alternatives --set python3 /usr/bin/python3.9
   pip3 uninstall --yes vapor || true
-  pip3  --disable-pip-version-check install --user colorlog "git+https://gitlab.cee.redhat.com/clusterqe/vapor.git@main#egg=vapor"
+  pip3  --disable-pip-version-check --use-feature=2020-resolver install --user colorlog "git+https://gitlab.cee.redhat.com/clusterqe/vapor.git@main#egg=vapor"
  ;;
 esac
 

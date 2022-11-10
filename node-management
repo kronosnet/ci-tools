@@ -190,14 +190,6 @@ addnodetoalljobs() {
 					;;
 				esac
 				;;
-			*needle*|pacemaker1*)
-				if [ $oldbuilds == yes ]; then
-					echo Adding oldbuilds to job $i
-					addjob=1
-				else
-					echo Skipping oldbuilds job $i
-				fi
-				;;
 			*-nonvoting)
 				if [ $voting == no ]; then
 					echo Adding to nonvoting job $i

@@ -125,18 +125,6 @@ if [ "$build" != "rpm" ]; then
  BOOTH_INSTALL_PATH=/srv/booth/origin/main-pcmk-${pcmkver}/
 
  case "$DEST" in
-  corosync-needle)
-   # old branches should only use system provided rpm to build
-   KNET_INSTALL_PATH=""
-   QB_INSTALL_PATH=""
-   COROSYNC_INSTALL_PATH=""
-   PCMK_INSTALL_PATH=""
-   QDEVICE_INSTALL_PATH=""
-   SBD_INSTALL_PATH=""
-   FAS_INSTALL_PATH=""
-   RAS_INSTALL_PATH=""
-   BOOTH_INSTALL_PATH=""
-   ;;
   corosync)
    # corosync supports both knet stable and knet main
    # we need to test build both
@@ -296,27 +284,6 @@ else
  fi
 
  case "$DEST" in
-  corosync-needle)
-   # old branches should only use system provided rpm to build
-   KNET_REPO=""
-   KNET_REPO_PATH=""
-   LIBQB_REPO=""
-   LIBQB_REPO_PATH=""
-   COROSYNC_REPO=""
-   COROSYNC_REPO_PATH=""
-   PCMK_REPO=""
-   PCMK_REPO_PATH=""
-   QDEVICE_REPO=""
-   QDEVICE_REPO_PATH=""
-   SBD_REPO=""
-   SBD_REPO_PATH=""
-   FAS_REPO=""
-   FAS_REPO_PATH=""
-   RAS_REPO=""
-   RAS_REPO_PATH=""
-   BOOTH_REPO=""
-   BOOTH_REPO_PATH=""
-   ;;
   corosync)
    # corosync supports both knet stable and knet main
    # we need to test build both

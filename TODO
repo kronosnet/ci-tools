@@ -11,7 +11,6 @@ TODO List for ci.kronosnet.org
    [ ] Add Ubuntu 22.10
    [ ] Remove debian-sparc64?
    [ ] Update rhel8.7 and rhel9.1
-   [ ] Drop corosync needle from all CI
 
 - CI Roadmap
   [ ] abidiff check

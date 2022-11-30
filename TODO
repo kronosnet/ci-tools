@@ -8,11 +8,6 @@ TODO List for ci.kronosnet.org
   [ ] review knet-memcheck as voting
   [ ] fix rpm publishing conditional on rpm build job
   [ ] check disk space on jenkins host
-  [ ] Add Ubuntu 22.10
-  [ ] Remove debian-sparc64?
-  [ ] Update rhel8.7 and rhel9.1
-  [ ] Add f37, drop older Fedora
-  [ ] Fix knet cross compile (can´t find nss?)
 
 - CI Roadmap
   [ ] abidiff check

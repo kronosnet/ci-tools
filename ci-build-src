@@ -35,7 +35,7 @@ case $build in
   case "$DEST" in
    pcmk)
     # make sure CI version is alway higher than any distro
-    export SPECVERSION=99
+    export SPECVERSION=$BUILD_NUMBER
    ;;
   esac
   if [ -n "$RPMDEPS" ]; then

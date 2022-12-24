@@ -15,10 +15,25 @@ $HOME/ci-tools/ci-setup-anvil-bm-vm-cache $BUILD none none
 echo "Creating nodes disks"
 
 cd "$DEPLOYDIR/snapshots"
-rm -rf *.qcow2
+rm -rf *.qcow2 *.iso
 for i in $ALLNODES; do
  qemu-img create -b "$DEPLOYDIR/cache/${BUILD}-latest.qcow2" -F qcow2 -f qcow2 "$i-vol.qcow2" 200G
  qemu-img create -f qcow2 "$i-vol2.qcow2" 200G
+done
+
+echo "Generating an-test-deployX kickstart files/isos"
+
+# 1 to 5, see anvil-ci-proxy:/etc/named/ci.alteeve.com
+for i in $(seq 1 5); do
+ rm -rf "$DEPLOYDIR/configs/ks${i}"
+ mkdir "$DEPLOYDIR/configs/ks${i}"
+ cat "$TEMPLATESDIR/ks.cfg" | \
+  sed \
+   -e "s#@NODE@#${i}#g" \
+   -e "s#@SSHKEY@#${SSHKEY}#g" \
+  > "$DEPLOYDIR/configs/ks${i}/ks.cfg"
+ rm -rf "$DEPLOYDIR/snapshots/deploy${i}.iso"
+ genisoimage -o "$DEPLOYDIR/snapshots/deploy${i}.iso" -V OEMDRV -r -J "$DEPLOYDIR/configs/ks${i}"
 done
 
 cd "$DEPLOYDIR/configs"

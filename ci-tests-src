@@ -141,11 +141,7 @@ case "$DEST" in
 esac
 
 if [ -z "$CHECKS" ]; then
- if [ "${NODE_NAME}" = debian-unstable-sparc64 ]; then
-  CHECKS="check $EXTRACHECKS"
- else
-  CHECKS="check distcheck $EXTRACHECKS"
- fi
+ CHECKS="check distcheck $EXTRACHECKS"
 fi
 
 if [ -n "$TESTUSELDPATH" ] && [ "$TESTUSELDPATH" = yes ]; then

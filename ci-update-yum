@@ -146,7 +146,7 @@ case "${NODE_NAME}" in
 esac
 
 # knet rust bindings
-if [ -n "$KNETRUST" ] && [ "$KNETRUST" = yes ]; then
+if [ -n "$RUSTBINDINGS" ] && [ "$RUSTBINDINGS" = yes ]; then
   EXTRADEPS="$EXTRADEPS cargo rust bindgen clippy rustfmt"
 fi
 

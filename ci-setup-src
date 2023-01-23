@@ -60,8 +60,8 @@ if [ -f ./configure ]; then
   *)
    installpath=/srv/$DEST/${ghprbActualCommit}
    case "$DEST" in
-    knet)
-     if [ -n "$KNETRUST" ] && [ "$KNETRUST" = yes ]; then
+    knet|corosync)
+     if [ -n "$RUSTBINDINGS" ] && [ "$RUSTBINDINGS" = yes ]; then
       extraopts="--enable-rust-bindings"
      fi
      ;;

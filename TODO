@@ -8,6 +8,9 @@ TODO List for ci.kronosnet.org
   [ ] review knet-memcheck as voting
   [ ] fix rpm publishing conditional on rpm build job
   [ ] check disk space on jenkins host
+  [ ] add i386 cross compiler for gfs2-utils
+  [ ] reinstall fedora-rawhide-x86-64 (gpg key upgrade issues)
+  [ ] rework deploy / update of start_node to add cleaning bits
 
 - CI Roadmap
   [ ] abidiff check

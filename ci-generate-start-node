@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -ev
+
+START_NODE_DIR=$HOME/bin
+
+case $(uname -s) in
+  *Linux) SHELL="/bin/bash"
+  ;;
+  *BSD) SHELL="/bin/tsch"
+esac
+
+mkdir -p $START_NODE_DIR
+cat $HOME/ci-tools/start_node.in | sed \
+    -e "s^@SHELL@^$SHELL^g" \
+    -e "s^@START_NODE_DIR@^$START_NODE_DIR^g" \
+    > $START_NODE_DIR/start_node
+chmod 755 $START_NODE_DIR/start_node

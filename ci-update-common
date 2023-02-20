@@ -9,3 +9,5 @@ rm -rf /dev/shm/qb*
 rm -rf /dev/shm/testvol*
 rm -rf /tmp/libqb*
 rm -rf /tmp/booth-tests*
+
+$HOME/ci-tools/ci-generate-start-node

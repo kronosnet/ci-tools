@@ -227,6 +227,7 @@ yum -y install         \
  net-snmp-devel        \
  ncurses-devel         \
  nss-devel             \
+ nss-tools             \
  openssl-devel         \
  pam-devel             \
  perl                  \

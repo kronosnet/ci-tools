@@ -1,0 +1,6 @@
+#!@SHELL@
+
+set -e
+rm -rf @START_NODE_DIR@/.jenkins
+wget -O @START_NODE_DIR@/agent.jar https://ci.kronosnet.org/jnlpJars/agent.jar
+exec java -jar @START_NODE_DIR@/agent.jar

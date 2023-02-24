@@ -76,19 +76,19 @@ dnf download --source \
 
 cd $BUILDDIR
 
-mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild $localmirror/edk2*.src.rpm --resultdir=$BUILDDIR/qemu-local-build
+mock -r /etc/mock/centos-stream-8-x86_64.cfg --nocheck --rebuild $localmirror/edk2*.src.rpm --resultdir=$BUILDDIR/qemu-local-build
 rm -rf $BUILDDIR/qemu-local-build/*debuginfo*
 mock -r /etc/mock/centos-stream-8-x86_64.cfg --install $BUILDDIR/qemu-local-build/edk2-tools*x86*
-mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild $localmirror/ipxe*.src.rpm --resultdir=$BUILDDIR/qemu-local-build --no-clean
+mock -r /etc/mock/centos-stream-8-x86_64.cfg --nocheck --rebuild $localmirror/ipxe*.src.rpm --resultdir=$BUILDDIR/qemu-local-build --no-clean
 rm -rf $BUILDDIR/qemu-local-build/*debuginfo*
-mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild $localmirror/cloud-utils*.src.rpm --resultdir=$BUILDDIR/qemu-local-build
+mock -r /etc/mock/centos-stream-8-x86_64.cfg --nocheck --rebuild $localmirror/cloud-utils*.src.rpm --resultdir=$BUILDDIR/qemu-local-build
 rm -rf $BUILDDIR/qemu-local-build/*debuginfo*
 
 rm -rf $HOME/rpmbuild
 rpm -i $localmirror/qemu*
 sed -i -e 's#%dnl.*##g' -e 's#Epoch:.*#Epoch: 20#g' -e 's#,jack,#,#g' -e 's#capstone=system#capstone=auto#g' $HOME/rpmbuild/SPECS/qemu.spec
 rpmbuild -bs $HOME/rpmbuild/SPECS/qemu.spec
-mock -r /etc/mock/centos-stream-8-x86_64.cfg --rebuild $HOME/rpmbuild/SRPMS/qemu*.src.rpm --resultdir=$BUILDDIR/qemu-local-build
+mock -r /etc/mock/centos-stream-8-x86_64.cfg --nocheck --rebuild $HOME/rpmbuild/SRPMS/qemu*.src.rpm --resultdir=$BUILDDIR/qemu-local-build
 rm -rf $BUILDDIR/qemu-local-build/*debuginfo*
 
 rm -rf $HOME/rpmbuild

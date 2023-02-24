@@ -5,9 +5,9 @@ set -ev
 START_NODE_DIR=$HOME/bin
 
 case $(uname -s) in
-  *Linux) SHELL="/bin/bash"
+  *Linux) SHELL="/bin/bash -e"
   ;;
-  *BSD) SHELL="/bin/tsch"
+  *BSD) SHELL="/bin/tcsh -e"
 esac
 
 mkdir -p $START_NODE_DIR

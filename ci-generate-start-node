@@ -12,6 +12,7 @@ esac
 
 mkdir -p $START_NODE_DIR
 cat $HOME/ci-tools/start_node.in | sed \
+    -e "s^@HOME@^$HOME^g" \
     -e "s^@SHELL@^$SHELL^g" \
     -e "s^@START_NODE_DIR@^$START_NODE_DIR^g" \
     > $START_NODE_DIR/start_node

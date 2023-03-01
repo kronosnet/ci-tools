@@ -17,7 +17,7 @@ else
 fi
 
 if [ -n "$RUSTBINDINGS" ] && [ "$RUSTBINDINGS" = yes ]; then
- rustdeps="rust rust-bindgen $rustextradeps"
+ rustdeps="rust rust-bindgen-cli $rustextradeps"
 fi
 
 pkg upgrade -y

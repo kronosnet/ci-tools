@@ -10,11 +10,9 @@ TODO List for ci.kronosnet.org
   [ ] check disk space on jenkins host
   [ ] add i386 cross compiler for gfs2-utils
   [ ] reinstall fedora-rawhide-x86-64 (gpg key upgrade issues)
-  [ ] rework deploy / update of start_node to add cleaning bits
 
 - CI Roadmap
   [ ] abidiff check
-  [ ] vapor (functional testing from QE)
   [ ] crazy net tests
 
 - Add build variable tree per project
@@ -26,5 +24,3 @@ TODO List for ci.kronosnet.org
 - More fine-grained support for knet_bench tests (perf-by-size/perf-by-time)
 
 - Make ipv6 and crypto testing optional
-
-- Improve test coverage for functional testing

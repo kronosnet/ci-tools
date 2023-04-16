@@ -99,9 +99,13 @@ for i in $ALLNODES; do
  netconf="--network network:ifn1_bridge1,model=e1000 --network network:ifn1_bridge1,model=e1000 --network network:bcn1_bridge1,model=e1000 --network network:bcn1_bridge1,model=e1000"
  case $i in
   *striker*)
+   cpu=2
+   mem=8192
    qemu_command_list=()
   ;;
   *)
+   cpu=8
+   mem=32768
    netconf="$netconf --network network:sn1_bridge1,model=e1000 --network network:sn1_bridge1,model=e1000"
    qemu_command_list=(
      "-chardev socket,id=ipmi0,host=localhost,port=$vmportbase,reconnect=2"
@@ -118,7 +122,7 @@ for i in $ALLNODES; do
   ;;
  esac
  virt-install --name ${i} \
-  --virt-type kvm --memory 16384 --vcpus 6 \
+  --virt-type kvm --memory $mem --vcpus $cpu \
   --boot hd,menu=on \
   --disk path="$DEPLOYDIR/snapshots/${i}-seed.img",device=cdrom \
   --disk path="$DEPLOYDIR/snapshots/$i-vol.qcow2",device=disk \

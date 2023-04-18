@@ -4,6 +4,12 @@ set -ev
 
 . $HOME/ci-tools/ci-rpm-common
 
+case "$DEST" in
+ dlm)
+  export PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
+ ;;
+esac
+
 case $build in
  coverity)
   case "$DEST" in
@@ -56,11 +62,7 @@ case $build in
     fi
     echo "$MAKE $MAKEOPTS"
     $MAKE $MAKEOPTS
-    ;;
-   dlm)
-    echo "PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH $MAKE $MAKEOPTS"
-    PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH $MAKE $MAKEOPTS
-    ;;
+   ;;
    *)
     echo "$MAKE $MAKEOPTS"
     $MAKE $MAKEOPTS

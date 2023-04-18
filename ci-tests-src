@@ -138,6 +138,10 @@ case "$DEST" in
    ;;
   esac
  ;;
+ dlm)
+  echo "no make check / distcheck support"
+  exit 0
+ ;;
 esac
 
 if [ -z "$CHECKS" ]; then

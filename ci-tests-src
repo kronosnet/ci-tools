@@ -51,7 +51,7 @@ case $build in
   echo "===== END CURRENT COVERITY SCAN ERRORS ====="
 
   case "$DEST" in
-   gfs2-util*)
+   gfs2-util*|dlm)
     echo "Complete html report can be found here: https://kronosnet.org/coverity/$DEST/${NODE_NAME}/${BUILD_NUMBER}/"
     exit 0
    ;;

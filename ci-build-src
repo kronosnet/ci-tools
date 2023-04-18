@@ -57,6 +57,10 @@ case $build in
     echo "$MAKE $MAKEOPTS"
     $MAKE $MAKEOPTS
     ;;
+   dlm)
+    echo "PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH $MAKE $MAKEOPTS"
+    PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH $MAKE $MAKEOPTS
+    ;;
    *)
     echo "$MAKE $MAKEOPTS"
     $MAKE $MAKEOPTS

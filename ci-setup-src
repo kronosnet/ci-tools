@@ -3,7 +3,7 @@
 set -ev
 
 case "$DEST" in
- gfs2-*)
+ gfs2-*|dlm)
   if [ -n "$REPO" -a -n "$BRANCH" ]; then
    git config user.email "jenkins@kronosnet.org"
    git config user.name "Sir Jenkins"

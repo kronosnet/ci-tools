@@ -7,9 +7,7 @@ TODO List for ci.kronosnet.org
   [ ] change dependencies per node vs per global job
   [ ] review knet-memcheck as voting
   [ ] fix rpm publishing conditional on rpm build job
-  [ ] check disk space on jenkins host
   [ ] add i386 cross compiler for gfs2-utils
-  [ ] reinstall fedora-rawhide-x86-64 (gpg key upgrade issues)
 
 - CI Roadmap
   [ ] abidiff check

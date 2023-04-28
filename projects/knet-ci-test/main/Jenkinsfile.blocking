@@ -1,0 +1,16 @@
+
+/// NOTE - this is not attached to any job yet.
+pipeline {
+    agent { label 'nobuild' }
+
+    parameters {
+        string(name: 'LOCKFILE', defaultValue: 'unknown', description: 'Name of lockfile to wait for')
+    }
+
+    stages {
+	// Just wait for parent job to exit
+	stage('waiting...') {
+	    sh "while [ -f ${params.LOCKFILE} ]; do sleep 1; done"
+	}
+    }
+}

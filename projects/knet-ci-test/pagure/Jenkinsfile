@@ -1,0 +1,148 @@
+// Jenkinsfile for the knet-ci-test/main project
+// 1-May-2023    Chrissie Caulfield    original version for running 'old-style' jobs
+//
+
+@Library('ProjectLib@devel') _
+
+// Globals
+def authcheck = false
+def nonvoting_fail = 0
+def voting_fail = 0
+def lockfile ="unknown"
+
+// These are the defaults for build-after-merge
+def target_branch=""
+def pull_id="1"
+def actual_commit = "origin/main"
+def install = 0 // s/b 1 really
+
+pipeline {
+    agent { label 'built-in' }
+
+    // Params that can be overridden at run-time
+    parameters {
+	string(name: 'REPO', defaultValue: '', description: 'REPO')
+	string(name: 'BRANCH', defaultValue: '', description: 'BRANCH')
+	string(name: 'BRANCH_TO', defaultValue: '', description: 'BRANCH_TO')
+    }
+    
+    stages {
+	// First check we are allowed to run
+	stage('Check user') {
+	    steps {
+		script {
+		    authcheck = getAuthCheck()
+		}
+	    }
+	}
+
+	// This is the main stage that covers everything
+	stage('Start builds') {
+	    when {
+		// getAuthCheck will usually abort the job if permission is denied
+		// but this is an extra check!
+		expression { authcheck == true }
+	    }
+	    // All of the stages that actually do stuff
+	    stages {
+		// This creates a lock file that the job (below) waits on and then exits
+		// This sub-job is only there to prevent build-after-merge etc from colliding with us.
+		stage('Start lock job') {
+		    steps {
+			script {
+			    // Check for build-after-merge and behave a little differently
+			    if (env.BRANCH_NAME == 'main') {
+				lockjob = 'ci-test-build-after-merge'
+			    } else {
+				lockjob = 'ci-test-github-pr-builder'
+				target_branch = env.CHANGE_TARGET
+				pull_id = env.CHANGE_ID
+				actual_commit = env.GIT_COMMIT
+				install = 0
+			    }
+			    lockfile = "${env.WORKSPACE}/${env.BUILD_TAG}"
+			}
+			sh "touch ${lockfile}"
+			build job: "${lockjob}",
+			    parameters: [string(name: 'LOCKFILE', value: "${lockfile}")],
+			    wait: false, waitForStart: true
+		    }
+		}
+
+		// Kick off the real jobs
+		stage('Standard builds') {
+		    parallel {
+			stage('voting') {
+			    steps {
+				build job: 'ci-test-build-all-voting',
+				    parameters: [string(name: 'install', value: "${install}"),
+						 string(name: 'ghprbActualCommit', value : "${actual_commit}"),
+						 string(name: 'ghprbPullId', value : "${pull_id}"),
+						 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
+						 string(name: 'compiler', value : 'gcc')]
+			    }
+			}
+			stage('non-voting') {
+			    steps {
+				script {
+				    try {
+					build job: 'ci-test-build-all-nonvoting',
+					    parameters: [string(name: 'install', value: "${install}"),
+							 string(name: 'ghprbActualCommit', value : "${actual_commit}"),
+							 string(name: 'ghprbPullId', value : "${pull_id}"),
+							 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
+							 string(name: 'compiler', value : 'gcc')]
+				    }
+				    catch (err) {
+					nonvoting_fail++
+				    }
+				}
+			    }
+			}
+			stage('covscan') {
+			    steps {
+				build job: 'ci-test-build-covscan',
+				    parameters: [string(name: 'install', value: '0'),
+						 string(name: 'ghprbActualCommit', value : "${actual_commit}"),
+						 string(name: 'ghprbPullId', value : "${pull_id}"),
+						 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
+						 string(name: 'covoptions', value : '--all --disable STACK_USE --disable-parse-warnings')]
+			    }
+			}
+		    }
+		}
+		stage('rpm builds') {
+		    steps {
+			build job: 'ci-test-build-rpms',
+			    parameters: [string(name: 'install', value: '0'),
+					 string(name: 'ghprbActualCommit', value : "${actual_commit}"),
+					 string(name: 'ghprbPullId', value : "${pull_id}"),
+					 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
+					 string(name: 'publishrpm', value : '0'),
+					 string(name: 'bootstrap', value : '0')]
+		    }
+		}
+	    }
+	}
+    }
+    post {
+	success {
+	    // Notify interested users if non-voting jobs fail
+	    script {
+		postFunctions(["state": "success", "nonvoting_fail": nonvoting_fail, "voting_fail": voting_fail])
+	    }
+	}
+	failure {
+	    // Notify interested users if voting jobs fail
+	    script {
+		postFunctions(["state": "failure", "nonvoting_fail": nonvoting_fail, "voting_fail": voting_fail])
+	    }
+	}
+	always {
+	    // Clear up the job file so the 'merge blocking job' can exit
+	    script {
+		sh "rm -f ${lockfile}"
+	    }
+	}
+    }
+}

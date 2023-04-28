@@ -10,7 +10,7 @@ case "$DEST" in
    git remote rm proposed || true
    git remote add proposed "$REPO"
    git fetch proposed
-   git checkout origin/main
+   git checkout "origin/${BRANCH_TO:-main}"
    git merge --no-ff "proposed/$BRANCH" -m "Merge PR"
   fi
  ;;

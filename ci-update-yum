@@ -6,6 +6,14 @@ cd /root
 
 $HOME/ci-tools/ci-update-common
 
+case "${NODE_NAME}" in
+ rhel*)
+  wget --no-check-certificate -O /etc/pki/ca-trust/source/anchors/RH-IT-Root-CA.crt https://password.corp.redhat.com/RH-IT-Root-CA.crt
+  wget --no-check-certificate -O /etc/pki/ca-trust/source/anchors/Eng-CA.crt https://engineering.redhat.com/Eng-CA.crt
+  update-ca-trust
+ ;;
+esac
+
 yum clean all
 
 # Enable OpenStack repos for fence-agents build dependencies
@@ -244,9 +252,6 @@ yum -y install         \
 
 case "${NODE_NAME}" in
  *vapor*)
-  wget -O /etc/pki/ca-trust/source/anchors/RH-IT-Root-CA.crt https://password.corp.redhat.com/RH-IT-Root-CA.crt
-  wget -O /etc/pki/ca-trust/source/anchors/Eng-CA.crt https://engineering.redhat.com/Eng-CA.crt
-  update-ca-trust
   if [ ! -f $HOME/.config/openstack/clouds.yaml ]; then
    echo "Install manually openstack cloud config!"
    exit 1

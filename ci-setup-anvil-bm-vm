@@ -4,6 +4,9 @@ set -e
 
 . $HOME/ci-tools/ci-setup-anvil-vm-env
 
+echo "Delay build by 180 seconds to allow Jenkins to cancel the job"
+sleep 180
+
 echo "Destroying VMs (if any)"
 
 for i in $ALLNODES $CACHENODES; do

@@ -4,14 +4,16 @@ set -ev
 
 case "$DEST" in
  gfs2-*|dlm)
-  if [ -n "$REPO" -a -n "$BRANCH" ]; then
-   git config user.email "jenkins@kronosnet.org"
-   git config user.name "Sir Jenkins"
-   git remote rm proposed || true
-   git remote add proposed "$REPO"
-   git fetch proposed
-   git checkout "origin/${BRANCH_TO:-main}"
-   git merge --no-ff "proposed/$BRANCH" -m "Merge PR"
+  if [ -n "$BRANCH_TO" ] && [ "$BRANCH_TO" != "None" ]; then
+   if [ -n "$REPO" -a -n "$BRANCH" ]; then
+    git config user.email "jenkins@kronosnet.org"
+    git config user.name "Sir Jenkins"
+    git remote rm proposed || true
+    git remote add proposed "$REPO"
+    git fetch proposed
+    git checkout "origin/$BRANCH_TO"
+    git merge --no-ff "proposed/$BRANCH" -m "Merge PR"
+   fi
   fi
  ;;
 esac

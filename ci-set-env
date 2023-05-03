@@ -78,6 +78,15 @@ fi
 if [ -n "${ghprbPullId}" ] && [ "${ghprbPullId}" != 1 ]; then
  export CITARGET="origin/${ghprbTargetBranch}"
 fi
+
+if [ -n "${BRANCH_TO}" ] && [ "${BRANCH_TO}" != "None" ]; then
+ export CITARGET="origin/${BRANCH_TO}"
+else
+ if [ -n "${BRANCH}" ]; then
+  export CITARGET="origin/main"
+ fi
+fi
+
 echo CITARGET $CITARGET
 
 # Latest Pacemaker release branch

@@ -2,6 +2,8 @@
 
 set -ev
 
+rm -rf $HOME/rpmbuild
+rm -rf /usr/src/packages/BUILDROOT/*
 rm -rf /srv/workspace/*
 # the test job can only clean up to a certain point
 # this is more likely to avoid qb leaks

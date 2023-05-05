@@ -99,6 +99,7 @@ rm -rf *debuginfo*
 createrepo .
 cd ..
 
+yum clean all
 yum install -y qemu-img qemu-kvm libvirt virt-install lftp httpd fence-virtd-libvirt fence-virtd-tcp postgresql ansible cloud-utils cloud-utils-growpart
 
 ## setup simengine

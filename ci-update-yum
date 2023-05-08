@@ -258,7 +258,7 @@ case "${NODE_NAME}" in
   fi
   #yum -y module enable python39
   yum -y install python39 python3-devel python3-pip python3-wheel \
-		 brewkoji createrepo ansible-core \
+		 brewkoji createrepo ansible \
 		 azure-cli firewalld-filesystem jq \
 		 google-cloud-sdk \
 		 libcurl-devel openssl-devel gcc

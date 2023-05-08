@@ -10,6 +10,7 @@ TODO List for ci.kronosnet.org
   [ ] add i386 cross compiler for gfs2-utils
   [ ] Readd: fedora38-power9-ppc64le
   [ ] rhel8.8/rhel9.2
+  [ ] add gfs2-utils / dlm userland to ci-tools repo and reinstall-all-manual
 
 - CI Roadmap
   [ ] abidiff check
@@ -18,8 +19,6 @@ TODO List for ci.kronosnet.org
 - Add build variable tree per project
 
 - Fix plot to support knet_bench output
-
-- Integrate qdevice + qnetd deployment in CI
 
 - More fine-grained support for knet_bench tests (perf-by-size/perf-by-time)
 

@@ -8,6 +8,8 @@ TODO List for ci.kronosnet.org
   [ ] review knet-memcheck as voting
   [ ] fix rpm publishing conditional on rpm build job
   [ ] add i386 cross compiler for gfs2-utils
+  [ ] Readd: fedora38-power9-ppc64le
+  [ ] rhel8.8/rhel9.2
 
 - CI Roadmap
   [ ] abidiff check

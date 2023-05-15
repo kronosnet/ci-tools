@@ -1,0 +1,45 @@
+#!/bin/sh
+
+set -e
+
+ARK_BRANCH=os-build
+DSTDIR=/srv/kernel/
+
+mkdir -p $DSTDIR
+cd $DSTDIR
+
+rm -rf $DSTDIR/kernel-ark
+
+git clone https://gitlab.com/cki-project/kernel-ark.git
+cd kernel-ark
+git remote add gfs2 https://git.kernel.org/pub/scm/linux/kernel/git/gfs2/linux-gfs2.git
+git remote add dlm git://git.kernel.org/pub/scm/linux/kernel/git/teigland/linux-dlm.git
+
+git checkout $ARK_BRANCH
+git fetch origin
+git fetch gfs2
+git fetch dlm
+git reset --hard origin/$ARK_BRANCH
+git checkout -b ci-test
+git merge --no-ff -m 'Automatic merge of gfs2/for-next and dlm/next' gfs2/for-next dlm/next
+
+yum -y install system-sb-certs $(make dist-get-buildreqs | grep "Missing dependencies:" | cut -d":" -f2)
+
+make dist-rhel-configs
+make dist-srpm
+
+srcrpm=$(ls -1 redhat/rpm/SRPMS/kernel-*.src.rpm)
+RPMBUILDOPTS="--without debug --without debuginfo --without doc"
+
+CIRPMDIR=$DSTDIR/kernel-ark/ci-test-rpms
+rm -rf $CIRPMDIR
+mkdir $CIRPMDIR
+
+rpmbuild \
+	--define "_sourcedir $CIRPMDIR/SOURCES" \
+	--define "_specdir $CIRPMDIR/SPECS" \
+	--define "_builddir $CIRPMDIR/BUILD" \
+	--define "_srcrpmdir $CIRPMDIR/SRPM" \
+	--define "_rpmdir $CIRPMDIR/RPMS" \
+	$RPMBUILDOPTS \
+	-rb $srcrpm

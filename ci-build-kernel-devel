@@ -23,7 +23,7 @@ git reset --hard origin/$ARK_BRANCH
 git checkout -b ci-test
 git merge --no-ff -m 'Automatic merge of gfs2/for-next and dlm/next' gfs2/for-next dlm/next
 
-yum -y install system-sb-certs $(make dist-get-buildreqs | grep "Missing dependencies:" | cut -d":" -f2)
+yum -y install system-sb-certs libpfm-devel libunwind-devel $(make dist-get-buildreqs | grep "Missing dependencies:" | cut -d":" -f2)
 
 make dist-rhel-configs
 make dist-srpm

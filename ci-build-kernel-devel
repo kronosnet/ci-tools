@@ -22,13 +22,12 @@ git merge --no-ff -m 'Automatic merge of gfs2/for-next and dlm/next' gfs2/for-ne
 
 yum -y install system-sb-certs libpfm-devel libunwind-devel $(make dist-get-buildreqs | grep "Missing dependencies:" | cut -d":" -f2)
 
-make dist-rhel-configs
 make dist-srpm
 
 srcrpm=$(ls -1 redhat/rpm/SRPMS/kernel-*.src.rpm)
 RPMBUILDOPTS="--without debug --without debuginfo --without doc"
 
-CIRPMDIR=$(PWD)/kernel-ark/ci-test-rpms
+CIRPMDIR=$(pwd)/kernel-ark/ci-test-rpms
 rm -rf $CIRPMDIR
 mkdir $CIRPMDIR
 

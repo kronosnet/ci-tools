@@ -261,6 +261,12 @@ else
  LIBQB_REPO=https://kronosnet.org/builds/libqb-main-${NODE_NAME}.repo
  LIBQB_REPO_PATH=https://kronosnet.org/builds/libqb/${NODE_NAME}/main/latest/
 
+ DLM_REPO=https://kronosnet.org/builds/dlm-main-${NODE_NAME}.repo
+ DLM_REPO_PATH=https://kronosnet.org/builds/dlm/${NODE_NAME}/main/latest/
+
+ GFS2UTILS_REPO=https://kronosnet.org/builds/gfs2-utils-main-${NODE_NAME}.repo
+ GFS2UTILS_REPO_PATH=https://kronosnet.org/builds/gfs2-utils/${NODE_NAME}/main/latest/
+
  QDEVICE_REPO=https://kronosnet.org/builds/corosync-qdevice-main-${NODE_NAME}.repo
  QDEVICE_REPO_PATH=https://kronosnet.org/builds/corosync-qdevice/${NODE_NAME}/main/latest/
 
@@ -321,6 +327,10 @@ export KNET_REPO
 export KNET_REPO_PATH
 export LIBQB_REPO
 export LIBQB_REPO_PATH
+export DLM_REPO
+export DLM_REPO_PATH
+export GFS2UTILS_REPO
+export GFS2UTILS_REPO_PATH
 export COROSYNC_REPO
 export COROSYNC_REPO_PATH
 export PCMK_REPO

@@ -1,4 +1,4 @@
-export REMOVERPMS="libnozzle1 libknet1 libqb* corosynclib libcorosync* resource-agents libpacemaker-devel pacemaker-libs-devel pacemaker-schemas fence-agents fence-agents-common corosync-qdevice-devel"
+export REMOVERPMS="libnozzle1 libknet1 libqb* corosynclib libcorosync* resource-agents libpacemaker-devel pacemaker-libs-devel pacemaker-schemas fence-agents fence-agents-common corosync-qdevice-devel dlm*"
 
 cleanbr() {
  if [ -n "$(which zypper 2>/dev/null)" ]; then
@@ -12,6 +12,8 @@ cleanbr() {
   zypper removerepo fas-build || true
   zypper removerepo ras-build || true
   zypper removerepo booth-build || true
+  zypper removerepo dlm-build || true
+  zypper removerepo gfs2utils-build || true
   zypper clean
  fi
  if [ -n "$(which yum 2>/dev/null)" ]; then
@@ -25,6 +27,8 @@ cleanbr() {
   rm -rf /etc/yum.repos.d/fas-build.repo || true
   rm -rf /etc/yum.repos.d/ras-build.repo || true
   rm -rf /etc/yum.repos.d/booth-build.repo || true
+  rm -rf /etc/yum.repos.d/dlm-build.repo || true
+  rm -rf /etc/yum.repos.d/gfs2utils-build.repo || true
   yum clean all
  fi
 }
@@ -114,6 +118,20 @@ installrpmdeps() {
     zypper removerepo booth-build || true
    fi
   fi
+  if [ -n "$DLM_REPO_PATH" ]; then
+   zypper addrepo $DLM_REPO_PATH dlm-build || $ret
+   zypper modifyrepo -p 1 -e -f -G dlm-build || $ret
+   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $DLM_REPO_PATH; then
+    zypper removerepo booth-build || true
+   fi
+  fi
+  if [ -n "$GFS2UTILS_REPO_PATH" ]; then
+   zypper addrepo $GFS2UTILS_REPO_PATH dlm-build || $ret
+   zypper modifyrepo -p 1 -e -f -G gfs2utils-build || $ret
+   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $GFS2UTILS_REPO_PATH; then
+    zypper removerepo booth-build || true
+   fi
+  fi
   zypper install -y $RPMDEPS || removerpmdeps 1
  fi
  if [ -n "$(which yum 2>/dev/null)" ]; then
@@ -143,6 +161,12 @@ installrpmdeps() {
   fi
   if [ -n "$BOOTH_REPO" ]; then
    wget -4 -O /etc/yum.repos.d/booth-build.repo $BOOTH_REPO || $ret
+  fi
+  if [ -n "$DLM_REPO" ]; then
+   wget -4 -O /etc/yum.repos.d/dlm-build.repo $DLM_REPO || $ret
+  fi
+  if [ -n "$GFS2UTILS_REPO" ]; then
+   wget -4 -O /etc/yum.repos.d/gfs2utils-build.repo $GFS2UTILS_REPO || $ret
   fi
   yum install -y $RPMDEPS || removerpmdeps 1
  fi

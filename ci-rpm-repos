@@ -133,7 +133,7 @@ EOF
 
 	cd $rpmdir/
 
-	for i in main-repo next-stable-repo; do
+	for i in main-repo main-kernel-repo next-stable-repo next-stable-kernel-repo; do
 		cd $i
 		for x in $(ls); do
 			echo "Creating $i-$x repo file"

@@ -9,7 +9,7 @@ rm -rf kernel-ark
 git clone https://gitlab.com/cki-project/kernel-ark.git
 
 cd kernel-ark
-git remote add gfs2 https://git.kernel.org/pub/scm/linux/kernel/git/gfs2/linux-gfs2.git
+git remote add gfs2 git://git.kernel.org/pub/scm/linux/kernel/git/gfs2/linux-gfs2.git
 git remote add dlm git://git.kernel.org/pub/scm/linux/kernel/git/teigland/linux-dlm.git
 
 git checkout $ARK_BRANCH
@@ -27,9 +27,9 @@ make dist-srpm
 srcrpm=$(ls -1 redhat/rpm/SRPMS/kernel-*.src.rpm)
 RPMBUILDOPTS="--without debug --without debuginfo --without doc"
 
-CIRPMDIR=$(pwd)/kernel-ark/ci-test-rpms
+CIRPMDIR=$(pwd)/ci-test-rpms
 rm -rf $CIRPMDIR
-mkdir $CIRPMDIR
+mkdir -p $CIRPMDIR
 
 rpmbuild \
 	--define "_sourcedir $CIRPMDIR/SOURCES" \

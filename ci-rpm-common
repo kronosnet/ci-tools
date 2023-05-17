@@ -122,14 +122,14 @@ installrpmdeps() {
    zypper addrepo $DLM_REPO_PATH dlm-build || $ret
    zypper modifyrepo -p 1 -e -f -G dlm-build || $ret
    if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $DLM_REPO_PATH; then
-    zypper removerepo booth-build || true
+    zypper removerepo dlm-build || true
    fi
   fi
   if [ -n "$GFS2UTILS_REPO_PATH" ]; then
-   zypper addrepo $GFS2UTILS_REPO_PATH dlm-build || $ret
+   zypper addrepo $GFS2UTILS_REPO_PATH gfs2utils-build || $ret
    zypper modifyrepo -p 1 -e -f -G gfs2utils-build || $ret
    if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $GFS2UTILS_REPO_PATH; then
-    zypper removerepo booth-build || true
+    zypper removerepo gfs2utils-build || true
    fi
   fi
   zypper install -y $RPMDEPS || removerpmdeps 1

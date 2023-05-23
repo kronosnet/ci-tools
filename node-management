@@ -103,7 +103,7 @@ addnodetoalljobs() {
 	for i in $joblist; do
 		addjob=0
 		case $i in
-			anvil-*|*pagure*)
+			anvil-*|*pagure*|*ci-test*)
 				echo Skipping manual job $i
 				;;
 			all-weekly|build-rpm-repos|reinstall-all-manual|reconnect-all-nodes|get-artifacts)
@@ -123,7 +123,7 @@ addnodetoalljobs() {
 				echo Adding updating job $i
 				addjob=1
 				;;
-			update-anvil*|update-all*|update-freebsd-devel)
+			update-anvil*|update-all*|update-freebsd-devel|update-kernel-devel)
 				echo Skipping updating job $i
 				;;
 			*clang)

@@ -92,7 +92,7 @@ addnodetoalljobs() {
 			stable|unstable)
 				updater=$i
 				;;
-			rhel7*|centos-7*)
+			rhel7*|centos-7*|rhel8*|centos-8*)
 				oldbuilds=yes
 				;;
 		esac
@@ -136,7 +136,7 @@ addnodetoalljobs() {
 				;;
 			*pcs*)
 				case $i in
-					*pcs-0.10*)
+					*pcs-0*)
 						# managed manually
 						;;
 					*rpms)
@@ -151,16 +151,24 @@ addnodetoalljobs() {
 						;;
 					*-nonvoting)
 						if [ $voting == no ]; then
-							echo Adding to nonvoting job $i
-							addjob=1
+							if [ $oldbuilds == yes ]; then
+								echo Skipping oldbuilds job $i
+							else
+								echo Adding oldbuilds to job $i
+								addjob=1
+							fi
 						else
 							echo Skipping nonvoting job $i
 						fi
 						;;
 					*-voting)
 						if [ $voting == yes ]; then
-							echo Adding to voting job $i
-							addjob=1
+							if [ $oldbuilds == yes ]; then
+								echo Skipping oldbuilds job $i
+							else
+								echo Adding oldbuilds to job $i
+								addjob=1
+							fi
 						else
 							echo Skipping voting job $i
 						fi

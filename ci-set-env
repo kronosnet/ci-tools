@@ -69,7 +69,7 @@ if [ "$DEST" != "pcs" ]; then
 fi
 
 case "${NODE_NAME}" in
- freebsd-12*|freebsd-devel*)
+ freebsd-12*|freebsd-13*)
   PARALLELMAKE="-j $(sysctl -n hw.ncpu)"
  ;;
  *)

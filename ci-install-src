@@ -19,8 +19,8 @@ if [ -n "$install" ] && [ "$install" = 1 ] && [ "x$build" != "xcoverity" ]; then
   $MAKE clean
   echo "./configure --prefix=$installpath --exec-prefix=$installpath --sysconfdir="$installpath/etc" --with-initdir="$installpath/etc/init.d" --with-ocfdir="$installpath/lib/ocf"  --with-systemdsystemunitdir="$installpath/usr/lib/systemd/system" $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
   ./configure --prefix=$installpath --exec-prefix=$installpath --sysconfdir="$installpath/etc" --with-initdir="$installpath/etc/init.d" --with-ocfdir="$installpath/lib/ocf"  --with-systemdsystemunitdir="$installpath/usr/lib/systemd/system" $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
-  echo "$MAKE $MAKEOPTS"
-  $MAKE $MAKEOPTS
+  echo "$MAKE $PARALLELMAKE $MAKEOPTS"
+  $MAKE $PARALLELMAKE $MAKEOPTS
  fi
  echo "$MAKE $MAKEINSTALLOPTS install"
  $MAKE $MAKEINSTALLOPTS install

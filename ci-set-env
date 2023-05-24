@@ -68,6 +68,10 @@ if [ "$DEST" != "pcs" ]; then
  export PYTHON=$python
 fi
 
+PARALLELMAKE="-j `nproc`"
+echo "Setting PARALLELMAKE to '$PARALLELMAKE'"
+export PARALLELMAKE
+
 echo ===== SOURCE TREE INFO =====
 
 if [ -z "${ghprbActualCommit}" ]; then

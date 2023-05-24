@@ -24,8 +24,8 @@ case $build in
     cov-build --dir=./cov --no-command --fs-capture-search agents $MAKECOVOPTS
    ;;
    *)
-    echo "cov-build --dir=./cov $MAKE $MAKECOVOPTS"
-    cov-build --dir=./cov $MAKE $MAKECOVOPTS
+    echo "cov-build --dir=./cov $MAKE $PARALLELMAKE $MAKECOVOPTS"
+    cov-build --dir=./cov $MAKE $PARALLELMAKE $MAKECOVOPTS
    ;;
   esac
   echo "cov-analyze --dir=./cov --wait-for-license $covoptions"
@@ -45,12 +45,12 @@ case $build in
    ;;
   esac
   if [ -n "$RPMDEPS" ]; then
-   echo "$MAKE $MAKERPMOPTS rpm"
-   $MAKE $MAKERPMOPTS rpm || removerpmdeps 1
+   echo "$MAKE $PARALLELMAKE $MAKERPMOPTS rpm"
+   $MAKE $PARALLELMAKE $MAKERPMOPTS rpm || removerpmdeps 1
    removerpmdeps 0
   else
-   echo "$MAKE $MAKERPMOPTS rpm"
-   $MAKE $MAKERPMOPTS rpm
+   echo "$MAKE $PARALLELMAKE $MAKERPMOPTS rpm"
+   $MAKE $PARALLELMAKE $MAKERPMOPTS rpm
   fi
  ;;
  *)
@@ -60,12 +60,12 @@ case $build in
      . .venv/bin/activate
      export PATH="$(pwd)/.venv"/bin/:$PATH
     fi
-    echo "$MAKE $MAKEOPTS"
-    $MAKE $MAKEOPTS
+    echo "$MAKE $PARALLELMAKE $MAKEOPTS"
+    $MAKE $PARALLELMAKE $MAKEOPTS
    ;;
    *)
-    echo "$MAKE $MAKEOPTS"
-    $MAKE $MAKEOPTS
+    echo "$MAKE $PARALLELMAKE $MAKEOPTS"
+    $MAKE $PARALLELMAKE $MAKEOPTS
    ;;
   esac
  ;;

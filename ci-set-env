@@ -68,7 +68,15 @@ if [ "$DEST" != "pcs" ]; then
  export PYTHON=$python
 fi
 
-PARALLELMAKE="-j `nproc`"
+case "${NODE_NAME}" in
+ freebsd-12*|freebsd-devel*)
+  PARALLELMAKE="-j $(sysctl -n hw.ncpu)"
+ ;;
+ *)
+  PARALLELMAKE="-j $(nproc)"
+ ;;
++esac
+
 echo "Setting PARALLELMAKE to '$PARALLELMAKE'"
 export PARALLELMAKE
 

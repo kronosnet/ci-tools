@@ -75,7 +75,7 @@ case "${NODE_NAME}" in
  *)
   PARALLELMAKE="-j $(nproc)"
  ;;
-+esac
+esac
 
 echo "Setting PARALLELMAKE to '$PARALLELMAKE'"
 export PARALLELMAKE

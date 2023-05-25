@@ -106,7 +106,7 @@ fi
 
 # blacklist PARALLELMAKE as necessary
 case "$DEST" in
- pcs|qb)
+ pcs)
   export PARALLELMAKE=""
  ;;
 esac

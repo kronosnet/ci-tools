@@ -94,6 +94,13 @@ PARALLELMAKE="$PARALLELMAKE $PARALLELOUTPUT"
 echo "Setting PARALLELMAKE to '$PARALLELMAKE'"
 export PARALLELMAKE
 
+# blacklist PARALLELMAKE as necessary
+case "$DEST" in
+ dlm)
+  export PARALLELMAKE=""
+ ;;
+esac
+
 echo ===== SOURCE TREE INFO =====
 
 if [ -z "${ghprbActualCommit}" ]; then

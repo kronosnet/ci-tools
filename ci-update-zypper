@@ -104,6 +104,7 @@ zypper install -y $bundler $glue  \
  ruby-devel                       \
  systemd-devel                    \
  time                             \
+ util-linux                       \
  valgrind                         \
  xz-devel                         \
  zlib-devel

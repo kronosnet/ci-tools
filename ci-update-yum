@@ -244,6 +244,7 @@ yum -y install         \
  rpmlint               \
  rsync                 \
  time                  \
+ util-linux            \
  valgrind              \
  which                 \
  xz-devel              \

@@ -2,21 +2,32 @@
 
 set -e
 
+BUILDDIR=$(pwd)
 ARK_BRANCH=os-build
+CACHEDIR=/srv/kcache
 
-rm -rf kernel-ark
+mkdir -p $CACHEDIR
 
-git clone https://gitlab.com/cki-project/kernel-ark.git
+if [ ! -d $CACHEDIR/kernel-ark ]; then
+	cd $CACHEDIR
+	git clone https://gitlab.com/cki-project/kernel-ark.git
+	cd kernel-ark
+	git remote add gfs2 git://git.kernel.org/pub/scm/linux/kernel/git/gfs2/linux-gfs2.git
+	git remote add dlm git://git.kernel.org/pub/scm/linux/kernel/git/teigland/linux-dlm.git
+fi
 
-cd kernel-ark
-git remote add gfs2 git://git.kernel.org/pub/scm/linux/kernel/git/gfs2/linux-gfs2.git
-git remote add dlm git://git.kernel.org/pub/scm/linux/kernel/git/teigland/linux-dlm.git
+cd $CACHEDIR/kernel-ark
 
 git checkout $ARK_BRANCH
 git fetch origin
 git fetch gfs2
 git fetch dlm
 git reset --hard origin/$ARK_BRANCH
+
+cd $BUILDDIR
+rsync -a $CACHEDIR/kernel-ark .
+cd kernel-ark
+
 git checkout -b ci-test
 git merge --no-ff -m 'Automatic merge of gfs2/for-next and dlm/next' gfs2/for-next dlm/next
 

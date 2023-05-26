@@ -79,15 +79,15 @@ esac
 
 PARALLEOUTPUT=""
 
-echo "Test for -O support in '$MAKE'"
-if $MAKE -f $HOME/ci-tools/Makefile.stub $PARALLELMAKE -O >/dev/null 2>&1; then
-  PARALLELOUTPUT="-O"
-fi
+#echo "Test for -O support in '$MAKE'"
+#if $MAKE -f $HOME/ci-tools/Makefile.stub $PARALLELMAKE -O >/dev/null 2>&1; then
+#  PARALLELOUTPUT="-O"
+#fi
 
-echo "Test for -Orecurse support in '$MAKE'"
-if $MAKE -f $HOME/ci-tools/Makefile.stub $PARALLELMAKE -Orecurse >/dev/null 2>&1; then
-  PARALLELOUTPUT="-Orecurse"
-fi
+#echo "Test for -Orecurse support in '$MAKE'"
+#if $MAKE -f $HOME/ci-tools/Makefile.stub $PARALLELMAKE -Orecurse >/dev/null 2>&1; then
+#  PARALLELOUTPUT="-Orecurse"
+#fi
 
 PARALLELMAKE="$PARALLELMAKE $PARALLELOUTPUT"
 

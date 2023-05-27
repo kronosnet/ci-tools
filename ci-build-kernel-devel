@@ -18,23 +18,34 @@ fi
 
 cd $CACHEDIR/kernel-ark
 
+echo == reset tree to $ARK_BRANCH ==
 git checkout $ARK_BRANCH
+echo == fetch kernel-ark ==
 git fetch origin
+echo == fetch gfs2 ==
 git fetch gfs2
+echo == fetch dlm ==
 git fetch dlm
+echo == reset tree to origin/$ARK_BRANCH ==
 git reset --hard origin/$ARK_BRANCH
 
+echo == clone tree to build dir ==
 cd $BUILDDIR
 rsync -a $CACHEDIR/kernel-ark .
 cd kernel-ark
 
+echo == checkout ci-test branch ==
 git checkout -b ci-test
+echo == merge gfs2/for-next and dlm/next ==
 git merge --no-ff -m 'Automatic merge of gfs2/for-next and dlm/next' gfs2/for-next dlm/next
 
+echo == install BuildRequires ==
 yum -y install system-sb-certs libpfm-devel libunwind-devel $(make dist-get-buildreqs | grep "Missing dependencies:" | cut -d":" -f2)
 
+echo == build srpm ==
 make dist-srpm
 
+echo == build rpms ==
 srcrpm=$(ls -1 redhat/rpm/SRPMS/kernel-*.src.rpm)
 RPMBUILDOPTS="--without debug --without debuginfo --without doc"
 

@@ -49,8 +49,8 @@ case $build in
    $MAKE $MAKERPMOPTS rpm || removerpmdeps 1
    removerpmdeps 0
   else
-   echo "$MAKE $PARALLELMAKE $MAKERPMOPTS rpm"
-   $MAKE $PARALLELMAKE $MAKERPMOPTS rpm
+   echo "$MAKE $MAKERPMOPTS rpm"
+   $MAKE $MAKERPMOPTS rpm
   fi
  ;;
  *)

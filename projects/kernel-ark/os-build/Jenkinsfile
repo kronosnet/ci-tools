@@ -1,0 +1,162 @@
+// Jenkinsfile for the kernel-ark/os-build project
+// 02-Jun-2023    Fabio M. Di Nitto     original version
+//
+
+@Library('ProjectLib') _
+
+pipeline {
+    agent { label 'kbuild' }
+
+    options {
+	timeout(time: 60, unit: 'MINUTES')
+	// This is required if you want to clean before build
+	// and kernel build is done via cache clone
+	skipDefaultCheckout(true)
+    }
+
+    environment {
+	BUILDDIR = "${env.WORKSPACE}"
+	ARK_BRANCH = 'os-build'
+	CACHEDIR = '/srv/kcache'
+    }
+
+    stages {
+	// This is the main stage that covers everything
+	stage('Prep workspace') {
+	    steps {
+		// Clean before build
+		cleanWs()
+	    }
+	}
+	stage('Populating kernel-ark cache') {
+	    steps {
+		sh '''
+		    mkdir -p $CACHEDIR
+		    if [ ! -d $CACHEDIR/kernel-ark ]; then
+			cd $CACHEDIR
+			echo "Cloning kernel-ark.git"
+			git clone https://gitlab.com/cki-project/kernel-ark.git
+			cd kernel-ark
+			echo "Adding remote linux-gfs2.git"
+			git remote add gfs2 git://git.kernel.org/pub/scm/linux/kernel/git/gfs2/linux-gfs2.git
+			echo "Adding remote linux-dlm.git"
+			git remote add dlm git://git.kernel.org/pub/scm/linux/kernel/git/teigland/linux-dlm.git
+		    fi
+		'''
+	    }
+	}
+	stage('Updating kernel-ark cache') {
+	    steps {
+		sh '''
+		    cd $CACHEDIR/kernel-ark
+		    echo == reset tree to $ARK_BRANCH ==
+		    git checkout $ARK_BRANCH
+		    echo == fetch kernel-ark ==
+		    git fetch origin
+		    echo == fetch gfs2 ==
+		    git fetch gfs2
+		    echo == fetch dlm ==
+		    git fetch dlm
+		    echo == reset tree to origin/$ARK_BRANCH ==
+		    git reset --hard origin/$ARK_BRANCH
+		'''
+	    }
+	}
+	stage('Cloning cache to build workspace') {
+	    steps {
+		sh '''
+		    echo == clone tree to build dir ==
+		    cd $BUILDDIR
+		    rsync -a $CACHEDIR/kernel-ark .
+		'''
+	    }
+	}
+	stage('Merging kernel-ark / gfs2 / dlm trees') {
+	    steps {
+		sh '''
+		    cd $BUILDDIR/kernel-ark
+		    echo == checkout ci-test branch ==
+		    git checkout -b ci-test
+		    echo == merge gfs2/for-next and dlm/next ==
+		    git merge --no-ff -m 'Automatic merge of gfs2/for-next and dlm/next' gfs2/for-next dlm/next
+		'''
+	    }
+	}
+	stage('Installing kernel-ark BuildRequires') {
+	    steps {
+		sh '''
+		    cd $BUILDDIR/kernel-ark
+		    echo == install BuildRequires ==
+		    yum -y install system-sb-certs libpfm-devel libunwind-devel $(make dist-get-buildreqs | grep "Missing dependencies:" | cut -d":" -f2)
+		'''
+	    }
+	}
+	stage('Build srpm') {
+	    steps {
+		sh '''
+		    cd $BUILDDIR/kernel-ark
+		    echo == build srpm ==
+		    make dist-srpm
+		'''
+	    }
+	}
+	stage('Build rpms') {
+	    steps {
+		sh '''
+		    cd $BUILDDIR/kernel-ark
+		    echo == build rpms ==
+		    srcrpm=$(ls -1 redhat/rpm/SRPMS/kernel-*.src.rpm)
+		    RPMBUILDOPTS="--without debug --without debuginfo --without doc"
+		    CIRPMDIR=$(pwd)/ci-test-rpms
+		    rm -rf $CIRPMDIR
+		    mkdir -p $CIRPMDIR
+
+		    rpmbuild \
+			--define "_sourcedir $CIRPMDIR/SOURCES" \
+			--define "_specdir $CIRPMDIR/SPECS" \
+			--define "_builddir $CIRPMDIR/BUILD" \
+			--define "_srcrpmdir $CIRPMDIR/SRPM" \
+			--define "_rpmdir $CIRPMDIR/RPMS" \
+			$RPMBUILDOPTS \
+			-rb $srcrpm
+		'''
+	    }
+	}
+	stage('Collect rpms') {
+	    steps {
+		build job: "get-artifacts",
+		    parameters: [string(name: 'sourcenode', value: "${env.NODE_NAME}"),
+				 string(name: 'sourcedir', value: "${env.WORKSPACE}/"),
+				 string(name: 'destdir', value: "rpmrepos/kernel/rhel9-kbuild/origin/ci-test/${env.BUILD_NUMBER}/"),
+				 string(name: 'transferset', value: 'rpm')]
+	    }
+	}
+	stage('Publish rpms') {
+	    steps {
+		build job: "build-rpm-repos",
+		    parameters: [string(name: 'project', value: 'kernel'),
+				 string(name: 'branch', value: 'origin/ci-test')]
+	    }
+	}
+    }
+
+    post {
+	success {
+	    node('built-in') {
+		script {
+		   postFunctions(['state': 'success'])
+		}
+	    }
+	}
+	failure {
+	    node('built-in') {
+		script {
+		   postFunctions(['state': 'success'])
+		}
+	    }
+	}
+	always {
+	    cleanWs()
+	}
+    }
+}

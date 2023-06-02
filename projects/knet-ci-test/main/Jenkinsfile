@@ -39,6 +39,20 @@ pipeline {
 	    }
 	    // All of the stages that actually do stuff
 	    stages {
+		stage('Check run type') {
+		    steps {
+			script {
+			    // Check for build-after-merge and set the params
+			    // for the sub-jobs.
+			    if (env.BRANCH_NAME != 'main') {
+				target_branch = env.CHANGE_TARGET
+				pull_id = env.CHANGE_ID
+				actual_commit = env.GIT_COMMIT
+				install = 0
+			    }
+			}
+		    }
+		}
 		// The work.
 		stage('Standard builds') {
 		    parallel {

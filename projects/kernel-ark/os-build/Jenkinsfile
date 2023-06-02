@@ -124,7 +124,7 @@ pipeline {
 	}
 	stage('Collect rpms') {
 	    steps {
-		build job: "get-artifacts",
+		build job: 'get-artifacts',
 		    parameters: [string(name: 'sourcenode', value: "${env.NODE_NAME}"),
 				 string(name: 'sourcedir', value: "${env.WORKSPACE}/"),
 				 string(name: 'destdir', value: "rpmrepos/kernel/rhel9-kbuild/origin/ci-test/${env.BUILD_NUMBER}/"),
@@ -133,7 +133,7 @@ pipeline {
 	}
 	stage('Publish rpms') {
 	    steps {
-		build job: "build-rpm-repos",
+		build job: 'build-rpm-repos',
 		    parameters: [string(name: 'project', value: 'kernel'),
 				 string(name: 'branch', value: 'origin/ci-test')]
 	    }

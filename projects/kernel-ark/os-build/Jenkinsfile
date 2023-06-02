@@ -96,7 +96,7 @@ pipeline {
 		sh '''
 		    cd $BUILDDIR/kernel-ark
 		    echo == build srpm ==
-		    make dist-srpm
+		    make -j $(nproc) dist-srpm
 		'''
 	    }
 	}

@@ -8,13 +8,12 @@
 def authcheck = false
 def nonvoting_fail = 0
 def voting_fail = 0
-def lockfile = "unknown"
-def project = "ci-test"
+def project = 'ci-test'
 
 // These are the defaults for build-after-merge
-def target_branch = ""
-def pull_id = "1"
-def actual_commit = "origin/main"
+def target_branch = ''
+def pull_id = '1'
+def actual_commit = 'origin/main'
 def install = 1
 
 pipeline {
@@ -112,13 +111,13 @@ pipeline {
 	success {
 	    // Notify interested users if non-voting jobs fail
 	    script {
-		postFunctions(["state": "success", "nonvoting_fail": nonvoting_fail, "voting_fail": voting_fail])
+		postFunctions(['state': 'success', 'nonvoting_fail': nonvoting_fail, 'voting_fail': voting_fail])
 	    }
 	}
 	failure {
 	    // Notify interested users if voting jobs fail
 	    script {
-		postFunctions(["state": "failure", "nonvoting_fail": nonvoting_fail, "voting_fail": voting_fail])
+		postFunctions(['state': 'failure', 'nonvoting_fail': nonvoting_fail, 'voting_fail': voting_fail])
 	    }
 	}
     }

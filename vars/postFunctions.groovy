@@ -14,15 +14,19 @@ def call(Map info) {
     if (info.containsKey("state")) {
 	state = info["state"]
     }
+
+    // getEmails() is allowed to retrun ''
+    email_addrs = getEmails()
+    if (email_addrs != '') {
+	email_addrs += ','
+    }
     if (state == "success" && nonvoting_fail > 0) {
-	email_addrs = getEmails()
-	email_addrs += ', commits@lists.kronosnet.org'
+	email_addrs += 'commits@lists.kronosnet.org'
 	mail to: email_addrs,
 	    subject: "${env.BUILD_TAG} succeeded but with non-voting fails",
 	    body: "Non-voting fails: ${nonvoting_fail}\nsee ${env.BUILD_URL}pipeline-console/"
     } else {
-	email_addrs = getEmails()
-	email_addrs += ', commits@lists.kronosnet.org'
+	email_addrs += 'commits@lists.kronosnet.org'
 	mail to: email_addrs,
 	    subject: "${env.BUILD_TAG} completed with state: ${state}",
 	    body: "see ${env.BUILD_URL}pipeline-console/"

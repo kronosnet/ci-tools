@@ -2,7 +2,7 @@
 // 1-May-2023    Chrissie Caulfield    original version for running 'old-style' jobs
 //
 
-@Library('ProjectLib@devel') _
+@Library('ProjectLib') _
 
 // Globals
 def authcheck = false
@@ -39,31 +39,7 @@ pipeline {
 	    }
 	    // All of the stages that actually do stuff
 	    stages {
-		// This creates a lock file that the job (below) waits on and then exits
-		// This sub-job is only there to prevent build-after-merge etc from colliding with us.
-		stage('Start lock job') {
-		    steps {
-			script {
-			    // Check for build-after-merge and behave a little differently
-			    if (env.BRANCH_NAME == 'main') {
-				lockjob = "${project}-build-after-merge"
-			    } else {
-				lockjob = "${project}-github-pr-builder"
-				target_branch = env.CHANGE_TARGET
-				pull_id = env.CHANGE_ID
-				actual_commit = env.GIT_COMMIT
-				install = 0
-			    }
-			    lockfile = "${env.WORKSPACE}/${env.BUILD_TAG}"
-			}
-			sh "touch ${lockfile}"
-			build job: "${lockjob}",
-			    parameters: [string(name: 'LOCKFILE', value: "${lockfile}")],
-			    wait: false, waitForStart: true
-		    }
-		}
-
-		// Kick off the real jobs
+		// The work.
 		stage('Standard builds') {
 		    parallel {
 			stage('voting') {
@@ -129,12 +105,6 @@ pipeline {
 	    // Notify interested users if voting jobs fail
 	    script {
 		postFunctions(["state": "failure", "nonvoting_fail": nonvoting_fail, "voting_fail": voting_fail])
-	    }
-	}
-	always {
-	    // Clear up the job file so the 'merge blocking job' can exit
-	    script {
-		sh "rm -f ${lockfile}"
 	    }
 	}
     }

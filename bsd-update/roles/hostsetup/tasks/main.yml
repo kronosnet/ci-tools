@@ -9,28 +9,31 @@
   when: preupgrade.stat.exists == False
 
 - name: install kernel
-  shell: cd /usr/src && make installkernel KERNCONF=GENERIC-NODEBUG
+  shell: cd /usr/src && make -j `nproc` installkernel KERNCONF=GENERIC-NODEBUG
 
 - name: reboot after kernel install
   reboot:
-    reboot_timeout: 1800
+    reboot_timeout: 300
+    post_reboot_delay: 60
 
 - name: update config files
   shell: mergemaster -a
 
 - name: install userland
-  shell: cd /usr/src && make installworld
+  shell: cd /usr/src && make -j `nproc` installworld
 
 - name: reboot after userland install
   reboot:
-    reboot_timeout: 1800
+    reboot_timeout: 300
+    post_reboot_delay: 60
 
 - name: clean old files
-  shell: cd /usr/src && make BATCH_DELETE_OLD_FILES=yes delete-old delete-old-libs
+  shell: cd /usr/src && make -j `nproc` BATCH_DELETE_OLD_FILES=yes delete-old delete-old-libs
 
 - name: reboot after config updates and old files removal
   reboot:
-    reboot_timeout: 1800
+    reboot_timeout: 300
+    post_reboot_delay: 60
 
 - name: clear pre upgrade status
   file:

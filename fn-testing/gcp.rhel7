@@ -1,0 +1,11 @@
+createopts="--flavor-workstation rhelha-vapor-workstation7 --flavor rhelha-vapor-node7 --image rhel-7"
+deployopts=""
+testopts=""
+
+gcp_setup() {
+	gcloud --quiet compute instance-templates delete rhelha-vapor-workstation7 rhelha-vapor-node7 || true
+	gcloud --quiet compute images delete rhel-7 || true
+	gcloud --quiet compute images create rhel-7 --source-image-family rhel-7 --source-image-project rhel-cloud
+	gcloud --quiet compute instance-templates create rhelha-vapor-node7 --boot-disk-size=40GB --machine-type=e2-custom-4-8192 --image-family=rhel-7 --image-project=rhel-cloud
+	gcloud --quiet compute instance-templates create rhelha-vapor-workstation7 --boot-disk-size=100GB --machine-type=e2-custom-4-8192 --image-family=rhel-7 --image-project=rhel-cloud
+}

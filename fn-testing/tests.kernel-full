@@ -1,0 +1,28 @@
+smoketests="
+cleanup
+setup
+pacemaker,resource,IPv4,recovery
+pacemaker,recovery,RecoveryActiveNode
+skeet
+"
+
+smotetags="
+"
+
+# 2+ nodes tests
+testsbasic="
+"
+
+tagsbasic="
+"
+
+# 3+ nodes tests
+testsplus="
+"
+
+tagsplus="
+"
+
+tags_3_nodes="
+suite:GFS2
+"

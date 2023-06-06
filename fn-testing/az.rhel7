@@ -1,0 +1,7 @@
+createopts="--image $(az vm image list --all --publisher RedHat  --output table | grep "RedHat:RHEL:7_" | tail -n 1 | awk '{print $NF}')"
+deployopts=""
+testopts=""
+
+az_setup() {
+	return 0
+}

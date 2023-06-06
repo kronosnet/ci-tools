@@ -252,20 +252,31 @@ yum -y install         \
  $EXTRADEPS
 
 case "${NODE_NAME}" in
- *vapor*)
+ *kbuild*|*vapor*)
   if [ ! -f $HOME/.config/openstack/clouds.yaml ]; then
    echo "Install manually openstack cloud config!"
    exit 1
   fi
-  #yum -y module enable python39
   yum -y install python39 python3-devel python3-pip python3-wheel \
 		 brewkoji createrepo ansible \
 		 azure-cli firewalld-filesystem jq \
-		 google-cloud-sdk \
-		 libcurl-devel openssl-devel gcc
-  #alternatives --set python3 /usr/bin/python3.9
-  pip3 uninstall --yes vapor || true
-  pip3 --disable-pip-version-check install --user colorlog "git+https://gitlab.cee.redhat.com/clusterqe/vapor.git@main#egg=vapor"
+		 google-cloud-sdk python3-openstackclient \
+		 libcurl-devel libvirt-devel openssl-devel gcc \
+		 tox crudini
+  mkdir -p /srv/vapor-node
+  curdir=$(pwd)
+  cd /srv/vapor-node
+  if [ ! -d vapor ]; then
+    git clone https://gitlab.cee.redhat.com/clusterqe/vapor.git
+  fi
+  cd vapor
+  git pull
+  rm -rf venv
+  make venv
+  . ./venv/bin/activate
+  pip install .[all]
+  deactivate
+  cd $curdir
  ;;
 esac
 

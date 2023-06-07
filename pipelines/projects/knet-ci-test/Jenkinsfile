@@ -2,8 +2,7 @@
 // 1-May-2023    Chrissie Caulfield    original version for running 'old-style' jobs
 //
 
-@Library('GlobalLib') _
-@Library('ProjectLib') _
+@Library(['GlobalLib', 'ProjectLib']) _
 
 // Globals
 def project = 'ci-test'

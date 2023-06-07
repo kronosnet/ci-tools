@@ -106,7 +106,7 @@ fi
 
 # blacklist PARALLELMAKE as necessary
 case "$DEST" in
- pcs)
+ knet|pcs)
   export PARALLELMAKE=""
  ;;
 esac

@@ -3,6 +3,7 @@ cleanup
 setup
 pacemaker,resource,IPv4,recovery
 pacemaker,recovery,RecoveryActiveNode
+setup,setup_sbd,sbd-only
 skeet
 "
 
@@ -14,7 +15,6 @@ testsbasic="
 pacemaker,recovery,RecoveryActiveNode,variant:iterations,iterations:10
 pacemaker,recovery,RecoveryRandomNode,variant:iterations,iterations:10
 pacemaker,recovery,RecoveryRestartPacemaker-AllNodes
-pacemaker,recovery,RecoveryRestartPacemaker-OneNode
 pacemaker,recovery,RecoveryResourceFailure,variant:iterations,iterations:10
 pacemaker,resource,Apache,recovery
 pacemaker,resource,Apache,variant:latency,latency:150ms
@@ -24,6 +24,7 @@ pacemaker,resource,Group,variant:scaling,scale:5
 pacemaker,resource,Filesystem
 pacemaker,resource,FilesystemGroup
 pacemaker,usecase,ha-apache
+pacemaker,recovery,RecoveryActiveNode,sbd-only,kill_reboot
 "
 
 tagsbasic="
@@ -35,6 +36,7 @@ pacemaker,recovery,RecoverySwitchFailure,variant:iterations,iterations:10
 pacemaker,recovery,RecoveryNodeNetworkFailure
 pacemaker,recovery,RecoveryRandomMultiNode,variant:iterations,iterations:10
 pacemaker,recovery,RecoveryRandomMultiNodeNQ,variant:iterations,iterations:10
+pacemaker,recovery,RecoveryNodeNetworkFailure,setup_sbd,sbd-only,network_disruptor
 "
 
 tagsplus="

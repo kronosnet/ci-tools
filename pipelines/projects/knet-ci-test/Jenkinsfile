@@ -2,7 +2,7 @@
 // 1-May-2023    Chrissie Caulfield    original version for running 'old-style' jobs
 //
 
-@Library(['GlobalLib', 'ProjectLib']) _
+@Library(['GlobalLib@cc-devel', 'ProjectLib@cc-devel']) _
 
 // Globals
 def project = 'ci-test'
@@ -19,16 +19,19 @@ def target_branch = ''
 def pull_id = '1'
 def actual_commit = ''
 def install = 0
+def publish_pr_rpm = false
+def covopts = ''
 
 pipeline {
     agent { label 'built-in' }
 
     stages {
-	// First check we are allowed to run
+	// First check we are allowed to run, then set some params for that run
 	stage('Validate build env') {
 	    steps {
 		script {
-		    authcheck = getAuthCheck(['isPullRequest': isPullRequest])
+		    authcheck = getGithubAuthCheck(['isPullRequest': isPullRequest])
+
 		    // set parameters the sub-jobs.
 		    if (isPullRequest) {
 			target_branch = env.CHANGE_TARGET
@@ -39,6 +42,8 @@ pipeline {
 			actual_commit = "origin/${env.BRANCH_NAME}"
 			install = 1
 		    }
+		    publish_pr_rpm = buildPRRPMs(['isPullRequest': isPullRequest, "branch": target_branch])
+		    covopts = getCovOpts(target_branch)
 		}
 	    }
 	}
@@ -88,7 +93,7 @@ pipeline {
 						 string(name: 'ghprbActualCommit', value : "${actual_commit}"),
 						 string(name: 'ghprbPullId', value : "${pull_id}"),
 						 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
-						 string(name: 'covoptions', value : '--all --disable STACK_USE --disable-parse-warnings')]
+						 string(name: 'covoptions', value : "${covopts}")]
 			    }
 			}
 			stage('rpm builds') {
@@ -98,6 +103,7 @@ pipeline {
 						 string(name: 'ghprbPullId', value : "${pull_id}"),
 						 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
 						 string(name: 'publishrpm', value : "${install}"),
+						 string(name: 'publishprrpm', value : "${publish_pr_rpm}"),
 						 string(name: 'bootstrap', value : '0')]
 			    }
 			}

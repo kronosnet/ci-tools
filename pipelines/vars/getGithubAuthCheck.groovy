@@ -13,7 +13,7 @@ def call(Map params) {
     // Triggered by admin on the website
     userEvent = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')
     if (!userEvent.size().equals(0)) {
-	println("Build Triggered from Jensink web UI")
+	println("Build Triggered from Jenkins web UI")
 	return true
     }
 

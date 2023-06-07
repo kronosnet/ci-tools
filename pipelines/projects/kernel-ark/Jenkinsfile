@@ -2,6 +2,7 @@
 // 02-Jun-2023    Fabio M. Di Nitto     original version
 //
 
+@Library('GlobalLib') _
 @Library('ProjectLib') _
 
 pipeline {

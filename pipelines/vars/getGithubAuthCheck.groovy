@@ -26,14 +26,21 @@ def call(Map params) {
     }
 
     // Triggered by admin comment in the PR
-    userEvent = currentBuild.getBuildCauses('com.adobe.jenkins.github_pr_comment_build.GitHubPullRequestCommentCause') 
+    userEvent = currentBuild.getBuildCauses('com.adobe.jenkins.github_pr_comment_build.GitHubPullRequestCommentCause')
     if (!userEvent.size().equals(0)) {
 	println("Build Triggered from PR comment")
 	return true
     }
 
     // Caused by a PR. Check it's from a valid user
-    valid_admins = getValidPRUsers()
+    // Get github collaborators list
+    valid_admins = getGithubCollaborators(env.GIT_URL)
+    // Any extras defined for the project
+    valid_admins += getValidPRUsers()
+    // Global admins
+    valid_admins += getGlobalAdminUsers()
+    println("valid admins: ${valid_admins}")
+
     if (valid_admins.contains(env.CHANGE_AUTHOR)) {
 	println("Build Triggered by PR authorized user")
 	return true

@@ -30,7 +30,10 @@ pipeline {
 	stage('Validate build env') {
 	    steps {
 		script {
-		    authcheck = getGithubAuthCheck(['isPullRequest': isPullRequest])
+		    cred_uuid = getCredUUID()
+                    withCredentials([gitUsernamePassword(credentialsId: cred_uuid, gitToolName: 'Default')]) {
+			authcheck = getGithubAuthCheck(['isPullRequest': isPullRequest])
+		    }
 
 		    // set parameters the sub-jobs.
 		    if (isPullRequest) {

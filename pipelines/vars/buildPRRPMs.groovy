@@ -12,7 +12,7 @@ def call(Map params)
 
     // Calls into the project-specific library
     branchnames = getPRBranchRPM()
-    println("PR Branchnames: ${branchnames}")
+    println("Publish PR RPMs Branchnames: ${branchnames}")
 
     if (isPullRequest == true) {
 	if (branchnames.contains(branch)) {

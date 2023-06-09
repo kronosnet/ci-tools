@@ -43,7 +43,7 @@ pipeline {
 			pull_id = env.CHANGE_ID
 			actual_commit = env.GIT_COMMIT
 			install = 0
-			publish_pr_rpm = buildPRRPMs(['isPullRequest': isPullRequest, "branch": target])
+			publish_pr_rpm = buildPRRPMs(['isPullRequest': isPullRequest, 'branch': target])
 		    } else {
 			actual_commit = "origin/${env.BRANCH_NAME}"
 			target = ${env.BRANCH_NAME}

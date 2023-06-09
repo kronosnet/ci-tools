@@ -46,7 +46,7 @@ pipeline {
 			publish_pr_rpm = buildPRRPMs(['isPullRequest': isPullRequest, 'branch': target])
 		    } else {
 			actual_commit = "origin/${env.BRANCH_NAME}"
-			target = ${env.BRANCH_NAME}
+			target = env.BRANCH_NAME
 			install = 1
 		    }
 		    covopts = getCovOpts(target)

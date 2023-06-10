@@ -1,0 +1,102 @@
+// Jenkinsfile for anvil CI project
+
+@Library(['GlobalLib', 'ProjectLib']) _
+
+// Globals
+def project = 'anvil'
+
+def authcheck = false
+
+// github specific
+def isPullRequest = env.CHANGE_ID ? true : false
+
+// Set defaults
+def target_branch = ''
+def target = ''
+def pull_id = '1'
+def actual_commit = ''
+def install = 0
+def publish_pr_rpm = 0
+def covopts = ''
+def anvilsrc = ''
+
+pipeline {
+    agent { label 'built-in' }
+
+    stages {
+	// First check we are allowed to run
+	stage('Validate build env') {
+	    steps {
+		script {
+		    cred_uuid = getCredUUID()
+		    withCredentials([gitUsernamePassword(credentialsId: cred_uuid, gitToolName: 'Default')]) {
+			authcheck = getGithubAuthCheck(['isPullRequest': isPullRequest])
+		    }
+		    // set parameters the sub-jobs.
+		    if (isPullRequest) {
+			target_branch = env.CHANGE_TARGET
+			target = env.CHANGE_TARGET
+			pull_id = env.CHANGE_ID
+			actual_commit = env.GIT_COMMIT
+			install = 0
+			publish_pr_rpm = buildPRRPMs(['isPullRequest': isPullRequest, 'branch': target])
+			anvilsrc = "pr/${pull_id}"
+		    } else {
+			actual_commit = "origin/${env.BRANCH_NAME}"
+			target = env.BRANCH_NAME
+			install = 1
+			anvilsrc = "ci"
+		    }
+		}
+	    }
+	}
+
+	// This is the main stage that covers everything
+	stage('Start builds') {
+	    when {
+		// getAuthCheck will usually abort the job if permission is denied
+		// but this is an extra check!
+		expression { authcheck == true }
+	    }
+	    // All of the stages that actually do stuff
+	    stages {
+		stage('voting') {
+		    steps {
+			build job: "${project}-build-all-voting",
+			    parameters: [string(name: 'ghprbActualCommit', value : "${actual_commit}"),
+					 string(name: 'ghprbPullId', value : "${pull_id}"),
+					 string(name: 'ghprbTargetBranch', value : "${target_branch}")]
+		    }
+		}
+		stage('rpm builds') {
+		    steps {
+			build job: "${project}-build-rpms",
+			    parameters: [string(name: 'ghprbActualCommit', value : "${actual_commit}"),
+					 string(name: 'ghprbPullId', value : "${pull_id}"),
+					 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
+					 string(name: 'publishrpm', value : "${install}"),
+					 string(name: 'publishprrpm', value : "${publish_pr_rpm}")]
+		    }
+		}
+		stage('functional testing') {
+		    steps {
+			build job: "${project}-build-all-functional-testing",
+			    parameters: [string(name: 'ANVILSRC', value : "${anvilsrc}")]
+		    }
+		}
+	    }
+	}
+    }
+    post {
+	success {
+	    script {
+		postFunctions(['state': 'success'])
+	    }
+	}
+	failure {
+	    script {
+		postFunctions(['state': 'failure'])
+	    }
+	}
+    }
+}

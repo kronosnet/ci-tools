@@ -4,10 +4,11 @@ TODO List for ci.kronosnet.org
 - CI Maintenance - work do be done on builders
   [ ] backup VMs
   [ ] reboot nodes
-  [ ] change dependencies per node vs per global job
   [ ] review knet-memcheck as voting
   [ ] fix rpm publishing conditional on rpm build job
   [ ] add i386 cross compiler for gfs2-utils
+  [ ] Sunset Debian 10 (EOL 2024)
+  [ ] Sunset RHEL7/centos-7
 
 - CI Roadmap
   [ ] abidiff check

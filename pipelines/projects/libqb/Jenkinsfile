@@ -44,7 +44,7 @@ pipeline {
 		    } else {
 			actual_commit = "origin/${env.BRANCH_NAME}"
 			target = env.BRANCH_NAME
-			install = 1
+			install = isThisAnInstallBranch(target)
 		    }
 		    covopts = getCovOpts(target)
 		}

@@ -18,12 +18,23 @@ def call(String project)
 
     // Create the main dictionary
     def info = ['isPullRequest': isPullRequest]
+    info['project'] = project
+    info['nonvoting_fail'] = 0
+    info['nonvoting_fail_nodes'] = ''
+    info['voting_fail'] = 0
+    info['voting_fail_nodes'] = ''
+    info['nonvoting_run'] = 0
+    info['voting_run'] = 0
 
     // Validate the user. This should Abort if disallowed.
     cred_uuid = getCredUUID()
     withCredentials([gitUsernamePassword(credentialsId: cred_uuid, gitToolName: 'Default')]) {
 	info['authcheck'] = getAuthCheck(['isPullRequest': isPullRequest])
     }
+
+    // Display/kill any old duplicates of this job that are running
+    info['email_extra_text'] = ''
+    killDuplicateJobs(info)
 
     // Set parameters for the sub-jobs.
     if (isPullRequest) {
@@ -34,7 +45,9 @@ def call(String project)
 	info['install'] = 0
 	info['maininstall'] = 0
 	info['stableinstall'] = 0
+	info['publish_rpm'] = 0  // TODO Remove once all in new pipelines
 	info['publish_pr_rpm'] = buildPRRPMs(['isPullRequest': isPullRequest, 'branch': info['target']])
+	info['publishrpm'] = info['publish_pr_rpm']
 
 	// Check for PRs marked 'draft' - this is Github-specific
 	is_draft = pullRequest.isDraft()
@@ -53,6 +66,8 @@ def call(String project)
 	info['target'] = env.BRANCH_NAME
 	info['target_branch'] = ''
 	info['pull_id'] = 1
+	info['publish_rpm'] = 1 // TODO Remove once all in new pipelines
+	info['publishrpm'] = 1
 	info['install'] = isThisAnInstallBranch(info['target'])
 	if ("${info['install']}" == '1') {
 	    if ("${info['target']}" == 'main') {
@@ -66,6 +81,10 @@ def call(String project)
     }
     info['is_draft'] = is_draft
     info['covopts'] = getCovOpts(info['target'])
+
+    // Make sure the params are in here so they get propogated to the scripts
+    info['bootstrap'] = params.bootstrap
+    info['fullrebuild'] = params.fullrebuild
 
     println("info map: ${info}")
     return info

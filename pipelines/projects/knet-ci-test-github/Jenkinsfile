@@ -1,16 +1,28 @@
-// Jenkinsfile for the a knet CI main project
+// Jenkinsfile for the knet CI (github) project
 //  1-May-2023    Chrissie Caulfield    original version for running 'old-style' jobs
 // 16-Jun-2023    me again              Move a lot of stuff into getBuildInfo() for tidiness
+// 13-Jul-2023    guess who?            Make it fully pipelined
 
-@Library(['GlobalLib', 'GithubLib', 'ProjectLib']) _
+@Library(['GlobalLib@cc-devel', 'GithubLib@cc-devel', 'ProjectLib@cc-devel']) _
 
-// Globals
+// Who we are
 def project = 'ci-test'
-def voting_fail =0
-def nonvoting_fail = 0
 
+// Pipeline code starts here
 pipeline {
+    // Start on the main Jenkins node. Build jobs are distributed inside 'parallel' below
     agent { label 'built-in' }
+
+    // Things that external jobs might want to influence
+    parameters {
+	string(name: 'bootstrap',   defaultValue: '0', description: 'Bootstrap the RPM repos')
+	string(name: 'fullrebuild', defaultValue: '0', description: 'This is a full rebuild - do not publish RPM and do NOT update build code on the nodes')
+    }
+
+    options {
+	// We do our own checkouts
+	skipDefaultCheckout(true)
+    }
 
     stages {
 	// First check we are allowed to run, then set some params for that run
@@ -18,92 +30,76 @@ pipeline {
 	    steps {
 		script {
 		    info = getBuildInfo(project)
+		    info['bootstrap'] = '1' // for this test job only.
 		}
 	    }
 	}
 
-	// This is the main stage that covers everything
-	stage('Start builds') {
+        // This is the main stage - building and testing
+	stage('Main stage') {
 	    when {
-		// getAuthCheck will usually abort the job if permission is denied
-		// but this is an extra check!
+		// getAuthCheck (in getBuildInfo) will usually abort the job if permission is denied,
+		// but this is an extra check.
 		expression { info['authcheck'] == true && info['is_draft'] == false }
 	    }
+
 	    // All of the stages that actually do stuff
-	    stages {
-		stage('Standard builds') {
-		    parallel {
-			stage('voting') {
-			    steps {
-				build job: "${project}-github/${project}-build-all-voting",
-				    parameters: [string(name: 'install', value: "${info['install']}"),
-						 string(name: 'ghprbActualCommit', value : "${info['actual_commit']}"),
-						 string(name: 'ghprbPullId', value : "${info['pull_id']}"),
-						 string(name: 'ghprbTargetBranch', value : "${info['target_branch']}"),
-						 string(name: 'compiler', value : 'gcc')]
-			    }
-			}
-			stage('non-voting') {
-			    steps {
-				script {
-				    try {
-					build job: "${project}-github/${project}-build-all-nonvoting",
-					    parameters: [string(name: 'install', value: "${info['install']}"),
-							 string(name: 'ghprbActualCommit', value : "${info['actual_commit']}"),
-							 string(name: 'ghprbPullId', value : "${info['pull_id']}"),
-							 string(name: 'ghprbTargetBranch', value : "${info['target_branch']}"),
-							 string(name: 'compiler', value : 'gcc')]
-				    }
-				    catch (err) {
-					nonvoting_fail++
-				    }
-				}
-			    }
-			}
-			stage('covscan') {
-			    steps {
-				build job: "${project}-github/${project}-build-covscan",
-				    parameters: [string(name: 'install', value: "${info['install']}"),
-						 string(name: 'ghprbActualCommit', value : "${info['actual_commit']}"),
-						 string(name: 'ghprbPullId', value : "${info['pull_id']}"),
-						 string(name: 'ghprbTargetBranch', value : "${info['target_branch']}"),
-						 string(name: 'covoptions', value : "${info['covopts']}")]
-			    }
-			}
-			stage('buildrpms') {
-			    steps {
-				script {
-				    try {
-					build job: "${project}-github/${project}-build-rpms",
-					    parameters: [string(name: 'ghprbActualCommit', value : "${info['actual_commit']}"),
-							 string(name: 'ghprbPullId', value : "${info['pull_id']}"),
-							 string(name: 'ghprbTargetBranch', value : "${info['target_branch']}"),
-							 string(name: 'publishrpm', value : "${info['install']}"),
-							 string(name: 'publishprrpm', value : "${info['publish_pr_rpm']}"),
-							 string(name: 'bootstrap', value : '0')]
-				    } catch (err) {
-					nonvoting_fail++
-				    }
-				}
-			    }
-			}
+	    steps {
+		script {
+		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+
+
+		    // The 'short' test list
+		    voting = buildRunMap('voting', info, ['voting': true,
+							  'nodelabel': 'test-voting'])
+		    nonvoting = buildRunMap('nonvoting', info, ['voting': false,
+								'nodelabel': 'test-nonvoting'])
+		    nonvoting_clang = [:]
+
+		    covscan = buildRunMap('covscan', info, ['voting': true,
+							    'nodelabel': 'test-covscan'])
+		    buildrpms = buildRunMap('buildrpms', info, ['voting': true,
+								'nodelabel': 'test-buildrpms'])
+
+
+		    // This is the libqb list ...
+		    // voting = buildRunMap('voting', info, ['voting': true,
+		    // 					  'nodelabel': 'voting',
+		    // 					  'nodelist': ['debian-unstable-cross-x86-64']])
+		    // nonvoting = buildRunMap('nonvoting', info, ['voting': false,
+		    // 						'nodelabel': 'nonvoting'])
+		    // nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
+		    // 							    'nodelabel': 'nonvoting-clang'])
+		    // covscan = buildRunMap('covscan', info, ['voting': true,
+		    // 					    'nodelabel': 'covscan'])
+		    // buildrpms = buildRunMap('buildrpms', info, ['voting': false,
+		    //                                             'nodelabel': 'buildrpms'])
+
+		    // Run them (errors are caught in info[:])
+		    try {
+			parallel voting + nonvoting + nonvoting_clang + buildrpms + covscan
+		    } catch (err) {
+			println("**** Jenkinsfile caught "+err)
 		    }
 		}
 	    }
 	}
-    }
-    post {
-	success {
-	    // Notify interested users if non-voting jobs fail
-	    script {
-		postFunctions(['project': project, 'state': 'success', 'nonvoting_fail': nonvoting_fail, 'voting_fail': voting_fail])
+
+        // Build the RPM/Coverity repos etc. If the job failed, this is what tells Jenkins
+	stage('Post Stage') {
+	    when {
+		expression { info['authcheck'] == true && info['is_draft'] == false }
+	    }
+	    steps {
+		postStage(info)
 	    }
 	}
-	failure {
-	    // Notify interested users if voting jobs fail
-	    script {
-		postFunctions(['project': project, 'state': 'failure', 'nonvoting_fail': nonvoting_fail, 'voting_fail': voting_fail])
-	    }
+    }
+
+    // Finish up and send emails
+    post {
+	always {
+	    sendEmails(info)
 	}
     }
 }

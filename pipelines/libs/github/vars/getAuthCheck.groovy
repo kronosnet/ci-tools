@@ -64,8 +64,29 @@ def call(Map params) {
 
     // Ask for approval
     echo "Approval needed from Jenkins administrator"
-    result = input(message: "Please verify this is safe to run", ok: "OK",
-		   submitterParameter: 'submitter')
+    long timeoutInMinutes = 10080 // a week
+    long startTime = System.currentTimeMillis()
+    try {
+	timeout(time: timeoutInMinutes, unit: 'MINUTES') {
+	    result = input(message: "Please verify this is safe to run", ok: "OK",
+			   submitterParameter: 'submitter')
+	}
+    } catch (err) {
+	long timePassed = System.currentTimeMillis() - startTime
+	if (timePassed >= timeoutInMinutes * 60000) {
+            echo 'Wait for admin response timed out'
+
+	    email_addrs = getEmails()
+	    if (email_addrs != '') {
+		email_addrs += ','
+	    }
+	    email_addrs += 'commits@lists.kronosnet.org'
+	    mail to: email_addrs,
+		subject: "${env.BUILD_TAG} from user ${env.CHANGE_AUTHOR} - timeout-out waiting for admin response"
+	    body: "see ${env.BUILD_URL}"
+	}
+        throw err
+    }
     println(result)
 
     println("Build Triggered by PR manual approval")

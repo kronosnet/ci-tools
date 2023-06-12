@@ -31,6 +31,13 @@ def call(String project, String upstream_repo)
 
     // Create the main dictionary
     def info = ['isPullRequest': isPullRequest]
+    info['project'] = project
+    info['nonvoting_fail'] = 0
+    info['nonvoting_fail_nodes'] = ''
+    info['voting_fail'] = 0
+    info['voting_fail_nodes'] = ''
+    info['nonvoting_run'] = 0
+    info['voting_run'] = 0
 
     // pagure needs credentials only to post comments on PRs.
     // knet-ci-bot user has been created in pagure, and has the API key
@@ -43,6 +50,9 @@ def call(String project, String upstream_repo)
 	info['authcheck'] = getAuthCheck(['upstream_repo': upstream_repo, 'isPullRequest': isPullRequest])
     }
 
+    // NOTE: the Github version runs killDuplicate() jobs here
+    // but we dont have a Pagure one.
+
     // Set parameters for the sub-jobs.
     if (isPullRequest) {
 	info['actual_commit'] = "origin/${env.BRANCH_TO}"
@@ -53,8 +63,9 @@ def call(String project, String upstream_repo)
 	info['install'] = 0
 	info['maininstall'] = 0
 	info['stableinstall'] = 0
-	info['publish_rpm'] = 0
+	info['publish_rpm'] = 0  // TODO Remove once all in new pipelines
 	info['publish_pr_rpm'] = buildPRRPMs(['isPullRequest': isPullRequest, 'branch': info['target']])
+	info['publishrpm'] = info['publish_pr_rpm']
 	info['jobname'] = "PR#${env.cause}"
     } else {
 	info['actual_commit'] = "origin/${env.BRANCH}"
@@ -72,7 +83,8 @@ def call(String project, String upstream_repo)
 		info['stableinstall'] = 1
 	    }
 	}
-	info['publish_rpm'] = 1
+	info['publish_rpm'] = 1  // TODO Remove once all in new pipelines
+	info['publishrpm'] = 1
 	info['jobname'] = "${env.BRANCH} ${env.cause}"
 	// because the pipeline has no concept of git checkout, we cannot filter
 	// branches to build from Jenkins. This check avoid contributors pushing
@@ -84,6 +96,10 @@ def call(String project, String upstream_repo)
 	}
     }
     info['covopts'] = getCovOpts(info['target'])
+
+    // Make sure the params are in here so they get propogated to the scripts
+    info['bootstrap'] = params.bootstrap
+    info['fullrebuild'] = params.fullrebuild
 
     println("info map: ${info}")
     return info

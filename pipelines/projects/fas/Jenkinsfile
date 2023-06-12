@@ -3,7 +3,7 @@
 @Library(['GlobalLib', 'ProjectLib']) _
 
 // Globals
-def project = 'fas'
+def project = 'fence-agents'
 
 def authcheck = false
 

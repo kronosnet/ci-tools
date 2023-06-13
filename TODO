@@ -7,8 +7,9 @@ TODO List for ci.kronosnet.org
   [ ] review knet-memcheck as voting
   [ ] fix rpm publishing conditional on rpm build job
   [ ] add i386 cross compiler for gfs2-utils
-  [ ] Sunset Debian 10 (EOL 2024)
-  [ ] Sunset RHEL7/centos-7
+  [ ] Sunset Debian 10 (EOL Jun 30 2024)
+  [ ] Upgrade jumphost
+  [ ] Drop concept of epel=new and python2
 
 - CI Roadmap
   [ ] abidiff check

@@ -49,8 +49,8 @@ pipeline {
 			actual_commit = "origin/${env.BRANCH_NAME}"
 			target = env.BRANCH_NAME
 			install = isThisAnInstallBranch(target)
-			if (install == 1) {
-			    if (target == "main") {
+			if ("${install}" == '1') {
+			    if ("${target}" == 'main') {
 				maininstall = 1
 				stableinstall = 0
 			    } else {

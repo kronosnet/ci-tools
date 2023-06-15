@@ -1,0 +1,220 @@
+// Jenkinsfile for booth CI project
+
+@Library(['GlobalLib', 'ProjectLib']) _
+
+// Globals
+def project = 'booth'
+
+def authcheck = false
+
+// github specific
+def isPullRequest = env.CHANGE_ID ? true : false
+
+// Set defaults
+def nonvoting_fail = 0
+def voting_fail = 0
+def target_branch = ''
+def target = ''
+def pull_id = '1'
+def actual_commit = ''
+def install = 0
+def publish_pr_rpm = 0
+def covopts = ''
+
+pipeline {
+    agent { label 'built-in' }
+
+    stages {
+	// First check we are allowed to run
+	stage('Validate build env') {
+	    steps {
+		script {
+		    cred_uuid = getCredUUID()
+		    withCredentials([gitUsernamePassword(credentialsId: cred_uuid, gitToolName: 'Default')]) {
+			authcheck = getGithubAuthCheck(['isPullRequest': isPullRequest])
+		    }
+		    // set parameters the sub-jobs.
+		    if (isPullRequest) {
+			target_branch = env.CHANGE_TARGET
+			target = env.CHANGE_TARGET
+			pull_id = env.CHANGE_ID
+			actual_commit = env.GIT_COMMIT
+			install = 0
+			publish_pr_rpm = buildPRRPMs(['isPullRequest': isPullRequest, 'branch': target])
+		    } else {
+			actual_commit = "origin/${env.BRANCH_NAME}"
+			target = env.BRANCH_NAME
+			install = isThisAnInstallBranch(target)
+		    }
+		    covopts = getCovOpts(target)
+		}
+	    }
+	}
+
+	// This is the main stage that covers everything
+	stage('Start builds') {
+	    when {
+		// getAuthCheck will usually abort the job if permission is denied
+		// but this is an extra check!
+		expression { authcheck == true }
+	    }
+	    // All of the stages that actually do stuff
+	    stages {
+		stage('Standard builds') {
+		    parallel {
+			stage('voting vs pacemaker main') {
+			    steps {
+				build job: "${project}-build-all-voting",
+				    parameters: [string(name: 'install', value: "${install}"),
+						 string(name: 'ghprbActualCommit', value : "${actual_commit}"),
+						 string(name: 'ghprbPullId', value : "${pull_id}"),
+						 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
+						 string(name: 'pcmkver', value : 'main'),
+						 string(name: 'compiler', value : 'gcc')]
+			    }
+			}
+			stage('voting vs pacemaker 2.1') {
+			    steps {
+				build job: "${project}-build-all-voting",
+				    parameters: [string(name: 'install', value: "${install}"),
+						 string(name: 'ghprbActualCommit', value : "${actual_commit}"),
+						 string(name: 'ghprbPullId', value : "${pull_id}"),
+						 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
+						 string(name: 'pcmkver', value : '2.1'),
+						 string(name: 'compiler', value : 'gcc')]
+			    }
+			}
+			stage('covscan vs pacemaker main') {
+			    steps {
+				build job: "${project}-build-covscan",
+				    parameters: [string(name: 'install', value: "${install}"),
+						 string(name: 'ghprbActualCommit', value : "${actual_commit}"),
+						 string(name: 'ghprbPullId', value : "${pull_id}"),
+						 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
+						 string(name: 'pcmkver', value : 'main'),
+						 string(name: 'covoptions', value : "${covopts}")]
+			    }
+			}
+			stage('covscan vs pacemaker 2.1') {
+			    steps {
+				build job: "${project}-build-covscan",
+				    parameters: [string(name: 'install', value: "${install}"),
+						 string(name: 'ghprbActualCommit', value : "${actual_commit}"),
+						 string(name: 'ghprbPullId', value : "${pull_id}"),
+						 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
+						 string(name: 'pcmkver', value : '2.1'),
+						 string(name: 'covoptions', value : "${covopts}")]
+			    }
+			}
+			stage('rpm builds vs pacemaker main') {
+			    steps {
+				build job: "${project}-build-rpms",
+				    parameters: [string(name: 'ghprbActualCommit', value : "${actual_commit}"),
+						 string(name: 'ghprbPullId', value : "${pull_id}"),
+						 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
+						 string(name: 'publishrpm', value : "${install}"),
+						 string(name: 'publishprrpm', value : "${publish_pr_rpm}"),
+						 string(name: 'pcmkver', value : 'main'),
+						 string(name: 'bootstrap', value : '0')]
+			    }
+			}
+			stage('rpm builds vs pacemaker 2.1') {
+			    steps {
+				build job: "${project}-build-rpms",
+				    parameters: [string(name: 'ghprbActualCommit', value : "${actual_commit}"),
+						 string(name: 'ghprbPullId', value : "${pull_id}"),
+						 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
+						 string(name: 'publishrpm', value : "${install}"),
+						 string(name: 'publishprrpm', value : "${publish_pr_rpm}"),
+						 string(name: 'pcmkver', value : '2.1'),
+						 string(name: 'bootstrap', value : '0')]
+			    }
+			}
+			stage('non-voting vs pacemaker main') {
+			    steps {
+				script {
+				    try {
+					build job: "${project}-build-all-nonvoting",
+					    parameters: [string(name: 'install', value: "${install}"),
+							 string(name: 'ghprbActualCommit', value : "${actual_commit}"),
+							 string(name: 'ghprbPullId', value : "${pull_id}"),
+							 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
+							 string(name: 'pcmkver', value : 'main'),
+							 string(name: 'compiler', value : 'gcc')]
+				    }
+				    catch (err) {
+					nonvoting_fail++
+				    }
+				}
+			    }
+			}
+			stage('non-voting vs pacemaker 2.1') {
+			    steps {
+				script {
+				    try {
+					build job: "${project}-build-all-nonvoting",
+					    parameters: [string(name: 'install', value: "${install}"),
+							 string(name: 'ghprbActualCommit', value : "${actual_commit}"),
+							 string(name: 'ghprbPullId', value : "${pull_id}"),
+							 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
+							 string(name: 'pcmkver', value : '2.1'),
+							 string(name: 'compiler', value : 'gcc')]
+				    }
+				    catch (err) {
+					nonvoting_fail++
+				    }
+				}
+			    }
+			}
+			stage('non-voting-clang vs pacemaker main') {
+			    steps {
+				script {
+				    try {
+					build job: "${project}-build-all-nonvoting-clang",
+					    parameters: [string(name: 'ghprbActualCommit', value : "${actual_commit}"),
+							 string(name: 'ghprbPullId', value : "${pull_id}"),
+							 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
+							 string(name: 'pcmkver', value : 'main')]
+				    }
+				    catch (err) {
+					nonvoting_fail++
+				    }
+				}
+			    }
+			}
+			stage('non-voting-clang vs pacemaker 2.1') {
+			    steps {
+				script {
+				    try {
+					build job: "${project}-build-all-nonvoting-clang",
+					    parameters: [string(name: 'ghprbActualCommit', value : "${actual_commit}"),
+							 string(name: 'ghprbPullId', value : "${pull_id}"),
+							 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
+							 string(name: 'pcmkver', value : '2.1')]
+				    }
+				    catch (err) {
+					nonvoting_fail++
+				    }
+				}
+			    }
+			}
+		    }
+		}
+	    }
+	}
+    }
+    post {
+	success {
+	    // Notify interested users if non-voting jobs fail
+	    script {
+		postFunctions(['state': 'success', 'nonvoting_fail': nonvoting_fail, 'voting_fail': voting_fail])
+	    }
+	}
+	failure {
+	    // Notify interested users if voting jobs fail
+	    script {
+		postFunctions(['state': 'failure', 'nonvoting_fail': nonvoting_fail, 'voting_fail': voting_fail])
+	    }
+	}
+    }
+}

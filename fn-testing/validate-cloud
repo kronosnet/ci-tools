@@ -153,8 +153,14 @@ if [ -n "${customrepopath}" ] && [ ! -d ${customrepopath} ]; then
 	exit 1
 fi
 
+if [ "$iscsisize" = "0" ]; then
+	iscsisize=10
+	deploybaseopts="--iscsi $iscsisize"
+else
+	deploybaseopts="--useiscsi --iscsi $iscsisize"
+fi
 createbaseopts="--nodes $nodes --iscsi $iscsisize --block $blocksize"
-deploybaseopts="--useiscsi --iscsi $iscsisize"
+
 if [ "$upstream" != "" ]; then
 	deploybaseopts="$deploybaseopts --useupstreamrepo $upstream"
 fi

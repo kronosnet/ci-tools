@@ -34,7 +34,7 @@ print_usage() {
 	echo "usage:"
 	echo ""
 	echo "$(basename $0) command [options]"
-	echo " -c command                 command: del, create, deploy, test, ssh, reboot, validate (required)"
+	echo " -c command                 command: del, create, deploy, test, ssh, ip, reboot, validate (required)"
 	echo " -p provider                cloud provider: osp, gcp, libvirtd, az (required)"
 	echo " -r rhelver                 rhel version: 8, 9 (required)"
 	echo " -z                         use zstream (default: none)"
@@ -219,7 +219,11 @@ cloud_reboot() {
 	vapor reboot $options
 }
 
-cloud_info() {
+cloud_ip_info() {
+	vapor get --provider $provider $authopts $clusteropts --ip-address
+}
+
+cloud_ssh_info() {
 	vapor get --provider $provider $authopts $clusteropts --ssh
 	vapor get --provider $provider $authopts $clusteropts --scp
 }
@@ -421,7 +425,10 @@ reboot)
 	ret=$?
 	;;
 ssh)
-	cloud_info
+	cloud_ssh_info
+	;;
+ip)
+	cloud_ip_info
 	;;
 validate)
 	cloud_validate

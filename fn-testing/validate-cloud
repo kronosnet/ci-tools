@@ -2,10 +2,6 @@
 
 set -e
 
-if [ -f /srv/vapor-node/vapor/venv/bin/activate ]; then
-	. /srv/vapor-node/vapor/venv/bin/activate
-fi
-
 if ! which vapor >/dev/null 2>&1; then
 	echo "Failure to find vapor binary"
 	exit 1

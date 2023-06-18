@@ -32,7 +32,15 @@ pipeline {
 		stage('Prep workspace') {
 		    steps {
 			// Clean before build
+			sh 'env|sort'
+
 			cleanWs()
+
+			sh '''
+			    echo "Delete any old test cluster"
+			    cd $HOME/ci-tools/fn-testing
+			    ./validate-cloud -c delete -p libvirtd -d -r 9
+			'''
 		    }
 		}
 		stage('Populating kernel-ark cache') {
@@ -153,16 +161,6 @@ pipeline {
 	}
 	stage('kernel testing') {
 	    stages {
-		// This is the main stage that covers everything
-		stage('Delete old test cluster') {
-		    steps {
-			sh '''
-			    echo "Delete any old test cluster"
-			    cd $HOME/ci-tools/fn-testing
-			    ./validate-cloud -c delete -p libvirtd -d -r 9
-			'''
-		    }
-		}
 		stage('Create test cluster') {
 		    steps {
 			sh '''

@@ -4,7 +4,6 @@ setup
 pacemaker,resource,IPv4,recovery
 pacemaker,recovery,RecoveryActiveNode
 setup,setup_sbd,sbd-only
-skeet
 "
 
 smotetags="

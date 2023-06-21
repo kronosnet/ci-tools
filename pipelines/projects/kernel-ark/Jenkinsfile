@@ -222,10 +222,10 @@ pipeline {
 		}
 		stage('Run testsuite') {
 		    steps {
-			sh '''
+			sh """
 			    cd $HOME/ci-tools/fn-testing
-			    ./validate-cloud -c test -p libvirtd -d -r 9 -n 3 -f -e -T ${paramas.testsuite}
-			'''
+			    ./validate-cloud -c test -p libvirtd -d -r 9 -n 3 -f -e -T ${params.testsuite}
+			"""
 		    }
 		}
 	    }

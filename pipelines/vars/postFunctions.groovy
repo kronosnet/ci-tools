@@ -23,12 +23,12 @@ def call(Map info) {
     if (state == "success" && nonvoting_fail > 0) {
 	email_addrs += 'commits@lists.kronosnet.org'
 	mail to: email_addrs,
-	    subject: "${env.BUILD_TAG} succeeded but with non-voting fails",
+	    subject: "[jenkins] ${env.BUILD_TAG} succeeded but with non-voting fails",
 	    body: "Non-voting fails: ${nonvoting_fail}\nsee ${env.BUILD_URL}pipeline-console/"
     } else {
 	email_addrs += 'commits@lists.kronosnet.org'
 	mail to: email_addrs,
-	    subject: "${env.BUILD_TAG} completed with state: ${state}",
+	    subject: "[jenkins] ${env.BUILD_TAG} completed with state: ${state}",
 	    body: "see ${env.BUILD_URL}pipeline-console/"
     }
 }

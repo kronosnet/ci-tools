@@ -1,0 +1,94 @@
+// Jenkinsfile for ha-functional-testing-weekly CI project
+
+@Library(['GlobalLib', 'ProjectLib']) _
+
+pipeline {
+    agent { label 'built-in' }
+
+    stages {
+	stage('smoke tests') {
+	    parallel {
+		// no more than 3 OSP environments at a time
+		stage('rhel8 z-stream next-stable osp') {
+		    steps {
+			build job: 'ha-functional-testing',
+			    parameters: [string(name: 'rhelver', value: '8'),
+					 string(name: 'zstream', value : 'yes'),
+					 string(name: 'upstream', value : 'next-stable'),
+					 string(name: 'tests', value : 'smoketests'),
+					 string(name: 'provider', value : 'osp')]
+		    }
+		}
+		stage('rhel9 z-stream next-stable osp') {
+		    steps {
+			build job: 'ha-functional-testing',
+			    parameters: [string(name: 'rhelver', value: '9'),
+					 string(name: 'zstream', value : 'yes'),
+					 string(name: 'upstream', value : 'next-stable'),
+					 string(name: 'tests', value : 'smoketests'),
+					 string(name: 'provider', value : 'osp')]
+		    }
+		}
+		stage('rhel9 z-stream main osp') {
+		    steps {
+			build job: 'ha-functional-testing',
+			    parameters: [string(name: 'rhelver', value: '9'),
+					 string(name: 'zstream', value : 'yes'),
+					 string(name: 'upstream', value : 'main'),
+					 string(name: 'tests', value : 'smoketests'),
+					 string(name: 'provider', value : 'osp')]
+		    }
+		}
+	    }
+	}
+	stage('regression tests') {
+	    parallel {
+		// no more than 3 OSP environments at a time
+		stage('rhel8 next-stable osp') {
+		    steps {
+			build job: 'ha-functional-testing',
+			    parameters: [string(name: 'rhelver', value: '8'),
+					 string(name: 'zstream', value : 'no'),
+					 string(name: 'upstream', value : 'next-stable'),
+					 string(name: 'tests', value : 'all'),
+					 string(name: 'provider', value : 'osp')]
+		    }
+		}
+		stage('rhel9 next-stable osp') {
+		    steps {
+			build job: 'ha-functional-testing',
+			    parameters: [string(name: 'rhelver', value: '9'),
+					 string(name: 'zstream', value : 'no'),
+					 string(name: 'upstream', value : 'next-stable'),
+					 string(name: 'tests', value : 'all'),
+					 string(name: 'provider', value : 'osp')]
+		    }
+		}
+		stage('rhel9 main osp') {
+		    steps {
+			build job: 'ha-functional-testing',
+			    parameters: [string(name: 'rhelver', value: '9'),
+					 string(name: 'zstream', value : 'no'),
+					 string(name: 'upstream', value : 'main'),
+					 string(name: 'tests', value : 'all'),
+					 string(name: 'provider', value : 'osp')]
+		    }
+		}
+	    }
+	}
+    }
+    post {
+	success {
+	    // Notify interested users if non-voting jobs fail
+	    script {
+		postFunctions(['state': 'success'])
+	    }
+	}
+	failure {
+	    // Notify interested users if voting jobs fail
+	    script {
+		postFunctions(['state': 'failure'])
+	    }
+	}
+    }
+}

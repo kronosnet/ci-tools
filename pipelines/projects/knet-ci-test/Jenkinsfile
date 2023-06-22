@@ -22,6 +22,7 @@ def actual_commit = ''
 def install = 0
 def publish_pr_rpm = 0
 def covopts = ''
+def is_draft = false
 
 pipeline {
     agent { label 'built-in' }
@@ -44,6 +45,20 @@ pipeline {
 			actual_commit = env.GIT_COMMIT
 			install = 0
 			publish_pr_rpm = buildPRRPMs(['isPullRequest': isPullRequest, 'branch': target])
+
+			// Check for PRs marked 'draft' - this is Github-specific
+			is_draft = pullRequest.isDraft()
+			if (is_draft) {
+			    // Default for most HA jobs - abort
+			    currentBuild.result = 'ABORTED'
+			    error('PR is marked as draft - pipeline will not run')
+			}
+
+			// For special jobs (manual override)
+//			if (is_draft) {
+//                            set_some_variables_for_build_or_something
+//                            is_draft = false
+//			}
 		    } else {
 			actual_commit = "origin/${env.BRANCH_NAME}"
 			target = env.BRANCH_NAME
@@ -59,7 +74,7 @@ pipeline {
 	    when {
 		// getAuthCheck will usually abort the job if permission is denied
 		// but this is an extra check!
-		expression { authcheck == true }
+		expression { authcheck == true && is_draft == false }
 	    }
 	    // All of the stages that actually do stuff
 	    stages {

@@ -2,7 +2,11 @@
 [ -z "$REPOSRC" ] && REPOSRC="$2"
 [ -z "$ANVILSRC" ] && ANVILSRC="$3"
 [ -z "$DEPLOYDR" ] && DEPLOYDR="$4"
-BREAKPOINT="$5"
+
+[ -z "$TESTS" ] && TESTS="$5"
+[ -z "$TESTS" ] && TESTS="all"
+
+BREAKPOINT="$6"
 
 [ -z "$BREAKPOINT" ] && BREAKPOINT=none
 

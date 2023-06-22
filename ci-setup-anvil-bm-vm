@@ -208,7 +208,7 @@ cd "$DEPLOYDIR"
 git clone git@github.com:Alteeve/anvil-test-suite.git
 cd anvil-test-suite
 set +e
-./run-tests $runtestopts -b $BREAKPOINT
+./run-tests $runtestopts -t $TESTS -b $BREAKPOINT
 ret=$?
 cd /root/ci-tools
 

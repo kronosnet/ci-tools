@@ -19,6 +19,7 @@ def install = 0
 def publish_pr_rpm = 0
 def covopts = ''
 def anvilsrc = ''
+def anviltests = 'all'
 
 pipeline {
     agent { label 'built-in' }
@@ -81,7 +82,8 @@ pipeline {
 		stage('functional testing') {
 		    steps {
 			build job: "${project}-build-all-functional-testing",
-			    parameters: [string(name: 'ANVILSRC', value : "${anvilsrc}")]
+			    parameters: [string(name: 'ANVILSRC', value : "${anvilsrc}"),
+					 string(name: 'TESTS', value : "${anviltests}")]
 		    }
 		}
 	    }

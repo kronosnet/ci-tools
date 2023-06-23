@@ -1,19 +1,19 @@
-// Jenkinsfile for the kernel-ark/os-build project
-// 02-Jun-2023    Fabio M. Di Nitto     original version
-//
+// Jenkinsfile for the kernel-ark project
 
 @Library(['GlobalLib', 'ProjectLib']) _
+
+String[] tests = ['setup', 'cleanup', 'skeet']
 
 pipeline {
     agent { label 'kbuild' }
 
     parameters {
-	string(name: 'testsuite', defaultValue: 'brawl_quick', description: 'vedder tag')
+	string(name: 'testtag', defaultValue: 'brawl_quick', description: 'vedder tag')
+	string(name: 'timeout', defaultValue: '720', description: 'timeout in minutes')
     }
 
     options {
-	// 12 hours timeout due to fn testing
-	timeout(time: 720, unit: 'MINUTES')
+	timeout(time: "${params.timeout}", unit: 'MINUTES')
 	// This is required if you want to clean before build
 	// and kernel build is done via cache clone
 	skipDefaultCheckout(true)
@@ -196,36 +196,24 @@ pipeline {
 			'''
 		    }
 		}
-		stage('Run test: setup') {
+		stage('Run tests') {
 		    steps {
-			sh '''
-			    cd $HOME/ci-tools/fn-testing
-			    ./validate-cloud -c test -p libvirtd -d -r 9 -n 3 -f -e -t setup
-			'''
-		    }
-		}
-		stage('Run test: cleanup') {
-		    steps {
-			sh '''
-			    cd $HOME/ci-tools/fn-testing
-			    ./validate-cloud -c test -p libvirtd -d -r 9 -n 3 -f -e -t cleanup
-			'''
-		    }
-		}
-		stage('Run test: skeet') {
-		    steps {
-			sh '''
-			    cd $HOME/ci-tools/fn-testing
-			    ./validate-cloud -c test -p libvirtd -d -r 9 -n 3 -f -e -t skeet
-			'''
-		    }
-		}
-		stage('Run testsuite') {
-		    steps {
-			sh """
-			    cd $HOME/ci-tools/fn-testing
-			    ./validate-cloud -c test -p libvirtd -d -r 9 -n 3 -f -e -T ${params.testsuite}
-			"""
+			script {
+			    for (test in tests) {
+				stage("Run vedder test: ${test}") {
+				    sh """
+					cd $HOME/ci-tools/fn-testing
+					./validate-cloud -c test -p libvirtd -d -r 9 -n 3 -f -e -t ${test}
+				    """
+				}
+			    }
+			    stage("Run vedder tag: ${params.testtag}") {
+				sh """
+				    cd $HOME/ci-tools/fn-testing
+				    ./validate-cloud -c test -p libvirtd -d -r 9 -n 3 -f -e -T ${params.testtag}
+				"""
+			    }
+			}
 		    }
 		}
 	    }

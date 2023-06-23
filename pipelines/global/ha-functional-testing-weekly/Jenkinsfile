@@ -81,13 +81,13 @@ pipeline {
 	success {
 	    // Notify interested users if non-voting jobs fail
 	    script {
-		postFunctions(['state': 'success'])
+		postFunctions(['project': project, 'state': 'success'])
 	    }
 	}
 	failure {
 	    // Notify interested users if voting jobs fail
 	    script {
-		postFunctions(['state': 'failure'])
+		postFunctions(['project': project, 'state': 'failure'])
 	    }
 	}
     }

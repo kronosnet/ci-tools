@@ -224,14 +224,14 @@ pipeline {
 	success {
 	    node('built-in') {
 		script {
-		   postFunctions(['state': 'success'])
+		   postFunctions(['project': project, 'state': 'success'])
 		}
 	    }
 	}
 	failure {
 	    node('built-in') {
 		script {
-		   postFunctions(['state': 'failure'])
+		   postFunctions(['project': project, 'state': 'failure'])
 		}
 	    }
 	}

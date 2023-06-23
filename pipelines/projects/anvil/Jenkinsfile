@@ -107,12 +107,12 @@ pipeline {
     post {
 	success {
 	    script {
-		postFunctions(['state': 'success'])
+		postFunctions(['project': project, 'state': 'success'])
 	    }
 	}
 	failure {
 	    script {
-		postFunctions(['state': 'failure'])
+		postFunctions(['project': project, 'state': 'failure'])
 	    }
 	}
     }

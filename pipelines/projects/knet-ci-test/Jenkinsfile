@@ -117,15 +117,21 @@ pipeline {
 						 string(name: 'covoptions', value : "${covopts}")]
 			    }
 			}
-			stage('rpm builds') {
+			stage('buildrpms') {
 			    steps {
-				build job: "${project}-build-rpms",
-				    parameters: [string(name: 'ghprbActualCommit', value : "${actual_commit}"),
-						 string(name: 'ghprbPullId', value : "${pull_id}"),
-						 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
-						 string(name: 'publishrpm', value : "${install}"),
-						 string(name: 'publishprrpm', value : "${publish_pr_rpm}"),
-						 string(name: 'bootstrap', value : '0')]
+				script {
+				    try {
+					build job: "${project}-build-rpms",
+					    parameters: [string(name: 'ghprbActualCommit', value : "${actual_commit}"),
+							 string(name: 'ghprbPullId', value : "${pull_id}"),
+							 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
+							 string(name: 'publishrpm', value : "${install}"),
+							 string(name: 'publishprrpm', value : "${publish_pr_rpm}"),
+							 string(name: 'bootstrap', value : '0')]
+				    } catch (err) {
+					nonvoting_fail++
+				    }
+				}
 			    }
 			}
 		    }
@@ -137,13 +143,13 @@ pipeline {
 	success {
 	    // Notify interested users if non-voting jobs fail
 	    script {
-		postFunctions(['state': 'success', 'nonvoting_fail': nonvoting_fail, 'voting_fail': voting_fail])
+		postFunctions(['project': project, 'state': 'success', 'stages_fail': nonvoting_fail, 'voting_fail': voting_fail])
 	    }
 	}
 	failure {
 	    // Notify interested users if voting jobs fail
 	    script {
-		postFunctions(['state': 'failure', 'nonvoting_fail': nonvoting_fail, 'voting_fail': voting_fail])
+		postFunctions(['project': project, 'state': 'failure', 'nonvoting_fail': nonvoting_fail, 'voting_fail': voting_fail])
 	    }
 	}
     }

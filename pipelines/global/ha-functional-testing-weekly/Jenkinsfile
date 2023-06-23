@@ -2,6 +2,9 @@
 
 @Library(['GlobalLib', 'ProjectLib']) _
 
+// Globals
+def project = 'ha-functional-testing-weekly'
+
 pipeline {
     agent { label 'built-in' }
 

@@ -1,7 +1,7 @@
 // Check if a PR has been submitted by an authorized user
 def call(Map params) {
     // requirered param
-    isPullRequest = params["isPullRequest"]
+    isPullRequest = params['isPullRequest']
 
     sh 'env|sort'
 
@@ -41,7 +41,7 @@ def call(Map params) {
 
     // Caused by a PR. Check it's from a valid user
     // Get github collaborators list
-    valid_admins = getGithubCollaborators(env.GIT_URL)
+    valid_admins = getCollaborators(env.GIT_URL)
     // Any extras defined for the project
     valid_admins += getValidPRUsers()
     // Global admins
@@ -60,7 +60,7 @@ def call(Map params) {
     //
 
     // Put a message in github/pagure that links to this job run
-    clusterLibSendReply("github", "Can one of the admins check and authorise this run please: ${env.BUILD_URL}input")
+    postPRcomment("Can one of the admins check and authorise this run please: ${env.BUILD_URL}input")
 
     // Ask for approval
     echo "Approval needed from Jenkins administrator"

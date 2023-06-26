@@ -1,6 +1,6 @@
 // Jenkinsfile for corosync CI project
 
-@Library(['GlobalLib', 'ProjectLib']) _
+@Library(['GlobalLib', 'GithubLib', 'ProjectLib']) _
 
 // Globals
 def project = 'corosync'

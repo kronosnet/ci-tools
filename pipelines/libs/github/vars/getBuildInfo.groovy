@@ -6,12 +6,8 @@
 // all projects unless we can check if a given method exists
 // https://gerg.dev/2020/11/jenkins-check-whether-a-dsl-method-exists/ ?
 //
-// We also call get[Github]AuthCheck() to verify that the
+// We also call getAuthCheck() to verify that the
 // user is allowed to run the pipeline at all
-//
-// This var is Github-specific in a few ways. Whether we
-// add conditionals for Pagure or make them a different
-// file depends on how different it is!
 def call(String project, String draft_override)
 {
     sh 'env|sort'
@@ -26,7 +22,7 @@ def call(String project, String draft_override)
     // Validate the user. This should Abort if disallowed.
     cred_uuid = getCredUUID()
     withCredentials([gitUsernamePassword(credentialsId: cred_uuid, gitToolName: 'Default')]) {
-	info['authcheck'] = getGithubAuthCheck(['isPullRequest': isPullRequest])
+	info['authcheck'] = getAuthCheck(['isPullRequest': isPullRequest])
     }
 
     // Set parameters for the sub-jobs.

@@ -1,6 +1,6 @@
 // Jenkinsfile for resource-agents CI project
 
-@Library(['GlobalLib', 'ProjectLib']) _
+@Library(['GlobalLib', 'GithubLib', 'ProjectLib']) _
 
 // Globals
 def project = 'resource-agents'

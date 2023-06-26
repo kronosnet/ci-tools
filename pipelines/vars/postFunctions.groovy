@@ -6,6 +6,7 @@ def call(Map info) {
     state = "unknown"
     email_addrs = ''
     project = env.BUILD_TAG
+    branch = env.BRANCH_NAME
 
     if (info.containsKey('voting_fail')) {
 	voting_fail = info['voting_fail']
@@ -16,11 +17,14 @@ def call(Map info) {
     if (info.containsKey('stages_fail')) {
 	stages_fail = info['stages_fail']
     }
-    if (info.containsKey("state")) {
-	state = info["state"]
+    if (info.containsKey('state')) {
+	state = info['state']
     }
-    if (info.containsKey("project")) {
+    if (info.containsKey('project')) {
 	project = info['project']
+    }
+    if (info.containsKey('branch')) {
+	branch = info['branch']
     }
 
     // Get the per-project email option ('all', 'none', 'only-failures')
@@ -44,7 +48,7 @@ def call(Map info) {
     email_addrs += 'commits@lists.kronosnet.org'
     println("Sending email to ${email_addrs}")
 
-    email_title = "[jenkins] ${info['project']} ${env.GIT_BRANCH} (build ${env.BUILD_ID})"
+    email_title = "[jenkins] ${info['project']} ${branch} (build ${env.BUILD_ID})"
     email_trailer = """
 total runtime = ${currentBuild.durationString}
 See ${env.BUILD_URL}pipeline-console/

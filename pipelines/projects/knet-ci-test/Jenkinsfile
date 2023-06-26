@@ -15,14 +15,6 @@ def isPullRequest = env.CHANGE_ID ? true : false
 // Set defaults
 def nonvoting_fail = 0
 def voting_fail = 0
-def target_branch = ''
-def target = ''
-def pull_id = '1'
-def actual_commit = ''
-def install = 0
-def publish_pr_rpm = 0
-def covopts = ''
-def is_draft = false
 
 pipeline {
     agent { label 'built-in' }

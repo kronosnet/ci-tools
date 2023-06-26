@@ -4,64 +4,18 @@
 
 // Globals
 def project = 'pcs'
-
-def authcheck = false
-
-// github specific
-def isPullRequest = env.CHANGE_ID ? true : false
-
-// Set defaults
 def nonvoting_fail = 0
 def voting_fail = 0
-def target_branch = ''
-def target = ''
-def pull_id = '1'
-def actual_commit = ''
-def install = 0
-def publish_pr_rpm = 0
-def covopts = ''
-def is_draft = false
 
 pipeline {
     agent { label 'built-in' }
 
     stages {
-	// First check we are allowed to run
+	// First check we are allowed to run and collect generic job info
 	stage('Validate build env') {
 	    steps {
 		script {
-		    cred_uuid = getCredUUID()
-		    withCredentials([gitUsernamePassword(credentialsId: cred_uuid, gitToolName: 'Default')]) {
-			authcheck = getGithubAuthCheck(['isPullRequest': isPullRequest])
-		    }
-		    // set parameters the sub-jobs.
-		    if (isPullRequest) {
-			target_branch = env.CHANGE_TARGET
-			target = env.CHANGE_TARGET
-			pull_id = env.CHANGE_ID
-			actual_commit = env.GIT_COMMIT
-			install = 0
-			publish_pr_rpm = buildPRRPMs(['isPullRequest': isPullRequest, 'branch': target])
-
-			// Check for PRs marked 'draft' - this is Github-specific
-			is_draft = pullRequest.isDraft()
-			if (is_draft) {
-			    // Default for most HA jobs - abort
-			    currentBuild.result = 'ABORTED'
-			    error('PR is marked as draft - pipeline will not run')
-			}
-
-			// For special jobs (manual override)
-//			if (is_draft) {
-//                            set_some_variables_for_build_or_something
-//                            is_draft = false
-//			}
-		    } else {
-			actual_commit = "origin/${env.BRANCH_NAME}"
-			target = env.BRANCH_NAME
-			install = isThisAnInstallBranch(target)
-		    }
-		    covopts = getCovOpts(target)
+		    info = getBuildInfo(project)
 		}
 	    }
 	}
@@ -71,7 +25,7 @@ pipeline {
 	    when {
 		// getAuthCheck will usually abort the job if permission is denied
 		// but this is an extra check!
-		expression { authcheck == true && target == 'pcs-0.10' && is_draft == false }
+		expression { info['authcheck'] == true && info['target'] == 'pcs-0.10' && info['is_draft'] == false }
 	    }
 	    // All of the stages that actually do stuff
 	    stages {
@@ -80,21 +34,21 @@ pipeline {
 			stage('voting vs pacemaker 2.1') {
 			    steps {
 				build job: "${project}-0.10-build-all-voting",
-				    parameters: [string(name: 'ghprbActualCommit', value : "${actual_commit}"),
-						 string(name: 'ghprbPullId', value : "${pull_id}"),
-						 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
-						 string(name: 'pcmkver', value : '2.1')]
+				    parameters: [string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
+						 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
+						 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
+						 string(name: 'pcmkver', value: '2.1')]
 			    }
 			}
 			stage('rpm builds') {
 			    steps {
 				build job: "${project}-0.10-build-rpms",
-				    parameters: [string(name: 'ghprbActualCommit', value : "${actual_commit}"),
-						 string(name: 'ghprbPullId', value : "${pull_id}"),
-						 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
-						 string(name: 'publishrpm', value : "${install}"),
-						 string(name: 'publishprrpm', value : "${publish_pr_rpm}"),
-						 string(name: 'bootstrap', value : '0')]
+				    parameters: [string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
+						 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
+						 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
+						 string(name: 'publishrpm', value: "${info['install']}"),
+						 string(name: 'publishprrpm', value: "${info['publish_pr_rpm']}"),
+						 string(name: 'bootstrap', value: '0')]
 			    }
 			}
 		    }
@@ -107,7 +61,7 @@ pipeline {
 	    when {
 		// getAuthCheck will usually abort the job if permission is denied
 		// but this is an extra check!
-		expression { authcheck == true && target == 'main' && is_draft == false }
+		expression { info['authcheck'] == true && info['target'] == 'main' && info['is_draft'] == false }
 	    }
 	    // All of the stages that actually do stuff
 	    stages {
@@ -116,52 +70,52 @@ pipeline {
 			stage('voting vs pacemaker main') {
 			    steps {
 				build job: "${project}-build-all-voting",
-				    parameters: [string(name: 'ghprbActualCommit', value : "${actual_commit}"),
-						 string(name: 'ghprbPullId', value : "${pull_id}"),
-						 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
-						 string(name: 'pcmkver', value : 'main')]
+				    parameters: [string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
+						 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
+						 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
+						 string(name: 'pcmkver', value: 'main')]
 			    }
 			}
 			stage('voting vs pacemaker 2.1') {
 			    steps {
 				build job: "${project}-build-all-voting",
-				    parameters: [string(name: 'ghprbActualCommit', value : "${actual_commit}"),
-						 string(name: 'ghprbPullId', value : "${pull_id}"),
-						 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
-						 string(name: 'pcmkver', value : '2.1')]
+				    parameters: [string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
+						 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
+						 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
+						 string(name: 'pcmkver', value: '2.1')]
 			    }
 			}
 			stage('covscan vs pacemaker main') {
 			    steps {
 				build job: "${project}-build-covscan",
-				    parameters: [string(name: 'install', value: "${install}"),
-						 string(name: 'ghprbActualCommit', value : "${actual_commit}"),
-						 string(name: 'ghprbPullId', value : "${pull_id}"),
-						 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
-						 string(name: 'pcmkver', value : 'main'),
-						 string(name: 'covoptions', value : "${covopts}")]
+				    parameters: [string(name: 'install', value: "${info['install']}"),
+						 string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
+						 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
+						 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
+						 string(name: 'pcmkver', value: 'main'),
+						 string(name: 'covoptions', value: "${info['covopts']}")]
 			    }
 			}
 			stage('covscan vs pacemaker 2.1') {
 			    steps {
 				build job: "${project}-build-covscan",
-				    parameters: [string(name: 'install', value: "${install}"),
-						 string(name: 'ghprbActualCommit', value : "${actual_commit}"),
-						 string(name: 'ghprbPullId', value : "${pull_id}"),
-						 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
-						 string(name: 'pcmkver', value : '2.1'),
-						 string(name: 'covoptions', value : "${covopts}")]
+				    parameters: [string(name: 'install', value: "${info['install']}"),
+						 string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
+						 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
+						 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
+						 string(name: 'pcmkver', value: '2.1'),
+						 string(name: 'covoptions', value: "${info['covopts']}")]
 			    }
 			}
 			stage('rpm builds') {
 			    steps {
 				build job: "${project}-build-rpms",
-				    parameters: [string(name: 'ghprbActualCommit', value : "${actual_commit}"),
-						 string(name: 'ghprbPullId', value : "${pull_id}"),
-						 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
-						 string(name: 'publishrpm', value : "${install}"),
-						 string(name: 'publishprrpm', value : "${publish_pr_rpm}"),
-						 string(name: 'bootstrap', value : '0')]
+				    parameters: [string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
+						 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
+						 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
+						 string(name: 'publishrpm', value: "${info['install']}"),
+						 string(name: 'publishprrpm', value: "${info['publish_pr_rpm']}"),
+						 string(name: 'bootstrap', value: '0')]
 			    }
 			}
 			stage('non-voting vs pacemaker main') {
@@ -169,10 +123,10 @@ pipeline {
 				script {
 				    try {
 					build job: "${project}-build-all-nonvoting",
-					    parameters: [string(name: 'ghprbActualCommit', value : "${actual_commit}"),
-							 string(name: 'ghprbPullId', value : "${pull_id}"),
-							 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
-							 string(name: 'pcmkver', value : 'main')]
+					    parameters: [string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
+							 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
+							 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
+							 string(name: 'pcmkver', value: 'main')]
 				    }
 				    catch (err) {
 					nonvoting_fail++
@@ -185,10 +139,10 @@ pipeline {
 				script {
 				    try {
 					build job: "${project}-build-all-nonvoting",
-					    parameters: [string(name: 'ghprbActualCommit', value : "${actual_commit}"),
-							 string(name: 'ghprbPullId', value : "${pull_id}"),
-							 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
-							 string(name: 'pcmkver', value : '2.1')]
+					    parameters: [string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
+							 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
+							 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
+							 string(name: 'pcmkver', value: '2.1')]
 				    }
 				    catch (err) {
 					nonvoting_fail++

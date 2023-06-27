@@ -3,7 +3,7 @@
 set -ev
 
 case "$DEST" in
- gfs2-*|dlm)
+ gfs2-*|dlm|ci-test-pagure)
   if [ -n "$BRANCH_TO" ] && [ "$BRANCH_TO" != "None" ]; then
    if [ -n "$REPO" -a -n "$BRANCH" ]; then
     git config user.email "jenkins@kronosnet.org"

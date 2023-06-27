@@ -36,11 +36,17 @@ cleanbr() {
 # always restore BaseOS libqb-devel
 removerpmdeps() {
  cleanbr
+ osdeps="libqb-devel"
+ case ${NODE_NAME} in
+  *ci-test*)
+   osdeps="$osdeps libknet1-devel"
+  ;;
+ esac
  if [ -n "$(which zypper 2>/dev/null)" ]; then
-  zypper install -y libqb-devel
+  zypper install -y $osdeps
  fi
  if [ -n "$(which yum 2>/dev/null)" ]; then
-  yum install -y libqb-devel
+  yum install -y $osdeps
  fi
  return $1
 }

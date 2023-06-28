@@ -1,62 +1,23 @@
 // Jenkinsfile for the a knet CI main project
-// 1-May-2023    Chrissie Caulfield    original version for running 'old-style' jobs
-//
+//  1-May-2023    Chrissie Caulfield    original version for running 'old-style' jobs
+// 16-Jun-2023    me again              Move a lot of stuff into getBuildInfo() for tidiness
 
-@Library(['GlobalLib@cc-devel', 'ProjectLib@cc-devel']) _
+@Library(['GlobalLib@try-a-map', 'ProjectLib@try-a-map']) _
 
 // Globals
 def project = 'ci-test'
-
-def authcheck = false
-
-// github specific
-def isPullRequest = env.CHANGE_ID ? true : false
-
-// Set defaults
+def voting_fail =0
 def nonvoting_fail = 0
-def voting_fail = 0
 
 pipeline {
     agent { label 'built-in' }
 
     stages {
 	// First check we are allowed to run, then set some params for that run
-	stage('Validate build env') {
+	stage('Setup build env') {
 	    steps {
 		script {
-		    cred_uuid = getCredUUID()
-                    withCredentials([gitUsernamePassword(credentialsId: cred_uuid, gitToolName: 'Default')]) {
-			authcheck = getGithubAuthCheck(['isPullRequest': isPullRequest])
-		    }
-
-		    // set parameters the sub-jobs.
-		    if (isPullRequest) {
-			target_branch = env.CHANGE_TARGET
-			target = env.CHANGE_TARGET
-			pull_id = env.CHANGE_ID
-			actual_commit = env.GIT_COMMIT
-			install = 0
-			publish_pr_rpm = buildPRRPMs(['isPullRequest': isPullRequest, 'branch': target])
-
-			// Check for PRs marked 'draft' - this is Github-specific
-			is_draft = pullRequest.isDraft()
-			if (is_draft) {
-			    // Default for most HA jobs - abort
-			    currentBuild.result = 'ABORTED'
-			    error('PR is marked as draft - pipeline will not run')
-			}
-
-			// For special jobs (manual override)
-//			if (is_draft) {
-//                            set_some_variables_for_build_or_something
-//                            is_draft = false
-//			}
-		    } else {
-			actual_commit = "origin/${env.BRANCH_NAME}"
-			target = env.BRANCH_NAME
-			install = isThisAnInstallBranch(target)
-		    }
-		    covopts = getCovOpts(target)
+		    info = getBuildInfo(project)
 		}
 	    }
 	}
@@ -66,7 +27,7 @@ pipeline {
 	    when {
 		// getAuthCheck will usually abort the job if permission is denied
 		// but this is an extra check!
-		expression { authcheck == true && is_draft == false }
+		expression { info['authcheck'] == true && info['is_draft'] == false }
 	    }
 	    // All of the stages that actually do stuff
 	    stages {
@@ -75,10 +36,10 @@ pipeline {
 			stage('voting') {
 			    steps {
 				build job: "${project}-build-all-voting",
-				    parameters: [string(name: 'install', value: "${install}"),
-						 string(name: 'ghprbActualCommit', value : "${actual_commit}"),
-						 string(name: 'ghprbPullId', value : "${pull_id}"),
-						 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
+				    parameters: [string(name: 'install', value: "${info['install']}"),
+						 string(name: 'ghprbActualCommit', value : "${info['actual_commit']}"),
+						 string(name: 'ghprbPullId', value : "${info['pull_id']}"),
+						 string(name: 'ghprbTargetBranch', value : "${info['target_branch']}"),
 						 string(name: 'compiler', value : 'gcc')]
 			    }
 			}
@@ -87,10 +48,10 @@ pipeline {
 				script {
 				    try {
 					build job: "${project}-build-all-nonvoting",
-					    parameters: [string(name: 'install', value: "${install}"),
-							 string(name: 'ghprbActualCommit', value : "${actual_commit}"),
-							 string(name: 'ghprbPullId', value : "${pull_id}"),
-							 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
+					    parameters: [string(name: 'install', value: "${info['install']}"),
+							 string(name: 'ghprbActualCommit', value : "${info['actual_commit']}"),
+							 string(name: 'ghprbPullId', value : "${info['pull_id']}"),
+							 string(name: 'ghprbTargetBranch', value : "${info['target_branch']}"),
 							 string(name: 'compiler', value : 'gcc')]
 				    }
 				    catch (err) {
@@ -102,11 +63,11 @@ pipeline {
 			stage('covscan') {
 			    steps {
 				build job: "${project}-build-covscan",
-				    parameters: [string(name: 'install', value: "${install}"),
-						 string(name: 'ghprbActualCommit', value : "${actual_commit}"),
-						 string(name: 'ghprbPullId', value : "${pull_id}"),
-						 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
-						 string(name: 'covoptions', value : "${covopts}")]
+				    parameters: [string(name: 'install', value: "${info['install']}"),
+						 string(name: 'ghprbActualCommit', value : "${info['actual_commit']}"),
+						 string(name: 'ghprbPullId', value : "${info['pull_id']}"),
+						 string(name: 'ghprbTargetBranch', value : "${info['target_branch']}"),
+						 string(name: 'covoptions', value : "${info['covopts']}")]
 			    }
 			}
 			stage('buildrpms') {
@@ -114,11 +75,11 @@ pipeline {
 				script {
 				    try {
 					build job: "${project}-build-rpms",
-					    parameters: [string(name: 'ghprbActualCommit', value : "${actual_commit}"),
-							 string(name: 'ghprbPullId', value : "${pull_id}"),
-							 string(name: 'ghprbTargetBranch', value : "${target_branch}"),
-							 string(name: 'publishrpm', value : "${install}"),
-							 string(name: 'publishprrpm', value : "${publish_pr_rpm}"),
+					    parameters: [string(name: 'ghprbActualCommit', value : "${info['actual_commit']}"),
+							 string(name: 'ghprbPullId', value : "${info['pull_id']}"),
+							 string(name: 'ghprbTargetBranch', value : "${info['target_branch']}"),
+							 string(name: 'publishrpm', value : "${info['install']}"),
+							 string(name: 'publishprrpm', value : "${info['publish_pr_rpm']}"),
 							 string(name: 'bootstrap', value : '0')]
 				    } catch (err) {
 					nonvoting_fail++
@@ -135,7 +96,7 @@ pipeline {
 	success {
 	    // Notify interested users if non-voting jobs fail
 	    script {
-		postFunctions(['project': project, 'state': 'success', 'stages_fail': nonvoting_fail, 'voting_fail': voting_fail])
+		postFunctions(['project': project, 'state': 'success', 'nonvoting_fail': nonvoting_fail, 'voting_fail': voting_fail])
 	    }
 	}
 	failure {

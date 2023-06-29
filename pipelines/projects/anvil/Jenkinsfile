@@ -4,6 +4,7 @@
 
 // Globals
 def project = 'anvil'
+def draft_override = '1'
 def anvilsrc = ''
 def anviltests = 'all'
 
@@ -19,7 +20,7 @@ pipeline {
 	stage('Validate build env') {
 	    steps {
 		script {
-		    info = getBuildInfo(project)
+		    info = getBuildInfo(project, draft_override)
 		    // set anvilsrc based on PR
 		    if (info['isPullRequest']) {
 			anvilsrc = "pr/${info['pull_id']}"

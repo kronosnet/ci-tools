@@ -12,7 +12,7 @@
 // This var is Github-specific in a few ways. Whether we
 // add conditionals for Pagure or make them a different
 // file depends on how different it is!
-def call(String project)
+def call(String project, String draft_override)
 {
     sh 'env|sort'
 
@@ -42,7 +42,7 @@ def call(String project)
 
 	// Check for PRs marked 'draft' - this is Github-specific
 	is_draft = pullRequest.isDraft()
-	if ((is_draft) && ("${env.ISDRAFTOVERRIDE}" == '')) {
+	if ((is_draft) && (draft_override == '0')) {
 	    // Default for most HA jobs - abort
 	    currentBuild.result = 'ABORTED'
 	    error('PR is marked as draft - pipeline will not run')

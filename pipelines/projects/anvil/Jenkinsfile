@@ -22,7 +22,7 @@ pipeline {
 		    info = getBuildInfo(project)
 		    // set anvilsrc based on PR
 		    if (info['isPullRequest']) {
-			anvilsrc = "pr/${pull_id}"
+			anvilsrc = "pr/${info['pull_id']}"
 		    } else {
 			anvilsrc = "ci"
 		    }

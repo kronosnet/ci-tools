@@ -38,7 +38,7 @@ def call(String project)
 
 	// Check for PRs marked 'draft' - this is Github-specific
 	is_draft = pullRequest.isDraft()
-	if (is_draft) {
+	if ((is_draft) && ("${ISDRAFTOVERRIDE}" == '')) {
 	    // Default for most HA jobs - abort
 	    currentBuild.result = 'ABORTED'
 	    error('PR is marked as draft - pipeline will not run')

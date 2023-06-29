@@ -10,12 +10,22 @@ def anviltests = 'all'
 pipeline {
     agent { label 'built-in' }
 
+    environment {
+	ISDRAFTOVERRIDE = '1'
+    }
+
     stages {
 	// First check we are allowed to run and collect generic job info
 	stage('Validate build env') {
 	    steps {
 		script {
 		    info = getBuildInfo(project)
+		    // set anvilsrc based on PR
+		    if (info['isPullRequest']) {
+			anvilsrc = "pr/${pull_id}"
+		    } else {
+			anvilsrc = "ci"
+		    }
 		    // For special jobs (manual override)
 		    if (info['is_draft']) {
 			anviltests = 'all,skip_advanced_servers'

@@ -2,6 +2,10 @@
 // All the non-pipeline-specific things are set
 // up here in a dictionary called 'info'.
 //
+// ALL methods in this function must be available on
+// all projects unless we can check if a given method exists
+// https://gerg.dev/2020/11/jenkins-check-whether-a-dsl-method-exists/ ?
+//
 // We also call get[Github]AuthCheck() to verify that the
 // user is allowed to run the pipeline at all
 //

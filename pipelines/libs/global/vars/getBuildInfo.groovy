@@ -36,7 +36,7 @@ def call(String project)
 	info['pull_id'] = env.CHANGE_ID
 	info['actual_commit'] = env.GIT_COMMIT
 	info['install'] = 0
-	info['maninstall'] = 0
+	info['maininstall'] = 0
 	info['stableinstall'] = 0
 	info['publish_pr_rpm'] = buildPRRPMs(['isPullRequest': isPullRequest, 'branch': info['target']])
 

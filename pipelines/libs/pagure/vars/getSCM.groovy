@@ -3,7 +3,7 @@ def call(Map params)
 {
     project = params['project']
     upstream_repo = params['upstream_repo']
-    target = params['target']
+    checkout = params['checkout']
     isPullRequest = params['isPullRequest']
 
     // when Jenkins handles the checkout of Jenkins files and source code
@@ -17,12 +17,13 @@ def call(Map params)
     // to avoid collitions
 
     dir(project) {
-	git(
-	    url: upstream_repo,
-	    branch: target,
-	    changelog: true,
-	    poll: false
-	)
+	checkout([$class: 'GitSCM',
+		  branches: [[name: checkout]],
+		  doGenerateSubmoduleConfigurations: false,
+		  extensions: [[$class: 'CleanCheckout']],
+		  submoduleCfg: [],
+		  userRemoteConfigs: [[url: upstream_repo]]])
+
 	if (isPullRequest) {
 	    sh """
 		if [ -n "$BRANCH_TO" ] && [ "$BRANCH_TO" != "None" ]; then
@@ -32,7 +33,7 @@ def call(Map params)
 			git remote rm proposed 2>/dev/null || true
 			git remote add proposed "$REPO"
 			git fetch proposed
-			git checkout "$BRANCH_TO"
+			git checkout "origin/$BRANCH_TO"
 			git checkout -b "PR$cause"
 			git merge --log=999 --no-ff -m "Merge PR$cause" "proposed/$BRANCH"
 			git show --no-patch

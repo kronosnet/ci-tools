@@ -47,6 +47,7 @@ def call(String project, String upstream_repo)
     if (isPullRequest) {
 	info['target_branch'] = env.BRANCH_TO
 	info['target'] = env.BRANCH_TO
+	info['checkout'] = env.BRANCH_TO
 	info['pull_id'] = env.cause
 	info['actual_commit'] = "origin/${env.BRANCH_TO}"
 	info['install'] = 0
@@ -58,6 +59,7 @@ def call(String project, String upstream_repo)
     } else {
 	info['actual_commit'] = "origin/${env.BRANCH}"
 	info['target'] = env.BRANCH
+	info['checkout'] = env.cause
 	info['install'] = isThisAnInstallBranch(info['target'])
 	if ("${info['install']}" == '1') {
 	    if ("${info['target']}" == 'main') {

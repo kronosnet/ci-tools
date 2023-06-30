@@ -74,7 +74,7 @@ def call(String project, String upstream_repo)
 	// branches to build from Jenkins. This check avoid contributors pushing
 	// to upstream_repo branch foo and have "free builds".
 	// as for draft, we can only abort the pipeline.
-	if (isThisATrackingBranch(target) == false) {
+	if (isThisATrackingBranch(info['target']) == false) {
 	    currentBuild.result = 'ABORTED'
 	    error('Branch is not set to autobuild - pipeline will not run')
 	}

@@ -71,7 +71,7 @@ def call(String project, String upstream_repo)
 	    }
 	}
 	info['publish_rpm'] = 1
-	info['jobname'] = env.BRANCH
+	info['jobname'] = "${env.BRANCH} ${env.cause}"
 	// because the pipeline has no concept of git checkout, we cannot filter
 	// branches to build from Jenkins. This check avoid contributors pushing
 	// to upstream_repo branch foo and have "free builds".

@@ -34,7 +34,7 @@ pipeline {
 		    parallel {
 			stage('voting vs kronosnet main') {
 			    steps {
-				build job: "${project}-build-all-voting",
+				build job: "${project}/${project}-build-all-voting",
 				    parameters: [string(name: 'install', value: "${info['maininstall']}"),
 						 string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
 						 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
@@ -45,7 +45,7 @@ pipeline {
 			}
 			stage('voting vs kronosnet stable1-proposed') {
 			    steps {
-				build job: "${project}-build-all-voting",
+				build job: "${project}/${project}-build-all-voting",
 				    parameters: [string(name: 'install', value: "${info['stableinstall']}"),
 						 string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
 						 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
@@ -57,7 +57,7 @@ pipeline {
 			stage('covscan vs kronosnet main') {
 			    steps {
 				// covscan always install on merge
-				build job: "${project}-build-covscan",
+				build job: "${project}/${project}-build-covscan",
 				    parameters: [string(name: 'install', value: "${info['install']}"),
 						 string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
 						 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
@@ -69,7 +69,7 @@ pipeline {
 			stage('covscan vs kronosnet stable1-proposed') {
 			    steps {
 				// covscan always install on merge
-				build job: "${project}-build-covscan",
+				build job: "${project}/${project}-build-covscan",
 				    parameters: [string(name: 'install', value: "${info['install']}"),
 						 string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
 						 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
@@ -80,7 +80,7 @@ pipeline {
 			}
 			stage('rpm builds vs kronosnet main') {
 			    steps {
-				build job: "${project}-build-rpms",
+				build job: "${project}/${project}-build-rpms",
 				    parameters: [string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
 						 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
 						 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
@@ -92,7 +92,7 @@ pipeline {
 			}
 			stage('rpm builds vs kronosnet stable1-proposed') {
 			    steps {
-				build job: "${project}-build-rpms",
+				build job: "${project}/${project}-build-rpms",
 				    parameters: [string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
 						 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
 						 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
@@ -106,7 +106,7 @@ pipeline {
 			    steps {
 				script {
 				    try {
-					build job: "${project}-build-all-nonvoting",
+					build job: "${project}/${project}-build-all-nonvoting",
 					    parameters: [string(name: 'install', value: "${info['maininstall']}"),
 							 string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
 							 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
@@ -124,7 +124,7 @@ pipeline {
 			    steps {
 				script {
 				    try {
-					build job: "${project}-build-all-nonvoting",
+					build job: "${project}/${project}-build-all-nonvoting",
 					    parameters: [string(name: 'install', value: "${info['stableinstall']}"),
 							 string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
 							 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
@@ -142,7 +142,7 @@ pipeline {
 			    steps {
 				script {
 				    try {
-					build job: "${project}-build-all-nonvoting-clang",
+					build job: "${project}/${project}-build-all-nonvoting-clang",
 					    parameters: [string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
 							 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
 							 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
@@ -158,7 +158,7 @@ pipeline {
 			    steps {
 				script {
 				    try {
-					build job: "${project}-build-all-nonvoting-clang",
+					build job: "${project}/${project}-build-all-nonvoting-clang",
 					    parameters: [string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
 							 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
 							 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),

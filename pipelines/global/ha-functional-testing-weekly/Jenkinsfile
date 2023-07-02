@@ -14,7 +14,7 @@ pipeline {
 		// no more than 3 OSP environments at a time
 		stage('rhel8 z-stream next-stable osp') {
 		    steps {
-			build job: 'ha-functional-testing',
+			build job: 'global/ha-functional-testing',
 			    parameters: [string(name: 'rhelver', value: '8'),
 					 string(name: 'zstream', value : 'yes'),
 					 string(name: 'upstream', value : 'next-stable'),
@@ -24,7 +24,7 @@ pipeline {
 		}
 		stage('rhel9 z-stream next-stable osp') {
 		    steps {
-			build job: 'ha-functional-testing',
+			build job: 'global/ha-functional-testing',
 			    parameters: [string(name: 'rhelver', value: '9'),
 					 string(name: 'zstream', value : 'yes'),
 					 string(name: 'upstream', value : 'next-stable'),
@@ -34,7 +34,7 @@ pipeline {
 		}
 		stage('rhel9 z-stream main osp') {
 		    steps {
-			build job: 'ha-functional-testing',
+			build job: 'global/ha-functional-testing',
 			    parameters: [string(name: 'rhelver', value: '9'),
 					 string(name: 'zstream', value : 'yes'),
 					 string(name: 'upstream', value : 'main'),
@@ -49,7 +49,7 @@ pipeline {
 		// no more than 3 OSP environments at a time
 		stage('rhel8 next-stable osp') {
 		    steps {
-			build job: 'ha-functional-testing',
+			build job: 'global/ha-functional-testing',
 			    parameters: [string(name: 'rhelver', value: '8'),
 					 string(name: 'zstream', value : 'no'),
 					 string(name: 'upstream', value : 'next-stable'),
@@ -59,7 +59,7 @@ pipeline {
 		}
 		stage('rhel9 next-stable osp') {
 		    steps {
-			build job: 'ha-functional-testing',
+			build job: 'global/ha-functional-testing',
 			    parameters: [string(name: 'rhelver', value: '9'),
 					 string(name: 'zstream', value : 'no'),
 					 string(name: 'upstream', value : 'next-stable'),
@@ -69,7 +69,7 @@ pipeline {
 		}
 		stage('rhel9 main osp') {
 		    steps {
-			build job: 'ha-functional-testing',
+			build job: 'global/ha-functional-testing',
 			    parameters: [string(name: 'rhelver', value: '9'),
 					 string(name: 'zstream', value : 'no'),
 					 string(name: 'upstream', value : 'main'),

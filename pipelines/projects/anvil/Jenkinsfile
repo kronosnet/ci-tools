@@ -47,7 +47,7 @@ pipeline {
 	    stages {
 		stage('voting') {
 		    steps {
-			build job: "${project}-build-all-voting",
+			build job: "${project}/${project}-build-all-voting",
 			    parameters: [string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
 					 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
 					 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}")]
@@ -55,7 +55,7 @@ pipeline {
 		}
 		stage('rpm builds') {
 		    steps {
-			build job: "${project}-build-rpms",
+			build job: "${project}/${project}-build-rpms",
 			    parameters: [string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
 					 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
 					 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
@@ -65,7 +65,7 @@ pipeline {
 		}
 		stage('functional testing') {
 		    steps {
-			build job: "${project}-build-all-functional-testing",
+			build job: "${project}/${project}-build-all-functional-testing",
 			    parameters: [string(name: 'ANVILSRC', value: "${anvilsrc}"),
 					 string(name: 'TESTS', value: "${anviltests}")]
 		    }

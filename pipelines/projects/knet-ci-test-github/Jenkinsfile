@@ -6,7 +6,6 @@
 
 // Globals
 def project = 'ci-test'
-def draft_override = '0'
 def voting_fail =0
 def nonvoting_fail = 0
 
@@ -18,7 +17,7 @@ pipeline {
 	stage('Setup build env') {
 	    steps {
 		script {
-		    info = getBuildInfo(project, draft_override)
+		    info = getBuildInfo(project)
 		}
 	    }
 	}

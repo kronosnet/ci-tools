@@ -8,7 +8,7 @@
 //
 // We also call getAuthCheck() to verify that the
 // user is allowed to run the pipeline at all
-def call(String project, String draft_override)
+def call(String project)
 {
     sh 'env|sort'
 
@@ -38,7 +38,7 @@ def call(String project, String draft_override)
 
 	// Check for PRs marked 'draft' - this is Github-specific
 	is_draft = pullRequest.isDraft()
-	if ((is_draft) && (draft_override == '0')) {
+	if ((is_draft) && (env.ISDRAFTOVERRIDE == null)) {
 	    // Default for most HA jobs - abort
 	    currentBuild.result = 'ABORTED'
 	    error('PR is marked as draft - pipeline will not run')

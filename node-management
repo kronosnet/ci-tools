@@ -15,30 +15,31 @@ getnodelist() {
 }
 
 getjoblist() {
-	joblist="$(ls -1 $HOME/jobs)"
+	cd $HOME/jobs
+	joblist="$(ls -1 */*/config.xml */*/*/config.xml 2>/dev/null | sed -e 's#/config.xml##g' || true)"
+	cd $HOME
 }
 
 delnodefromjob() {
 	job="$1"
 	node="$2"
 
-	cp $HOME/jobs/$job/config.xml $TMPDIR/${job}.xml
+	cp $HOME/jobs/$job/config.xml $TMPDIR/${node}.xml
 
 	xmlstarlet ed \
 		--net \
 		--inplace \
 		--delete "/matrix-project/axes/hudson.matrix.LabelAxis/values/string[contains(text(),'$node')]" \
-		$TMPDIR/${job}.xml 2>/dev/null
+		$TMPDIR/${node}.xml 2>/dev/null
 
-	cat $TMPDIR/${job}.xml > $HOME/jobs/$job/config.xml
+	cat $TMPDIR/${node}.xml > $HOME/jobs/$job/config.xml
 
-	rm -rf $TMPDIR/${job}.xml
+	rm -rf $TMPDIR/${node}.xml
 }
 
 delnodefromalljobs() {
 	node="$1"
-
-	for i in $joblist; do
+	for i in $nodejobs; do
 		delnodefromjob $i $node
 	done
 }
@@ -47,7 +48,7 @@ addnodetojob() {
 	job="$1"
 	node="$2"
 
-	cp $HOME/jobs/$job/config.xml $TMPDIR/${job}.xml
+	cp $HOME/jobs/$job/config.xml $TMPDIR/${node}.xml
 
 	xmlstarlet ed \
 		--net \
@@ -56,11 +57,11 @@ addnodetojob() {
 		--type elem \
 		--name string \
 		--value $node \
-		$TMPDIR/${job}.xml 2>/dev/null
+		$TMPDIR/${node}.xml 2>/dev/null
 
-	cat $TMPDIR/${job}.xml > $HOME/jobs/$job/config.xml
+	cat $TMPDIR/${node}.xml > $HOME/jobs/$job/config.xml
 
-	rm -rf $TMPDIR/${job}.xml
+	rm -rf $TMPDIR/${node}.xml
 }
 
 addnodetoalljobs() {
@@ -103,10 +104,10 @@ addnodetoalljobs() {
 	for i in $joblist; do
 		addjob=0
 		case $i in
-			anvil-*|*pagure*|*ci-test*)
+			*anvil*|*pagure-hook*|*ci-test*|*pipeline*)
 				echo Skipping manual job $i
 				;;
-			all-weekly|build-rpm-repos|reinstall-all-manual|reconnect-all-nodes|get-artifacts)
+			*all-weekly|*build-rpm-repos|*reinstall-all-manual|*reconnect-all-nodes|*get-artifacts|*folder-template)
 				echo Skipping global job $i
 				;;
 			*after-merge|*github-pr-builder|*covscan*|*crosscompile*)
@@ -115,15 +116,15 @@ addnodetoalljobs() {
 			*ha-functional*)
 				echo Skipping functional job $i
 				;;
-			update-all-ci-tools)
+			*update-all-ci-tools)
 				echo Adding updating job $i
 				addjob=1
 				;;
-			update-all-${packager}-${updater})
+			*update-all-${packager}-${updater})
 				echo Adding updating job $i
 				addjob=1
 				;;
-			update-anvil*|update-all*|update-freebsd-devel|update-kernel-devel)
+			*update-anvil*|*update-all*|*update-freebsd-devel|*update-kernel-devel)
 				echo Skipping updating job $i
 				;;
 			*clang)
@@ -233,17 +234,11 @@ listnodejobs()
 {
 	node="$1"
 
-	mkdir -p $TMPDIR/jobs
-
 	for job in $joblist; do
-		cp $HOME/jobs/$job/config.xml $TMPDIR/jobs/${job}.xml 2>/dev/null
+		grep -l $node $HOME/jobs/$job/config.xml | sed \
+			-e 's#/config.xml##g' \
+			-e 's#'$HOME'/jobs/##g'
 	done
-
-	cd $TMPDIR/jobs 2>/dev/null
-	grep -l $node *.xml | sed -e 's/.xml//g'
-	cd - >/dev/null
-
-	rm -rf $TMPDIR/jobs
 }
 
 action=$1
@@ -251,6 +246,7 @@ node=$2
 
 getjoblist
 getnodelist
+nodejobs="$(listnodejobs $node)"
 
 reloadconfig=1
 
@@ -262,7 +258,7 @@ case $action in
 		addnodetoalljobs $node
 	;;
 	list)
-		listnodejobs $node
+		echo "$nodejobs"
 		reloadconfig=0
 	;;
 	add-to-job-list)
@@ -272,6 +268,10 @@ case $action in
 		for job in $jobs; do
 			addnodetojob $job $node
 		done
+	;;
+	*)
+		echo "No action specified. Do nothing"
+		exit 0
 	;;
 esac
 

@@ -98,6 +98,8 @@ pipeline {
 			    echo == merge gfs2/for-next and dlm/next ==
 			    git merge --log=999 --no-ff -m 'Automatic merge of gfs2/for-next and dlm/next' gfs2/for-next dlm/next
 			    git show --no-patch
+			    echo == apply workaround for debuginfo package build ==
+			    git revert --no-edit 7dc0430e5e007a7441a8f5109276df99b4cf48a7
 			'''
 		    }
 		}
@@ -125,7 +127,8 @@ pipeline {
 			    cd $BUILDDIR/kernel-ark
 			    echo == build rpms ==
 			    srcrpm=$(ls -1 redhat/rpm/SRPMS/kernel-*.src.rpm)
-			    RPMBUILDOPTS="--without debug --without debuginfo --without doc"
+			    RPMBUILDOPTS="--without debug --without doc"
+
 			    CIRPMDIR=$(pwd)/ci-test-rpms
 			    rm -rf $CIRPMDIR
 			    mkdir -p $CIRPMDIR
@@ -134,6 +137,7 @@ pipeline {
 				--define "_sourcedir $CIRPMDIR/SOURCES" \
 				--define "_specdir $CIRPMDIR/SPECS" \
 				--define "_builddir $CIRPMDIR/BUILD" \
+				--define "_buildrootdir $CIRPMDIR/BUILDROOT" \
 				--define "_srcrpmdir $CIRPMDIR/SRPM" \
 				--define "_rpmdir $CIRPMDIR/RPMS" \
 				$RPMBUILDOPTS \
@@ -146,7 +150,7 @@ pipeline {
 			script {
 			    timeStamp = Calendar.getInstance().getTime().format('YYYYMMdd-hhmmss',TimeZone.getTimeZone('UTC'))
 			}
-			build job: 'get-artifacts',
+			build job: 'global/get-artifacts',
 			    parameters: [string(name: 'sourcenode', value: "${env.NODE_NAME}"),
 					 string(name: 'sourcedir', value: "${env.WORKSPACE}/"),
 					 string(name: 'destdir', value: "rpmrepos/kernel/rhel9-kbuild/origin/ci-test/${timeStamp}/"),
@@ -155,7 +159,7 @@ pipeline {
 		}
 		stage('Publish rpms') {
 		    steps {
-			build job: 'build-rpm-repos',
+			build job: 'global/build-rpm-repos',
 			    parameters: [string(name: 'project', value: 'kernel'),
 					 string(name: 'branch', value: 'origin/ci-test')]
 		    }

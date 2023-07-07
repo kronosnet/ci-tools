@@ -37,7 +37,7 @@ pipeline {
 			// Clean before build
 			sh 'env|sort'
 
-			cleanWs()
+			cleanWs(disableDeferredWipeout: true)
 
 			sh '''
 			    echo "Delete any old test cluster"
@@ -248,7 +248,7 @@ pipeline {
 		cd $HOME/ci-tools/fn-testing
 		./validate-cloud -c delete -p libvirtd -r 9
 	    '''
-	    cleanWs()
+	    cleanWs(disableDeferredWipeout: true)
 	}
     }
 }

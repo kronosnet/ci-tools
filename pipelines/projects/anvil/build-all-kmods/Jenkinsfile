@@ -1,0 +1,101 @@
+// Jenkinsfile for building anvil kmods
+
+@Library(['GlobalLib', 'ProjectLib']) _
+
+// Globals
+def project = 'anvil'
+def nonvoting_fail = 0
+
+pipeline {
+    agent { label 'built-in' }
+
+    stages {
+	stage('Build all kmods') {
+	    parallel {
+		stage('centos-8-stream enterprise-staging') {
+		    steps {
+			build job: "${project}/${project}-build-kmods",
+			    parameters: [string(name: 'BASEDISTRO', value: 'centos-8-stream'),
+					 string(name: 'REPOSRC', value: 'enterprise-staging'),
+					 string(name: 'ANVILSRC', value: 'none')]
+		    }
+		}
+		stage('rhel-8 enterprise-staging') {
+		    steps {
+			build job: "${project}/${project}-build-kmods",
+			    parameters: [string(name: 'BASEDISTRO', value: 'rhel-8'),
+					 string(name: 'REPOSRC', value: 'enterprise-staging'),
+					 string(name: 'ANVILSRC', value: 'none')]
+		    }
+		}
+		stage('centos-8-stream enterprise') {
+		    steps {
+			build job: "${project}/${project}-build-kmods",
+			    parameters: [string(name: 'BASEDISTRO', value: 'centos-8-stream'),
+					 string(name: 'REPOSRC', value: 'enterprise'),
+					 string(name: 'ANVILSRC', value: 'none')]
+		    }
+		}
+		stage('rhel-8 enterprise') {
+		    steps {
+			build job: "${project}/${project}-build-kmods",
+			    parameters: [string(name: 'BASEDISTRO', value: 'rhel-8'),
+					 string(name: 'REPOSRC', value: 'enterprise'),
+					 string(name: 'ANVILSRC', value: 'none')]
+		    }
+		}
+		stage('centos-8-stream ci') {
+		    steps {
+			build job: "${project}/${project}-build-kmods",
+			    parameters: [string(name: 'BASEDISTRO', value: 'centos-8-stream'),
+					 string(name: 'REPOSRC', value: 'ci'),
+					 string(name: 'ANVILSRC', value: 'ci')]
+		    }
+		}
+		stage('rhel-8 ci') {
+		    steps {
+			build job: "${project}/${project}-build-kmods",
+			    parameters: [string(name: 'BASEDISTRO', value: 'rhel-8'),
+					 string(name: 'REPOSRC', value: 'ci'),
+					 string(name: 'ANVILSRC', value: 'ci')]
+		    }
+		}
+		stage('centos-9-stream ci') {
+		    steps {
+			script {
+			    try {
+				build job: "${project}/${project}-build-kmods",
+				    parameters: [string(name: 'BASEDISTRO', value: 'centos-9-stream'),
+						 string(name: 'REPOSRC', value: 'ci'),
+						 string(name: 'ANVILSRC', value: 'ci')]
+			    }
+			    catch(err) {
+				nonvoting_fail++
+			    }
+			}
+		    }
+		}
+		stage('rhel-9 ci') {
+		    steps {
+			build job: "${project}/${project}-build-kmods",
+			    parameters: [string(name: 'BASEDISTRO', value: 'rhel-9'),
+					 string(name: 'REPOSRC', value: 'ci'),
+					 string(name: 'ANVILSRC', value: 'ci')]
+		    }
+		}
+	    }
+	}
+    }
+    post {
+	success {
+	    script {
+		postFunctions(['project': project, 'state': 'success', 'nonvoting_fail': nonvoting_fail, 'branch': "kmods"])
+	    }
+	}
+	failure {
+	    script {
+		postFunctions(['project': project, 'state': 'failure', 'nonvoting_fail': nonvoting_fail, 'branch': "kmods"])
+	    }
+	}
+    }
+}

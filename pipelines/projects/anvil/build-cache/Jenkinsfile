@@ -1,0 +1,63 @@
+// Jenkinsfile for building anvil kmods
+
+@Library(['GlobalLib', 'ProjectLib']) _
+
+// Globals
+def project = 'anvil'
+
+pipeline {
+    agent { label 'built-in' }
+
+    options {
+	timeout(time: 60, unit: 'MINUTES')
+	skipDefaultCheckout(true)
+    }
+
+    stages {
+	stage('Update cache matrix') {
+	    matrix {
+		agent {
+		    label "${PLATFORM}"
+		}
+		axes {
+		    axis {
+			name 'PLATFORM'
+			values 'anvil-ci-bm-phy01', 'anvil-ci-bm-phy02', 'anvil-ci-bm-phy03', 'anvil-ci-bm-phy04'
+		    }
+	        }
+
+		stages('Update cache node') {
+		    stage('Update cache') {
+			steps {
+			    script {
+				stage("Prep build env ${PLATFORM}") {
+				    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+				    sh """
+					DEST=${project} /root/ci-tools/ci-destroy-anvil-bm-vm
+				    """
+			    	}
+				stage("Build cache ${PLATFORM}") {
+				    sh """
+					DEST=${project} /root/ci-tools/ci-setup-anvil-bm-vm-cache $BASEDISTRO none none
+				    """
+				}
+			    }
+			}
+		    }
+		}
+	    }
+	}
+    }
+    post {
+	success {
+	    script {
+		postFunctions(['project': project, 'state': 'success', 'branch': "cache $BASEDISTRO"])
+	    }
+	}
+	failure {
+	    script {
+		postFunctions(['project': project, 'state': 'failure', 'branch': "cache $BASEDISTRO"])
+	    }
+	}
+    }
+}

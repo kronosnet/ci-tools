@@ -16,10 +16,14 @@ BREAKPOINT="$6"
 # common strategy to cleanup all VMs
 destroy_vm() {
  vm="$1"
- ssh $vm subscription-manager unregister || true
- sleep 2
- virsh destroy $vm || true
- virsh undefine $vm || true
+ if virsh dominfo $vm >/dev/null 2>&1; then
+  if ping -c 1 $vm >/dev/null 2>&1; then
+   ssh $vm subscription-manager unregister || true
+   sleep 2
+  fi
+  virsh destroy $vm || true
+  virsh undefine $vm || true
+ fi
 }
 
 cleanup_simengine() {

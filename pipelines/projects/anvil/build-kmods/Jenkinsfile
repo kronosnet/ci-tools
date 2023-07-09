@@ -1,0 +1,51 @@
+// Jenkinsfile for building anvil kmods
+
+@Library(['GlobalLib', 'ProjectLib']) _
+
+// Globals
+def project = 'anvil'
+
+pipeline {
+    agent { label 'anvil-bm' }
+
+    options {
+	timeout(time: 60, unit: 'MINUTES')
+    }
+
+    stages {
+	// First check we are allowed to run, then set some params for that run
+	stage('Prep build env') {
+	    steps {
+		cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+		sh """
+		    DEST=${project} /root/ci-tools/ci-destroy-anvil-bm-vm
+		"""
+	    }
+	}
+	stage('Build kmod') {
+	    steps {
+		sh """
+		    DEST=${project} /root/ci-tools/ci-setup-anvil-bm-vm-kmods $BASEDISTRO $REPOSRC $ANVILSRC
+		"""
+	    }
+	}
+    }
+    post {
+	success {
+	    script {
+		postFunctions(['project': project, 'state': 'success', 'branch': "kmod $BASEDISTRO $REPOSRC $ANVILSRC"])
+	    }
+	}
+	failure {
+	    script {
+		postFunctions(['project': project, 'state': 'failure', 'branch': "kmod $BASEDISTRO $REPOSRC $ANVILSRC"])
+	    }
+	}
+	always {
+	    sh """
+		DEST=${project} /root/ci-tools/ci-destroy-anvil-bm-vm
+	    """
+	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+	}
+    }
+}

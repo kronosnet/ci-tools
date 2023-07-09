@@ -10,6 +10,11 @@ pipeline {
     agent { label 'built-in' }
 
     stages {
+	stage('Prep build env') {
+	    steps {
+		cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+	    }
+	}
 	stage('Build all kmods') {
 	    parallel {
 		stage('centos-8-stream enterprise-staging') {
@@ -96,6 +101,9 @@ pipeline {
 	    script {
 		postFunctions(['project': project, 'state': 'failure', 'nonvoting_fail': nonvoting_fail, 'branch': "kmods"])
 	    }
+	}
+	always {
+	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 	}
     }
 }

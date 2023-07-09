@@ -229,17 +229,13 @@ pipeline {
 
     post {
 	success {
-	    node('built-in') {
-		script {
-		   postFunctions(['project': project, 'state': 'success'])
-		}
+	    script {
+		postFunctions(['project': project, 'state': 'success'])
 	    }
 	}
 	failure {
-	    node('built-in') {
-		script {
-		   postFunctions(['project': project, 'state': 'failure'])
-		}
+	    script {
+		postFunctions(['project': project, 'state': 'failure'])
 	    }
 	}
 	always {

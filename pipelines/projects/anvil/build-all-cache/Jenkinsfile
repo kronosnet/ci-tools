@@ -50,12 +50,12 @@ pipeline {
     post {
 	success {
 	    script {
-		postFunctions(['project': project, 'state': 'success', 'nonvoting_fail': nonvoting_fail, 'branch': "caches"])
+		postFunctions(['project': project, 'state': 'success', 'branch': "caches"])
 	    }
 	}
 	failure {
 	    script {
-		postFunctions(['project': project, 'state': 'failure', 'nonvoting_fail': nonvoting_fail, 'branch': "caches"])
+		postFunctions(['project': project, 'state': 'failure', 'branch': "caches"])
 	    }
 	}
 	always {

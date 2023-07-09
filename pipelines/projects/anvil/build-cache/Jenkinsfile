@@ -5,6 +5,8 @@
 // Globals
 def project = 'anvil'
 
+String[] distros = ['rhel-8', 'centos-8-stream', 'rhel-9', 'centos-9-stream']
+
 pipeline {
     agent { label 'built-in' }
 
@@ -36,27 +38,30 @@ pipeline {
 					DEST=${project} /root/ci-tools/ci-destroy-anvil-bm-vm
 				    """
 			    	}
-				stage("Build cache ${PLATFORM}") {
+				for (distro in distros) {
+				    def state = 'success'
+				    stage("Build cache ${PLATFORM} ${distro}") {
+					try {
+					    sh """
+						DEST=${project} /root/ci-tools/ci-setup-anvil-bm-vm-cache ${distro} none none
+					    """
+					}
+					catch(err) {
+					    state = 'failure'
+					}
+					postFunctions(['project': project, 'state': state, 'branch': "cache ${PLATFORM} ${distro}"])
+				    }
+				}
+				stage("Clean build env ${PLATFORM}") {
+				    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 				    sh """
-					DEST=${project} /root/ci-tools/ci-setup-anvil-bm-vm-cache $BASEDISTRO none none
+					DEST=${project} /root/ci-tools/ci-destroy-anvil-bm-vm
 				    """
 				}
 			    }
 			}
 		    }
 		}
-	    }
-	}
-    }
-    post {
-	success {
-	    script {
-		postFunctions(['project': project, 'state': 'success', 'branch': "cache $BASEDISTRO"])
-	    }
-	}
-	failure {
-	    script {
-		postFunctions(['project': project, 'state': 'failure', 'branch': "cache $BASEDISTRO"])
 	    }
 	}
     }

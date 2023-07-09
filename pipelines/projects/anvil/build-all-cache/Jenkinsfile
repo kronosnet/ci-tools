@@ -1,0 +1,65 @@
+// Jenkinsfile for building anvil kmods
+
+@Library(['GlobalLib', 'ProjectLib']) _
+
+// Globals
+def project = 'anvil'
+
+pipeline {
+    agent { label 'built-in' }
+
+    options {
+	skipDefaultCheckout(true)
+    }
+
+    stages {
+	stage('Prep build env') {
+	    steps {
+		cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+	    }
+	}
+	stage('Build all cache') {
+	    parallel {
+		stage('centos-8-stream') {
+		    steps {
+			build job: "${project}/${project}-build-cache",
+			    parameters: [string(name: 'BASEDISTRO', value: 'centos-8-stream')]
+		    }
+		}
+		stage('centos-9-stream') {
+		    steps {
+			build job: "${project}/${project}-build-cache",
+			    parameters: [string(name: 'BASEDISTRO', value: 'centos-9-stream')]
+		    }
+		}
+		stage('rhel-8') {
+		    steps {
+			build job: "${project}/${project}-build-cache",
+			    parameters: [string(name: 'BASEDISTRO', value: 'rhel-8')]
+		    }
+		}
+		stage('rhel-9') {
+		    steps {
+			build job: "${project}/${project}-build-cache",
+			    parameters: [string(name: 'BASEDISTRO', value: 'rhel-9')]
+		    }
+		}
+	    }
+	}
+    }
+    post {
+	success {
+	    script {
+		postFunctions(['project': project, 'state': 'success', 'nonvoting_fail': nonvoting_fail, 'branch': "caches"])
+	    }
+	}
+	failure {
+	    script {
+		postFunctions(['project': project, 'state': 'failure', 'nonvoting_fail': nonvoting_fail, 'branch': "caches"])
+	    }
+	}
+	always {
+	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+	}
+    }
+}

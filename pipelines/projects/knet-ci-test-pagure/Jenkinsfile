@@ -31,11 +31,17 @@ def voting_fail = 0
 pipeline {
     agent { label 'built-in' }
 
+    options {
+	skipDefaultCheckout(true)
+    }
+
     stages {
 	// First check we are allowed to run, then set some params for that run
 	stage('Validate build env') {
 	    steps {
 		script {
+		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+
 		    info = getBuildInfo(project, upstream_repo)
 
 		    stage("Checkout ${info['jobname']}") {
@@ -107,6 +113,9 @@ pipeline {
 	    script {
 		postFunctions(['project': project, 'state': 'failure', 'branch': "${info['jobname']}"])
 	    }
+	}
+	always {
+	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 	}
     }
 }

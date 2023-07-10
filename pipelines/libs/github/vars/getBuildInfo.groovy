@@ -27,10 +27,10 @@ def call(String project)
 
     // Set parameters for the sub-jobs.
     if (isPullRequest) {
-	info['target_branch'] = env.CHANGE_TARGET
-	info['target'] = env.CHANGE_TARGET
-	info['pull_id'] = env.CHANGE_ID
 	info['actual_commit'] = env.GIT_COMMIT
+	info['target'] = env.CHANGE_TARGET
+	info['target_branch'] = env.CHANGE_TARGET
+	info['pull_id'] = env.CHANGE_ID
 	info['install'] = 0
 	info['maininstall'] = 0
 	info['stableinstall'] = 0
@@ -51,6 +51,8 @@ def call(String project)
     } else {
 	info['actual_commit'] = "origin/${env.BRANCH_NAME}"
 	info['target'] = env.BRANCH_NAME
+	info['target_branch'] = ''
+	info['pull_id'] = 1
 	info['install'] = isThisAnInstallBranch(info['target'])
 	if ("${info['install']}" == '1') {
 	    if ("${info['target']}" == 'main') {

@@ -1,0 +1,131 @@
+// Jenkinsfile for the dlm project
+
+@Library(['GlobalLib', 'PagureLib', 'ProjectLib']) _
+
+// Globals
+def project = 'dlm'
+def upstream_repo = "https://pagure.io/${project}.git"
+
+// Set defaults
+def nonvoting_fail = 0
+def voting_fail = 0
+
+pipeline {
+    agent { label 'built-in' }
+
+    options {
+	skipDefaultCheckout(true)
+    }
+
+    stages {
+	// First check we are allowed to run, then set some params for that run
+	stage('Validate build env') {
+	    steps {
+		script {
+		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+
+		    info = getBuildInfo(project, upstream_repo)
+
+		    stage("Checkout ${info['jobname']}") {
+			getSCM(['project': project, 'upstream_repo': upstream_repo, 'checkout': info['checkout'], 'isPullRequest': info['isPullRequest']])
+		    }
+		}
+	    }
+	}
+	// This is the main stage that covers everything
+	stage('Start builds') {
+	    when {
+		// getAuthCheck will usually abort the job if permission is denied
+		// but this is an extra check!
+		expression { info['authcheck'] == true }
+	    }
+	    stages {
+		stage('Standard builds') {
+		    parallel {
+			stage('voting') {
+			    steps {
+				build job: "${project}/${project}-build-all-voting",
+				    parameters: [string(name: 'install', value : "${info['install']}"),
+						 string(name: 'ghprbActualCommit', value : "${info['actual_commit']}"),
+						 string(name: 'REPO', value : env.REPO),
+						 string(name: 'BRANCH', value : env.BRANCH),
+						 string(name: 'BRANCH_TO', value : env.BRANCH_TO),
+						 string(name: 'compiler', value : 'gcc')]
+			    }
+			}
+			stage('covscan') {
+			    steps {
+				build job: "${project}/${project}-build-covscan",
+				    parameters: [string(name: 'ghprbActualCommit', value : "${info['actual_commit']}"),
+						 string(name: 'REPO', value : env.REPO),
+						 string(name: 'BRANCH', value : env.BRANCH),
+						 string(name: 'BRANCH_TO', value : env.BRANCH_TO),
+						 string(name: 'covoptions', value: "${info['covopts']}")]
+			    }
+			}
+			stage('rpm builds') {
+			    steps {
+				build job: "${project}/${project}-build-rpms",
+				    parameters: [string(name: 'ghprbActualCommit', value : "${info['actual_commit']}"),
+						 string(name: 'REPO', value : env.REPO),
+						 string(name: 'BRANCH', value : env.BRANCH),
+						 string(name: 'BRANCH_TO', value : env.BRANCH_TO),
+						 string(name: 'publishrpm', value : "${info['publish_rpm']}"),
+						 string(name: 'publishprrpm', value : "${info['publish_pr_rpm']}"),
+						 string(name: 'bootstrap', value : '0')]
+			    }
+			}
+			stage('non-voting') {
+			    steps {
+				script {
+				    try {
+					build job: "${project}/${project}-build-all-nonvoting",
+					    parameters: [string(name: 'ghprbActualCommit', value : "${info['actual_commit']}"),
+							 string(name: 'REPO', value : env.REPO),
+							 string(name: 'BRANCH', value : env.BRANCH),
+							 string(name: 'BRANCH_TO', value : env.BRANCH_TO),
+							 string(name: 'compiler', value : 'gcc')]
+				    } catch (err) {
+					nonvoting_fail++
+				    }
+				}
+			    }
+			}
+			stage('non-voting-clang') {
+			    steps {
+				script {
+				    try {
+					build job: "${project}/${project}-build-all-nonvoting-clang",
+					    parameters: [string(name: 'ghprbActualCommit', value : "${info['actual_commit']}"),
+							 string(name: 'REPO', value : env.REPO),
+							 string(name: 'BRANCH', value : env.BRANCH),
+							 string(name: 'BRANCH_TO', value : env.BRANCH_TO)]
+				    } catch (err) {
+					nonvoting_fail++
+				    }
+				}
+			    }
+			}
+		    }
+		}
+	    }
+	}
+    }
+    post {
+	success {
+	    // Notify interested users if non-voting jobs fail
+	    script {
+		postFunctions(['project': project, 'state': 'success', 'branch': "${info['jobname']}"])
+	    }
+	}
+	failure {
+	    // Notify interested users if voting jobs fail
+	    script {
+		postFunctions(['project': project, 'state': 'failure', 'branch': "${info['jobname']}"])
+	    }
+	}
+	always {
+	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+	}
+    }
+}

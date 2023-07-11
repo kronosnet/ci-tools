@@ -17,7 +17,7 @@ cleanbr() {
   zypper clean
  fi
  if [ -n "$(which yum 2>/dev/null)" ]; then
-  yum erase -y $REMOVERPMS || true
+  yum remove -y $REMOVERPMS || true
   rm -rf /etc/yum.repos.d/knet-build.repo || true
   rm -rf /etc/yum.repos.d/libqb-build.repo || true
   rm -rf /etc/yum.repos.d/corosync-build.repo || true

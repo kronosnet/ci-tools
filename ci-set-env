@@ -349,14 +349,6 @@ else
 
 fi
 
-# DLM main not available in RHEL7 or equivalent
-case "${NODE_NAME}" in
- rhel7*|centos-7*)
-  DLM_REPO=""
-  DLM_REPO_PATH=""
- ;;
-esac
-
 export KNET_REPO
 export KNET_REPO_PATH
 export LIBQB_REPO

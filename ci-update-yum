@@ -14,42 +14,16 @@ case "${NODE_NAME}" in
  ;;
 esac
 
+# not all yum based distro have python3, deal with it
+if [ -z "$python" ]; then
+ python=python3
+fi
+
 yum clean all
 
-# Enable OpenStack repos for fence-agents build dependencies
 case "${NODE_NAME}" in
- rhel*x86*|rhel*power*)
-  rpm -qa | grep rhos-release || yum install -y http://download.eng.brq.redhat.com/rcm-guest/puddles/OpenStack/rhos-release/rhos-release-latest.noarch.rpm
-  RHELVER=$(echo $NODE_NAME | sed -e 's/rhel//g' -e  's/z-.*//g' | cut --characters 1-1,2-2 --output-delimiter '.')
-  echo "Detected RHEL version: $RHELVER"
- ;;
- centos-7.2*)
-  EXTRAOPTS="--skip-broken"
- ;;
- centos-7*)
-  yum install -y centos-release-openstack-stein epel-release
-  EXTRAOPTS="--skip-broken"
- ;;
- centos-8*|anvil-ci-centos-8*|anvil-ci-bm*)
-  yum install -y centos-release-openstack-ussuri epel-release
- ;;
- anvil-ci-centos-9*)
+ centos-*|anvil-ci-centos-*|anvil-ci-bm*)
   yum install -y epel-release
- ;;
-esac
-
-case "${NODE_NAME}" in
- anvil-ci-centos-9*|anvil-ci-rhel-9*|centos-9*|rhel9*power9*)
-  cd /etc/yum.repos.d/
-  rm -rf delorean*.repo
-  wget https://trunk.rdoproject.org/centos9/current/delorean.repo
-  wget https://trunk.rdoproject.org/centos9-master-preview/delorean-deps.repo
- ;;
-esac
-
-case "${NODE_NAME}" in
- anvil-ci*)
-  yum install -y fence-agents-common resource-agents mock wget rpm-build createrepo_c yum-utils
  ;;
 esac
 
@@ -59,110 +33,42 @@ case "${NODE_NAME}" in
  ;;
 esac
 
-#case "${NODE_NAME}" in
-# rhel7*x86*|rhel7*power*)
-#  rhos-release 14
-# ;;
-# rhel8*x86*|rhel8*power*)
-#  rhos-release 15
-# ;;
-#esac
-
-# Disable repos that don´t exist or are "bad"
-case "${NODE_NAME}" in
- rhel7*power*)
-  yum-config-manager --save --setopt=rhelosp-14.0-optools-puddle.skip_if_unavailable=true
-  yum-config-manager --save --setopt=rhelosp-ceph-3-mon.skip_if_unavailable=true
-  yum-config-manager --save --setopt=rhelosp-ceph-3-osd.skip_if_unavailable=true
-  yum-config-manager --save --setopt=rhelosp-ceph-3-tools.skip_if_unavailable=true
-  yum-config-manager --save --setopt=rhelosp-rhel-${RHELVER}-ha.skip_if_unavailable=true
-  yum-config-manager --save --setopt=rhelosp-rhel-${RHELVER}-server.skip_if_unavailable=true
- ;;
-esac
-
-# not all yum based distro have python3, deal with it
-if [ -z "$python" ]; then
- python=python3
-fi
-
+# disable for now
 POSTOPTS=""
-case "${NODE_NAME}" in
- rhel7*|centos-7*|jenkins-jumphost)
- ;;
- *)
-  POSTOPTS="--nobest"
- ;;
-esac
+# case "${NODE_NAME}" in
+# *)
+#  POSTOPTS="--nobest"
+# ;;
+# esac
 
 yum -y $EXTRAOPTS update $POSTOPTS
+
+# handle special packages that are not available everywhere
+for i in libcgroup-devel libservicelog-devel python3-boto3 python3-google-api-client; do
+ yum -y install $i || true
+done
 
 EXTRADEPS=""
 
 case "${NODE_NAME}" in
- *centos-7.2*)
-  PYTHONDEV="python34 python34-devel"
+ fedora*)
+  EXTRADEPS="python3-devel $EXTRADEPS"
  ;;
- *)
-  PYTHONDEV="python-devel python3-devel"
+ centos*|rhel*|anvil-ci-centos*|anvil-ci-rhel*)
+  EXTRADEPS="platform-python-devel $EXTRADEPS"
  ;;
 esac
-# Install special case packages
-for i in $PYTHONDEV python3-setuptools python3-pip python3-rpm-macros platform-python-devel libzstd-devel libcgroup-devel; do
- yum -y install $i || true
-done
 
-yum -y install systemd-python || yum -y install python3-systemd
-EXTRADEPS="systemd-devel $EXTRADEPS"
-
-# available only on ppc
-yum -y install libservicelog-devel || true
-
-# pcs builds only on recent distros
 case "${NODE_NAME}" in
- fedora*|rhel8*|centos-8*|centos-9*|anvil-ci*|rhel9*)
-  EXTRADEPS="ruby ruby-devel rubygems rubygem-bundler fontconfig liberation-sans-fonts overpass-fonts npm rpmdevtools python3-lxml python3-wheel python3-setuptools_scm python3-cryptography $EXTRADEPS"
+ anvil-ci*)
+  EXTRADEPS="fence-agents-common resource-agents mock wget rpm-build createrepo_c yum-utils $EXTRADEPS"
  ;;
 esac
 
-# available only with python3
-if [ "$python" = python3 ]; then
- EXTRADEPS="execstack python3-pexpect python3-pycurl python3-suds python3-requests openwsman-python3 python3-pyroute2 python3-httplib2 $EXTRADEPS"
-else
- EXTRADEPS="pexpect openwsman-python python-suds python2-google-api-client python-requests $EXTRADEPS"
- if [ "$epel" = new ]; then
-  EXTRADEPS="python-boto3 python-s3transfer $EXTRADEPS"
- else
-  EXTRADEPS="python2-boto3 $EXTRADEPS"
- fi
-fi
-
-# Cloud packages
-case "${NODE_NAME}" in
- rhel*s390*|rhel9*power*|centos*s390*|centos*power*|anvil*centos*9*)
- ;;
- *centos-7.2*)
-  EXTRADEPS="python34"
- ;;
- *)
-  EXTRADEPS="${python}-keystoneclient ${python}-keystoneauth1 ${python}-novaclient $EXTRADEPS"
-  if [ "$python" = python3 ]; then
-    for i in python3-boto3 python3-google-api-client; do
-      yum -y install $i || true
-    done
-  fi
- ;;
-esac
-
-# knet rust bindings
+# rust bindings
 if [ -n "$RUSTBINDINGS" ] && [ "$RUSTBINDINGS" = yes ]; then
-  EXTRADEPS="$EXTRADEPS cargo rust bindgen clippy rustfmt"
+  EXTRADEPS="bindgen clippy rustfmt $EXTRADEPS"
 fi
-
-case "${NODE_NAME}" in
- rhel9*|centos-9*|rhel8*|centos-8*)
-  EXTRADEPS="$EXTRADEPS rust cargo"
- ;;
-esac
 
 # shellcheck for resource-agents ci/build.sh
 case "${NODE_NAME}" in
@@ -196,13 +102,16 @@ yum -y install         \
  bison                 \
  byacc                 \
  bzip2-devel           \
+ cargo                 \
  check-devel           \
  clang                 \
  curl                  \
  dbus-devel            \
  docbook-style-xsl     \
  doxygen               \
+ execstack             \
  flex                  \
+ fontconfig            \
  gcc                   \
  gettext-devel         \
  git                   \
@@ -216,6 +125,7 @@ yum -y install         \
  libblkid-devel        \
  libcmocka-devel       \
  libcurl-devel         \
+ liberation-sans-fonts \
  libffi-devel          \
  libgcrypt-devel       \
  libnet-devel          \
@@ -228,21 +138,46 @@ yum -y install         \
  libxml2-devel         \
  libxslt               \
  libxslt-devel         \
+ libzstd-devel         \
  lksctp-tools-devel    \
  lz4-devel             \
  lzo-devel             \
  make                  \
  net-snmp-devel        \
  ncurses-devel         \
+ npm                   \
  nss-devel             \
  nss-tools             \
  openssl-devel         \
+ openwsman-python3     \
+ overpass-fonts        \
  pam-devel             \
  perl                  \
+ python3-cryptography  \
+ python3-httplib2      \
+ python3-lxml          \
+ python3-pexpect       \
+ python3-pip           \
+ python3-pycurl        \
+ python3-pyroute2      \
+ python3-requests      \
+ python3-rpm-macros    \
+ python3-setuptools    \
+ python3-setuptools_scm\
+ python3-systemd       \
+ python3-suds          \
+ python3-wheel         \
  psmisc                \
  rpm-build             \
+ rpmdevtools           \
  rpmlint               \
  rsync                 \
+ ruby                  \
+ ruby-devel            \
+ rubygems              \
+ rubygem-bundler       \
+ rust                  \
+ systemd-devel         \
  time                  \
  util-linux            \
  valgrind              \
@@ -253,7 +188,14 @@ yum -y install         \
 
 case "${NODE_NAME}" in
  *kbuild*|*vapor*)
-  yum -y install python3-devel python3-pip python3-wheel \
+  if ! rpm -qa | grep rhos-release; then
+    yum install -y http://download.eng.brq.redhat.com/rcm-guest/puddles/OpenStack/rhos-release/rhos-release-latest.noarch.rpm
+    rhos-release --without-ceph 17.0
+  else
+    rhos-release --without-ceph -u
+  fi
+  yum -y update
+  yum install -y python3-devel python3-pip python3-wheel \
 		 brewkoji createrepo ansible \
 		 azure-cli firewalld-filesystem jq \
 		 google-cloud-sdk python3-openstackclient \

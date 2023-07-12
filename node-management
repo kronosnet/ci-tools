@@ -93,7 +93,7 @@ addnodetoalljobs() {
 			stable|unstable)
 				updater=$i
 				;;
-			rhel7*|centos-7*|rhel8*|centos-8*)
+			rhel8*|centos-8*)
 				oldbuilds=yes
 				;;
 		esac

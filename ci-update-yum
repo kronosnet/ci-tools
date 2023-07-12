@@ -46,7 +46,7 @@ esac
 yum -y $EXTRAOPTS update $POSTOPTS
 
 # handle special packages that are not available everywhere
-for i in libcgroup-devel libservicelog-devel python3-boto3 python3-google-api-client; do
+for i in libcgroup-devel libservicelog-devel python3-google-api-client; do
  yum -y install $i || true
 done
 
@@ -157,7 +157,6 @@ yum -y install             \
  perl                      \
  python3-boto3             \
  python3-cryptography      \
- python3-google-api-client \
  python3-httplib2          \
  python3-lxml              \
  python3-pexpect           \

@@ -48,33 +48,49 @@ def call(Map info) {
     email_addrs += 'commits@lists.kronosnet.org'
     println("Sending email to ${email_addrs}")
 
+    // Projects can override the email Reply-To header too
+    email_replyto = getEmailReplyTo()
+    if (email_replyto == '') {
+	email_replyto = 'devel@lists.kronosnet.org' // default
+    }
+    println("reply-to: ${email_replyto}")
+
+    // Remove "and counting" from the end of the time string
+    duration = currentBuild.durationString
+    jobDuration = duration.substring(0, duration.length() - 13)
+
     email_title = "[jenkins] ${info['project']} ${branch} (build ${env.BUILD_ID})"
     email_trailer = """
-total runtime = ${currentBuild.durationString}
+total runtime = ${jobDuration}
 See ${env.BUILD_URL}pipeline-console/
 """
 
+    // Now actually send the email
     if (state == "success") {
 	if (nonvoting_fail > 0) {
-	    mail to: email_addrs,
+	    emailext to: email_addrs,
+		replyTo: "${email_replyto}",
 		subject: "${email_title} succeeded but with ${nonvoting_fail} non-voting fails",
 		body: "${email_trailer}"
 	} else {
 	    mail to: email_addrs,
+		replyTo: "${email_replyto}",
 		subject: "${email_title} succeeded",
 		body: "${email_trailer}"
 	}
     } else {
 	// If this pipeline has no voting/non-voting options, then show as 'stages' failed
 	if (stages_fail > 0) {
-	    mail to: email_addrs,
+	    emailext to: email_addrs,
+		replyTo: "${email_replyto}",
 		subject: "${email_title} completed with state: ${state}",
 		body: """
 ${stages_fail} Stages failed
 ${email_trailer}
 """
 	} else {
-	    mail to: email_addrs,
+	    emailext to: email_addrs,
+		replyTo: "${email_replyto}",
 		subject: "${email_title} completed with state: ${state}",
 		body: """
 ${nonvoting_fail} Non-voting fails

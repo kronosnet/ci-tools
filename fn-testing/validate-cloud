@@ -22,10 +22,10 @@ post=""
 jobid=""
 testvariant="default"
 customrepopath=""
+iscsisize="0"
+blocksize="0"
 
 # hardcoded sizing for now
-iscsisize="10"
-blocksize="10"
 links="1"
 
 print_usage() {
@@ -133,6 +133,11 @@ if [ -z "$rhelver" ]; then
 	exit 1
 fi
 
+if [ ! -f ./${provider}.defaults ]; then
+	echo "Provider $provider defaults not configured"
+	exit 1
+fi
+
 if [ ! -f ./${provider}.auth ]; then
 	echo "Provider $provider authentication not configured"
 	exit 1
@@ -153,13 +158,35 @@ if [ -n "${customrepopath}" ] && [ ! -d ${customrepopath} ]; then
 	exit 1
 fi
 
-if [ "$iscsisize" = "0" ]; then
-	iscsisize=10
-	deploybaseopts="--iscsi $iscsisize"
-else
-	deploybaseopts="--useiscsi --iscsi $iscsisize"
+# load auth options
+. ./${provider}.defaults
+
+# load auth options
+. ./${provider}.auth
+
+# load per provider / rhelver create/deploy/test options
+. ./${provider}.rhel${rhelver}
+
+createbaseopts="--nodes $nodes"
+deploybaseopts=""
+
+if [ "$iscsisize" = "0" ] && [ -n "$defaultiscsi" ]; then
+	iscsisize="$defaultiscsi"
 fi
-createbaseopts="--nodes $nodes --iscsi $iscsisize --block $blocksize"
+if [ "$iscsisize" != "0" ]; then
+	createbaseopts="$createbaseopts --iscsi $iscsisize"
+	deploybaseopts="$deploybaseopts --iscsi $iscsisize"
+fi
+if [ "$defaultuseiscsi" = "yes" ]; then
+	deploybaseopts="$deploybaseopts --useiscsi"
+fi
+
+if [ "$blocksize" = "0" ] && [ -n "$defaultblocksize" ]; then
+	blocksize="$defaultblocksize"
+fi
+if [ "$blocksize" != "0" ]; then
+	createbaseopts="$createbaseopts --block $blocksize"
+fi
 
 if [ "$upstream" != "" ]; then
 	deploybaseopts="$deploybaseopts --useupstreamrepo $upstream"
@@ -170,16 +197,11 @@ fi
 if [ "$customrepopath" != "" ]; then
 	deploybaseopts="$deploybaseopts --usecustomrepo $customrepopath"
 fi
+
 testbaseopts=""
 if [ "$post" != "" ]; then
 	testbaseopts="$testbaseopts --post-results"
 fi
-
-# load auth options
-. ./${provider}.auth
-
-# load per provider / rhelver create/deploy/test options
-. ./${provider}.rhel${rhelver}
 
 # generic log options, debug off by default
 logopts="--verbose --nocolorlog"

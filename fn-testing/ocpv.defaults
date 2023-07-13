@@ -1,0 +1,3 @@
+defaultiscsi="10"
+defaultuseiscsi="yes"
+defaultblocksize="10"

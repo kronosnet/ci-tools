@@ -1,0 +1,7 @@
+createopts="--image 9.2.0"
+deployopts=""
+testopts=""
+
+ocpv_setup() {
+	return 0
+}

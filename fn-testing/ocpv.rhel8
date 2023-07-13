@@ -1,0 +1,7 @@
+createopts="--image 8.8.0"
+deployopts=""
+testopts=""
+
+ocpv_setup() {
+	return 0
+}

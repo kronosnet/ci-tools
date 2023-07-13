@@ -174,9 +174,14 @@ pipeline {
 			    echo "Creating test cluster"
 			    cd $HOME/ci-tools/fn-testing
 			    ./validate-cloud -c create -p libvirtd -d -r 9 -n 3 -s 110 -i 0
-
+			'''
+		    }
+		}
+		stage('Check test cluster availability') {
+		    steps {
+			sh '''
 			    echo "Waiting for cluster to boot"
-
+			    cd $HOME/ci-tools/fn-testing
 			    wsip=$(./validate-cloud -c ip -p libvirtd -r 9)
 			    waittimeout=600
 

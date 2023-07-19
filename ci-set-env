@@ -96,23 +96,48 @@ export PARALLELMAKE
 
 echo ===== SOURCE TREE INFO =====
 
-if [ -z "${ghprbActualCommit}" ]; then
- export CITARGET=${GIT_BRANCH}
-else
- export CITARGET=${ghprbActualCommit}
-fi
-if [ -n "${ghprbPullId}" ] && [ "${ghprbPullId}" != 1 ]; then
- export CITARGET="origin/${ghprbTargetBranch}"
-fi
+# new world order has PIPELINE_VER defined
+# this can go away once we drop the old jobs
+# backward compat env vars mapping
+# logic could be simplified but this is all going away
+if [ -z "${PIPELINE_VER}" ]; then
+ # common to github and pagure
+ export actual_commit=${ghprbActualCommit}
 
-if [ -n "${BRANCH_TO}" ] && [ "${BRANCH_TO}" != "None" ]; then
- export CITARGET="origin/${BRANCH_TO}"
-else
- if [ -n "${BRANCH}" ]; then
-  export CITARGET="origin/main"
+ # github specific
+ export pull_id=${ghprbPullId}
+ export target_branch=${ghprbTargetBranch}
+
+ # pagure specific
+ if [ -n "${BRANCH_TO}" ] && [ "${BRANCH_TO}" != "None" ]; then
+  export target_branch=${BRANCH_TO}
+  export pull_id=yes
+ else
+  # check if BRANCH is defined from pagure
+  if [ -n "${BRANCH}" ]; then
+   export target_branch=${BRANCH}
+   export pull_id=1
+  fi
  fi
 fi
 
+if [ -z "${actual_commit}" ]; then
+ echo "Unable to proceed without actual_commit information"
+ exit 1
+fi
+
+export CITARGET=${actual_commit}
+
+# pull_id and target_branch are used only here.
+# they should be calculated in getBuildInfo directly
+if [ -n "${pull_id}" ] && [ "${pull_id}" != 1 ]; then
+ export CITARGET="origin/${target_branch}"
+fi
+
+# CITARGET is used only here to setup pcmk versions
+# and CFLAGS / rpmrepo variables, and in coverity scan check.
+# in a similar fashion we have a GIT_BRANCH leftover in coverity scan
+# that´s why coverity works properly only in github (diff version).
 echo CITARGET $CITARGET
 
 # Latest Pacemaker release branch

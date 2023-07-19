@@ -4,10 +4,13 @@ set -ev
 
 . $HOME/ci-tools/ci-set-env
 
+# we shouldn´t be receiving any updates about gh-pages
+# after moving to pipelines, but better safe than sorry
 if [ "$CITARGET" = "origin/gh-pages" ]; then
 	echo "Skipping tests for web page updates"
 	exit 0
 fi
+
 ci-build-info
 ci-setup-rpm
 ci-setup-src

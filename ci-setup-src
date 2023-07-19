@@ -2,21 +2,26 @@
 
 set -ev
 
-case "$DEST" in
- gfs2-*|dlm|ci-test-pagure)
-  if [ -n "$BRANCH_TO" ] && [ "$BRANCH_TO" != "None" ]; then
-   if [ -n "$REPO" -a -n "$BRANCH" ]; then
-    git config user.email "jenkins@kronosnet.org"
-    git config user.name "Sir Jenkins"
-    git remote rm proposed || true
-    git remote add proposed "$REPO"
-    git fetch proposed
-    git checkout "origin/$BRANCH_TO"
-    git merge --no-ff "proposed/$BRANCH" -m "Merge PR"
+# in the old world order, git clone is done by the jenkins job via git plugin and
+# we need to add the PR on top.
+# in the new world order, the whole git clone and pr handling is managed by getSCM
+if [ -z "${PIPELINE_VER}" ]; then
+ case "$DEST" in
+  gfs2-*|dlm|ci-test-pagure)
+   if [ -n "$BRANCH_TO" ] && [ "$BRANCH_TO" != "None" ]; then
+    if [ -n "$REPO" -a -n "$BRANCH" ]; then
+     git config user.email "jenkins@kronosnet.org"
+     git config user.name "Sir Jenkins"
+     git remote rm proposed || true
+     git remote add proposed "$REPO"
+     git fetch proposed
+     git checkout "origin/$BRANCH_TO"
+     git merge --no-ff "proposed/$BRANCH" -m "Merge PR"
+    fi
    fi
-  fi
- ;;
-esac
+  ;;
+ esac
+fi
 
 if [ -f ./autogen.sh ]; then
  echo "./autogen.sh"
@@ -60,7 +65,7 @@ if [ -f ./configure ]; then
    ./configure --enable-destructive-tests --enable-parallel-tests $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
    ;;
   *)
-   installpath=/srv/$DEST/${ghprbActualCommit}
+   installpath=/srv/$DEST/${actual_commit}
    case "$DEST" in
     knet|corosync)
      if [ -n "$RUSTBINDINGS" ] && [ "$RUSTBINDINGS" = yes ]; then

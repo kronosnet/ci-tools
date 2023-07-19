@@ -204,6 +204,7 @@ case "${NODE_NAME}" in
 		 google-cloud-sdk python3-openstackclient \
 		 libcurl-devel libvirt-devel openssl-devel gcc \
 		 tox crudini \
+		 nmap-ncat \
 		 python3-vapor
  ;;
 esac

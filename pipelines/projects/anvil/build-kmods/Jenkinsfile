@@ -9,7 +9,6 @@ pipeline {
     agent { label 'anvil-bm' }
 
     options {
-	timeout(time: 60, unit: 'MINUTES')
 	skipDefaultCheckout(true)
     }
 

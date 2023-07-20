@@ -34,7 +34,6 @@ def call(Map info) {
     // Get the per-project email addresses (if wanted), then add the 'always' one.
     // This looks like it could be 'simplified' into one 'if, but I argue it's clearer
     // this way, as we deal in positive conditions only
-    def email_addrs = ''
     if (state == 'success' && email_opts == 'only-failures') {
 	println('email_option is "only-failures" and pipeline has succeded, only default email sent')
     } else {

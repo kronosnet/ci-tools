@@ -1,12 +1,12 @@
 def call(Map info) {
     // Called at the end of the pipeline
-    nonvoting_fail = 0
-    voting_fail = 0
-    stages_fail = 0
-    state = "unknown"
-    email_addrs = ''
-    project = env.BUILD_TAG
-    branch = env.BRANCH_NAME
+    def nonvoting_fail = 0
+    def voting_fail = 0
+    def stages_fail = 0
+    def state = "unknown"
+    def email_addrs = ''
+    def project = env.BUILD_TAG
+    def branch = env.BRANCH_NAME
 
     if (info.containsKey('voting_fail')) {
 	voting_fail = info['voting_fail']
@@ -28,12 +28,13 @@ def call(Map info) {
     }
 
     // Get the per-project email option ('all', 'none', 'only-failures')
-    email_opts = getEmailOptions()
+    def email_opts = getEmailOptions()
     println("Project email_opts: ${email_opts}")
 
     // Get the per-project email addresses (if wanted), then add the 'always' one.
     // This looks like it could be 'simplified' into one 'if, but I argue it's clearer
     // this way, as we deal in positive conditions only
+    def email_addrs = ''
     if (state == 'success' && email_opts == 'only-failures') {
 	println('email_option is "only-failures" and pipeline has succeded, only default email sent')
     } else {
@@ -49,18 +50,18 @@ def call(Map info) {
     println("Sending email to ${email_addrs}")
 
     // Projects can override the email Reply-To header too
-    email_replyto = getEmailReplyTo()
+    def email_replyto = getEmailReplyTo()
     if (email_replyto == '') {
 	email_replyto = 'devel@lists.kronosnet.org' // default
     }
     println("reply-to: ${email_replyto}")
 
     // Remove "and counting" from the end of the time string
-    duration = currentBuild.durationString
-    jobDuration = duration.substring(0, duration.length() - 13)
+    def duration = currentBuild.durationString
+    def jobDuration = duration.substring(0, duration.length() - 13)
 
-    email_title = "[jenkins] ${info['project']} ${branch} (build ${env.BUILD_ID})"
-    email_trailer = """
+    def email_title = "[jenkins] ${info['project']} ${branch} (build ${env.BUILD_ID})"
+    def email_trailer = """
 total runtime = ${jobDuration}
 See ${env.BUILD_URL}pipeline-console/
 """
@@ -73,7 +74,7 @@ See ${env.BUILD_URL}pipeline-console/
 		subject: "${email_title} succeeded but with ${nonvoting_fail} non-voting fails",
 		body: "${email_trailer}"
 	} else {
-	    mail to: email_addrs,
+	    emailext to: email_addrs,
 		replyTo: "${email_replyto}",
 		subject: "${email_title} succeeded",
 		body: "${email_trailer}"

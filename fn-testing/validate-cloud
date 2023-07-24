@@ -20,6 +20,7 @@ teststags=""
 debug=""
 post=""
 jobid=""
+buildnum=""
 testvariant="default"
 customrepopath=""
 iscsisize="0"
@@ -52,9 +53,10 @@ print_usage() {
 	echo " -e                         export results to CQE (default: off)"
 	echo " -d                         enable debug (default: off)"
 	echo " -j                         jobid (default: '')"
+	echo " -b                         buildnumber (default: '')"
 }
 
-while getopts "j:c:p:m:r:n:u:t:T:zefdhi:s:k:" optflag; do
+while getopts "j:c:p:m:r:n:u:t:T:zefdhi:s:k:b:" optflag; do
 	case "$optflag" in
 	c)
 		command="$OPTARG"
@@ -79,6 +81,9 @@ while getopts "j:c:p:m:r:n:u:t:T:zefdhi:s:k:" optflag; do
 		;;
 	j)
 		jobid="$OPTARG"
+		;;
+	b)
+		buildnum="$OPTARG"
 		;;
 	z)
 		zstream="yes"
@@ -199,6 +204,9 @@ if [ "$customrepopath" != "" ]; then
 fi
 
 testbaseopts=""
+if [ "$jobid" != "" ]; then
+	testbaseopts="$testbaseopts -j $jobid"
+fi
 if [ "$post" != "" ]; then
 	testbaseopts="$testbaseopts --post-results"
 fi
@@ -210,10 +218,10 @@ if [ "$debug" != "" ]; then
 fi
 
 # generate cluster name
-if [ "$jobid" != "" ]; then
-	jobid="j$jobid"
+if [ "$buildnum" != "" ]; then
+	buildnum="j$buildnum"
 fi
-clusteropts="--cluster ${provider}c${rhelver}${jobid}"
+clusteropts="--cluster ${provider}c${rhelver}${buildnum}"
 
 # put all options together
 options="--provider $provider $authopts $clusteropts $logopts"
@@ -294,10 +302,6 @@ cloud_validate() {
 
 	if [ "$upstream" != "" ]; then
 		upver="_${upstream}"
-	fi
-
-	if [ "$jobid" != "" ]; then
-		jobid="_${jobid}"
 	fi
 
 	logdir="$(mktemp -d)"

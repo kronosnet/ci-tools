@@ -36,6 +36,13 @@ case $build in
   cov-format-errors --dir=./cov --emacs-style > cov.txt
   echo "cov-format-errors --dir=./cov --html-output cov.html"
   cov-format-errors --dir=./cov --html-output cov.html
+  # new world order, we need to sanitize paths inside coverity reports
+  if [ -n "${PIPELINE_VER}" ]; then
+    for i in cov.json cov.txt; do
+      sed -i -e 's#'${WORKSPACE}'#/'${project}'#g' $i
+    done
+    find cov.html -type f -exec sed -i -e 's#'${WORKSPACE}'#/'${project}'#g' {} \;
+  fi
  ;;
  rpm)
   case "$DEST" in

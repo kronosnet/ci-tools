@@ -203,7 +203,7 @@ case "${NODE_NAME}" in
 		 azure-cli firewalld-filesystem jq \
 		 google-cloud-sdk python3-openstackclient \
 		 libcurl-devel libvirt-devel openssl-devel gcc \
-		 tox crudini \
+		 tox crudini libxml2 \
 		 nmap-ncat \
 		 python3-vapor
  ;;

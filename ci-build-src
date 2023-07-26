@@ -39,9 +39,9 @@ case $build in
   # new world order, we need to sanitize paths inside coverity reports
   if [ -n "${PIPELINE_VER}" ]; then
     for i in cov.json cov.txt; do
-      sed -i -e 's#'${WORKSPACE}'#/'${project}'#g' $i
+      sed -i -e 's#'${WORKSPACE}'##g' $i
     done
-    find cov.html -type f -exec sed -i -e 's#'${WORKSPACE}'#/'${project}'#g' {} \;
+    find cov.html -type f -exec sed -i -e 's#'${WORKSPACE}'##g' {} \;
   fi
  ;;
  rpm)

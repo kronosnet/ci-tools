@@ -163,7 +163,10 @@ if [ "$build" != "rpm" ]; then
 
  # all projects should build against libqb main
  # exceptions below
- QB_INSTALL_PATH=/srv/qb/origin/main/
+ LIBQB_INSTALL_PATH=/srv/qb/origin/main/
+ if [ -n "${PIPELINE_VER}" ]; then
+  LIBQB_INSTALL_PATH=/srv/libqb/origin/main/
+ fi
 
  # origin/main should use all main branches built
  # from sources
@@ -211,13 +214,13 @@ if [ "$build" != "rpm" ]; then
   PKG_CONFIG_PATH=$KNET_CONFIG_PATH pkg-config --modversion libknet || true
  fi
 
- if [ -n "$QB_INSTALL_PATH" ] && [ -d "$QB_INSTALL_PATH" ]; then
-  QB_LIB=$(ls -1 $QB_INSTALL_PATH | grep lib)
-  QB_CONFIG_PATH=$QB_INSTALL_PATH/$QB_LIB/pkgconfig
-  export EXTERNAL_CONFIG_PATH=$EXTERNAL_CONFIG_PATH:$QB_CONFIG_PATH
-  export EXTERNAL_LD_LIBRARY_PATH=$EXTERNAL_LD_LIBRARY_PATH:$QB_INSTALL_PATH/$QB_LIB/
-  echo libqb build info: $(cat $QB_INSTALL_PATH/.build-info)
-  PKG_CONFIG_PATH=$QB_CONFIG_PATH pkg-config --modversion libqb || true
+ if [ -n "$LIBQB_INSTALL_PATH" ] && [ -d "$LIBQB_INSTALL_PATH" ]; then
+  LIBQB_LIB=$(ls -1 $LIBQB_INSTALL_PATH | grep lib)
+  LIBQB_CONFIG_PATH=$LIBQB_INSTALL_PATH/$LIBQB_LIB/pkgconfig
+  export EXTERNAL_CONFIG_PATH=$EXTERNAL_CONFIG_PATH:$LIBQB_CONFIG_PATH
+  export EXTERNAL_LD_LIBRARY_PATH=$EXTERNAL_LD_LIBRARY_PATH:$LIBQB_INSTALL_PATH/$LIBQB_LIB/
+  echo libqb build info: $(cat $LIBQB_INSTALL_PATH/.build-info)
+  PKG_CONFIG_PATH=$LIBQB_CONFIG_PATH pkg-config --modversion libqb || true
  else
   echo using libqb as provided by OS
  fi

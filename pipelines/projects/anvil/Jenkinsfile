@@ -28,7 +28,7 @@ pipeline {
 		    }
 		    // For special jobs (manual override)
 		    if (info['is_draft']) {
-			anviltests = 'all,skip_advanced_servers'
+			anviltests = 'all,skip_advanced_servers,skip_upgrade'
 			info['is_draft'] = false
 		    }
 		}

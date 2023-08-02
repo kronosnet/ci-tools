@@ -25,6 +25,7 @@ testvariant="default"
 customrepopath=""
 iscsisize="0"
 blocksize="0"
+testlogdir=""
 
 # hardcoded sizing for now
 links="1"
@@ -50,13 +51,14 @@ print_usage() {
 	echo " -t tests                   tests: all, smoketests, or tests in vedder format"
 	echo "                            default: setup for normal test invocation"
 	echo "                            default: all for validate test invocation"
+	echo " -a                         set path to store test logs (default: none)"
 	echo " -e                         export results to CQE (default: off)"
 	echo " -d                         enable debug (default: off)"
 	echo " -j                         jobid (default: '')"
 	echo " -b                         buildnumber (default: '')"
 }
 
-while getopts "j:c:p:m:r:n:u:t:T:zefdhi:s:k:b:" optflag; do
+while getopts "j:c:p:m:r:n:u:t:T:zefdhi:s:k:b:a:" optflag; do
 	case "$optflag" in
 	c)
 		command="$OPTARG"
@@ -108,6 +110,9 @@ while getopts "j:c:p:m:r:n:u:t:T:zefdhi:s:k:b:" optflag; do
 		;;
 	f)
 		forcenodes="yes"
+		;;
+	a)
+		testlogdir="$OPTARG"
 		;;
 	h)
 		print_usage
@@ -209,6 +214,9 @@ if [ "$jobid" != "" ]; then
 fi
 if [ "$post" != "" ]; then
 	testbaseopts="$testbaseopts --post-results"
+fi
+if [ "$testlogdir" != "" ]; then
+	testbaseopts="$testbaseopts --collect-debug-dir=$testlogdir --collect-debug-always"
 fi
 
 # generic log options, debug off by default

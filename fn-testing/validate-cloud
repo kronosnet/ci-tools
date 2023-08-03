@@ -13,8 +13,8 @@ provider=""
 rhelver=""
 nodes="4"
 forcenodes="no"
-zstream=""
-upstream=""
+zstream="no"
+upstream="none"
 tests="setup"
 teststags=""
 debug=""
@@ -58,7 +58,7 @@ print_usage() {
 	echo " -b                         buildnumber (default: '')"
 }
 
-while getopts "j:c:p:m:r:n:u:t:T:zefdhi:s:k:b:a:" optflag; do
+while getopts "j:c:p:m:r:n:u:t:T:z:efdhi:s:k:b:a:" optflag; do
 	case "$optflag" in
 	c)
 		command="$OPTARG"
@@ -88,7 +88,7 @@ while getopts "j:c:p:m:r:n:u:t:T:zefdhi:s:k:b:a:" optflag; do
 		buildnum="$OPTARG"
 		;;
 	z)
-		zstream="yes"
+		zstream="$OPTARG"
 		;;
 	d)
 		debug="yes"
@@ -198,10 +198,10 @@ if [ "$blocksize" != "0" ]; then
 	createbaseopts="$createbaseopts --block $blocksize"
 fi
 
-if [ "$upstream" != "" ]; then
+if [ "$upstream" != "none" ]; then
 	deploybaseopts="$deploybaseopts --useupstreamrepo $upstream"
 fi
-if [ "$zstream" != "" ]; then
+if [ "$zstream" == "yes" ]; then
 	deploybaseopts="$deploybaseopts --usezstream"
 fi
 if [ "$customrepopath" != "" ]; then

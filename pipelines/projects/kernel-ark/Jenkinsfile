@@ -215,14 +215,14 @@ pipeline {
 				stage("Run vedder test: ${test}") {
 				    sh """
 					cd $HOME/ci-tools/fn-testing
-					./validate-cloud -c test -p libvirtd -d -r 9 -j "jenkins:${BUILD_URL}" -e -t ${test}
+					./validate-cloud -c test -p libvirtd -d -r 9 -j "jenkins:${BUILD_URL}" -n 3 -e -t ${test}
 				    """
 				}
 			    }
 			    stage("Run vedder tag: ${params.testtag}") {
 				sh """
 				    cd $HOME/ci-tools/fn-testing
-				    ./validate-cloud -c test -p libvirtd -d -r 9 -j "jenkins:${BUILD_URL}" -e -T ${params.testtag}
+				    ./validate-cloud -c test -p libvirtd -d -r 9 -j "jenkins:${BUILD_URL}" -n 3 -e -T ${params.testtag}
 				"""
 			    }
 			}

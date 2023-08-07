@@ -11,44 +11,47 @@ fi
 
 covdir=/srv/publish/cov
 
-echo "Purging 0 byte files"
-find $covdir/ -type f -size 0 -print -delete
+(
+	flock -e 200
+	echo "Purging 0 byte files"
+	find $covdir/ -type f -size 0 -print -delete
 
-echo "Purging empty dirs"
-find $covdir/ -type d -empty -print -delete
+	echo "Purging empty dirs"
+	find $covdir/ -type d -empty -print -delete
 
-cd $covdir/$project/
+	cd $covdir/$project/
 
-# nodes
-for x in $(ls); do
-	cd $x
-	# builds
-	for i in $(ls); do
-		echo "Processing $i"
-		cd $i
-		if [ -d new ]; then
-			cd new
-			rm -f index.html
-			ln -sf cov-index.html index.html
+	# nodes
+	for x in $(ls); do
+		cd $x
+		# builds
+		for i in $(ls); do
+			echo "Processing $i"
+			cd $i
+			if [ -d new ]; then
+				cd new
+				rm -f index.html
+				ln -sf cov-index.html index.html
+				cd ..
+			fi
 			cd ..
+		done
+		# remove old builds (keep last 20)
+		builds="$(ls -1 | sort -n)"
+		numbuilds="$(echo "$builds" | wc -l)"
+		if [ "$numbuilds" -gt 20 ]; then
+			purgenum=$((numbuilds - 20))
+			candidates="$(echo "$builds" | head -n $purgenum)"
+			for z in $candidates; do
+				echo "Removing old build: $z"
+				rm -rf $z
+			done
 		fi
 		cd ..
 	done
-	# remove old builds (keep last 20)
-	builds="$(ls -1 | sort -n)"
-	numbuilds="$(echo "$builds" | wc -l)"
-	if [ "$numbuilds" -gt 20 ]; then
-		purgenum=$((numbuilds - 20))
-		candidates="$(echo "$builds" | head -n $purgenum)"
-		for z in $candidates; do
-			echo "Removing old build: $z"
-			rm -rf $z
-		done
-	fi
-	cd ..
-done
 
-cd $covdir/
-rsync -av --sparse-block=0 --progress --delete-after . www.kronosnet.org:~kronosnet/kronosnet/coverity/.
+	cd $covdir/
+	rsync -av --sparse-block=0 --progress --delete-after . www.kronosnet.org:~kronosnet/kronosnet/coverity/.
 
-exit 0
+	exit 0
+) 200>/tmp/ci-cov-repos.lock

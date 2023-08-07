@@ -8,7 +8,7 @@ def project = 'kernel-ark'
 String[] tests = ['setup', 'cleanup', 'skeet']
 
 pipeline {
-    agent { label 'kbuild' }
+    agent { label 'vapor-libvirtd' }
 
     parameters {
 	string(name: 'testtag', defaultValue: 'brawl_quick', description: 'vedder tag')

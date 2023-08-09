@@ -9,7 +9,7 @@ cleanlibqb() {
  # make sure to clean before and after the test run
  # this code works because we do NOT allow multiple builds of libqb
  # in parallel!
- if [ "$DEST" = qb ] || [ "$DESTS" = libqb ]; then
+ if [ "$DESTS" = libqb ]; then
   if [ -d "/dev/shm" ]; then
    find /dev/shm -name qb-\*-test\* | xargs rm -rf
   fi

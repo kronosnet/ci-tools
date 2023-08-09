@@ -163,10 +163,7 @@ if [ "$build" != "rpm" ]; then
 
  # all projects should build against libqb main
  # exceptions below
- LIBQB_INSTALL_PATH=/srv/qb/origin/main/
- if [ -n "${PIPELINE_VER}" ]; then
-  LIBQB_INSTALL_PATH=/srv/libqb/origin/main/
- fi
+ LIBQB_INSTALL_PATH=/srv/libqb/origin/main/
 
  # origin/main should use all main branches built
  # from sources

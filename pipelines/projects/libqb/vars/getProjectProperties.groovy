@@ -24,7 +24,7 @@ def call(Map info, String agentName, String branch)
     // Give the tests time to run, even if the CI is busy
     props['CK_TIMEOUT_MULTIPLIER'] = 10
 
-    props['DISTROCONFOPTS'] = "-with-socket-dir=/tmp/libqb-${info['pull_id']}-${env.BUILD_NUMBER}"
+    props['DISTROCONFOPTS'] = "--with-socket-dir=/tmp/libqb-${info['pull_id']}-${env.BUILD_NUMBER}"
 
     if (agentName.startsWith("debian-experimental")) {
 	props['DISTROCONFOPTS'] += ' --enable-debug'

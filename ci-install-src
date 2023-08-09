@@ -2,7 +2,12 @@
 
 set -ev
 
-if [ -n "$install" ] && [ "$install" = 1 ] && [ "x$build" != "xcoverity" ]; then
+if [ -n "$build" ]; then
+  echo "$build detected, nothing to do here!"
+  exit 0
+fi
+
+if [ -n "$install" ] && [ "$install" = 1 ]; then
  installpath=/srv/$DEST/${actual_commit}
  case "$DEST" in
   sbd|booth)

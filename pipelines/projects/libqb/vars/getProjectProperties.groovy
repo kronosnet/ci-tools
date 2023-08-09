@@ -15,7 +15,7 @@ def call(Map info, String agentName, String branch)
     props['PARALLELMAKE'] = ''
     props['MAKEINSTALLOPTS'] = ''
     props['TOPTS'] = ''
-    props['CHECKS'] = 'nochecks'
+    props['CHECKS'] = ''
     props['EXTRACHECKS'] = ''
     props['EXTRAVER'] = ''
     props['EXTERNAL_LD_LIBRARY_PATH'] = ''

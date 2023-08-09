@@ -15,9 +15,11 @@ cd "$destdir"
 case $transferset in
 	rpm)
 		preptar="$(echo cd $sourcedir \&\& rm -f ci-artifacts.tar \&\& find .  -name \"*.rpm\" \| tar -cvf ci-artifacts.tar -T -)"
+		lock="/tmp/ci-rpm-repos.lock"
 	;;
 	cov)
 		preptar="$(echo cd $sourcedir/cov.html \&\& rm -f ../ci-artifacts.tar \&\& tar -cvf ../ci-artifacts.tar .)"
+		lock="/tmp/ci-cov-repos.lock"
 	;;
 	*)
 		echo "Unknown transfer set"
@@ -29,8 +31,12 @@ mkdir -p "$destdir"
 cd "$destdir"
 
 ssh "$sourcenode".ci.kronosnet.org $preptar
-scp "$sourcenode".ci.kronosnet.org:"$sourcedir"/ci-artifacts.tar  .
-tar -xvpf ci-artifacts.tar
-rm -f ci-artifacts.tar
+
+(
+	flock -e 200
+	scp "$sourcenode".ci.kronosnet.org:"$sourcedir"/ci-artifacts.tar  .
+	tar -xvpf ci-artifacts.tar
+	rm -f ci-artifacts.tar
+) 200>$lock
 
 exit 0

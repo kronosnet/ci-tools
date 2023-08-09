@@ -16,7 +16,7 @@ def getNodes(String label) {
 }
 
 // This is the bit that does most of the work
-def buildTheRunMap(List nodeList, String label, Map info, Boolean voting, String exclude_regexp) {
+def buildTheRunMap(List nodeList, String label, Map info, Boolean voting, Map extravars, String exclude_regexp) {
     collectBuildEnv = [:]
 
     for (i=0; i<nodeList.size(); i++) {
@@ -26,7 +26,7 @@ def buildTheRunMap(List nodeList, String label, Map info, Boolean voting, String
         if (agentName != null && !agentName.matches(exclude_regexp)) {
             collectBuildEnv[label + '_' + agentName] = {
 		// This works because runStage is also in the global library
-                runStage(info, agentName, label, voting)
+                runStage(info, agentName, label, voting, extravars)
             }
         }
     }
@@ -63,5 +63,10 @@ def call(String joblabel, Map info, Map options)
 	voting = options['voting']
     }
 
-    return buildTheRunMap(nodeList, joblabel, info, voting, excludes)
+    def extravars = [:]
+    if (options.containsKey('extravars')) {
+	extravars = options['extravars']
+    }
+
+    return buildTheRunMap(nodeList, joblabel, info, voting, extravars, excludes)
 }

@@ -1,5 +1,5 @@
 // Run a generic CI stage with the right params and record success/failure
-def call(Map info, String agentName, String stageName, Boolean voting)
+def call(Map info, String agentName, String stageName, Boolean voting, Map extravars)
 {
     println("runStage")
 
@@ -16,7 +16,8 @@ def call(Map info, String agentName, String stageName, Boolean voting)
     }
 
     // We need these later
-    def extras = [:]
+    println("extravars "+extravars)
+    def extras = extravars
     def locals = ['voting': voting,
 		  'stageName': stageName,
 		  'stageType': stageType]
@@ -31,7 +32,7 @@ def call(Map info, String agentName, String stageName, Boolean voting)
 	}
 
 	// Get any job-specific configuration variables
-	extras = getProjectProperties(info, agentName, info['target_branch'])
+	extras += getProjectProperties(info, agentName, info['target_branch'])
 	def build_timeout = getBuildTimeout()
 
 	// Save the local workspace directory etc for postStage()

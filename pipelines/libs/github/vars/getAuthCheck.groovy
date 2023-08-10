@@ -41,7 +41,7 @@ def call(Map params) {
 
     // Caused by a PR. Check it's from a valid user
     // Get github collaborators list
-    valid_admins = getCollaborators(env.GIT_URL)
+    valid_admins = getCollaborators(env.CHANGE_URL)
     // Any extras defined for the project
     valid_admins += getValidPRUsers()
     // Global admins

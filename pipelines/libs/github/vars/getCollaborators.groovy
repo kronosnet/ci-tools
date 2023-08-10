@@ -1,10 +1,11 @@
 // needs to be run under withCredentials
 def call(String url)
 {
+    println("getCollab: url="+url)
     // Turn the URL into project/repo
     s = url.split("/")
     owner = s[3]
-    repo = s[4].substring(0,s[4].length()-4)
+    repo = s[4]
     url = "https://api.github.com/repos/${owner}/${repo}/collaborators"
 
     collabs = sh (

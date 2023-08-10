@@ -15,31 +15,34 @@ pipeline {
 		stage('rhel8 z-stream next-stable osp') {
 		    steps {
 			build job: 'global/ha-functional-testing',
-			    parameters: [string(name: 'rhelver', value: '8'),
+			    parameters: [[$class: 'LabelParameterValue', name: 'provider', label: 'osp'],
+					 string(name: 'dryrun', value : "${dryrun}"),
+					 string(name: 'rhelver', value: '8'),
 					 string(name: 'zstream', value : 'yes'),
 					 string(name: 'upstream', value : 'next-stable'),
-					 string(name: 'tests', value : 'smoketests'),
-					 string(name: 'provider', value : 'osp')]
+					 string(name: 'tests', value : 'smoke')]
 		    }
 		}
 		stage('rhel9 z-stream next-stable osp') {
 		    steps {
 			build job: 'global/ha-functional-testing',
-			    parameters: [string(name: 'rhelver', value: '9'),
+			    parameters: [[$class: 'LabelParameterValue', name: 'provider', label: 'osp'],
+					 string(name: 'dryrun', value : "${dryrun}"),
+					 string(name: 'rhelver', value: '9'),
 					 string(name: 'zstream', value : 'yes'),
 					 string(name: 'upstream', value : 'next-stable'),
-					 string(name: 'tests', value : 'smoketests'),
-					 string(name: 'provider', value : 'osp')]
+					 string(name: 'tests', value : 'smoke')]
 		    }
 		}
 		stage('rhel9 z-stream main osp') {
 		    steps {
 			build job: 'global/ha-functional-testing',
-			    parameters: [string(name: 'rhelver', value: '9'),
+			    parameters: [[$class: 'LabelParameterValue', name: 'provider', label: 'osp'],
+					 string(name: 'dryrun', value : "${dryrun}"),
+					 string(name: 'rhelver', value: '9'),
 					 string(name: 'zstream', value : 'yes'),
 					 string(name: 'upstream', value : 'main'),
-					 string(name: 'tests', value : 'smoketests'),
-					 string(name: 'provider', value : 'osp')]
+					 string(name: 'tests', value : 'smoke')]
 		    }
 		}
 	    }
@@ -50,31 +53,34 @@ pipeline {
 		stage('rhel8 next-stable osp') {
 		    steps {
 			build job: 'global/ha-functional-testing',
-			    parameters: [string(name: 'rhelver', value: '8'),
+			    parameters: [[$class: 'LabelParameterValue', name: 'provider', label: 'osp'],
+					 string(name: 'dryrun', value : "${dryrun}"),
+					 string(name: 'rhelver', value: '8'),
 					 string(name: 'zstream', value : 'no'),
 					 string(name: 'upstream', value : 'next-stable'),
-					 string(name: 'tests', value : 'all'),
-					 string(name: 'provider', value : 'osp')]
+					 string(name: 'tests', value : 'all')]
 		    }
 		}
 		stage('rhel9 next-stable osp') {
 		    steps {
 			build job: 'global/ha-functional-testing',
-			    parameters: [string(name: 'rhelver', value: '9'),
+			    parameters: [[$class: 'LabelParameterValue', name: 'provider', label: 'osp'],
+					 string(name: 'dryrun', value : "${dryrun}"),
+					 string(name: 'rhelver', value: '9'),
 					 string(name: 'zstream', value : 'no'),
 					 string(name: 'upstream', value : 'next-stable'),
-					 string(name: 'tests', value : 'all'),
-					 string(name: 'provider', value : 'osp')]
+					 string(name: 'tests', value : 'all')]
 		    }
 		}
 		stage('rhel9 main osp') {
 		    steps {
 			build job: 'global/ha-functional-testing',
-			    parameters: [string(name: 'rhelver', value: '9'),
+			    parameters: [[$class: 'LabelParameterValue', name: 'provider', label: 'osp'],
+					 string(name: 'dryrun', value : "${dryrun}"),
+					 string(name: 'rhelver', value: '9'),
 					 string(name: 'zstream', value : 'no'),
 					 string(name: 'upstream', value : 'main'),
-					 string(name: 'tests', value : 'all'),
-					 string(name: 'provider', value : 'osp')]
+					 string(name: 'tests', value : 'all')]
 		    }
 		}
 	    }

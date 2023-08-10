@@ -4,37 +4,26 @@
 //
 // info contains all of the global build information
 //      (do NOT change anything in here)
-// extras contains 'extra' variables added for this run only
-//      during the buildRunMap phase
+// extras contains extra variables set for this build-type
 // agentName is the node we are building on,
 // branch is the git branch we are building (for)
 def call(Map info, Map extras, String agentName, String branch)
 {
     def props = [:]
 
-//    props['DEST'] = 'qb'
     props['MAKEOPTS'] = ''
     props['PARALLELMAKE'] = ''
     props['MAKEINSTALLOPTS'] = ''
     props['TOPTS'] = ''
     props['CHECKS'] = ''
     props['EXTRACHECKS'] = ''
-    props['EXTRAVER'] = ''
     props['EXTERNAL_LD_LIBRARY_PATH'] = ''
+    props['extraver'] = "knet-${extras['knetver']}"
     props['SPECVERSION'] = env.BUILD_NUMBER
+    props['RPMDEPS'] = "libnozzle1-devel libknet1-devel libqb-devel"
 
-    // Give the tests time to run, even if the CI is busy
-    props['CK_TIMEOUT_MULTIPLIER'] = 10
+    props['DISTROCONFOPTS'] = "--enable-fatal-warnings --enable-snmp --enable-dbus --enable-systemd --enable-nozzle --enable-vqsim"
 
-    props['DISTROCONFOPTS'] = "--with-socket-dir=/tmp/libqb-${info['pull_id']}-${env.BUILD_NUMBER}"
-
-    if (agentName.startsWith("debian-experimental")) {
-	props['DISTROCONFOPTS'] += ' --enable-debug'
-    }
-
-    if (agentName.startsWith("freebsd")) {
-	props['DISTROCONFOPTS'] += ' MAKE=gmake'
-    }
 
     return props
 }

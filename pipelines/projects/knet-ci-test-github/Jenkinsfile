@@ -19,11 +19,6 @@ pipeline {
 	string(name: 'fullrebuild', defaultValue: '0', description: 'This is a full rebuild - do not publish RPM and do NOT update build code on the nodes')
     }
 
-    options {
-	// We do our own checkouts
-	skipDefaultCheckout(true)
-    }
-
     stages {
 	// First check we are allowed to run, then set some params for that run
 	stage('Setup build env') {
@@ -48,7 +43,6 @@ pipeline {
 		script {
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 
-
 		    // The 'short' test list
 		    voting = buildRunMap('voting', info, ['voting': true,
 							  'nodelabel': 'test-voting',
@@ -58,10 +52,14 @@ pipeline {
 		    nonvoting = buildRunMap('nonvoting', info, ['voting': false,
 								'nodelabel': 'test-nonvoting',
 								'extravars': ['knetver': 'stable1']])
-		    nonvoting_clang = [:]
+		    nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
+									    'nodelabel': 'test-nonvoting',
+									    'extravars': ['compiler': 'clang',
+											  'install': '0',
+											  'title': 'CLANG test']])
 
-		    covscan = buildRunMap('covscan', info, ['voting': true,
-							    'nodelabel': 'test-covscan'])
+//		    covscan = buildRunMap('covscan', info, ['voting': true,
+//							    'nodelabel': 'test-covscan'])
 		    buildrpms = buildRunMap('buildrpms', info, ['voting': true,
 								'nodelabel': 'test-buildrpms'])
 
@@ -81,7 +79,7 @@ pipeline {
 
 		    // Run them (errors are caught in info[:])
 		    try {
-			parallel voting + nonvoting + nonvoting_clang + buildrpms + covscan
+			parallel voting + nonvoting + nonvoting_clang + buildrpms
 		    } catch (err) {
 			println("**** Jenkinsfile caught "+err)
 		    }

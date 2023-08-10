@@ -6,7 +6,7 @@
 //      (do NOT change anything in here)
 // agentName is the node we are building on,
 // branch is the git branch we are building (for)
-def call(Map info, String agentName, String branch)
+def call(Map info, Map extras, String agentName, String branch)
 {
     def props = [:]
 

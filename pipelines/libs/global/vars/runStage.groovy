@@ -22,24 +22,32 @@ def call(Map info, String agentName, String stageName, Boolean voting, Map extra
 		  'stageName': stageName,
 		  'stageType': stageType]
 
+    def stageTitle = ''
+    if (extravars.containsKey('title')) {
+	stageTitle = extravars['title']
+    } else {
+	stageTitle = stageName
+    }
+
     // Run stuff!
     node("${agentName}") {
-	echo "Building ${stageName} for ${info['project']} on ${agentName} (${stageType})"
+	echo "Building ${stageTitle} for ${info['project']} on ${agentName} (${stageType})"
+	cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 
 	info["${stageType}_run"]++
-	stage("${stageName} on ${agentName} - checkout") {
+	stage("${stageTitle} on ${agentName} - checkout") {
 	    getSCM(info)
 	}
 
 	// Get any job-specific configuration variables
-	extras += getProjectProperties(info, agentName, info['target_branch'])
+	extras += getProjectProperties(info, extras, agentName, info['target_branch'])
 	def build_timeout = getBuildTimeout()
 
 	// Save the local workspace directory etc for postStage()
 	info['workspace'] = env.WORKSPACE + '/' + info['project']
 	info['EXTRAVER'] = extras['EXTRAVER']
 
-	stage("${stageName} on ${agentName} - build") {
+	stage("${stageTitle} on ${agentName} - build") {
 
 	    // Run everything in the checked-out directory
 	    dir (info['project']) {

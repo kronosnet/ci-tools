@@ -25,6 +25,7 @@ def call(String project)
     info['voting_fail_nodes'] = ''
     info['nonvoting_run'] = 0
     info['voting_run'] = 0
+    info['state'] = 'script error'
 
     // Validate the user. This should Abort if disallowed.
     cred_uuid = getCredUUID()
@@ -85,6 +86,9 @@ def call(String project)
     // Make sure the params are in here so they get propogated to the scripts
     info['bootstrap'] = params.bootstrap
     info['fullrebuild'] = params.fullrebuild
+
+    // Copy the SCM into artifacts so that other nodes can use them
+    getSCM(info)
 
     println("info map: ${info}")
     return info

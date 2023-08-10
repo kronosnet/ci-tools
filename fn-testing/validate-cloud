@@ -12,7 +12,6 @@ command=""
 provider=""
 rhelver=""
 nodes="4"
-forcenodes="no"
 zstream="no"
 upstream="none"
 tests="setup"
@@ -21,7 +20,6 @@ debug=""
 post=""
 jobid=""
 buildnum=""
-testvariant="default"
 customrepopath=""
 iscsisize="0"
 blocksize="0"
@@ -36,21 +34,18 @@ print_usage() {
 	echo "usage:"
 	echo ""
 	echo "$(basename $0) command [options]"
-	echo " -c command                 command: del, create, deploy, test, ssh, ip, reboot, validate (required)"
-	echo " -p provider                cloud provider: osp, gcp, libvirtd, az (required)"
-	echo " -r rhelver                 rhel version: 8, 9 (required)"
+	echo " -c command                 command: del, create, deploy, test, ssh, ip, reboot (required)"
+	echo " -p provider                cloud provider: az, gcp, libvirtd, ocpv, osp (required)"
+	echo " -r rhelver                 rhel version: 7, 8, 9 (required)"
 	echo " -z                         use zstream (default: none)"
 	echo " -m                         use custom repo (default: none)"
 	echo " -u upstream                upstream branch: next-stable, next-stable-kernel, main, main-kernel (default: none)"
 	echo " -n nodes                   cluster nodes: 0, 32 (default: 4)"
-	echo " -f force nodes             restric testing to only selected number of nodes"
 	echo " -i size                    iscsi storage size (default: 10)"
 	echo " -s size                    shared block storage size (default: 10)"
-	echo " -k variant                 test variant default, kernel, kernel-full (default: default)"
 	echo " -T tests tags              tests: all, smoketests, or tests in vedder format"
 	echo " -t tests                   tests: all, smoketests, or tests in vedder format"
 	echo "                            default: setup for normal test invocation"
-	echo "                            default: all for validate test invocation"
 	echo " -a                         set path to store test logs (default: none)"
 	echo " -e                         export results to CQE (default: off)"
 	echo " -d                         enable debug (default: off)"
@@ -58,7 +53,7 @@ print_usage() {
 	echo " -b                         buildnumber (default: '')"
 }
 
-while getopts "j:c:p:m:r:n:u:t:T:z:efdhi:s:k:b:a:" optflag; do
+while getopts "j:c:p:m:r:n:u:t:T:z:edhi:s:b:a:" optflag; do
 	case "$optflag" in
 	c)
 		command="$OPTARG"
@@ -102,14 +97,8 @@ while getopts "j:c:p:m:r:n:u:t:T:z:efdhi:s:k:b:a:" optflag; do
 	s)
 		blocksize="$OPTARG"
 		;;
-	k)
-		testvariant="$OPTARG"
-		;;
 	m)
 		customrepopath="$OPTARG"
-		;;
-	f)
-		forcenodes="yes"
 		;;
 	a)
 		testlogdir="$OPTARG"
@@ -155,11 +144,6 @@ fi
 
 if [ ! -f ./${provider}.rhel${rhelver} ]; then
 	echo "Provider $provider rhel${rhelver} not supported"
-	exit 1
-fi
-
-if [ ! -f ./tests.${testvariant} ]; then
-	echo "tests variant file ${testvariant} does not exist"
 	exit 1
 fi
 
@@ -272,170 +256,6 @@ cloud_ssh_info() {
 	vapor get --provider $provider $authopts $clusteropts --scp
 }
 
-cloud_recovery() {
-	echo -n "Attempting to recover cloud (cleanup): "
-	tests="cleanup"
-	cloud_test test > /dev/null 2>&1
-	if [ "$?" != "0" ]; then
-		echo "FAILED"
-	else
-		echo "PASS"
-		return 0
-	fi
-	echo -n "Attempting to recover cloud (reboot): "
-	cloud_reboot > /dev/null 2>&1
-	if [ "$?" != "0" ]; then
-		echo "FAILED"
-		cloud_delete
-		rm -rf "$logdir"
-		exit 1
-	else
-		echo "PASS"
-	fi
-	echo "Waiting 5 minutes for nodes to be back online"
-	sleep 300
-	cloud_test test > /dev/null 2>&1
-	if [ "$?" != "0" ]; then
-		echo "FAILED"
-		cloud_delete
-		rm -rf "$logdir"
-		exit 1
-	else
-		echo "PASS"
-	fi
-}
-
-cloud_validate() {
-	. ./tests.${testvariant}
-
-	if [ "$upstream" != "" ]; then
-		upver="_${upstream}"
-	fi
-
-	logdir="$(mktemp -d)"
-
-	set +e
-	echo "=== Cloud Validation for ${provider} rhel${rhelver}${upver} ==="
-
-	echo -n "Deleting any old envs: "
-	cloud_delete > "$logdir/delete_old.log" 2>&1
-	if [ "$?" != "0" ]; then
-		echo "FAILED"
-		cat "$logdir/delete_old.log"
-		rm -rf "$logdir"
-		exit 1
-	else
-		echo "PASS"
-	fi
-
-	echo -n "Creating ${provider} rhel${rhelver} nodes: "
-	cloud_create > "$logdir/create.log" 2>&1
-	if [ "$?" != "0" ]; then
-		echo "FAILED"
-		cat "$logdir/create.log"
-		cloud_delete
-		rm -rf "$logdir"
-		exit 1
-	else
-		echo "PASS"
-	fi
-
-	if [ "${provider}" = "libvirtd" ]; then
-		echo "libvirtd: artificial sleep to give time to the nodes to boot"
-		sleep 60
-	fi
-
-	echo -n "Deploying ${provider} rhel${rhelver} nodes: "
-	cloud_deploy > "$logdir/deploy.log" 2>&1
-	if [ "$?" != "0" ]; then
-		echo "FAILED"
-		cat "$logdir/deploy.log"
-		cloud_delete
-		rm -rf "$logdir"
-		exit 1
-	else
-		echo "PASS"
-	fi
-
-	nodeslist="2 3 4 6 8 16 24 32"
-	if [ "$forcenodes" = "yes" ]; then
-		nodeslist="$nodes"
-	fi
-	nlist=""
-	for n in $nodeslist; do
-		if [ "$n" -lt "$nodes" ]; then
-			nlist="$nlist $n"
-		else
-			nlist="$nlist $nodes"
-			break
-		fi
-	done
-
-	requestedtests="$tests"
-	if [ "$requestedtests" = "setup" ]; then
-		requestedtests="all"
-	fi
-
-	echo "Starting validation ${provider} rhel${rhelver}_${upstream}"
-	for nodes in $nlist; do
-		testlist="$smoketests"
-		taglist="$smoketags"
-		if [ "$requestedtests" = "all" ]; then
-			nodestestlist="tests_${nodes}_nodes"
-			nodestaglist="tags_${nodes}_nodes"
-			testlist="$testlist $testsbasic ${!nodestestlist}"
-			taglist="$taglist $tagsbasic ${!nodestaglist}"
-			if [ "$nodes" -gt "2" ]; then
-				testlist="$testlist $testsplus"
-				taglist="$taglist $tagsplus"
-			fi
-		fi
-		echo "Running tests"
-		for tests in $testlist; do
-			echo -n "Testing ${provider} rhel${rhelver} [nodes: $nodes] [$tests]: "
-			cloud_test test > "$logdir/${nodes}_nodes-${tests}.log" 2>&1
-			if [ "$?" != "0" ]; then
-				echo "FAILED"
-				cat "$logdir/${nodes}_nodes-${tests}.log"
-				cloud_recovery
-			else
-				echo "PASS"
-			fi
-			tests="cleanup"
-			cloud_test test > /dev/null 2>&1 || cloud_recovery
-		done
-		echo "Running test tags"
-		for tests in $taglist; do
-			echo -n "Testing ${provider} rhel${rhelver} [nodes: $nodes] [$tests]: "
-			cloud_test tags > "$logdir/${nodes}_nodes-${tests}.log" 2>&1
-			if [ "$?" != "0" ]; then
-				echo "FAILED"
-				cat "$logdir/${nodes}_nodes-${tests}.log"
-				cloud_recovery
-			else
-				echo "PASS"
-			fi
-			tests="cleanup"
-			cloud_test test > /dev/null 2>&1 || cloud_recovery
-		done
-	done
-
-	echo -n "Deleting test env: "
-	cloud_delete > "$logdir/delete.log" 2>&1
-	if [ "$?" != "0" ]; then
-		echo "FAILED"
-		cat "$logdir/delete.log"
-		rm -rf "$logdir"
-		exit 1
-	else
-		echo "PASS"
-	fi
-
-	set -e
-
-	rm -rf "$logdir"
-}
-
 ret=0
 
 case "$command" in
@@ -469,9 +289,6 @@ ssh)
 	;;
 ip)
 	cloud_ip_info
-	;;
-validate)
-	cloud_validate
 	;;
 *)
 	echo "unknown command: $command"

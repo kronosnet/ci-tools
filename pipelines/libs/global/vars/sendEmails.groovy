@@ -119,6 +119,10 @@ Full log:   ${env.BUILD_URL}consoleText/
     if (nonvoting_fail > 0) {
 	nonvoting_colon = ':'
     }
+    def stages_colon = ''
+    if (stages_fail > 0) {
+	stages_colon = ':'
+    }
     def voting_s = 's'
     if (voting_run == 1) {
 	voting_s = ''
@@ -149,14 +153,13 @@ ${email_trailer}
 		body: "${email_trailer}"
 	}
     } else {
-	// If this pipeline has no voting/non-voting options, then show as 'stages' failed
+	// If this pipeline has 'stages' rather than voting/non-voting, then show 'stages' failed
 	if (stages_fail > 0) {
-
 	    mail to: email_addrs,
 		replyTo: "${email_replyto}",
 		subject: "${email_title} completed with state: ${state}",
 		body: """
-${stages_fail}/${stages_run} Stage${stage_s} failed
+${stages_fail}/${stages_run} Stage${stage_s} failed${stages_colon} ${info['stages_fail_nodes']}
 ${email_trailer}
 """
 	} else {

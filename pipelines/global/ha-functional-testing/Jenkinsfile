@@ -9,6 +9,7 @@ def minnodes = "${fromnodes}" as int
 def maxnodes = "${tonodes}" as int
 def testtimeout = "${testtimeout}" as int
 def tagtimeout = "${tagtimeout}" as int
+def info = [:]
 
 pipeline {
     agent { label "${provider}" }
@@ -21,6 +22,12 @@ pipeline {
 	stage('Prepare test cluster') {
 	    steps {
 		script {
+		    info['project'] = project
+		    info['stages_fail_nodes'] = ''
+		    info['stages_fail'] = 0
+		    info['stages_run'] = 0
+		    info['state'] = 'completed'
+
 		    stage('Prep build env') {
 			cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 			sh 'env|sort'
@@ -50,7 +57,7 @@ pipeline {
 			}
 			for (test in finaltestlist) {
 			    stage("Run test '${test}' on ${nodes} nodes") {
-				run_cluster_test('test', test, nodes, testtimeout)
+				run_cluster_test('test', info, test, nodes, testtimeout)
 			    }
 			}
 			def finaltaglist = [ ]
@@ -61,7 +68,7 @@ pipeline {
 			}
 			for (tag in finaltaglist) {
 			    stage("Run tag '${tag}' on ${nodes} nodes") {
-				run_cluster_test('tag', tag, nodes, tagtimeout)
+				run_cluster_test('tag', info, tag, nodes, tagtimeout)
 			    }
 			}
 		    }
@@ -71,23 +78,15 @@ pipeline {
     }
 
     post {
-	success {
-	    node('built-in') {
-		script {
-		   postFunctions(['project': project, 'state': 'success', 'branch': "${provider} rhel${rhelver} zstream: ${zstream} upstream: ${upstream} tests: ${tests}"])
-		}
-	    }
-	}
-	failure {
-	    node('built-in') {
-		script {
-		   postFunctions(['project': project, 'state': 'failure', 'branch': "${provider} rhel${rhelver} zstream: ${zstream} upstream: ${upstream} tests: ${tests}"])
-		}
-	    }
-	}
 	always {
 	    delete_cluster()
 	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+	    node('built-in') {
+		script {
+		    info['branch'] = "${provider} rhel${rhelver} zstream: ${zstream} upstream: ${upstream} tests: ${tests}"
+		    sendEmails(info)
+		}
+	    }
 	}
     }
 }

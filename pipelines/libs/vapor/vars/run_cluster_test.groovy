@@ -49,12 +49,15 @@ def post_run_test(Map info, Map locals)
 	logdst = "SUCCESS_${info['logsrc']}.tar.xz"
     } else {
 	logdst = "FAILED_${info['logsrc']}.tar.xz"
+	info['stages_fail_nodes'] += "\n- ${info['testtag']} (nodes: ${info['nodes']})"
+	info['stages_fail']++
     }
+    info['stages_run']++
     sh "mv ${info['logsrc']}.tar.xz ${logdst}"
     archiveArtifacts artifacts: "${logdst}", fingerprint: false
 }
 
-def call(String testtags, String testtag, Integer nodes, Integer timeout)
+def call(String testtags, Map info, String testtag, Integer nodes, Integer timeout)
 {
     // bypass sandbox check
     def testtimeout = timeout
@@ -75,7 +78,6 @@ def call(String testtags, String testtag, Integer nodes, Integer timeout)
 
     def locals = [:]
 
-    def info = [:]
     info['logsrc'] = "${logsrc}"
     info['testtag'] = "${testtag}"
     info['nodes'] = nodes

@@ -14,8 +14,8 @@ def run_test(Map info)
 		echo "FAKE RUNNING TEST"
 		cd $HOME/ci-tools/fn-testing
 		echo ./validate-cloud -c test -d -p ${provider} -b ${BUILD_NUMBER} -j "jenkins:${BUILD_URL}" -r ${rhelver} -n ${info['nodes']} -e ${info['testopt']} ${info['testtag']} -a "${WORKSPACE}/${info['logsrc']}"
-		echo "SLEEP 10"
-		sleep 10
+		echo "SLEEP 5"
+		sleep 5
 		if [ "${info['testtag']}" = "fake_failure" ]; then
 		    exit 1
 		fi

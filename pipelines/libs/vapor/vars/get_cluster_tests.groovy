@@ -1,9 +1,79 @@
-// commmon sets, even if we don´t use them all
-def default_smoke_tests_common() {
+def sanity_tests_common() {
     return [
 	'cleanup',
 	'setup',
-	'pcs,cli,Setup',
+    ]
+}
+
+
+// pcs variant
+def pcs_smoke_tests_common() {
+    return \
+	sanity_tests_common() +
+	['pcs,cli,Setup']
+}
+
+def pcs_smoke_tags_common() {
+    return [ ]
+}
+
+def pcs_basic_tests_common() {
+    return [
+	'pcs,cli,Auth',
+	'pcs,cli,ClusterStartStop',
+	'pcs,cli,Stonith',
+    ]
+}
+
+def pcs_basic_tags_common() {
+    return [ ]
+}
+
+def pcs_advanced_tests_common() {
+    return [
+	'pcs,cli,ResourceMove',
+    ]
+}
+
+def pcs_advanced_tags_common() {
+    return [ ]
+}
+
+def pcs_smoke_tests_generic_nodes() {
+    return \
+	pcs_smoke_tests_common()
+}
+
+def pcs_all_tests_generic_nodes() {
+    return \
+	pcs_smoke_tests_common() +
+	pcs_basic_tests_common() +
+	pcs_advanced_tests_common()
+}
+
+def pcs_smoke_tags_generic_nodes() {
+    return \
+	pcs_smoke_tags_common()
+}
+
+def pcs_all_tags_generic_nodes() {
+    return \
+	pcs_smoke_tags_common() +
+	pcs_basic_tags_common() +
+	pcs_advanced_tags_common()
+}
+
+def pcs_all_tests_2_nodes() {
+    return \
+	pcs_smoke_tests_common() +
+	pcs_basic_tests_common()
+}
+
+// commmon sets, even if we don´t use them all
+def default_smoke_tests_common() {
+    return \
+	pcs_smoke_tests_common() +
+    [
 	'pacemaker,resource,IPv4,recovery',
 	'pacemaker,recovery,RecoveryActiveNode',
 	'setup,setup_sbd,sbd-only'
@@ -11,15 +81,16 @@ def default_smoke_tests_common() {
 }
 
 def default_smoke_tags_common() {
-    return [ ]
+    return \
+	pcs_smoke_tags_common() +
+	[ ]
 }
 
 // 2 nodes and up
 def default_basic_tests_common() {
-    return [
-	'pcs,cli,Auth',
-	'pcs,cli,ClusterStartStop',
-	'pcs,cli,Stonith',
+    return \
+	pcs_basic_tests_common() +
+    [
 	'lvm,lvm_config,cluster-lvmlockd',
 	'pacemaker,recovery,RecoveryActiveNode,variant:iterations,iterations:10',
 	'pacemaker,recovery,RecoveryRandomNode,variant:iterations,iterations:10',
@@ -39,13 +110,16 @@ def default_basic_tests_common() {
 }
 
 def default_basic_tags_common() {
-    return [ ]
+    return \
+	pcs_basic_tags_common() +
+	[ ]
 }
 
 // 3 nodes and up
 def default_advanced_tests_common() {
-    return [
-	'pcs,cli,ResourceMove',
+    return \
+	pcs_advanced_tests_common() +
+    [
 	'pacemaker,recovery,RecoverySwitchFailure,variant:iterations,iterations:10',
 	'pacemaker,recovery,RecoveryNodeNetworkFailure',
 	'pacemaker,recovery,RecoveryRandomMultiNode,variant:iterations,iterations:10',
@@ -56,7 +130,9 @@ def default_advanced_tests_common() {
 }
 
 def default_advanced_tags_common() {
-    return [ ]
+    return \
+	pcs_advanced_tags_common() +
+	[ ]
 }
 
 def default_smoke_tests_generic_nodes() {
@@ -110,11 +186,9 @@ def default_all_tests_4_nodes() {
 
 // kernel variant
 def kernel_smoke_tests_common() {
-    return [
-	'setup',
-	'cleanup',
-	'skeet',
-    ]
+    return \
+	sanity_tests_common() +
+	['skeet']
 }
 
 def kernel_smoke_tags_common() {

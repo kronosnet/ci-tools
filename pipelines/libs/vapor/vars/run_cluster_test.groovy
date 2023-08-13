@@ -42,15 +42,15 @@ def post_run_test(Map info, Map locals)
     sh """
 	mkdir -p ${info['logsrc']}
 	mv vapor.log ${info['logsrc']}/
-	tar Jcvpf ${info['logsrc']}.xz ${info['logsrc']}/
+	tar Jcvpf ${info['logsrc']}.tar.xz ${info['logsrc']}/
 	rm -rf ${info['logsrc']}
     """
     if (locals['RET'] == 'OK') {
-	logdst = "SUCCESS_${info['logsrc']}.xz"
+	logdst = "SUCCESS_${info['logsrc']}.tar.xz"
     } else {
-	logdst = "FAILED_${info['logsrc']}.xz"
+	logdst = "FAILED_${info['logsrc']}.tar.xz"
     }
-    sh "mv ${info['logsrc']}.xz ${logdst}"
+    sh "mv ${info['logsrc']}.tar.xz ${logdst}"
     archiveArtifacts artifacts: "${logdst}", fingerprint: false
 }
 

@@ -31,6 +31,15 @@ def call(Map info)
 	}
     }
 
+    // Clean up the tarball containing the sources
+    if (info['tarfile'] != null) {
+	// If this fails, tough.
+	try {
+	    sh "rm /var/www/ci.kronosnet.org/buildsources/${info['tarfile']}"
+	} catch (err) {}
+
+    }
+
     // Fail the pipeline if any voting jobs failed
     info['state'] = 'success'
     if (info['voting_fail'] > 0) {

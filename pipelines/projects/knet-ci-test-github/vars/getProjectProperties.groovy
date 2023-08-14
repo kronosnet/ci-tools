@@ -24,7 +24,7 @@ def call(Map info, Map extras, String agentName, String branch)
     props['SPECVERSION'] = env.BUILD_NUMBER
 
     if (agentName.startsWith('debian')) {
-	props['DISTROCONFOPTS'] += '--enable-debug'
+	props['DISTROCONFOPTS'] += '--with-debug'
     }
 
     if (agentName.startsWith('rhel') ||

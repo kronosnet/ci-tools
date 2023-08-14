@@ -1,3 +1,23 @@
+// Return true if we are running on the 'main' branch for
+// all libraries.
+def is_main_lib()
+{
+    def ret = true
+
+    def envAll = getContext( hudson.EnvVars )
+    envAll.collect { k, v ->
+	if (k.startsWith("library")) {
+	    println("LIB: ${k} = ${v}")
+	    if (v != "main") {
+		ret = false
+	    }
+	}
+    }
+
+    return ret
+}
+
+
 // Send completion emails
 def call(Map info)
 {
@@ -44,10 +64,6 @@ def call(Map info)
 	info['email_extra_text'] = ''
     }
 
-    // Thi should go back in postFunctions, we'll do that
-    // when everything is upgraded to full pipelines
-    sh "rm /var/www/ci.kronosnet.org/buildsources/${info['tarfile']}"
-    
     // Get the per-project email option ('all', 'none', 'only-failures')
     def email_opts = getEmailOptions()
     println("Project email_opts: ${email_opts}")
@@ -81,9 +97,14 @@ def call(Map info)
     def jobDuration = duration.substring(0, duration.length() - 13)
 
     // Build email strings that apply to all statuses
-    def email_title = "[jenkins] ${info['project']} ${branch} (build ${env.BUILD_ID})"
-    def email_trailer = """
-total runtime: ${jobDuration}
+    def email_title = ''
+    if (is_main_lib()) {
+	email_title = "[jenkins] ${info['project']} ${branch} (build ${env.BUILD_ID})"
+    } else {
+	email_title = "[jenkins][cidev] ${info['project']} ${branch} (build ${env.BUILD_ID})"
+    }
+
+    def email_trailer = """total runtime: ${jobDuration}
 ${info['email_extra_text']}
 Split logs: ${env.BUILD_URL}artifact/
 Full log:   ${env.BUILD_URL}consoleText/

@@ -99,15 +99,15 @@ Full log:   ${env.BUILD_URL}consoleText/
 	nonvoting_colon = ':'
     }
     def voting_s = 's'
-    if (voting_fail == 1) {
+    if (voting_run == 1) {
 	voting_s = ''
     }
     def nonvoting_s = 's'
-    if (nonvoting_fail == 1) {
+    if (nonvoting_run == 1) {
 	nonvoting_s = ''
     }
     def stage_s = 's'
-    if (stages_fail == 1) {
+    if (stages_run == 1) {
 	stage_s = ''
     }
 

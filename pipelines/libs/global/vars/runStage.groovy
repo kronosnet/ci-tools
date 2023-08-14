@@ -1,11 +1,7 @@
 // Run a generic CI stage with the right params and record success/failure
+
 def call(Map info, String agentName, String stageName, Boolean voting, Map extravars)
 {
-    println("runStage")
-
-    // Timeout (minutes) for the collection stages
-    def collect_timeout = 10
-
     // Are we voting or non-voting?
     // used to record stats in info[]
     def stageType = ''
@@ -14,6 +10,30 @@ def call(Map info, String agentName, String stageName, Boolean voting, Map extra
     } else {
 	stageType = 'nonvoting'
     }
+
+    def okRun = true
+    try {
+	okRun = doRunStage(info, agentName, stageName, voting, stageType, extravars)
+    } catch (err) { // Catch BAD things (not script failures, but stuff like nodes failing)
+	println("runStage() caught "+err+" okRun="+okRun);
+
+	// If the job succeeded then mark it as failed because ... BAD stuff
+	if (!okRun) {
+	    info["${stageType}_fail"]++
+	    info["${stageType}_fail_nodes"] += env.NODE_NAME + "(${stageName}: ${err})" + ' '
+	    info["${stage}_failed"] = 1 // One of these failed. that's all we need to know
+	} else {
+	    // If the job failed then just add extra info to the email
+	    info["${stageType}_fail_nodes"] += env.NODE_NAME + "(${stageName}: ${err})" + ' '
+	}
+    }
+}
+
+
+def doRunStage(Map info, String agentName, String stageName, Boolean voting, String stageType, Map extravars)
+{
+    // Timeout (minutes) for the collection stages
+    def collect_timeout = 10
 
     // We need these later
     println("extravars "+extravars)
@@ -70,7 +90,7 @@ def call(Map info, String agentName, String stageName, Boolean voting, Map extra
     // Run dependant global scripts for some jobs ... if we suceeded
     if (locals['failed']) {
 	println('this job failed, collection not happening')
-	return
+	return false
     }
 
     // Gather covscan results
@@ -101,6 +121,7 @@ def call(Map info, String agentName, String stageName, Boolean voting, Map extra
 	    }
 	}
     }
+    return true
 }
 
 def processRunSuccess(Map info, Map locals)

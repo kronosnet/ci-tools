@@ -81,7 +81,8 @@ pipeline {
 		    try {
 			parallel voting + nonvoting + nonvoting_clang + buildrpms
 		    } catch (err) {
-			println("**** Jenkinsfile caught "+err)
+			println("Jenkinsfile caught "+err)
+			info['email_extra_text'] += "\n parallel error caught: {$err}"
 		    }
 		}
 	    }

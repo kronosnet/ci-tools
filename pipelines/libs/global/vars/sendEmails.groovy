@@ -44,6 +44,10 @@ def call(Map info)
 	info['email_extra_text'] = ''
     }
 
+    // Thi should go back in postFunctions, we'll do that
+    // when everything is upgraded to full pipelines
+    sh "rm /var/www/ci.kronosnet.org/buildsources/${info['tarfile']}"
+    
     // Get the per-project email option ('all', 'none', 'only-failures')
     def email_opts = getEmailOptions()
     println("Project email_opts: ${email_opts}")

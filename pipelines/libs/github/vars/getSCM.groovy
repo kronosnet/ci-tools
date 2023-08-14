@@ -9,7 +9,8 @@ def call(Map info)
     println("tarfile = ${tarfile}, node=${env.NODE_NAME}")
 
     if (env.NODE_NAME == 'built-in') {
-	sh "tar --exclude=${tarfile} -czf /var/www/ci.kronosnet.org/buildsources/${tarfile} ."
+	shNoTrace("tar --exclude=${tarfile} -czf /var/www/ci.kronosnet.org/buildsources/${tarfile} .",
+		  "tar --exclude=${tarfile} -czf <redacted-web-dir>/${tarfile} .")
 	info['tarfile'] = tarfile
     } else {
 	dir (info['project']) {
@@ -17,6 +18,7 @@ def call(Map info)
 	    sleep(new Random().nextInt(12))
 	    sh "wget https://ci.kronosnet.org/buildsources/${tarfile}"
 	    sh "tar --no-same-owner -xzf ${tarfile}"
+	    sh "rm ${tarfile}"
 	}
     }
 }

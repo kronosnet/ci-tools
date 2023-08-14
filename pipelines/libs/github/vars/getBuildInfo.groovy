@@ -88,8 +88,9 @@ def call(String project)
     info['fullrebuild'] = params.fullrebuild
 
     // Copy the SCM into artifacts so that other nodes can use them
-    getSCM(info)
-
+    catchError {
+	getSCM(info)
+    }
     println("info map: ${info}")
     return info
 }

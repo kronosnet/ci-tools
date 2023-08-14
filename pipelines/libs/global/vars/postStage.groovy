@@ -35,7 +35,8 @@ def call(Map info)
     if (info['tarfile'] != null) {
 	// If this fails, tough.
 	try {
-	    sh "rm /var/www/ci.kronosnet.org/buildsources/${info['tarfile']}"
+	    shNoTrace("rm /var/www/ci.kronosnet.org/buildsources/${info['tarfile']}",
+		      "rm <redacted-web-dir>/${info['tarfile']}")
 	} catch (err) {}
 
     }

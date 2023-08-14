@@ -18,13 +18,12 @@ def call(Map info, String agentName, String stageName, Boolean voting, Map extra
 	println("runStage() caught "+err+" okRun="+okRun);
 
 	// If the job succeeded then mark it as failed because ... BAD stuff
-	if (!okRun) {
+	info["${stage}_failed"] = 1 // One of these failed. that's all we need to know
+	info["${stageType}_fail_nodes"] += env.NODE_NAME + "(${stageName}: ${err})" + ' '
+
+	// Increment the fail count for this type
+	if (okRun) {
 	    info["${stageType}_fail"]++
-	    info["${stageType}_fail_nodes"] += env.NODE_NAME + "(${stageName}: ${err})" + ' '
-	    info["${stage}_failed"] = 1 // One of these failed. that's all we need to know
-	} else {
-	    // If the job failed then just add extra info to the email
-	    info["${stageType}_fail_nodes"] += env.NODE_NAME + "(${stageName}: ${err})" + ' '
 	}
     }
 }
@@ -68,14 +67,14 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	info['EXTRAVER'] = extras['EXTRAVER']
 
 	stage("${stageTitle} on ${agentName} - build") {
+	    locals['logfile'] = "${stageName}-${agentName}.log"
 
-	    // Run everything in the checked-out directory
-	    dir (info['project']) {
-		def exports = getShellVariables(info, extras, stageName)
-		def res = ''
-
-		// Keep the log in a separate file so they are easy to find
-		tee ("${stageName}-${agentName}.log") {
+	    // Keep the log in a separate file so they are easy to find
+	    tee (locals['logfile']) {
+		// Run everything in the checked-out directory
+		dir (info['project']) {
+		    def exports = getShellVariables(info, extras, stageName)
+		    def res = ''
 		    res = cmdWithTimeout(build_timeout,
 					 "${exports} ~/ci-tools/ci-build",
 					 info, locals,
@@ -84,42 +83,44 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 		}
 	    }
 	}
-    }
 
-    println('LOCALS: '+locals)
-    // Run dependant global scripts for some jobs ... if we suceeded
-    if (locals['failed']) {
-	println('this job failed, collection not happening')
-	return false
-    }
-
-    // Gather covscan results
-    // 'fullrebuild' is set by a parent job to prevent uploads from weekly jobs
-    if (stageName == 'covscan' && info['fullrebuild'] != '1') { // Covers the case where it might be null too
-	stage("${stageName} on ${agentName} - get covscan artifacts") {
-	    node('built-in') {
-		cmdWithTimeout(collect_timeout,
-			       "~/ci-tools/ci-get-artifacts ${agentName} ${info['workspace']} cov/${info['project']}/${agentName}/${env.BUILD_NUMBER}/ cov",
-			       info, locals, {}, { postFnError(info, locals) })
-	    }
+	println('LOCALS: '+locals)
+	// Run dependant global scripts for some jobs ... if we suceeded
+	if (locals['failed']) {
+	    println('this job failed, collection not happening')
+	    return false
 	}
-    }
 
-    // RPM builds
-    if (stageName == 'buildrpms' && info['publishrpm'] == 1 && info['fullrebuild'] != '1') { // Covers the case where it might be null too
-	stage("${stageName} on ${agentName} - get RPM artifacts") {
-	    node('built-in') {
-		if (info['isPullRequest']) {
+	// Gather covscan results
+	// 'fullrebuild' is set by a parent job to prevent uploads from weekly jobs.
+	// Yes - you can nest 'node's
+	if (stageName == 'covscan' && info['fullrebuild'] != '1') { // Covers the case where it might be null too
+	    stage("${stageName} on ${agentName} - get covscan artifacts") {
+		node('built-in') {
 		    cmdWithTimeout(collect_timeout,
-				   "~/ci-tools/ci-get-artifacts ${agentName} ${info['workspace']} rpmrepos/${info['project']}/pr/${info['pull_id']}/${agentName} rpm",
-				   info, locals, {}, { postFnError(info, locals) })
-		} else {
-		    cmdWithTimeout(collect_timeout,
-				   "~/ci-tools/ci-get-artifacts ${agentName} ${info['workspace']} rpmrepos/${info['project']}/${agentName}/${info['actual_commit']}/${env.BUILD_NUMBER}/ rpm",
+				   "~/ci-tools/ci-get-artifacts ${agentName} ${info['workspace']} cov/${info['project']}/${agentName}/${env.BUILD_NUMBER}/ cov",
 				   info, locals, {}, { postFnError(info, locals) })
 		}
 	    }
 	}
+
+	// RPM builds
+	if (stageName == 'buildrpms' && info['publishrpm'] == 1 && info['fullrebuild'] != '1') { // Covers the case where it might be null too
+	    stage("${stageName} on ${agentName} - get RPM artifacts") {
+		node('built-in') {
+		    if (info['isPullRequest']) {
+			cmdWithTimeout(collect_timeout,
+				       "~/ci-tools/ci-get-artifacts ${agentName} ${info['workspace']} rpmrepos/${info['project']}/pr/${info['pull_id']}/${agentName} rpm",
+				       info, locals, {}, { postFnError(info, locals) })
+		    } else {
+			cmdWithTimeout(collect_timeout,
+				       "~/ci-tools/ci-get-artifacts ${agentName} ${info['workspace']} rpmrepos/${info['project']}/${agentName}/${info['actual_commit']}/${env.BUILD_NUMBER}/ rpm",
+				       info, locals, {}, { postFnError(info, locals) })
+		    }
+		}
+	    }
+	}
+	cleanWs(disableDeferredWipeout: true, deleteDirs: true)
     }
     return true
 }
@@ -127,9 +128,10 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 def processRunSuccess(Map info, Map locals)
 {
     // Rename the log so we know it all went fine
-    def log_name = "${locals['stageName']}-${env.NODE_NAME}.log"
-    sh "mv ${log_name} SUCCESS_${log_name}"
-    archiveArtifacts artifacts: "SUCCESS_${log_name}", fingerprint: false
+    dir('..') {
+	sh "mv ${locals['logfile']} SUCCESS_${locals['logfile']}"
+	archiveArtifacts artifacts: "SUCCESS_${locals['logfile']}", fingerprint: false
+    }
 
     locals['failed'] = false
 }
@@ -151,9 +153,10 @@ def processRunException(Map info, Map locals)
 
     // This happens after the above in case the log doesn't exist
     // and causes an exception
-    def log_name = "${locals['stageName']}-${env.NODE_NAME}.log"
-    sh "mv ${log_name} FAILED_${log_name}"
-    archiveArtifacts artifacts: "FAILED_${log_name}", fingerprint: false
+    dir ('..') {
+	sh "mv ${locals['logfile']} FAILED_${locals['logfile']}"
+	archiveArtifacts artifacts: "FAILED_${locals['logfile']}", fingerprint: false
+    }
 
     // If the jobs was aborted, then GO AWAY!
     if (locals['RET'] == 'ABORT') {

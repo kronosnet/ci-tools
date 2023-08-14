@@ -89,7 +89,7 @@ while getopts "j:c:p:m:r:n:u:t:T:z:edhi:s:b:a:" optflag; do
 		debug="yes"
 		;;
 	e)
-		post="yes"
+		post=""
 		;;
 	i)
 		iscsisize="$OPTARG"

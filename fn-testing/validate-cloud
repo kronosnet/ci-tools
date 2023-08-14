@@ -24,6 +24,7 @@ customrepopath=""
 iscsisize="0"
 blocksize="0"
 testlogdir=""
+project=""
 
 # hardcoded sizing for now
 links="1"
@@ -51,9 +52,10 @@ print_usage() {
 	echo " -d                         enable debug (default: off)"
 	echo " -j                         jobid (default: '')"
 	echo " -b                         buildnumber (default: '')"
+	echo " -P                         project identifier (default: '')"
 }
 
-while getopts "j:c:p:m:r:n:u:t:T:z:edhi:s:b:a:" optflag; do
+while getopts "j:c:p:m:r:n:u:t:T:z:edhi:s:b:a:P:" optflag; do
 	case "$optflag" in
 	c)
 		command="$OPTARG"
@@ -102,6 +104,9 @@ while getopts "j:c:p:m:r:n:u:t:T:z:edhi:s:b:a:" optflag; do
 		;;
 	a)
 		testlogdir="$OPTARG"
+		;;
+	P)
+		project="$OPTARG"
 		;;
 	h)
 		print_usage
@@ -213,7 +218,7 @@ fi
 if [ "$buildnum" != "" ]; then
 	buildnum="j$buildnum"
 fi
-clusteropts="--cluster ${provider}c${rhelver}${buildnum}"
+clusteropts="--cluster ${project}${provider}c${rhelver}${buildnum}"
 
 # put all options together
 options="--provider $provider $authopts $clusteropts $logopts"

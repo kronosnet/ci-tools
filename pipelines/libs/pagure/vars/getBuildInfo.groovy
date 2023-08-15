@@ -38,6 +38,9 @@ def call(String project, String upstream_repo)
     info['voting_fail_nodes'] = ''
     info['nonvoting_run'] = 0
     info['voting_run'] = 0
+    info['state'] = 'script error'
+
+    info['upstream_repo'] = upstream_repo
 
     // pagure needs credentials only to post comments on PRs.
     // knet-ci-bot user has been created in pagure, and has the API key
@@ -66,7 +69,8 @@ def call(String project, String upstream_repo)
 	info['publish_rpm'] = 0  // TODO Remove once all in new pipelines
 	info['publish_pr_rpm'] = buildPRRPMs(['isPullRequest': isPullRequest, 'branch': info['target']])
 	info['publishrpm'] = info['publish_pr_rpm']
-	info['jobname'] = "PR#${env.cause}"
+	info['jobname'] = "PR-${env.cause}"
+	info['branch'] = "PR-${env.cause}"
     } else {
 	info['actual_commit'] = "origin/${env.BRANCH}"
 	info['target_branch'] = env.BRANCH
@@ -86,6 +90,7 @@ def call(String project, String upstream_repo)
 	info['publish_rpm'] = 1  // TODO Remove once all in new pipelines
 	info['publishrpm'] = 1
 	info['jobname'] = "${env.BRANCH} ${env.cause}"
+	info['branch'] = "${env.BRANCH}"
 	// because the pipeline has no concept of git checkout, we cannot filter
 	// branches to build from Jenkins. This check avoid contributors pushing
 	// to upstream_repo branch foo and have "free builds".
@@ -101,6 +106,10 @@ def call(String project, String upstream_repo)
     info['bootstrap'] = params.bootstrap
     info['fullrebuild'] = params.fullrebuild
 
+    // Copy the SCM into artifacts so that other nodes can use them
+    catchError {
+	getSCM(info)
+    }
     println("info map: ${info}")
     return info
 }

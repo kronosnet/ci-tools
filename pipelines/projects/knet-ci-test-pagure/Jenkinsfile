@@ -24,12 +24,13 @@ def upstream_repo = 'https://pagure.io/knet-ci-test.git'
 //                 and project name in github/pagure, we need to specify both.
 //                 this shouldn´t be necessary for dlm/gfs2-utils.
 
-// Set defaults
-def nonvoting_fail = 0
-def voting_fail = 0
-
 pipeline {
     agent { label 'built-in' }
+
+    parameters {
+	string(name: 'bootstrap',   defaultValue: '0', description: 'Bootstrap the RPM repos')
+	string(name: 'fullrebuild', defaultValue: '0', description: 'This is a full rebuild - do not publish RPM and do NOT update build code on the nodes')
+    }
 
     options {
 	skipDefaultCheckout(true)
@@ -41,81 +42,61 @@ pipeline {
 	    steps {
 		script {
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
-
 		    info = getBuildInfo(project, upstream_repo)
-
-		    stage("Checkout ${info['jobname']}") {
-			getSCM(['project': project, 'upstream_repo': upstream_repo, 'checkout': info['checkout'], 'isPullRequest': info['isPullRequest']])
-		    }
+		    info['bootstrap'] = '1' // for this test job only.
 		}
 	    }
 	}
 	// This is the main stage that covers everything
-	stage('Start builds') {
+	stage('Main stage') {
 	    when {
 		// getAuthCheck will usually abort the job if permission is denied
 		// but this is an extra check!
 		expression { info['authcheck'] == true }
 	    }
-	    // All of the stages that actually do stuff
-	    // for testing the ci-test-* jobs have been created. those
-	    // are clones from gfs2-utils-* and they currently use a different set of
-	    // parameters vs github jobs.
-	    // at the moment, ${install} is ignored by voting/non-voting. Neither
-	    // gfs2-utils or dlm are required on the target nodes (similar to pcs).
-	    // Only rpms are needed for functional testing.
-	    stages {
-		stage('Standard builds') {
-		    parallel {
-			stage('voting') {
-			    steps {
-				build job: "${project}-pagure/${project}-build-all-voting",
-				    parameters: [string(name: 'install', value : "${info['install']}"),
-						 string(name: 'ghprbActualCommit', value : "${info['actual_commit']}"),
-						 string(name: 'REPO', value : env.REPO),
-						 string(name: 'BRANCH', value : env.BRANCH),
-						 string(name: 'BRANCH_TO', value : env.BRANCH_TO),
-						 string(name: 'compiler', value : 'gcc')]
-			    }
-			}
-			stage('buildrpms') {
-			    steps {
-				script {
-				    try {
-					build job: "${project}-pagure/${project}-build-rpms",
-					    parameters: [string(name: 'ghprbActualCommit', value : "${info['actual_commit']}"),
-							 string(name: 'REPO', value : env.REPO),
-							 string(name: 'BRANCH', value : env.BRANCH),
-							 string(name: 'BRANCH_TO', value : env.BRANCH_TO),
-							 string(name: 'publishrpm', value : "${info['publish_rpm']}"),
-							 string(name: 'publishprrpm', value : "${info['publish_pr_rpm']}"),
-							 string(name: 'bootstrap', value : '0')]
-				    } catch (err) {
-					nonvoting_fail++
-				    }
-				}
-			    }
-			}
+	    steps {
+		script {
+		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+
+		    // The 'short' test list
+		    voting = buildRunMap('voting', info, ['voting': true,
+							  'nodelabel': 'test-voting'])
+
+		    nonvoting = buildRunMap('nonvoting', info, ['voting': false,
+								'nodelabel': 'test-nonvoting'])
+
+		    nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
+									    'nodelabel': 'test-nonvoting',
+									    'extravars': ['compiler': 'clang',
+											  'install': '0',
+											  'title': 'CLANG test']])
+
+		    buildrpms = buildRunMap('buildrpms', info, ['voting': true,
+								'nodelabel': 'test-buildrpms'])
+
+		    try {
+			parallel voting + nonvoting + nonvoting_clang + buildrpms
+		    } catch (err) {
+			println("Jenkinsfile caught "+err)
+			info['email_extra_text'] += "\n parallel error caught: {$err}"
 		    }
 		}
 	    }
 	}
+	stage('Post stage') {
+	    when {
+		// getAuthCheck will usually abort the job if permission is denied
+		// but this is an extra check!
+		expression { info['authcheck'] == true }
+	    }
+	    steps {
+		postStage(info)
+	    }
+	}
     }
     post {
-	success {
-	    // Notify interested users if non-voting jobs fail
-	    script {
-		postFunctions(['project': project, 'state': 'success', 'branch': "${info['jobname']}"])
-	    }
-	}
-	failure {
-	    // Notify interested users if voting jobs fail
-	    script {
-		postFunctions(['project': project, 'state': 'failure', 'branch': "${info['jobname']}"])
-	    }
-	}
 	always {
-	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+	    sendEmails(info)
 	}
     }
 }

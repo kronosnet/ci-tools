@@ -16,7 +16,7 @@ def call(Map info)
 	dir (info['project']) {
 	    // Random delay to stop hitting the server too hard
 	    sleep(new Random().nextInt(12))
-	    sh "wget https://ci.kronosnet.org/buildsources/${tarfile}"
+	    sh "wget -nv https://ci.kronosnet.org/buildsources/${tarfile}"
 	    sh "tar --no-same-owner -xzf ${tarfile}"
 	    sh "rm ${tarfile}"
 	}

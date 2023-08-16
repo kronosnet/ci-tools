@@ -107,7 +107,7 @@ def call(Map info)
     def email_trailer = """total runtime: ${jobDuration}
 ${info['email_extra_text']}
 Split logs: ${env.BUILD_URL}artifact/
-Full log:   ${env.BUILD_URL}consoleText/
+Full log:   ${env.BUILD_URL}consoleText
 """
 
     // Make it look nice

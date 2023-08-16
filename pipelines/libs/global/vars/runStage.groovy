@@ -15,7 +15,8 @@ def call(Map info, String agentName, String stageName, Boolean voting, Map extra
     try {
 	okRun = doRunStage(info, agentName, stageName, voting, stageType, extravars)
     } catch (err) { // Catch BAD things (not script failures, but stuff like nodes failing)
-	println("runStage() caught "+err+" okRun="+okRun);
+	println("runStage() caught "+err+" okRun="+okRun)
+	def stage = stageName.replace('-','_')
 
 	// If the job succeeded then mark it as failed because ... BAD stuff
 	info["${stage}_failed"] = 1 // One of these failed. that's all we need to know

@@ -39,6 +39,8 @@ def call(String project, String upstream_repo)
     info['nonvoting_run'] = 0
     info['voting_run'] = 0
     info['state'] = 'script error'
+    info['email_extra_text'] = ''
+    info['exception_text'] = ''
 
     info['upstream_repo'] = upstream_repo
 

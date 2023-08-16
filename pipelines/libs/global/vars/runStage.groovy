@@ -11,21 +11,13 @@ def call(Map info, String agentName, String stageName, Boolean voting, Map extra
 	stageType = 'nonvoting'
     }
 
-    def okRun = true
     try {
-	okRun = doRunStage(info, agentName, stageName, voting, stageType, extravars)
-    } catch (err) { // Catch BAD things (not script failures, but stuff like nodes failing)
-	println("runStage() caught "+err+" okRun="+okRun)
-	def stage = stageName.replace('-','_')
-
-	// If the job succeeded then mark it as failed because ... BAD stuff
-	info["${stage}_failed"] = 1 // One of these failed. that's all we need to know
-	info["${stageType}_fail_nodes"] += env.NODE_NAME + "(${stageName}: ${err})" + ' '
-
-	// Increment the fail count for this type
-	if (okRun) {
-	    info["${stageType}_fail"]++
-	}
+	doRunStage(info, agentName, stageName, voting, stageType, extravars)
+    } catch (err) {
+	// Catch BAD things (not script failures, but stuff like nodes failing or source download died)
+	// these are logged into info[:] in the exception handlers
+	println("runStage() caught "+err)
+	info['exception_text'] += "Exception caught on ${agentName} during ${stageName}: ${err}\n"
     }
 }
 
@@ -56,7 +48,15 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 
 	info["${stageType}_run"]++
 	stage("${stageTitle} on ${agentName} - checkout") {
-	    getSCM(info)
+	    locals['runstage'] = 'checkout'
+	    def rc = runWithTimeout(collect_timeout, { getSCM(info) }, info, locals,
+				    { processRunSuccess(info, locals) },
+				    { processRunException(info, locals) })
+	    if (rc != 'OK') {
+		println("RC runWithTimeout returned "+rc)
+		// Big stick here, we can't continue
+		sh "exit 1"
+	    }
 	}
 
 	// Get any job-specific configuration variables
@@ -69,18 +69,18 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 
 	stage("${stageTitle} on ${agentName} - build") {
 	    locals['logfile'] = "${stageName}-${agentName}.log"
+	    locals['runstage'] = 'run'
 
 	    // Keep the log in a separate file so they are easy to find
 	    tee (locals['logfile']) {
 		// Run everything in the checked-out directory
 		dir (info['project']) {
 		    def exports = getShellVariables(info, extras, stageName)
-		    def res = ''
-		    res = cmdWithTimeout(build_timeout,
-					 "${exports} ~/ci-tools/ci-build",
-					 info, locals,
-					 { processRunSuccess(info, locals) },
-					 { processRunException(info, locals) })
+		    cmdWithTimeout(build_timeout,
+				   "${exports} ~/ci-tools/ci-build",
+				   info, locals,
+				   { processRunSuccess(info, locals) },
+				   { processRunException(info, locals) })
 		}
 	    }
 	}
@@ -129,9 +129,12 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 def processRunSuccess(Map info, Map locals)
 {
     // Rename the log so we know it all went fine
-    dir('..') {
-	sh "mv ${locals['logfile']} SUCCESS_${locals['logfile']}"
-	archiveArtifacts artifacts: "SUCCESS_${locals['logfile']}", fingerprint: false
+    // The log file might not be there, if getSCM failed.
+    if (locals.containsKey('logfile')) {
+	dir('..') {
+	    sh "mv ${locals['logfile']} SUCCESS_${locals['logfile']}"
+	    archiveArtifacts artifacts: "SUCCESS_${locals['logfile']}", fingerprint: false
+	}
     }
 
     locals['failed'] = false
@@ -147,16 +150,21 @@ def processRunException(Map info, Map locals)
     // as environment variable names.
     def stage = locals['stageName'].replace('-','_')
 
+    def runtype = ''
+    if (locals['runstage'] == 'checkout') {
+	runtype = ' source download'
+    }
     // Stats, and save the job name for the email
     info["${locals['stageType']}_fail"]++
-    info["${locals['stageType']}_fail_nodes"] += env.NODE_NAME + "(${locals['stageName']})" + ' '
+    info["${locals['stageType']}_fail_nodes"] += env.NODE_NAME + "(${locals['stageName']}${runtype})" + ' '
     info["${stage}_failed"] = 1 // One of these failed. that's all we need to know
 
-    // This happens after the above in case the log doesn't exist
-    // and causes an exception
-    dir ('..') {
-	sh "mv ${locals['logfile']} FAILED_${locals['logfile']}"
-	archiveArtifacts artifacts: "FAILED_${locals['logfile']}", fingerprint: false
+    // The log file might not be there, if getSCM failed.
+    if (locals.containsKey('logfile')) {
+	dir ('..') {
+	    sh "mv ${locals['logfile']} FAILED_${locals['logfile']}"
+	    archiveArtifacts artifacts: "FAILED_${locals['logfile']}", fingerprint: false
+	}
     }
 
     // If the jobs was aborted, then GO AWAY!

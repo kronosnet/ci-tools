@@ -48,8 +48,8 @@ def call(Map info)
     } else {
 	dir (info['project']) {
 	    // Random delay to stop hitting the server too hard
-	    sleep(new Random().nextInt(12))
-	    sh "wget -nv https://ci.kronosnet.org/buildsources/${tarfile}"
+	    sleep(new Random().nextInt(15))
+	    sh "wget -4 -nv https://ci.kronosnet.org/buildsources/${tarfile}"
 	    sh "tar --no-same-owner -xzf ${tarfile}"
 	    sh "rm ${tarfile}"
 	}

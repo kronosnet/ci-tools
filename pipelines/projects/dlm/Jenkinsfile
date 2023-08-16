@@ -64,7 +64,7 @@ pipeline {
 			parallel voting + nonvoting + nonvoting_clang + buildrpms + covscan
 		    } catch (err) {
 			println("Jenkinsfile caught "+err)
-			info['email_extra_text'] += "\n parallel error caught: {$err}"
+			info['exception_text'] += "\nparallel error caught: {$err}\n"
 		    }
 		}
 	    }

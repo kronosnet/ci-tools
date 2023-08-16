@@ -49,6 +49,7 @@ def call(Integer time, Closure fn, Map info, Map locals,
 	// If no 'cause' is given then we don't know what happened
 	// so just rethrow it.
 	if (err.getCauses() == 0) {
+	    retval = 'EXCEPTION'
 	    throw (err)
 	}
 	def String cause = err.getCauses()[0]

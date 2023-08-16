@@ -69,6 +69,12 @@ def call(Map info)
 	return
     }
 
+    if (info['exception_text'] != '') {
+	info['exception_text'] = "\nPlease report the following errors to your friendly local Jenkins admin (though they have probably already seen them and are already panicking).\n" +
+	    info['exception_text']
+	state ='Jenkins exception'
+    }
+
     // Get the per-project email option ('all', 'none', 'only-failures')
     def email_opts = getEmailOptions()
     println("Project email_opts: ${email_opts}")
@@ -113,6 +119,7 @@ def call(Map info)
 ${info['email_extra_text']}
 Split logs: ${env.BUILD_URL}artifact/
 Full log:   ${env.BUILD_URL}consoleText
+${info['exception_text']}
 """
 
     // Make it look nice

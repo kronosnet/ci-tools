@@ -33,7 +33,7 @@ pipeline {
 	    when {
 		// getAuthCheck will usually abort the job if permission is denied
 		// but this is an extra check!
-		expression { info['authcheck'] == true }
+		expression { info['authcheck'] == true && info['tracking'] == true }
 	    }
 	    steps {
 		script {
@@ -73,7 +73,7 @@ pipeline {
 	    when {
 		// getAuthCheck will usually abort the job if permission is denied
 		// but this is an extra check!
-		expression { info['authcheck'] == true }
+		expression { info['authcheck'] == true && info['tracking'] == true }
 	    }
 	    steps {
 		postStage(info)

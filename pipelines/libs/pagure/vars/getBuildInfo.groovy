@@ -91,16 +91,18 @@ def call(String project, String upstream_repo)
 	info['publishrpm'] = 1
 	info['jobname'] = "${env.BRANCH} ${env.cause}"
 	info['branch'] = "${env.BRANCH}"
-	// because the pipeline has no concept of git checkout, we cannot filter
-	// branches to build from Jenkins. This check avoid contributors pushing
-	// to upstream_repo branch foo and have "free builds".
-	// as for draft, we can only abort the pipeline.
-	if (isThisATrackingBranch(info['target']) == false) {
-	    currentBuild.result = 'ABORTED'
-	    error('Branch is not set to autobuild - pipeline will not run')
-	}
     }
     info['covopts'] = getCovOpts(info['target'])
+    // because the pipeline has no concept of git checkout, we cannot filter
+    // branches to build from Jenkins. This check avoid contributors pushing
+    // to upstream_repo branch foo and have "free builds".
+    // as for draft, we can only abort the pipeline.
+    info['tracking'] = isThisATrackingBranch(info['target'])
+    if (info['tracking'] == false) {
+	currentBuild.result = 'ABORTED'
+	info['state'] = 'build-ignored'
+	return info
+    }
 
     // Make sure the params are in here so they get propogated to the scripts
     info['bootstrap'] = params.bootstrap

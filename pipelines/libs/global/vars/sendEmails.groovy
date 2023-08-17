@@ -64,6 +64,11 @@ def call(Map info)
 	info['email_extra_text'] = ''
     }
 
+    if (state == 'build-ignored') {
+	println('build has been ignored, not sending emails')
+	return
+    }
+
     // Get the per-project email option ('all', 'none', 'only-failures')
     def email_opts = getEmailOptions()
     println("Project email_opts: ${email_opts}")

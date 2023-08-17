@@ -1,6 +1,6 @@
 // Jenkinsfile for the dlm project
 
-@Library(['GlobalLib', 'PagureLib', 'ProjectLib']) _
+@Library(['GlobalLib', 'PagureLib', 'ProjectLib@pagure']) _
 
 // Globals
 def project = 'gfs2-utils'

@@ -18,7 +18,7 @@ def call(Map info, Map extras, String job_type)
     if (!info.containsKey('DEST')) {
 	info['DEST'] = info['project']
     }
-    exports = mapToShellVars(info)
+    del exports = mapToShellVars(info)
     exports += mapToShellVars(extras)
 
     // Global things

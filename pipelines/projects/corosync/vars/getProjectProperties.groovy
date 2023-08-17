@@ -20,10 +20,16 @@ def call(Map info, Map extras, String agentName, String branch)
     props['EXTERNAL_LD_LIBRARY_PATH'] = ''
     props['extraver'] = "knet-${extras['knetver']}"
     props['SPECVERSION'] = env.BUILD_NUMBER
-    props['RPMDEPS'] = "libnozzle1-devel libknet1-devel libqb-devel"
+    props['RPMDEPS'] = 'libnozzle1-devel libknet1-devel libqb-devel'
+    props['DISTROCONFOPTS'] = '--enable-snmp --enable-dbus --enable-systemd --enable-nozzle'
 
-    props['DISTROCONFOPTS'] = "--enable-fatal-warnings --enable-snmp --enable-dbus --enable-systemd --enable-nozzle --enable-vqsim"
+    if (!extras.containsKey('compiler') || extras['compiler'] == 'gcc') {
+	props['DISTROCONFOPTS'] += ' --enable-fatal-warnings'
+    }
 
+    if (agentName.startsWith('freebsd')) {
+	props['DISTROCONFOPTS'] += ' --disable-systemd'
+    }
 
     return props
 }

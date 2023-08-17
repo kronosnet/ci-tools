@@ -2,27 +2,6 @@
 
 set -ev
 
-# in the old world order, git clone is done by the jenkins job via git plugin and
-# we need to add the PR on top.
-# in the new world order, the whole git clone and pr handling is managed by getSCM
-if [ -z "${PIPELINE_VER}" ]; then
- case "$DEST" in
-  gfs2-*|dlm|ci-test-pagure)
-   if [ -n "$BRANCH_TO" ] && [ "$BRANCH_TO" != "None" ]; then
-    if [ -n "$REPO" -a -n "$BRANCH" ]; then
-     git config user.email "jenkins@kronosnet.org"
-     git config user.name "Sir Jenkins"
-     git remote rm proposed || true
-     git remote add proposed "$REPO"
-     git fetch proposed
-     git checkout "origin/$BRANCH_TO"
-     git merge --no-ff "proposed/$BRANCH" -m "Merge PR"
-    fi
-   fi
-  ;;
- esac
-fi
-
 if [ -f ./autogen.sh ]; then
  echo "./autogen.sh"
  ./autogen.sh
@@ -78,13 +57,6 @@ if [ -f ./configure ]; then
     booth)
      installpath=${installpath}-pcmk-${pcmkver}/
      extraopts="--with-ocfdir=$installpath/lib/ocf"
-     ;;
-    gfs2-*)
-     case "${NODE_NAME}" in
-      *x86*)
-       extraopts="--with-testvol=/dev/shm/testvol-${BUILD_NUMBER}"
-      ;;
-     esac
      ;;
     *)
      installpath=${installpath}/

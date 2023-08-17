@@ -138,14 +138,6 @@ case "$DEST" in
    extraopts="--enable-rust-bindings"
   fi
  ;;
- gfs2-util*)
-  export TOPTS="--always-clean-testvol"
-  case "${NODE_NAME}" in
-   *x86*)
-    extraopts="--with-testvol=/dev/shm/testvol-${BUILD_NUMBER}"
-   ;;
-  esac
- ;;
 esac
 
 if [ -z "$CHECKS" ]; then

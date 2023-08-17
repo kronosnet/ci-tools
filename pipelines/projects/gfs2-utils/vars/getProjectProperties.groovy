@@ -12,7 +12,7 @@ def call(Map info, Map extras, String agentName, String branch)
 
     props['DEST'] = info['project']
     props['EXTRAVER'] = ''
-    if (agentName.contains('x86_64')) {
+    if (agentName.contains('x86-64')) {
 	props['DISTROCONFOPTS'] = "--with-testvol=/dev/shm/testvol-${info['pull_id']}-${env.BUILD_NUMBER}"
     }
 

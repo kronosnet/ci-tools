@@ -19,7 +19,7 @@ if [ -z "$branch" ]; then
 	exit 1
 fi
 
-rpmdir=/srv/publish/rpmrepos
+rpmdir=/var/www/ci.kronosnet.org/builds
 
 clean_dirs() {
 	echo "Purging 0 byte files"
@@ -173,9 +173,6 @@ EOF
 			process_publish
 			;;
 	esac
-
-	cd $rpmdir/
-	rsync -av --sparse-block=0 --progress --delete-after . /var/www/ci.kronosnet.org/builds/.
 
 	exit 0
 ) 200>/tmp/ci-rpm-repos.lock

@@ -9,7 +9,7 @@ if [ -z "$project" ]; then
 	exit 1
 fi
 
-covdir=/srv/publish/cov
+covdir=/var/www/ci.kronosnet.org/coverity
 
 (
 	flock -e 200
@@ -49,9 +49,6 @@ covdir=/srv/publish/cov
 		fi
 		cd ..
 	done
-
-	cd $covdir/
-	rsync -av --sparse-block=0 --progress --delete-after . /var/www/ci.kronosnet.org/coverity/.
 
 	exit 0
 ) 200>/tmp/ci-cov-repos.lock

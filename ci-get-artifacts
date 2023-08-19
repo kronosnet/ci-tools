@@ -2,7 +2,7 @@
 
 set -ex
 
-publish=/srv/publish/
+publish=/var/www/ci.kronosnet.org/
 
 sourcenode="$1"
 sourcedir="$2"

@@ -113,6 +113,7 @@ EOF
 [$i-$b-$x]
 name=$i-$b-$x
 baseurl=https://kronosnet.org/builds/$i/$x/$b/latest/
+        https://ci.kronosnet.org/builds/$i/$x/$b/latest/
 repo_gpgcheck=0
 enabled=1
 gpgcheck=0
@@ -175,6 +176,7 @@ EOF
 
 	cd $rpmdir/
 	rsync -av --sparse-block=0 --progress --delete-after . www.kronosnet.org:~kronosnet/kronosnet/builds/.
+	rsync -av --sparse-block=0 --progress --delete-after . /var/www/ci.kronosnet.org/builds/.
 
 	exit 0
 ) 200>/tmp/ci-rpm-repos.lock

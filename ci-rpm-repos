@@ -175,7 +175,6 @@ EOF
 	esac
 
 	cd $rpmdir/
-	rsync -av --sparse-block=0 --progress --delete-after . www.kronosnet.org:~kronosnet/kronosnet/builds/.
 	rsync -av --sparse-block=0 --progress --delete-after . /var/www/ci.kronosnet.org/builds/.
 
 	exit 0

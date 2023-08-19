@@ -51,7 +51,7 @@ covdir=/srv/publish/cov
 	done
 
 	cd $covdir/
-	rsync -av --sparse-block=0 --progress --delete-after . www.kronosnet.org:~kronosnet/kronosnet/coverity/.
 	rsync -av --sparse-block=0 --progress --delete-after . /var/www/ci.kronosnet.org/coverity/.
+
 	exit 0
 ) 200>/tmp/ci-cov-repos.lock

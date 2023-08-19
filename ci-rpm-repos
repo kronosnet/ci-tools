@@ -39,7 +39,7 @@ process_pr() {
 	done
 	cd -
 	cd $rpmdir/$project/pr
-	find . -maxdepth 0 -type d -ctime +30 -print -delete
+	find . -maxdepth 1 -type d -mtime +30 -exec rm -rf {} \;
 	cd -
 }
 

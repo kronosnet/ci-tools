@@ -78,7 +78,11 @@ def call(String project, String upstream_repo)
 	info['target_branch'] = env.BRANCH
 	info['target'] = env.BRANCH
 	info['pull_id'] = '1'
-	info['checkout'] = env.cause
+	if (env.cause == '') {
+	    info['checkout'] = env.BRANCH
+	} else {
+	    info['checkout'] = env.cause
+	}
 	info['install'] = isThisAnInstallBranch(info['target'])
 	if ("${info['install']}" == '1') {
 	    if ("${info['target']}" == 'main') {

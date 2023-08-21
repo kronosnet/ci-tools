@@ -52,7 +52,7 @@ case $build in
 
   ret=0
   # this will trigger only with build-after-merge
-  if [ "${install}" = 1 ]; then
+  if [ "${install}" = 1 ] || [ "${covinstall}" = 1 ]; then
    mkdir -p /srv/covscan/$DEST/$CITARGET/$extraver/
    mv cov.json cov.txt /srv/covscan/$DEST/$CITARGET/$extraver/
   else

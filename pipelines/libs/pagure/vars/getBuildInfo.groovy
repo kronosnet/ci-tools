@@ -68,6 +68,7 @@ def call(String project, String upstream_repo)
 	info['install'] = 0
 	info['maininstall'] = 0
 	info['stableinstall'] = 0
+	info['covinstall'] = 0
 	info['publish_rpm'] = 0  // TODO Remove once all in new pipelines
 	info['publish_pr_rpm'] = buildPRRPMs(['isPullRequest': isPullRequest, 'branch': info['target']])
 	info['publishrpm'] = info['publish_pr_rpm']
@@ -93,6 +94,7 @@ def call(String project, String upstream_repo)
 		info['stableinstall'] = 1
 	    }
 	}
+	info['covinstall'] = 1
 	info['publish_rpm'] = 1  // TODO Remove once all in new pipelines
 	info['publishrpm'] = 1
 	info['jobname'] = "${env.BRANCH} ${env.cause}"

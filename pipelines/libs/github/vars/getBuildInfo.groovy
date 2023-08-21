@@ -47,6 +47,7 @@ def call(String project)
 	info['install'] = 0
 	info['maininstall'] = 0
 	info['stableinstall'] = 0
+	info['covinstall'] = 0
 	info['publish_rpm'] = 0  // TODO Remove once all in new pipelines
 	info['publish_pr_rpm'] = buildPRRPMs(['isPullRequest': isPullRequest, 'branch': info['target']])
 	info['publishrpm'] = info['publish_pr_rpm']
@@ -80,6 +81,7 @@ def call(String project)
 		info['stableinstall'] = 1
 	    }
 	}
+	info['covinstall'] = 1
     }
     info['is_draft'] = is_draft
     info['covopts'] = getCovOpts(info['target'])

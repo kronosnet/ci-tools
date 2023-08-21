@@ -30,7 +30,7 @@ def hard_recover(Map info, Map locals)
     }
 }
 
-def call(Integer nodes)
+def call(Map info)
 {
     println("Recovering test cluster")
     if ("${dryrun}" == '1') {
@@ -38,8 +38,6 @@ def call(Integer nodes)
     }
 
     def locals = [:]
-    def info = [:]
-    info['nodes'] = nodes
 
     runWithTimeout(30, { run_cleanup(info) }, info, locals, { }, { hard_recover(info, locals) })
 

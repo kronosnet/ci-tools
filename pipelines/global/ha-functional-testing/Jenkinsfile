@@ -31,16 +31,16 @@ pipeline {
 		    stage('Prep build env') {
 			cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 			sh 'env|sort'
-			delete_cluster()
+			delete_cluster(info)
 		    }
 		    stage("Create ${provider} rhel${rhelver} test cluster") {
-			create_cluster(maxnodes)
+			create_cluster(info, maxnodes)
 		    }
 		    stage("Check ${provider} rhel${rhelver} test cluster availability") {
-			access_cluster()
+			access_cluster(info)
 		    }
 		    stage("Deploy ${provider} rhel${rhelver} zstream: ${zstream} upstream: ${upstream} test cluster") {
-			deploy_cluster()
+			deploy_cluster(info)
 		    }
 		}
 	    }
@@ -51,24 +51,24 @@ pipeline {
 		    for (int nodes = minnodes; nodes <= maxnodes; nodes++) {
 			def finaltestlist = [ ]
 			if ("${testlist}" == 'auto') {
-			    finaltestlist = get_cluster_tests('tests', testvariant, tests, nodes)
+			    finaltestlist = get_cluster_tests(info, 'tests', testvariant, tests, nodes)
 			} else if ("${testlist}" != '') {
 			    finaltestlist = ["${testlist}"]
 			}
 			for (test in finaltestlist) {
 			    stage("Run test '${test}' on ${nodes} nodes") {
-				run_cluster_test('test', info, test, nodes, testtimeout)
+				run_cluster_test(info, 'test', test, nodes, testtimeout)
 			    }
 			}
 			def finaltaglist = [ ]
 			if ("${taglist}" == 'auto') {
-			    finaltaglist = get_cluster_tests('tags', testvariant, tests, nodes)
+			    finaltaglist = get_cluster_tests(info, 'tags', testvariant, tests, nodes)
 			} else if ("${taglist}" != '') {
 			    finaltaglist = ["${taglist}"]
 			}
 			for (tag in finaltaglist) {
 			    stage("Run tag '${tag}' on ${nodes} nodes") {
-				run_cluster_test('tag', info, tag, nodes, tagtimeout)
+				run_cluster_test(info, 'tag', tag, nodes, tagtimeout)
 			    }
 			}
 		    }
@@ -79,7 +79,7 @@ pipeline {
 
     post {
 	always {
-	    delete_cluster()
+	    delete_cluster(info)
 	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 	    node('built-in') {
 		script {

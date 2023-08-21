@@ -228,7 +228,7 @@ def kernel_all_tags_generic_nodes() {
 }
 
 // wrapper
-def call(String testtags, String testvariant, String level, Integer nodes)
+def call(Map info, String testtags, String testvariant, String level, Integer nodes)
 {
     method = "${testvariant}_${level}_${testtags}_${nodes}_nodes"
     try {

@@ -1,4 +1,4 @@
-def call()
+def call(Map info)
 {
     println("Deleting test cluster")
     if ("${dryrun}" == '1') {

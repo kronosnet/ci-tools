@@ -57,7 +57,7 @@ def post_run_test(Map info, Map locals)
     archiveArtifacts artifacts: "${logdst}", fingerprint: false
 }
 
-def call(String testtags, Map info, String testtag, Integer nodes, Integer timeout)
+def call(Map info, String testtags, String testtag, Integer nodes, Integer timeout)
 {
     // bypass sandbox check
     def testtimeout = timeout
@@ -87,7 +87,7 @@ def call(String testtags, Map info, String testtag, Integer nodes, Integer timeo
 
     // handle errors et all
     if (locals['RET'] != 'OK') {
-	recover_cluster(info['nodes'])
+	recover_cluster(info)
 	catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
 	    sh 'exit 1'
 	}

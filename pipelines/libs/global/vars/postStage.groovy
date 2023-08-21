@@ -47,7 +47,7 @@ def call(Map info)
     // Fail the pipeline if any voting jobs failed
     info['state'] = 'success'
     if (info['voting_fail'] > 0) {
-	currentBuild.result = 'FAILED'
+	currentBuild.result = 'FAILURE'
 	info['state'] = 'failure'
 	error('Failed voting stage(s) caused build to abort')
     }

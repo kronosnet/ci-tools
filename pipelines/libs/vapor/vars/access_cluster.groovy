@@ -1,4 +1,4 @@
-def call()
+def call(Map info)
 {
     println("Waiting for cluster to boot")
     if ("${dryrun}" == '1') {

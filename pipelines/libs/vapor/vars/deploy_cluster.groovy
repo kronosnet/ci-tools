@@ -1,4 +1,4 @@
-def call()
+def call(Map info)
 {
     println("Deploy test cluster")
     if ("${dryrun}" == '1') {

@@ -53,7 +53,7 @@ case $build in
   # TODO: fix pagure coverity handling once we move to new pipelines
   case "$DEST" in
    gfs2-util*|dlm|ci-test-pagure)
-    echo "Complete html report can be found here: https://kronosnet.org/coverity/$DEST/${NODE_NAME}/${BUILD_NUMBER}/"
+    echo "Complete html report can be found here: https://ci.kronosnet.org/coverity/$DEST/${NODE_NAME}/${BUILD_NUMBER}/"
     exit 0
    ;;
   esac
@@ -83,10 +83,10 @@ case $build in
     echo "===== END NEW COVERITY SCAN ERRORS DETECTED ====="
     ret=1
     cat cov.diff | cshtml - > cov-index.html
-    echo "New errors can be found here: https://kronosnet.org/coverity/$DEST/${NODE_NAME}/${BUILD_NUMBER}/new/"
+    echo "New errors can be found here: https://ci.kronosnet.org/coverity/$DEST/${NODE_NAME}/${BUILD_NUMBER}/new/"
    fi
   fi
-  echo "Complete html report can be found here: https://kronosnet.org/coverity/$DEST/${NODE_NAME}/${BUILD_NUMBER}/"
+  echo "Complete html report can be found here: https://ci.kronosnet.org/coverity/$DEST/${NODE_NAME}/${BUILD_NUMBER}/"
 
   exit $ret
   ;;

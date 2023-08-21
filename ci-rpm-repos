@@ -90,7 +90,7 @@ OpenSUSE users, please browse the knet/ folder for appropriate builds for your d
 You can use zypper to enable those repositories.
 
 For example use the following command to add the repository:
-zypper add https://kronosnet.org/builds/knet/opensuse-tumbleweed-x86-64/main/latest/ knet
+zypper add https://ci.kronosnet.org/builds/knet/opensuse-tumbleweed-x86-64/main/latest/ knet
 
 and to enable and autorefresh:
 zypper mr -e -f -G knet
@@ -112,8 +112,7 @@ EOF
 			cat > $rpmdir/$i-$b-$x.repo << EOF
 [$i-$b-$x]
 name=$i-$b-$x
-baseurl=https://kronosnet.org/builds/$i/$x/$b/latest/
-        https://ci.kronosnet.org/builds/$i/$x/$b/latest/
+baseurl=https://ci.kronosnet.org/builds/$i/$x/$b/latest/
 repo_gpgcheck=0
 enabled=1
 gpgcheck=0
@@ -139,7 +138,7 @@ EOF
 			cat > $rpmdir/$i-$x.repo << EOF
 [$i-$x]
 name=$i-$x
-baseurl=https://kronosnet.org/builds/$i/$x/
+baseurl=https://ci.kronosnet.org/builds/$i/$x/
 repo_gpgcheck=0
 enabled=1
 gpgcheck=0

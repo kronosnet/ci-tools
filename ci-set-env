@@ -309,44 +309,44 @@ if [ "$build" != "rpm" ]; then
 
 else
 
- LIBQB_REPO=https://kronosnet.org/builds/libqb-main-${NODE_NAME}.repo
- LIBQB_REPO_PATH=https://kronosnet.org/builds/libqb/${NODE_NAME}/main/latest/
+ LIBQB_REPO=https://ci.kronosnet.org/builds/libqb-main-${NODE_NAME}.repo
+ LIBQB_REPO_PATH=https://ci.kronosnet.org/builds/libqb/${NODE_NAME}/main/latest/
 
- DLM_REPO=https://kronosnet.org/builds/dlm-main-${NODE_NAME}.repo
- DLM_REPO_PATH=https://kronosnet.org/builds/dlm/${NODE_NAME}/main/latest/
+ DLM_REPO=https://ci.kronosnet.org/builds/dlm-main-${NODE_NAME}.repo
+ DLM_REPO_PATH=https://ci.kronosnet.org/builds/dlm/${NODE_NAME}/main/latest/
 
- GFS2UTILS_REPO=https://kronosnet.org/builds/gfs2-utils-main-${NODE_NAME}.repo
- GFS2UTILS_REPO_PATH=https://kronosnet.org/builds/gfs2-utils/${NODE_NAME}/main/latest/
+ GFS2UTILS_REPO=https://ci.kronosnet.org/builds/gfs2-utils-main-${NODE_NAME}.repo
+ GFS2UTILS_REPO_PATH=https://ci.kronosnet.org/builds/gfs2-utils/${NODE_NAME}/main/latest/
 
- QDEVICE_REPO=https://kronosnet.org/builds/corosync-qdevice-main-${NODE_NAME}.repo
- QDEVICE_REPO_PATH=https://kronosnet.org/builds/corosync-qdevice/${NODE_NAME}/main/latest/
+ QDEVICE_REPO=https://ci.kronosnet.org/builds/corosync-qdevice-main-${NODE_NAME}.repo
+ QDEVICE_REPO_PATH=https://ci.kronosnet.org/builds/corosync-qdevice/${NODE_NAME}/main/latest/
 
- SBD_REPO=https://kronosnet.org/builds/sbd-main-pcmk-${pcmkver}-${NODE_NAME}.repo
- SBD_REPO_PATH=https://kronosnet.org/builds/sbd/${NODE_NAME}/main-pcmk-${pcmkver}/latest/
+ SBD_REPO=https://ci.kronosnet.org/builds/sbd-main-pcmk-${pcmkver}-${NODE_NAME}.repo
+ SBD_REPO_PATH=https://ci.kronosnet.org/builds/sbd/${NODE_NAME}/main-pcmk-${pcmkver}/latest/
 
- FAS_REPO=https://kronosnet.org/builds/fence-agents-main-${NODE_NAME}.repo
- FAS_REPO_PATH=https://kronosnet.org/builds/fence-agents/${NODE_NAME}/main/latest/
+ FAS_REPO=https://ci.kronosnet.org/builds/fence-agents-main-${NODE_NAME}.repo
+ FAS_REPO_PATH=https://ci.kronosnet.org/builds/fence-agents/${NODE_NAME}/main/latest/
 
- RAS_REPO=https://kronosnet.org/builds/resource-agents-main-${NODE_NAME}.repo
- RAS_REPO_PATH=https://kronosnet.org/builds/resource-agents/${NODE_NAME}/main/latest/
+ RAS_REPO=https://ci.kronosnet.org/builds/resource-agents-main-${NODE_NAME}.repo
+ RAS_REPO_PATH=https://ci.kronosnet.org/builds/resource-agents/${NODE_NAME}/main/latest/
 
- BOOTH_REPO=https://kronosnet.org/builds/booth-main-pcmk-${pcmkver}-${NODE_NAME}.repo
- BOOTH_REPO_PATH=https://kronosnet.org/builds/booth/${NODE_NAME}/main-pcmk-${pcmkver}/latest/
+ BOOTH_REPO=https://ci.kronosnet.org/builds/booth-main-pcmk-${pcmkver}-${NODE_NAME}.repo
+ BOOTH_REPO_PATH=https://ci.kronosnet.org/builds/booth/${NODE_NAME}/main-pcmk-${pcmkver}/latest/
 
  if [ "$CITARGET" = "origin/main" ]; then
-  KNET_REPO=https://kronosnet.org/builds/knet-main-${NODE_NAME}.repo
-  KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/main/latest/
-  COROSYNC_REPO=https://kronosnet.org/builds/corosync-main-${NODE_NAME}.repo
-  COROSYNC_REPO_PATH=https://kronosnet.org/builds/corosync/${NODE_NAME}/main/latest/
-  PCMK_REPO=https://kronosnet.org/builds/pacemaker-main-${NODE_NAME}.repo
-  PCMK_REPO_PATH=https://kronosnet.org/builds/pacemaker/${NODE_NAME}/main/latest/
+  KNET_REPO=https://ci.kronosnet.org/builds/knet-main-${NODE_NAME}.repo
+  KNET_REPO_PATH=https://ci.kronosnet.org/builds/knet/${NODE_NAME}/main/latest/
+  COROSYNC_REPO=https://ci.kronosnet.org/builds/corosync-main-${NODE_NAME}.repo
+  COROSYNC_REPO_PATH=https://ci.kronosnet.org/builds/corosync/${NODE_NAME}/main/latest/
+  PCMK_REPO=https://ci.kronosnet.org/builds/pacemaker-main-${NODE_NAME}.repo
+  PCMK_REPO_PATH=https://ci.kronosnet.org/builds/pacemaker/${NODE_NAME}/main/latest/
  else
-  KNET_REPO=https://kronosnet.org/builds/knet-stable1-proposed-${NODE_NAME}.repo
-  KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/stable1-proposed/latest/
-  COROSYNC_REPO=https://kronosnet.org/builds/corosync-camelback-${NODE_NAME}.repo
-  COROSYNC_REPO_PATH=https://kronosnet.org/builds/corosync/${NODE_NAME}/camelback/latest/
-  PCMK_REPO="https://kronosnet.org/builds/pacemaker-${PCMK_RELEASE}-${NODE_NAME}.repo"
-  PCMK_REPO_PATH="https://kronosnet.org/builds/pacemaker/${NODE_NAME}/${PCMK_RELEASE}/latest/"
+  KNET_REPO=https://ci.kronosnet.org/builds/knet-stable1-proposed-${NODE_NAME}.repo
+  KNET_REPO_PATH=https://ci.kronosnet.org/builds/knet/${NODE_NAME}/stable1-proposed/latest/
+  COROSYNC_REPO=https://ci.kronosnet.org/builds/corosync-camelback-${NODE_NAME}.repo
+  COROSYNC_REPO_PATH=https://ci.kronosnet.org/builds/corosync/${NODE_NAME}/camelback/latest/
+  PCMK_REPO="https://ci.kronosnet.org/builds/pacemaker-${PCMK_RELEASE}-${NODE_NAME}.repo"
+  PCMK_REPO_PATH="https://ci.kronosnet.org/builds/pacemaker/${NODE_NAME}/${PCMK_RELEASE}/latest/"
  fi
 
  case "$DEST" in
@@ -354,20 +354,20 @@ else
    # corosync supports both knet stable and knet main
    # we need to test build both
    if [ -n "${knetver}" ]; then
-    KNET_REPO=https://kronosnet.org/builds/knet-${knetver}-${NODE_NAME}.repo
-    KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/${knetver}/latest/
+    KNET_REPO=https://ci.kronosnet.org/builds/knet-${knetver}-${NODE_NAME}.repo
+    KNET_REPO_PATH=https://ci.kronosnet.org/builds/knet/${NODE_NAME}/${knetver}/latest/
    fi
    ;;
   sbd|booth|pcs)
    # booth and sbd only have a main branch, but they need
    # different settings when building against pcmk main or release
    if [ "${pcmkver}" = "${PCMK_RELEASE}" ]; then
-    KNET_REPO=https://kronosnet.org/builds/knet-stable1-proposed-${NODE_NAME}.repo
-    KNET_REPO_PATH=https://kronosnet.org/builds/knet/${NODE_NAME}/stable1-proposed/latest/
-    COROSYNC_REPO=https://kronosnet.org/builds/corosync-camelback-${NODE_NAME}.repo
-    COROSYNC_REPO_PATH=https://kronosnet.org/builds/corosync/${NODE_NAME}/camelback/latest/
-    PCMK_REPO=https://kronosnet.org/builds/pacemaker-${PCMK_RELEASE}-${NODE_NAME}.repo
-    PCMK_REPO_PATH=https://kronosnet.org/builds/pacemaker/${NODE_NAME}/${PCMK_RELEASE}/latest/
+    KNET_REPO=https://ci.kronosnet.org/builds/knet-stable1-proposed-${NODE_NAME}.repo
+    KNET_REPO_PATH=https://ci.kronosnet.org/builds/knet/${NODE_NAME}/stable1-proposed/latest/
+    COROSYNC_REPO=https://ci.kronosnet.org/builds/corosync-camelback-${NODE_NAME}.repo
+    COROSYNC_REPO_PATH=https://ci.kronosnet.org/builds/corosync/${NODE_NAME}/camelback/latest/
+    PCMK_REPO=https://ci.kronosnet.org/builds/pacemaker-${PCMK_RELEASE}-${NODE_NAME}.repo
+    PCMK_REPO_PATH=https://ci.kronosnet.org/builds/pacemaker/${NODE_NAME}/${PCMK_RELEASE}/latest/
    fi
    ;;
  esac

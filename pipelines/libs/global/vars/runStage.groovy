@@ -99,7 +99,7 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	    stage("${stageName} on ${agentName} - get covscan artifacts") {
 		node('built-in') {
 		    cmdWithTimeout(collect_timeout,
-				   "~/ci-tools/ci-get-artifacts ${agentName} ${info['workspace']} cov/${info['project']}/${agentName}/${env.BUILD_NUMBER}/ cov",
+				   "~/ci-tools/ci-get-artifacts ${agentName} ${info['workspace']} coverity/${info['project']}/${agentName}/${env.BUILD_NUMBER}/ cov",
 				   info, locals, {}, { postFnError(info, locals) })
 		}
 	    }
@@ -111,11 +111,11 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 		node('built-in') {
 		    if (info['isPullRequest']) {
 			cmdWithTimeout(collect_timeout,
-				       "~/ci-tools/ci-get-artifacts ${agentName} ${info['workspace']} rpmrepos/${info['project']}/pr/${info['pull_id']}/${agentName} rpm",
+				       "~/ci-tools/ci-get-artifacts ${agentName} ${info['workspace']} builds/${info['project']}/pr/${info['pull_id']}/${agentName} rpm",
 				       info, locals, {}, { postFnError(info, locals) })
 		    } else {
 			cmdWithTimeout(collect_timeout,
-				       "~/ci-tools/ci-get-artifacts ${agentName} ${info['workspace']} rpmrepos/${info['project']}/${agentName}/${info['actual_commit']}/${env.BUILD_NUMBER}/ rpm",
+				       "~/ci-tools/ci-get-artifacts ${agentName} ${info['workspace']} builds/${info['project']}/${agentName}/${info['actual_commit']}/${env.BUILD_NUMBER}/ rpm",
 				       info, locals, {}, { postFnError(info, locals) })
 		    }
 		}

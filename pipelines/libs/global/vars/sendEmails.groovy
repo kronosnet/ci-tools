@@ -71,6 +71,11 @@ def call(Map info)
 	println('build has been ignored, not sending emails')
 	return
     }
+    // Did we REALLY (li,e properly) fail??
+    if (currentBuild.result == 'FAILURE') {
+	state = 'failure'
+    }
+
 
     if (info['exception_text'] != '') {
 	info['exception_text'] = "\nPlease report the following errors to your friendly local Jenkins admin (though they have probably already seen them and are already panicking).\n" +
@@ -151,41 +156,59 @@ ${info['exception_text']}
 	stage_s = ''
     }
 
-    // Now actually send the email
+    // Now build the email bits
+    def subject = ''
+    def body = ''
     if (state == 'success' || state == 'completed') {
-	if (nonvoting_fail > 0) {
-	    mail to: email_addrs,
-		replyTo: "${email_replyto}",
-		subject: "${email_title} succeeded but with ${nonvoting_fail}/${nonvoting_run} non-voting fail${nonvoting_s}",
-		body: """
+	// If this pipeline has 'stages' rather than voting/non-voting, then show 'stages' failed
+	// FN testing jobs 'complete' but can have stage failures.
+	if (stages_fail > 0) {
+		subject = "${email_title} completed with state: ${state}"
+		body = """
+${stages_fail}/${stages_run} Stage${stage_s} failed${stages_colon} ${info['stages_fail_nodes']}
+${email_trailer}
+"""
+	} else if (nonvoting_fail > 0) {
+	    // Only non-voting fails
+	    subject = "${email_title} succeeded but with ${nonvoting_fail}/${nonvoting_run} non-voting fail${nonvoting_s}"
+	    body = """
 failed job${nonvoting_s}: ${info['nonvoting_fail_nodes']}
 ${email_trailer}
 """
 	} else {
-	    mail to: email_addrs,
-		replyTo: "${email_replyto}",
-		subject: "${email_title} ${state}",
-		body: "${email_trailer}"
+	    // Just a normal success
+	    subject = "${email_title} ${state}"
+	    body = email_trailer
 	}
+
+	// Failures...
+    } else if (voting_fail == 0) {
+	// Failed but no voting/nonvoting jobs
+	subject = "${email_title} ${state}"
+	body = email_trailer
     } else {
-	// If this pipeline has 'stages' rather than voting/non-voting, then show 'stages' failed
-	if (stages_fail > 0) {
-	    mail to: email_addrs,
-		replyTo: "${email_replyto}",
-		subject: "${email_title} completed with state: ${state}",
-		body: """
-${stages_fail}/${stages_run} Stage${stage_s} failed${stages_colon} ${info['stages_fail_nodes']}
-${email_trailer}
-"""
-	} else {
-	    mail to: email_addrs,
-		replyTo: "${email_replyto}",
-		subject: "${email_title} completed with state: ${state}",
-		body: """
+	// Normal failure with voting/nonvoting jobs
+	subject = "${email_title} completed with state: ${state}"
+	body = """
 ${nonvoting_fail}/${nonvoting_run} Non-voting fail${nonvoting_s}${nonvoting_colon} ${info['nonvoting_fail_nodes']}
 ${voting_fail}/${voting_run} Voting fail${voting_s}${voting_colon} ${info['voting_fail_nodes']}
 ${email_trailer}
 """
-	}
     }
+
+    // Dump the email text to the log, so it doesn't get lost
+    println("""
+email contents:
+
+To: ${email_addrs}
+ReplyTo: ${email_replyto}
+Subject: ${subject}
+${body}
+""")
+
+    // Actually send it
+    mail to: email_addrs,
+	replyTo: email_replyto,
+	subject: subject,
+	body: body
 }

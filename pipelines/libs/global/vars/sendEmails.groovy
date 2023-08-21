@@ -63,6 +63,9 @@ def call(Map info)
     if (!info.containsKey('email_extra_text')) {
 	info['email_extra_text'] = ''
     }
+    if (!info.containsKey('exception_text')) {
+	info['exception_text'] = ''
+    }
 
     if (state == 'build-ignored') {
 	println('build has been ignored, not sending emails')
@@ -149,7 +152,7 @@ ${info['exception_text']}
     }
 
     // Now actually send the email
-    if (state == "success") {
+    if (state == 'success' || state == 'completed') {
 	if (nonvoting_fail > 0) {
 	    mail to: email_addrs,
 		replyTo: "${email_replyto}",
@@ -161,7 +164,7 @@ ${email_trailer}
 	} else {
 	    mail to: email_addrs,
 		replyTo: "${email_replyto}",
-		subject: "${email_title} succeeded",
+		subject: "${email_title} ${state}",
 		body: "${email_trailer}"
 	}
     } else {

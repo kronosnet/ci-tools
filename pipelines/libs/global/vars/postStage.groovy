@@ -3,8 +3,10 @@ def call(Map info)
 {
     def publish_timeout = 15 // Minutes
 
-    // Archive the accumulated covscan results
-    if (info['fullrebuild'] != '1') { // Covers the case where it might be null too
+    // Don't do this for the weekly jobs
+    if (info['fullrebuild'] != '1') {
+
+	// Archive the accumulated covscan results
 	stage("Publish Coverity results") {
 	    node('built-in') {
 		lock('ci-cov-repos') { // This script needs to be serialised
@@ -14,21 +16,22 @@ def call(Map info)
 		}
 	    }
 	}
-    }
 
-    // Archive the accumulated RPMs (IFF all rpm builds suceeded)
-    if ((info['buildrpms_failed'] != 1) &&
-	(info['publishrpm'] == 1) &&
-	(info['fullrebuild'] != '1')) { // Covers the case where it might be null too
-	stage("Publish RPMs") {
-	    node('built-in') {
-		lock('ci-rpm-repos') { // This script needs to be serialised
-		    timeout (time: publish_timeout, unit: 'MINUTES') {
-			sh "~/ci-tools/ci-rpm-repos ${info['project']} ${info['actual_commit']} ${info['EXTRAVER']}"
+	// Archive the accumulated RPMs (IFF all rpm builds suceeded)
+	if ((info['buildrpms_failed'] != 1) &&
+	    (info['publishrpm'] == 1)) {
+	    stage("Publish RPMs") {
+		node('built-in') {
+		    lock('ci-rpm-repos') { // This script needs to be serialised
+			timeout (time: publish_timeout, unit: 'MINUTES') {
+			    sh "~/ci-tools/ci-rpm-repos ${info['project']} ${info['actual_commit']} ${info['EXTRAVER']}"
+			}
 		    }
 		}
 	    }
 	}
+    } else {
+	println("fullrebuild set - rpm & covscan repos not updated")
     }
 
     // Clean up the tarball containing the sources

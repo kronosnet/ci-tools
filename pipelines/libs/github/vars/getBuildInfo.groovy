@@ -90,7 +90,18 @@ def call(String project)
     info['bootstrap'] = params.bootstrap
     info['fullrebuild'] = params.fullrebuild
 
-    // Copy the SCM into artifacts so that other nodes can use them
+    // fullrebuild overrides some things
+    if (info['fullrebuild'] == '1') { // params are always strings
+	info['install'] = 0
+	info['covinstall'] = 0
+	info['maininstall'] = 0
+	info['publish_rpm'] = 0 // TODO Remove once all in new pipelines
+	info['publishrpm'] = 0
+    }
+
+    // Copy the SCM into artifacts so that other nodes can use them.
+    // catchError makes sure that info[:] is returned even if it fails,
+    // so that sendEmails knows what to do
     catchError {
 	getSCM(info)
     }

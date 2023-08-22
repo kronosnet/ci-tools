@@ -136,8 +136,6 @@ fi
 
 # CITARGET is used only here to setup pcmk versions
 # and CFLAGS / rpmrepo variables, and in coverity scan check.
-# in a similar fashion we have a GIT_BRANCH leftover in coverity scan
-# that´s why coverity works properly only in github (diff version).
 echo CITARGET $CITARGET
 
 # Latest Pacemaker release branch

@@ -32,16 +32,6 @@ def call(String project, String upstream_repo)
     // Create the main dictionary
     def info = ['isPullRequest': isPullRequest]
     info['project'] = project
-    info['nonvoting_fail'] = 0
-    info['nonvoting_fail_nodes'] = ''
-    info['voting_fail'] = 0
-    info['voting_fail_nodes'] = ''
-    info['nonvoting_run'] = 0
-    info['voting_run'] = 0
-    info['state'] = 'script error'
-    info['email_extra_text'] = ''
-    info['exception_text'] = ''
-
     info['upstream_repo'] = upstream_repo
 
     // pagure needs credentials only to post comments on PRs.
@@ -100,7 +90,6 @@ def call(String project, String upstream_repo)
 	info['jobname'] = "${env.BRANCH} ${env.cause}"
 	info['branch'] = "${env.BRANCH}"
     }
-    info['covopts'] = getCovOpts(info['target'])
     // because the pipeline has no concept of git checkout, we cannot filter
     // branches to build from Jenkins. This check avoid contributors pushing
     // to upstream_repo branch foo and have "free builds".
@@ -111,20 +100,10 @@ def call(String project, String upstream_repo)
 	info['state'] = 'build-ignored'
 	return info
     }
+    info['covopts'] = getCovOpts(info['target'])
 
-    // Make sure the params are in here so they get propogated to the scripts
-    info['bootstrap'] = params.bootstrap
-    info['fullrebuild'] = params.fullrebuild
-
-    // fullrebuild overrides some things
-    if (info['fullrebuild'] == '1') { // params are always strings
-	info['install'] = 0
-	info['covinstall'] = 0
-	info['maininstall'] = 0
-	info['stableinstall'] = 0
-	info['publish_rpm'] = 0 // TODO Remove once all in new pipelines
-	info['publishrpm'] = 0
-    }
+    // Fill in the common parts
+    getBuildInfoCommon(info)
 
     // Copy the SCM into artifacts so that other nodes can use them.
     // catchError makes sure that info[:] is returned even if it fails,
@@ -132,6 +111,7 @@ def call(String project, String upstream_repo)
     catchError {
 	getSCM(info)
     }
+
     println("info map: ${info}")
     return info
 }

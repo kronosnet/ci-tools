@@ -19,14 +19,6 @@ def call(String project)
     // Create the main dictionary
     def info = ['isPullRequest': isPullRequest]
     info['project'] = project
-    info['nonvoting_fail'] = 0
-    info['nonvoting_fail_nodes'] = ''
-    info['voting_fail'] = 0
-    info['voting_fail_nodes'] = ''
-    info['nonvoting_run'] = 0
-    info['voting_run'] = 0
-    info['exception_text'] = ''
-    info['state'] = 'script error'
 
     // Validate the user. This should Abort if disallowed.
     cred_uuid = getCredUUID()
@@ -35,7 +27,6 @@ def call(String project)
     }
 
     // Display/kill any old duplicates of this job that are running
-    info['email_extra_text'] = ''
     killDuplicateJobs(info)
 
     // Set parameters for the sub-jobs.
@@ -86,19 +77,7 @@ def call(String project)
     info['is_draft'] = is_draft
     info['covopts'] = getCovOpts(info['target'])
 
-    // Make sure the params are in here so they get propogated to the scripts
-    info['bootstrap'] = params.bootstrap
-    info['fullrebuild'] = params.fullrebuild
-
-    // fullrebuild overrides some things
-    if (info['fullrebuild'] == '1') { // params are always strings
-	info['install'] = 0
-	info['covinstall'] = 0
-	info['maininstall'] = 0
-	info['stableinstall'] = 0
-	info['publish_rpm'] = 0 // TODO Remove once all in new pipelines
-	info['publishrpm'] = 0
-    }
+    getBuildInfoCommon(info)
 
     // Copy the SCM into artifacts so that other nodes can use them.
     // catchError makes sure that info[:] is returned even if it fails,

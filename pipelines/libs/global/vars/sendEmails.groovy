@@ -121,6 +121,7 @@ def call(Map info)
 	email_title = "[jenkins] ${info['project']} ${branch} (build ${env.BUILD_ID})"
     } else {
 	email_title = "[jenkins][cidev] ${info['project']} ${branch} (build ${env.BUILD_ID})"
+	email_addrs = "fdinitto@redhat.com, ccaulfie@redhat.com"
     }
 
     def email_trailer = """total runtime: ${jobDuration}

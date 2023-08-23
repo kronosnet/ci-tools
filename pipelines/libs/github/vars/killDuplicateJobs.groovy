@@ -15,9 +15,9 @@ def call(Map info)
 	try {
 	    Jenkins.instance.getAllItems(Job).each{
 		def jobBuilds=it.getBuilds()
-		for (i = 0; i< jobBuilds.size(); i++) {
+		for (i = 0; i < jobBuilds.size(); i++) {
 		    jobBuilds[i].each { build ->
-			if (build.isBuilding()) {
+			if (build.isInProgress()) {
 			    def String name = build // convert it to an actual string
 			    def this_jobname = name.substring(0, name.indexOf(' '))
 			    def this_jobnum = name.substring(name.indexOf('#')+1)

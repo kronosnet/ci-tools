@@ -1,4 +1,3 @@
-// based on https://gist.github.com/mramanathan/b1e7e92a3953d28b3b9f856f6bb18412
 
 import jenkins.model.*
 
@@ -6,24 +5,32 @@ import jenkins.model.*
 // labelled NonCPS so it runs (effectively) atomically
 // without saving state.
 @NonCPS
-def getNodes(String label) {
-    jenkins.model.Jenkins.instance.nodes.collect { thisAgent ->
+def getLabelledNodes(String label) {
+    def nodelist = []
+    for (thisAgent in jenkins.model.Jenkins.instance.nodes) {
 	labelarray = thisAgent.labelString.split(' ')
-        if (labelarray.contains("${label}")) {
-            return thisAgent.name
+        if (labelarray.contains(label)) {
+            nodelist += thisAgent.name
         }
     }
+    return nodelist
 }
+
 
 // This is the bit that does most of the work
 def buildTheRunMap(List nodeList, String label, Map info, Boolean voting, Map extravars, String exclude_regexp) {
     collectBuildEnv = [:]
 
+    // These are nodes that are deliberately switched off and should be ignored
+    def downnodes = getLabelledNodes('down')
+    println('"Down" nodes: '+downnodes);
+
     for (i=0; i<nodeList.size(); i++) {
         def agentName = nodeList[i]
 
         // Skip any null entries and exclusions
-        if (agentName != null && !agentName.matches(exclude_regexp)) {
+        if (agentName != null && !agentName.matches(exclude_regexp) &&
+	    !downnodes.contains(agentName)) {
             collectBuildEnv[label + '_' + agentName] = {
 		// This works because runStage is also in the global library
                 runStage(info, agentName, label, voting, extravars)

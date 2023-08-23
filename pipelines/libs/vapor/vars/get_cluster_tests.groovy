@@ -228,13 +228,13 @@ def kernel_all_tags_generic_nodes() {
 }
 
 // wrapper
-def call(Map info, String testtags, String testvariant, String level, Integer nodes)
+def call(Map info)
 {
-    method = "${testvariant}_${level}_${testtags}_${nodes}_nodes"
+    method = "${info['testvariant']}_${info['tests']}_${info['testtype']}_${info['nodes']}_nodes"
     try {
 	"$method"()
     } catch (java.lang.Throwable ex) {
-	method = "${testvariant}_${level}_${testtags}_generic_nodes"
+	method = "${info['testvariant']}_${info['tests']}_${info['testtype']}_generic_nodes"
 	try {
 	    "$method"()
 	} catch (java.lang.Throwable genex) {

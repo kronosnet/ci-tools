@@ -1,22 +1,36 @@
 // Jenkinsfile for the kernel-ark project
 
-@Library(['GlobalLib', 'ProjectLib']) _
+@Library(['GlobalLib', 'VaporLib', 'ProjectLib']) _
 
 // Globals
 def project = 'kernel-ark'
+def projectid = 'kft'
 
-String[] tests = ['setup', 'cleanup', 'skeet']
+// kernel-ark overrides
+def provider = 'libvirtd'
+def fromnodes = 3
+def tonodes = 3
+def rhelver = '9'
+def zstream = 'no'
+def upstream = 'next-stable-kernel'
+def iscsi = '0'
+def block = '110'
+def testvariant = 'kernel'
+def tests = 'all'
 
 pipeline {
-    agent { label 'libvirtd' }
+    agent { label "${provider}" }
 
     parameters {
-	string(name: 'testtag', defaultValue: 'brawl_quick', description: 'vedder tag')
-	string(name: 'timeout', defaultValue: '720', description: 'timeout in minutes')
+	string(name: 'testlist', defaultValue: 'auto', description: 'override auto generated test list. Set to empty to skip running tests')
+	string(name: 'taglist', defaultValue: 'auto', description: 'override auto generated tag list. Set to empty to skip running tags')
+	string(name: 'testtimeout', defaultValue: '60', description: 'timeout for running any test (in minutes)')
+	string(name: 'tagtimeout', defaultValue: '360', description: 'timeout for running any tag (in minutes)')
+	string(name: 'dryrun', defaultValue: '0', description: 'set to 1 to see what the pipeline would do, without actually doing anything')
+	string(name: 'skipkernelbuild', defaultValue: '0', description: 'set to 1 to only run tests on current kernel')
     }
 
     options {
-	timeout(time: "${params.timeout}", unit: 'MINUTES')
 	// This is required if you want to clean before build
 	// and kernel build is done via cache clone
 	skipDefaultCheckout(true)
@@ -29,23 +43,41 @@ pipeline {
     }
 
     stages {
-	stage('kernel build') {
-	    stages {
-		// This is the main stage that covers everything
-		stage('Prep workspace') {
-		    steps {
-			// Clean before build
-			sh 'env|sort'
+	stage('Validate build env') {
+	    steps {
+		script {
+		    info = getBuildInfo(project, projectid)
+		    info['provider'] = provider
+		    info['fromnodes'] = fromnodes
+		    info['tonodes'] = tonodes
+		    info['rhelver'] = rhelver
+		    info['zstream'] = zstream
+		    info['upstream'] = upstream
+		    info['iscsi'] = iscsi
+		    info['block'] = block
+		    info['tests'] = tests
+		    info['testvariant'] = testvariant
+		    info['testlist'] = "${params.testlist}"
+		    info['taglist'] = "${params.taglist}"
+		    info['testtimeout'] = "${params.testtimeout}" as int
+		    info['tagtimeout'] = "${params.tagtimeout}" as int
+		    info['dryrun'] = "${params.dryrun}"
 
+		    println("info map: ${info}")
+
+		    stage('Prep workspace') {
 			cleanWs(disableDeferredWipeout: true, deleteDirs: true)
-
-			sh '''
-			    echo "Delete any old test cluster"
-			    cd $HOME/ci-tools/fn-testing
-			    ./validate-cloud -c delete -p libvirtd -d -r 9
-			'''
+			delete_cluster(info)
 		    }
 		}
+	    }
+	}
+	stage('kernel build') {
+	    when {
+		expression { "${params.skipkernelbuild}" == '0' }
+	    }
+	    stages {
+		// This is the main stage that covers everything
 		stage('Populating kernel-ark cache') {
 		    steps {
 			sh '''
@@ -170,60 +202,57 @@ pipeline {
 	    stages {
 		stage('Create test cluster') {
 		    steps {
-			sh '''
-			    echo "Creating test cluster"
-			    cd $HOME/ci-tools/fn-testing
-			    ./validate-cloud -c create -p libvirtd -d -r 9 -n 3 -s 110 -i 0
-			'''
+			create_cluster(info)
 		    }
 		}
 		stage('Check test cluster availability') {
 		    steps {
-			sh '''
-			    echo "Waiting for cluster to boot"
-			    cd $HOME/ci-tools/fn-testing
-			    wsip=$(./validate-cloud -c ip -p libvirtd -r 9)
-			    waittimeout=600
-
-			    while ! nc -z $wsip 22 && [ "$waittimeout" -gt "0" ]; do
-				sleep 1
-				waittimeout=$((waittimeout - 1))
-			    done
-
-			    if [ "$waittimeout" = "0" ]; then
-				echo "Cluster failed to boot"
-				exit 1
-			    fi
-
-			    echo "Cluster done booting"
-			'''
+			access_cluster(info)
 		    }
 		}
 		stage('Deploy test cluster') {
 		    steps {
-			sh '''
-			    echo "Deploy test cluster"
-			    cd $HOME/ci-tools/fn-testing
-			    ./validate-cloud -c deploy -p libvirtd -d -r 9 -i 0 -u next-stable-kernel
-			'''
+			deploy_cluster(info)
 		    }
 		}
 		stage('Run tests') {
 		    steps {
 			script {
-			    for (test in tests) {
-				stage("Run vedder test: ${test}") {
-				    sh """
-					cd $HOME/ci-tools/fn-testing
-					./validate-cloud -c test -p libvirtd -d -r 9 -j "jenkins:${BUILD_URL}" -n 3 -e -t ${test}
-				    """
+			    for (info['nodes'] = info['fromnodes']; info['nodes'] <= info['tonodes']; info['nodes']++) {
+
+				// tests
+				info['testtype'] = 'tests'
+				info['runtesttimeout'] = info['testtimeout']
+				def finaltestlist = [ ]
+				if ("${info['testlist']}" == 'auto') {
+				    finaltestlist = get_cluster_tests(info)
+				} else if ("${info['testlist']}" != '') {
+				    finaltestlist = "${info['testlist']}".split(';')
 				}
-			    }
-			    stage("Run vedder tag: ${params.testtag}") {
-				sh """
-				    cd $HOME/ci-tools/fn-testing
-				    ./validate-cloud -c test -p libvirtd -d -r 9 -j "jenkins:${BUILD_URL}" -n 3 -e -T ${params.testtag}
-				"""
+				println(finaltestlist)
+				for (test in finaltestlist) {
+				    info['runtest'] = test
+				    stage("Run test '${info['runtest']}' on ${info['nodes']} nodes") {
+					run_cluster_test(info)
+				    }
+				}
+
+				// tags
+				info['testtype'] = 'tags'
+				info['runtesttimeout'] = info['tagtimeout']
+				def finaltaglist = [ ]
+				if ("${info['taglist']}" == 'auto') {
+				    finaltaglist = get_cluster_tests(info)
+				} else if ("${info['taglist']}" != '') {
+				    finaltaglist = "${info['taglist']}".split(';')
+				}
+				println(finaltaglist)
+				for (test in finaltaglist) {
+				    info['runtest'] = test
+				    stage("Run tag '${info['runtest']}' on ${info['nodes']} nodes") {
+					run_cluster_test(info)
+				    }
+				}
 			    }
 			}
 		    }
@@ -233,23 +262,14 @@ pipeline {
     }
 
     post {
-	success {
-	    script {
-		postFunctions(['project': project, 'state': 'success'])
-	    }
-	}
-	failure {
-	    script {
-		postFunctions(['project': project, 'state': 'failure'])
-	    }
-	}
 	always {
-	    sh '''
-		echo "Deleting test cluster"
-		cd $HOME/ci-tools/fn-testing
-		./validate-cloud -c delete -p libvirtd -r 9
-	    '''
+	    delete_cluster(info)
 	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+	    node('built-in') {
+		script {
+		    sendEmails(info)
+		}
+	    }
 	}
     }
 }

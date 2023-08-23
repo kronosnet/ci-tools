@@ -3,13 +3,7 @@
 @Library(['GlobalLib', 'VaporLib', 'ProjectLib']) _
 
 def project = 'ha-functional-testing'
-
-// convert string params to int
-def minnodes = "${fromnodes}" as int
-def maxnodes = "${tonodes}" as int
-def testtimeout = "${testtimeout}" as int
-def tagtimeout = "${tagtimeout}" as int
-def info = [:]
+def projectid = 'haft'
 
 pipeline {
     agent { label "${provider}" }
@@ -22,24 +16,19 @@ pipeline {
 	stage('Prepare test cluster') {
 	    steps {
 		script {
-		    info['project'] = project
-		    info['stages_fail_nodes'] = ''
-		    info['stages_fail'] = 0
-		    info['stages_run'] = 0
-		    info['state'] = 'completed'
+		    info = getBuildInfo(project, projectid)
 
 		    stage('Prep build env') {
 			cleanWs(disableDeferredWipeout: true, deleteDirs: true)
-			sh 'env|sort'
 			delete_cluster(info)
 		    }
-		    stage("Create ${provider} rhel${rhelver} test cluster") {
-			create_cluster(info, maxnodes)
+		    stage("Create ${info['provider']} rhel${info['rhelver']} test cluster") {
+			create_cluster(info)
 		    }
-		    stage("Check ${provider} rhel${rhelver} test cluster availability") {
+		    stage("Check ${info['provider']} rhel${info['rhelver']} test cluster availability") {
 			access_cluster(info)
 		    }
-		    stage("Deploy ${provider} rhel${rhelver} zstream: ${zstream} upstream: ${upstream} test cluster") {
+		    stage("Deploy ${info['provider']} rhel${info['rhelver']} zstream: ${info['zstream']} upstream: ${info['upstream']} test cluster") {
 			deploy_cluster(info)
 		    }
 		}
@@ -48,27 +37,39 @@ pipeline {
 	stage('Run tests') {
 	    steps {
 		script {
-		    for (int nodes = minnodes; nodes <= maxnodes; nodes++) {
+		    for (info['nodes'] = info['fromnodes']; info['nodes'] <= info['tonodes']; info['nodes']++) {
+
+			// tests
+			info['testtype'] = 'tests'
+			info['runtesttimeout'] = info['testtimeout']
 			def finaltestlist = [ ]
-			if ("${testlist}" == 'auto') {
-			    finaltestlist = get_cluster_tests(info, 'tests', testvariant, tests, nodes)
-			} else if ("${testlist}" != '') {
-			    finaltestlist = ["${testlist}"]
+			if ("${info['testlist']}" == 'auto') {
+			    finaltestlist = get_cluster_tests(info)
+			} else if ("${info['testlist']}" != '') {
+			    finaltestlist = "${info['testlist']}".split(';')
 			}
+			println(finaltestlist)
 			for (test in finaltestlist) {
-			    stage("Run test '${test}' on ${nodes} nodes") {
-				run_cluster_test(info, 'test', test, nodes, testtimeout)
+			    info['runtest'] = test
+			    stage("Run test '${info['runtest']}' on ${info['nodes']} nodes") {
+				run_cluster_test(info)
 			    }
 			}
+
+			// tags
+			info['testtype'] = 'tags'
+			info['runtesttimeout'] = info['tagtimeout']
 			def finaltaglist = [ ]
-			if ("${taglist}" == 'auto') {
-			    finaltaglist = get_cluster_tests(info, 'tags', testvariant, tests, nodes)
-			} else if ("${taglist}" != '') {
-			    finaltaglist = ["${taglist}"]
+			if ("${info['taglist']}" == 'auto') {
+			    finaltaglist = get_cluster_tests(info)
+			} else if ("${info['taglist']}" != '') {
+			    finaltaglist = "${info['taglist']}".split(';')
 			}
-			for (tag in finaltaglist) {
-			    stage("Run tag '${tag}' on ${nodes} nodes") {
-				run_cluster_test(info, 'tag', tag, nodes, tagtimeout)
+			println(finaltaglist)
+			for (test in finaltaglist) {
+			    info['runtest'] = test
+			    stage("Run tag '${info['runtest']}' on ${info['nodes']} nodes") {
+				run_cluster_test(info)
 			    }
 			}
 		    }
@@ -83,7 +84,7 @@ pipeline {
 	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 	    node('built-in') {
 		script {
-		    info['branch'] = "${provider} rhel${rhelver} zstream: ${zstream} upstream: ${upstream} tests: ${tests}"
+		    info['branch'] = "${info['provider']} rhel${info['rhelver']} zstream: ${info['zstream']} upstream: ${info['upstream']} tests: ${info['tests']}"
 		    sendEmails(info)
 		}
 	    }

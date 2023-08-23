@@ -2,24 +2,24 @@ def run_test(Map info)
 {
     sh "rm -f vapor.log"
     tee ("vapor.log") {
-	if ("${dryrun}" == '0') {
+	if (info['dryrun'] == '0') {
 	    sh """
 		echo "Running test"
 		cd $HOME/ci-tools/fn-testing
-		./validate-cloud -c test -d -p ${provider} -b ${BUILD_NUMBER} -j "jenkins:${BUILD_URL}" -r ${rhelver} -n ${info['nodes']} -e ${info['testopt']} ${info['testtag']} -a "${WORKSPACE}/${info['logsrc']}"
+		./validate-cloud -c test -d -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -j "jenkins:${BUILD_URL}" -r ${info['rhelver']} -n ${info['nodes']} -e ${info['testopt']} ${info['runtest']} -a "${WORKSPACE}/${info['logsrc']}"
 	    """
 	} else {
 	    // keep this for debugging
 	    sh """
 		echo "FAKE RUNNING TEST"
 		cd $HOME/ci-tools/fn-testing
-		echo ./validate-cloud -c test -d -p ${provider} -b ${BUILD_NUMBER} -j "jenkins:${BUILD_URL}" -r ${rhelver} -n ${info['nodes']} -e ${info['testopt']} ${info['testtag']} -a "${WORKSPACE}/${info['logsrc']}"
+		echo ./validate-cloud -c test -d -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -j "jenkins:${BUILD_URL}" -r ${info['rhelver']} -n ${info['nodes']} -e ${info['testopt']} ${info['runtest']} -a "${WORKSPACE}/${info['logsrc']}"
 		echo "SLEEP 5"
 		sleep 5
-		if [ "${info['testtag']}" = "fake_failure" ]; then
+		if [ "${info['runtest']}" = "fake_failure" ]; then
 		    exit 1
 		fi
-		if [ "${info['testtag']}" = "fake_timeout" ]; then
+		if [ "${info['runtest']}" = "fake_timeout" ]; then
 		    sleep 600
 		fi
 	    """
@@ -36,8 +36,6 @@ def post_run_test(Map info, Map locals)
 	throw (locals['EXP'])
     }
 
-    def logdst = ""
-
     // always collect logs from a test run
     sh """
 	mkdir -p ${info['logsrc']}
@@ -46,44 +44,40 @@ def post_run_test(Map info, Map locals)
 	rm -rf ${info['logsrc']}
     """
     if (locals['RET'] == 'OK') {
-	logdst = "SUCCESS_${info['logsrc']}.tar.xz"
+	info['logdst'] = "SUCCESS_${info['logsrc']}.tar.xz"
     } else {
-	logdst = "FAILED_${info['logsrc']}.tar.xz"
-	info['stages_fail_nodes'] += "\n- ${info['testtag']} (nodes: ${info['nodes']})"
+	info['logdst'] = "FAILED_${info['logsrc']}.tar.xz"
+	info['stages_fail_nodes'] += "\n- ${info['runtest']} (nodes: ${info['nodes']})"
 	info['stages_fail']++
     }
     info['stages_run']++
-    sh "mv ${info['logsrc']}.tar.xz ${logdst}"
-    archiveArtifacts artifacts: "${logdst}", fingerprint: false
+    sh "mv ${info['logsrc']}.tar.xz ${info['logdst']}"
+    archiveArtifacts artifacts: "${info['logdst']}", fingerprint: false
 }
 
-def call(Map info, String testtags, String testtag, Integer nodes, Integer timeout)
+def call(Map info)
 {
-    // bypass sandbox check
-    def testtimeout = timeout
-
-    def testopt = '-t'
-    if (testtags == 'tag') {
-	testopt = '-T'
-    }
-
     // keep this for debugging
-    if ("${dryrun}" == '1') {
-	testtimeout = 2
+    if (info['dryrun'] == '1') {
+	info['runtesttimeout'] = 2
     }
 
-    def logsrc = "rhel${rhelver}-zstream_${zstream}-upstream_${upstream}-nodes_${nodes}-${testtag}"
-    // sanitize path by removing , and _ from testtag
-    logsrc = logsrc.replace(',','_').replace(':','_')
+    // set testopt for vapor/vedder call
+    info['testopt'] = '-t'
+    if (info['testtype'] == 'tags') {
+	info['testopt'] = '-T'
+    }
 
+    // define log source
+    def logsrc = "rhel${info['rhelver']}-zstream_${info['zstream']}-upstream_${info['upstream']}-nodes_${info['nodes']}-${info['runtest']}"
+    // sanitize path by removing , and _ from info['runtest']
+    logsrc = logsrc.replace(',','_').replace(':','_')
+    info['logsrc'] = "${logsrc}"
+
+    // define locals for return status/errors
     def locals = [:]
 
-    info['logsrc'] = "${logsrc}"
-    info['testtag'] = "${testtag}"
-    info['nodes'] = nodes
-    info['testopt'] = "${testopt}"
-
-    runWithTimeout(testtimeout, { run_test(info) }, info, locals, { post_run_test(info, locals) }, { post_run_test(info, locals) })
+    runWithTimeout(info['runtesttimeout'], { run_test(info) }, info, locals, { post_run_test(info, locals) }, { post_run_test(info, locals) })
 
     // handle errors et all
     if (locals['RET'] != 'OK') {

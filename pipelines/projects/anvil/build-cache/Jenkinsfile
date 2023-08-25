@@ -1,6 +1,6 @@
 // Update anvil cache on all anvil-bm nodes
 
-@Library(['GlobalLib', 'ProjectLib']) _
+@Library(['GlobalLib@fab-devel', 'ProjectLib@fab-devel']) _
 
 def info = [:]
 def project = 'anvil-build-cache'

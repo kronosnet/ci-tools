@@ -1,6 +1,6 @@
 // Jenkinsfile for the anvil project
 
-@Library(['GlobalLib', 'GithubLib', 'ProjectLib']) _
+@Library(['GlobalLib@fab-devel', 'GithubLib@fab-devel', 'ProjectLib@fab-devel']) _
 
 // Who we are
 def project = 'anvil'

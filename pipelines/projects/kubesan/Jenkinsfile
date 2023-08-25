@@ -1,4 +1,4 @@
-@Library(['GlobalLib', 'ProjectLib']) _
+@Library(['GlobalLib@fab-devel', 'ProjectLib@fab-devel']) _
 
 def test_list = ''
 def ret = 'SUCCESS'

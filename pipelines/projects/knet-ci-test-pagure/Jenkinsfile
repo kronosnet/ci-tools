@@ -7,7 +7,7 @@
 // we need to revisit this whole concept a bit to keep it clean and
 // consistent, otherwise Jenkins views will be extremely different
 // to browse.
-@Library(['GlobalLib', 'PagureLib', 'ProjectLib']) _
+@Library(['GlobalLib@fab-devel', 'PagureLib@fab-devel', 'ProjectLib@fab-devel']) _
 
 // Globals
 

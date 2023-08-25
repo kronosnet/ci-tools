@@ -1,6 +1,6 @@
 // Jenkinsfile for the pcs-functiona-testing
 
-@Library(['GlobalLib', 'VaporLib', 'ProjectLib']) _
+@Library(['GlobalLib', 'VaporLib@fab-devel', 'ProjectLib']) _
 
 def project = 'pcs-functional-testing'
 def projectid = 'pcs'

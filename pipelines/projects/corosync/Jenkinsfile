@@ -1,6 +1,6 @@
 // Jenkinsfile for the corosync project
 
-@Library(['GlobalLib', 'GithubLib', 'ProjectLib']) _
+@Library(['GlobalLib@fab-devel', 'GithubLib@fab-devel', 'ProjectLib@fab-devel']) _
 
 // Who we are
 def project = 'corosync'

@@ -1,6 +1,6 @@
 // Jenkinsfile for the ha-functional-testing
 
-@Library(['GlobalLib', 'VaporLib', 'ProjectLib']) _
+@Library(['GlobalLib@fab-devel', 'VaporLib@fab-devel', 'ProjectLib']) _
 
 def project = 'ha-functional-testing'
 def projectid = 'haft'

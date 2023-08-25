@@ -1,6 +1,6 @@
 // Jenkinsfile for the kernel-ark project
 
-@Library(['GlobalLib', 'VaporLib', 'ProjectLib']) _
+@Library(['GlobalLib@fab-devel', 'VaporLib@fab-devel', 'ProjectLib@fab-devel']) _
 
 // Globals
 def project = 'kernel-ark'

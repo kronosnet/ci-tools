@@ -1,6 +1,6 @@
 // Jenkinsfile for running anvil functional testing
 
-@Library(['GlobalLib', 'ProjectLib']) _
+@Library(['GlobalLib@fab-devel', 'ProjectLib@fab-devel']) _
 
 // Globals
 def project = 'anvil-build-functional-testing'
@@ -9,7 +9,7 @@ def info = ['project': project, 'branch': '']
 def run_fn_testing(Map info)
 {
     sh """
-     $HOME/ci-tools/ci-wrap ci-setup-anvil-bm-vm ${info['BASEDISTRO']} ${info['REPOSRC']} ${info['ANVILSRC']} ${info['TESTS']}
+     echo $HOME/ci-tools/ci-wrap ci-setup-anvil-bm-vm ${info['BASEDISTRO']} ${info['REPOSRC']} ${info['ANVILSRC']} ${info['TESTS']}
     """
 }
 

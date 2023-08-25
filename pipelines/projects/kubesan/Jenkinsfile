@@ -1,4 +1,4 @@
-@Library(['GlobalLib', 'GitlabLib', 'ProjectLib']) _
+@Library(['GlobalLib@fab-devel', 'GitlabLib@fab-devel', 'ProjectLib@fab-devel']) _
 
 def info = [:]
 def project = 'kubesan'

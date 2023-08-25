@@ -1,6 +1,6 @@
 // Update anvil external dependencies repos
 
-@Library(['GlobalLib', 'GithubLib', 'ProjectLib']) _
+@Library(['GlobalLib@fab-devel', 'GithubLib@fab-devel', 'ProjectLib@fab-devel']) _
 
 def info = [:]
 def project = 'anvil-build-dep-repos'

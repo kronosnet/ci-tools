@@ -28,7 +28,7 @@ def call(String agentName, Map info)
 		    def exports = getShellVariables(localinfo)
 
 		    sh """
-		     ./build-anvil-ext-repo -d ${buildtarget} -p /var/www/html
+		     echo ./build-anvil-ext-repo -d ${buildtarget} -p /var/www/html
 		    """
 		    sh """
 		     cd /var/www/html/

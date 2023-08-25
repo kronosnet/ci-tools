@@ -1,6 +1,6 @@
 // Update BaseOS on all freebsd nodes
 
-@Library(['GlobalLib', 'ProjectLib']) _
+@Library(['GlobalLib@fab-devel', 'ProjectLib@fab-devel']) _
 
 def info = [:]
 def project = 'update-all-freebsd'

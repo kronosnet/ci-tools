@@ -3,9 +3,10 @@
 // NOTE:
 // properties that are <project>DISTROCONFOPTS are here as reminders *only*
 // and really belong in the getProjectProperties file
-def call(String node, Map props)
+def call(String node)
 {
     def node_env=[:]
+    def props = [:]
     node_env['anvil-ci-bm-phy01'] = []
     node_env['anvil-ci-bm-phy02'] = []
     node_env['anvil-ci-bm-phy03'] = []
@@ -66,4 +67,6 @@ def call(String node, Map props)
 	    }
 	}
     }
+    println("getNodeProperties: node = ${node} - env='${node_env[node]}' - props:"+props)
+    return props
 }

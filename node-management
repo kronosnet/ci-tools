@@ -16,7 +16,7 @@ getnodelist() {
 
 getjoblist() {
 	cd $HOME/jobs
-	joblist="$(ls -1 */*/config.xml */*/*/config.xml 2>/dev/null | sed -e 's#/config.xml##g' || true)"
+	joblist="$(ls -1 */config.xml */*/config.xml */*/*/config.xml 2>/dev/null | sed -e 's#/config.xml##g' || true)"
 	cd $HOME
 }
 
@@ -72,7 +72,7 @@ addnodetoalljobs() {
 	voting=no
 	oldbuilds=no
 
-	labels=$(cat $HOME/nodes/$node/config.xml | grep label | sed -e 's/<label>//g' -e 's/<\/label>//g')
+	labels=$(cat $HOME/ci-tools/pipelines/libs/global/vars/getNodes.groovy | grep $node | sed -e 's#.*\[##g' -e "s#'##g" -e 's#]##g' -e 's#,# #g')
 
 	echo $labels
 

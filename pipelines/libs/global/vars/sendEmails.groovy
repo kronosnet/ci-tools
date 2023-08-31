@@ -71,14 +71,14 @@ def call(Map info)
 	println('build has been ignored, not sending emails')
 	return
     }
-    // Did we REALLY (li,e properly) fail??
+    // Did we REALLY (like properly) fail??
     if (currentBuild.result == 'FAILURE') {
 	state = 'failure'
     }
 
-
+    // A script exception was logged
     if (info['exception_text'] != '') {
-	info['exception_text'] = "\nPlease report the following errors to your friendly local Jenkins admin (though they have probably already seen them and are already panicking).\n" +
+	info['exception_text'] = "\nPlease report the following errors to your friendly local Jenkins admin (though they have probably already seen them and are already panicking).\n\n" +
 	    info['exception_text']
 	state ='Jenkins exception'
     }

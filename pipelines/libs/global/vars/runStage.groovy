@@ -59,6 +59,9 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	    }
 	}
 
+	// Add node-specific properties
+	getNodeProperties(agentName, extras)
+
 	// Get any job-specific configuration variables
 	extras += getProjectProperties(info, extras, agentName, info['target_branch'])
 	def build_timeout = getBuildTimeout()

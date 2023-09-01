@@ -111,8 +111,14 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	    }
 	}
 
+	// Allow overrides
+	def publishrpm = info['publishrpm']
+	if (extras.containsKey('publishrpm')) {
+	    publishrpm = extras['publishrpm']
+	}
+
 	// RPM builds
-	if (stageName.contains('buildrpms') && info['publishrpm'] == 1 && info['fullrebuild'] != '1') { // Covers the case where it might be null too
+	if (stageName.contains('buildrpms') && publishrpm == 1 && info['fullrebuild'] != '1') { // Covers the case where it might be null too
 	    stage("${stageName} on ${agentName} - get RPM artifacts") {
 		node('built-in') {
 		    if (info['isPullRequest']) {

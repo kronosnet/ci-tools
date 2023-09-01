@@ -78,11 +78,11 @@ pipeline {
 		    buildrpms_kmain = buildRunMap('kmain-buildrpms', info, ['voting': false,
 									     'nodelabel': 'buildrpms',
 									     'extravars': ['knetver': 'main',
-											   'install': info['maininstall']]])
+											   'publishrpm': info['maininstall']]])
 		    buildrpms_kstable = buildRunMap('kstable-buildrpms', info, ['voting': false,
 										'nodelabel': 'buildrpms',
 										'extravars': ['knetver': 'stable1-proposed',
-											      'install': info['stableinstall']]])
+											      'publishrpm': info['stableinstall']]])
 
 		    // Run them (errors are caught in info[:])
 		    try {

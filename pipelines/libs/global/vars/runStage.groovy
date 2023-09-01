@@ -68,8 +68,11 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	// Get any job-specific configuration variables
 	extras += getProjectProperties(info, extras, agentName, info['target_branch'])
 
-	// Needed for building the repos in postStage
-	info['EXTRAVER'] = extras['EXTRAVER']
+	// EXTRAVERS is needed for building the repos in postStage, and is overridden
+	// (where needed) in getProjectProperties()
+	if (extras.containsKey('EXTRAVER')) {
+	    info['EXTRAVER'] = extras['EXTRAVER']
+	}
 
 	def build_timeout = getBuildTimeout()
 

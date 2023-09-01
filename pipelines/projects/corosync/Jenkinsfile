@@ -50,10 +50,12 @@ pipeline {
 
 		    nonvoting_kmain = buildRunMap('kmain-nonvoting', info, ['voting': false,
 									    'nodelabel': 'nonvoting',
-									    'extravars': ['knetver': 'main']])
+									    'extravars': ['knetver': 'main',
+											  'install': info['maininstall']]])
 		    nonvoting_kstable = buildRunMap('kstable-nonvoting', info, ['voting': false,
 										'nodelabel': 'nonvoting',
-										'extravars': ['knetver': 'stable1-proposed']])
+										'extravars': ['knetver': 'stable1-proposed',
+											      'install': info['stableinstall']]])
 
 		    nonvoting_clang_kmain = buildRunMap('kmain-nonvoting-clang', info, ['voting': false,
 											'nodelabel': 'nonvoting-clang',
@@ -65,6 +67,7 @@ pipeline {
 											    'extravars': ['compiler': 'clang',
 													  'knetver': 'stable1-proposed',
 													  'install': '0']])
+
 		    covscan_kmain = buildRunMap('kmain-covscan', info, ['voting': true,
 									'nodelabel': 'covscan',
 									'extravars': ['knetver': 'main']])

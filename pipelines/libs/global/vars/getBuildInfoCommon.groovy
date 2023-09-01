@@ -9,6 +9,7 @@ def call(Map info)
     info['voting_fail_nodes'] = ''
     info['nonvoting_run'] = 0
     info['voting_run'] = 0
+    info['EXTRAVER'] = ''
     info['exception_text'] = ''
     info['email_extra_text'] = ''
     info['state'] = 'script error'

@@ -101,7 +101,7 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	// Gather covscan results
 	// 'fullrebuild' is set by a parent job to prevent uploads from weekly jobs.
 	// Yes - you can nest 'node's
-	if (stageName == 'covscan' && info['fullrebuild'] != '1') { // Covers the case where it might be null too
+	if (stageName.contains('covscan') && info['fullrebuild'] != '1') { // Covers the case where it might be null too
 	    stage("${stageName} on ${agentName} - get covscan artifacts") {
 		node('built-in') {
 		    cmdWithTimeout(collect_timeout,
@@ -112,7 +112,7 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	}
 
 	// RPM builds
-	if (stageName == 'buildrpms' && info['publishrpm'] == 1 && info['fullrebuild'] != '1') { // Covers the case where it might be null too
+	if (stageName.contains('buildrpms') && info['publishrpm'] == 1 && info['fullrebuild'] != '1') { // Covers the case where it might be null too
 	    stage("${stageName} on ${agentName} - get RPM artifacts") {
 		node('built-in') {
 		    if (info['isPullRequest']) {

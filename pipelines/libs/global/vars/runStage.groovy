@@ -46,6 +46,9 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	echo "Building ${stageTitle} for ${info['project']} on ${agentName} (${stageType})"
 	cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 
+	// Save the local workspace directory for later
+	def workspace = env.WORKSPACE + '/' + info['project']
+
 	info["${stageType}_run"]++
 	stage("${stageTitle} on ${agentName} - checkout") {
 	    locals['runstage'] = 'checkout'
@@ -64,11 +67,11 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 
 	// Get any job-specific configuration variables
 	extras += getProjectProperties(info, extras, agentName, info['target_branch'])
-	def build_timeout = getBuildTimeout()
 
-	// Save the local workspace directory etc for postStage()
-	info['workspace'] = env.WORKSPACE + '/' + info['project']
+	// Needed for building the repos in postStage
 	info['EXTRAVER'] = extras['EXTRAVER']
+
+	def build_timeout = getBuildTimeout()
 
 	stage("${stageTitle} on ${agentName} - build") {
 	    locals['logfile'] = "${stageName}-${agentName}.log"
@@ -102,7 +105,7 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	    stage("${stageName} on ${agentName} - get covscan artifacts") {
 		node('built-in') {
 		    cmdWithTimeout(collect_timeout,
-				   "~/ci-tools/ci-get-artifacts ${agentName} ${info['workspace']} coverity/${info['project']}/${agentName}/${env.BUILD_NUMBER}/ cov",
+				   "~/ci-tools/ci-get-artifacts ${agentName} ${workspace} coverity/${info['project']}/${agentName}/${env.BUILD_NUMBER}/ cov",
 				   info, locals, {}, { postFnError(info, locals) })
 		}
 	    }
@@ -114,11 +117,11 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 		node('built-in') {
 		    if (info['isPullRequest']) {
 			cmdWithTimeout(collect_timeout,
-				       "~/ci-tools/ci-get-artifacts ${agentName} ${info['workspace']} builds/${info['project']}/pr/${info['pull_id']}/${agentName} rpm",
+				       "~/ci-tools/ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/pr/${info['pull_id']}/${agentName} rpm",
 				       info, locals, {}, { postFnError(info, locals) })
 		    } else {
 			cmdWithTimeout(collect_timeout,
-				       "~/ci-tools/ci-get-artifacts ${agentName} ${info['workspace']} builds/${info['project']}/${agentName}/${info['actual_commit']}/${env.BUILD_NUMBER}/ rpm",
+				       "~/ci-tools/ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/${agentName}/${info['actual_commit']}/${env.BUILD_NUMBER}/ rpm",
 				       info, locals, {}, { postFnError(info, locals) })
 		    }
 		}

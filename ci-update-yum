@@ -157,6 +157,7 @@ yum -y install             \
  perl                      \
  python3-boto3             \
  python3-cryptography      \
+ python3-devel             \
  python3-httplib2          \
  python3-lxml              \
  python3-pexpect           \

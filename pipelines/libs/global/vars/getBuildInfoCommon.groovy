@@ -20,6 +20,11 @@ def call(Map info)
     info['bootstrap'] = params.bootstrap
     info['fullrebuild'] = params.fullrebuild
 
+    // Disable 'make check' if we are bootstrapping
+    if (info['bootstrap'] == '1') {
+	info['CHECKS'] = 'nochecks'
+    }
+
     // fullrebuild overrides some things
     if (info['fullrebuild'] == '1') { // params are always strings
 	info['install'] = 0

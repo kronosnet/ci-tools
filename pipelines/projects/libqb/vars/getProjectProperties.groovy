@@ -12,12 +12,10 @@ def call(Map info, Map extras, String agentName, String branch)
 {
     def props = [:]
 
-//    props['DEST'] = 'qb'
     props['MAKEOPTS'] = ''
     props['PARALLELMAKE'] = ''
     props['MAKEINSTALLOPTS'] = ''
     props['TOPTS'] = ''
-    props['CHECKS'] = ''
     props['EXTRACHECKS'] = ''
     props['EXTERNAL_LD_LIBRARY_PATH'] = ''
     props['SPECVERSION'] = env.BUILD_NUMBER

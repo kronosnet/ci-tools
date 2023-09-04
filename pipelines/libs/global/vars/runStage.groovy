@@ -102,10 +102,11 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	}
 
 	// Gather covscan results
-	// 'fullrebuild' is set by a parent job to prevent uploads from weekly jobs.
-	// Yes - you can nest 'node's
-	if (stageName.contains('covscan') && info['fullrebuild'] != '1') { // Covers the case where it might be null too
+	// 'fullrebuild' is param set by a parent job to prevent uploads from weekly jobs
+	//    and will normally be the String '0'
+	if (stageName.endsWith('covscan') && info['fullrebuild'] == '0') {
 	    stage("${stageName} on ${agentName} - get covscan artifacts") {
+		// Yes - you can nest 'node's
 		node('built-in') {
 		    if (info['isPullRequest']) {
 			info['covtgtdir'] = "pr${info['pull_id']}"
@@ -121,14 +122,14 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	    }
 	}
 
-	// Allow overrides
+	// Allow overrides for stages
 	def publishrpm = info['publishrpm']
 	if (extras.containsKey('publishrpm')) {
 	    publishrpm = extras['publishrpm']
 	}
 
 	// RPM builds
-	if (stageName.contains('buildrpms') && publishrpm == 1 && info['fullrebuild'] != '1') { // Covers the case where it might be null too
+	if (stageName.endsWith('buildrpms') && publishrpm == 1 && info['fullrebuild'] == '0') {
 	    stage("${stageName} on ${agentName} - get RPM artifacts") {
 		node('built-in') {
 		    if (info['isPullRequest']) {

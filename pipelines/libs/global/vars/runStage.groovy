@@ -193,7 +193,11 @@ def processRunException(Map info, Map locals)
     }
 
     // Tell runStage()
-    locals['failed'] = true
+    if (stageType.endsWith('covscan') && fileExists('cov.json')) {
+	locals['failed'] = false // Coverity failed but we want the results
+    } else {
+	locals['failed'] = true
+    }
 }
 
 // Called if the collection stage failed for any reason

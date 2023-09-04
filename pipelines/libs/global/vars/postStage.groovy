@@ -11,7 +11,7 @@ def call(Map info)
 	    node('built-in') {
 		lock('ci-cov-repos') { // This script needs to be serialised
 		    timeout (time: publish_timeout, unit: 'MINUTES') {
-			sh "~/ci-tools/ci-cov-repos ${info['project']}"
+			sh "~/ci-tools/ci-cov-repos ${info['project']} ${info['covtgtdir']}"
 		    }
 		}
 	    }

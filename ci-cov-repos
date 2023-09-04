@@ -3,6 +3,7 @@
 set -e
 
 project="$1"
+branch="$2"
 
 if [ -z "$project" ]; then
 	echo "no project specificed"
@@ -11,44 +12,65 @@ fi
 
 covdir=/var/www/ci.kronosnet.org/coverity
 
-(
-	flock -e 200
+clean_dirs() {
 	echo "Purging 0 byte files"
 	find $covdir/ -type f -size 0 -print -delete
 
 	echo "Purging empty dirs"
 	find $covdir/ -type d -empty -print -delete
+}
 
+clean_prs() {
+	echo "Purging old prs data"
 	cd $covdir/$project/
+	find . -maxdepth 2 -type d -mtime +30 -name "pr*" -exec rm -rf {} \;
+}
 
-	# nodes
-	for x in $(ls); do
-		cd $x
-		# builds
-		for i in $(ls); do
-			echo "Processing $i"
-			cd $i
-			if [ -d new ]; then
-				cd new
-				rm -f index.html
-				ln -sf cov-index.html index.html
-				cd ..
-			fi
+process_builds() {
+	# builds
+	for build in $(ls); do
+		echo "Processing $build"
+		cd $build
+		if [ -d new ]; then
+			cd new
+			rm -f index.html
+			ln -sf cov-index.html index.html
 			cd ..
-		done
-		# remove old builds (keep last 20)
-		builds="$(ls -1 | sort -n)"
-		numbuilds="$(echo "$builds" | wc -l)"
-		if [ "$numbuilds" -gt 20 ]; then
-			purgenum=$((numbuilds - 20))
-			candidates="$(echo "$builds" | head -n $purgenum)"
-			for z in $candidates; do
-				echo "Removing old build: $z"
-				rm -rf $z
-			done
 		fi
 		cd ..
 	done
+	# remove old builds (keep last 10)
+	builds="$(ls -1 | sort -n)"
+	numbuilds="$(echo "$builds" | wc -l)"
+	if [ "$numbuilds" -gt 10 ]; then
+		purgenum=$((numbuilds - 10))
+		candidates="$(echo "$builds" | head -n $purgenum)"
+		for candidate in $candidates; do
+			echo "Removing old build: $candidate"
+			rm -rf $candidate
+		done
+	fi
+}
+
+process_cov_repos() {
+	cd $covdir/$project/
+	# we are in project dir
+	for node in $(ls); do
+		echo "Node $node / $branch"
+		cd $node/$branch
+		process_builds
+		cd $covdir/$project/
+	done
+}
+
+(
+	flock -e 200
+
+	clean_dirs
+
+	process_cov_repos
+
+	clean_prs
 
 	exit 0
 ) 200>/tmp/ci-cov-repos.lock

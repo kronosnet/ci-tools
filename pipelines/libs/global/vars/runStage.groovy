@@ -107,8 +107,13 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	if (stageName.contains('covscan') && info['fullrebuild'] != '1') { // Covers the case where it might be null too
 	    stage("${stageName} on ${agentName} - get covscan artifacts") {
 		node('built-in') {
+		    if (info['isPullRequest']) {
+			info['covtgtdir'] = "pr${info['pull_id']}"
+		    } else {
+			info['covtgtdir'] = "${info['actual_commit']}"
+		    }
 		    cmdWithTimeout(collect_timeout,
-				   "~/ci-tools/ci-get-artifacts ${agentName} ${workspace} coverity/${info['project']}/${agentName}/${env.BUILD_NUMBER}/ cov",
+				   "~/ci-tools/ci-get-artifacts ${agentName} ${workspace} coverity/${info['project']}/${agentName}/${info['covtgtdir']}/${env.BUILD_NUMBER}/ cov",
 				   info, locals, {}, { postFnError(info, locals) })
 		}
 	    }

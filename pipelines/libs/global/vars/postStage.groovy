@@ -4,7 +4,7 @@ def call(Map info)
     def publish_timeout = 15 // Minutes
 
     // Don't do this for the weekly jobs
-    if (info['fullrebuild'] != '1') {
+    if (info['fullrebuild'] == 0) {
 
 	// Archive the accumulated covscan results
 	stage("Publish Coverity results") {

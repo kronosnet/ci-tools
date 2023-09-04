@@ -50,7 +50,7 @@ pipeline {
 		    nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
 									    'nodelabel': 'nonvoting-clang',
 									    'extravars': ['compiler': 'clang',
-											  'install': '0']])
+											  'install': 0]])
 		    covscan = buildRunMap('covscan', info, ['voting': true,
 							    'nodelabel': 'covscan'])
 		    buildrpms = buildRunMap('buildrpms', info, ['voting': false,

@@ -74,6 +74,11 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	    info['EXTRAVER'] = extras['EXTRAVER']
 	}
 
+	// Disable 'make check' if we are bootstrapping
+	if (info['bootstrap'] == 1) {
+	    extras['CHECKS'] = 'nochecks'
+	}
+
 	def build_timeout = getBuildTimeout()
 
 	stage("${stageTitle} on ${agentName} - build") {
@@ -103,8 +108,8 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 
 	// Gather covscan results
 	// 'fullrebuild' is param set by a parent job to prevent uploads from weekly jobs
-	//    and will normally be the String '0'
-	if (stageName.endsWith('covscan') && info['fullrebuild'] == '0') {
+	//    and will normally be 0
+	if (stageName.endsWith('covscan') && info['fullrebuild'] == 0) {
 	    stage("${stageName} on ${agentName} - get covscan artifacts") {
 		// Yes - you can nest 'node's
 		node('built-in') {
@@ -129,7 +134,7 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	}
 
 	// RPM builds
-	if (stageName.endsWith('buildrpms') && publishrpm == 1 && info['fullrebuild'] == '0') {
+	if (stageName.endsWith('buildrpms') && publishrpm == 1 && info['fullrebuild'] == 0) {
 	    stage("${stageName} on ${agentName} - get RPM artifacts") {
 		node('built-in') {
 		    if (info['isPullRequest']) {

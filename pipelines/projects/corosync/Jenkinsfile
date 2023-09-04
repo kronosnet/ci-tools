@@ -61,12 +61,12 @@ pipeline {
 											'nodelabel': 'nonvoting-clang',
 											'extravars': ['compiler': 'clang',
 												      'kronosnetver': 'main',
-												      'install': '0']])
+												      'install': 0]])
 		    nonvoting_clang_kstable = buildRunMap('kstable-nonvoting-clang', info, ['voting': false,
 											    'nodelabel': 'nonvoting-clang',
 											    'extravars': ['compiler': 'clang',
 													  'kronosnetver': 'stable1-proposed',
-													  'install': '0']])
+													  'install': 0]])
 
 		    covscan_kmain = buildRunMap('kmain-covscan', info, ['voting': true,
 									'nodelabel': 'covscan',

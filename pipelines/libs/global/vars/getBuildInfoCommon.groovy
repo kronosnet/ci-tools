@@ -17,16 +17,12 @@ def call(Map info)
     info['cov_results_urls'] = []
 
     // Make sure the params are in here so they get propogated to the scripts
-    info['bootstrap'] = params.bootstrap
-    info['fullrebuild'] = params.fullrebuild
-
-    // Disable 'make check' if we are bootstrapping
-    if (info['bootstrap'] == '1') {
-	info['CHECKS'] = 'nochecks'
-    }
+    // Also convert them to ints so that info is consistent
+    info['bootstrap'] = params.bootstrap as int
+    info['fullrebuild'] = params.fullrebuild as int
 
     // fullrebuild overrides some things
-    if (info['fullrebuild'] == '1') { // params are always strings
+    if (info['fullrebuild'] == 1) {
 	info['install'] = 0
 	info['covinstall'] = 0
 	info['maininstall'] = 0

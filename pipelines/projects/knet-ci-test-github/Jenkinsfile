@@ -25,7 +25,7 @@ pipeline {
 	    steps {
 		script {
 		    info = getBuildInfo(project)
-		    info['bootstrap'] = '1' // for this test job only.
+		    info['bootstrap'] = 1 // for this test job only.
 		}
 	    }
 	}
@@ -48,18 +48,18 @@ pipeline {
 							  'nodelabel': 'test-voting',
 							  'extravars': ['kronosnetver': 'main',
 									'justforfun': 'BOO',
-									'install': '0']])
+									'install': 0]])
 		    nonvoting = buildRunMap('nonvoting', info, ['voting': false,
 								'nodelabel': 'test-nonvoting',
 								'extravars': ['kronosnetver': 'stable1']])
 		    nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
 									    'nodelabel': 'test-nonvoting',
 									    'extravars': ['compiler': 'clang',
-											  'install': '0',
+											  'install': 0,
 											  'title': 'CLANG test']])
 
-//		    covscan = buildRunMap('covscan', info, ['voting': true,
-//							    'nodelabel': 'test-covscan'])
+		    covscan = buildRunMap('covscan', info, ['voting': true,
+							    'nodelabel': 'covscan'])
 		    buildrpms = buildRunMap('buildrpms', info, ['voting': true,
 								'nodelabel': 'test-buildrpms'])
 
@@ -79,7 +79,7 @@ pipeline {
 
 		    // Run them (errors are caught in info[:])
 		    try {
-			parallel voting + nonvoting + nonvoting_clang + buildrpms
+			parallel voting + nonvoting + nonvoting_clang + covscan + buildrpms
 		    } catch (err) {
 			println("Jenkinsfile caught "+err)
 			info['exception_text'] += "\nparallel error caught: {$err}\n"

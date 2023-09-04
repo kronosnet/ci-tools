@@ -45,7 +45,7 @@ pipeline {
 		    voting_arm_cross = buildRunMap('arm_crosscompile', info, ['voting': true,
 									      'nodelist': ['debian-unstable-cross-x86-64'],
 									      'extravars': ['ARCH': 'ARM',
-											    'install': '0']])
+											    'install': 0]])
 
 		    nonvoting = buildRunMap('nonvoting', info, ['voting': false,
 								'nodelabel': 'nonvoting'])
@@ -54,7 +54,7 @@ pipeline {
 									    'nodelabel': 'nonvoting-clang',
 									    'extravars': ['compiler': 'clang',
 											  'CHECKS': 'check',
-											  'install': '0']])
+											  'install': 0]])
 
 		    covscan = buildRunMap('covscan', info, ['voting': true,
 							    'nodelabel': 'covscan'])

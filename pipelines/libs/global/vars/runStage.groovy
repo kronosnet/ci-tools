@@ -112,9 +112,11 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 		    } else {
 			info['covtgtdir'] = "${info['actual_commit']}"
 		    }
+		    def covdir = "coverity/${info['project']}/${agentName}/${info['covtgtdir']}/${env.BUILD_NUMBER}/"
 		    cmdWithTimeout(collect_timeout,
-				   "~/ci-tools/ci-get-artifacts ${agentName} ${workspace} coverity/${info['project']}/${agentName}/${info['covtgtdir']}/${env.BUILD_NUMBER}/ cov",
+				   "~/ci-tools/ci-get-artifacts ${agentName} ${workspace} ${covdir} cov",
 				   info, locals, {}, { postFnError(info, locals) })
+		    info['cov_results_urls'] += covdir
 		}
 	    }
 	}

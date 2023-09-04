@@ -120,8 +120,22 @@ def call(Map info)
     if (is_main_lib()) {
 	email_title = "[jenkins] ${info['project']} ${branch} (build ${env.BUILD_ID})"
     } else {
+	// Don't spam everybody with our test results
 	email_title = "[jenkins][cidev] ${info['project']} ${branch} (build ${env.BUILD_ID})"
 	email_addrs = "fdinitto@redhat.com, ccaulfie@redhat.com"
+    }
+
+    // Add links to coverity scans
+    if (info['cov_results_urls'].size() > 0) {
+	def cov_urls = '\nCoverity results:\n'
+	for (u in info['cov_results_urls']) {
+	    cov_urls += "http://ci.kronosnet.org/${u}\n"
+	}
+	// A bit of a code mess but it keeps the emails tidy
+	if (info['email_extra_text'] != '') {
+	    info['email_extra_text'] += '\n'
+	}
+	info['email_extra_text'] += cov_urls
     }
 
     def email_trailer = """total runtime: ${jobDuration}

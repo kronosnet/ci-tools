@@ -14,6 +14,7 @@ def call(Map info)
     info['email_extra_text'] = ''
     info['state'] = 'script error'
     info['covtgtdir'] = ''
+    info['cov_results_urls'] = []
 
     // Make sure the params are in here so they get propogated to the scripts
     info['bootstrap'] = params.bootstrap

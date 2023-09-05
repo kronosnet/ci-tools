@@ -149,7 +149,7 @@ pipeline {
 			sh '''
 			    cd $BUILDDIR/kernel-ark
 			    echo == build srpm ==
-			    make -j $(nproc) dist-srpm
+			    make -j $(nproc) CONFIG_KASAN=y CONFIG_UBSAN=y dist-srpm
 			'''
 		    }
 		}

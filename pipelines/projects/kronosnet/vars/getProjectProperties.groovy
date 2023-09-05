@@ -4,7 +4,8 @@
 //
 // info contains all of the global build information
 //      (do NOT change anything in here)
-// extras contains extra variables set for this build-type
+// extras contains 'extra' variables added for this run only
+//      during the buildRunMap phase
 // agentName is the node we are building on,
 // branch is the git branch we are building (for)
 def call(Map info, Map extras, String agentName, String branch)
@@ -15,20 +16,19 @@ def call(Map info, Map extras, String agentName, String branch)
     props['PARALLELMAKE'] = ''
     props['MAKEINSTALLOPTS'] = ''
     props['TOPTS'] = ''
-    props['CHECKS'] = ''
+    //props['CHECKS'] = ''
     props['EXTRACHECKS'] = ''
     props['EXTERNAL_LD_LIBRARY_PATH'] = ''
-    props['extraver'] = "kronosnet-${extras['kronosnetver']}"
     props['SPECVERSION'] = env.BUILD_NUMBER
-    props['RPMDEPS'] = 'libnozzle1-devel libknet1-devel libqb-devel'
-    props['DISTROCONFOPTS'] = '--enable-snmp --enable-dbus --enable-systemd --enable-nozzle'
+    props['RPMDEPS'] = 'libqb-devel doxygen2man'
 
-    if (!extras.containsKey('compiler') || extras['compiler'] == 'gcc') {
-	props['DISTROCONFOPTS'] += ' --enable-fatal-warnings'
-    }
+    props['DISTROCONFOPTS'] = ''
 
-    if (agentName.startsWith('freebsd')) {
-	props['DISTROCONFOPTS'] += ' --disable-systemd'
+    if (agentName.startsWith("debian-unstable-cross")) {
+	if (extras['ARCH'] == 'ARM') {
+	    props['compiler'] = 'arm-linux-gnueabihf-gcc'
+	    props['DISTROCONFOPTS'] += ' --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf'
+	}
     }
 
     return props

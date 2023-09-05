@@ -46,7 +46,7 @@ if [ -f ./configure ]; then
   *)
    installpath=/srv/$DEST/${actual_commit}
    case "$DEST" in
-    knet|corosync)
+    kronosnet|corosync)
      if [ -n "$RUSTBINDINGS" ] && [ "$RUSTBINDINGS" = yes ]; then
       extraopts="--enable-rust-bindings"
      fi

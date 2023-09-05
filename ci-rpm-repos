@@ -86,14 +86,14 @@ process_publish() {
 	cd $rpmdir/
 
 	cat > $rpmdir/opensuse-readme.repo << EOF
-OpenSUSE users, please browse the knet/ folder for appropriate builds for your deployment.
+OpenSUSE users, please browse the kronosnet/ folder for appropriate builds for your deployment.
 You can use zypper to enable those repositories.
 
 For example use the following command to add the repository:
-zypper add https://ci.kronosnet.org/builds/knet/opensuse-tumbleweed-x86-64/main/latest/ knet
+zypper add https://ci.kronosnet.org/builds/kronosnet/opensuse-tumbleweed-x86-64/main/latest/ kronosnet
 
 and to enable and autorefresh:
-zypper mr -e -f -G knet
+zypper mr -e -f -G kronosnet
 
 please be aware the repositories are not signed.
 EOF

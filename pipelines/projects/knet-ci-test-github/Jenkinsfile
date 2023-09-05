@@ -46,12 +46,12 @@ pipeline {
 		    // The 'short' test list
 		    voting = buildRunMap('voting', info, ['voting': true,
 							  'nodelabel': 'test-voting',
-							  'extravars': ['knetver': 'main',
+							  'extravars': ['kronosnetver': 'main',
 									'justforfun': 'BOO',
 									'install': '0']])
 		    nonvoting = buildRunMap('nonvoting', info, ['voting': false,
 								'nodelabel': 'test-nonvoting',
-								'extravars': ['knetver': 'stable1']])
+								'extravars': ['kronosnetver': 'stable1']])
 		    nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
 									    'nodelabel': 'test-nonvoting',
 									    'extravars': ['compiler': 'clang',

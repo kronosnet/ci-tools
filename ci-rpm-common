@@ -3,7 +3,7 @@ export REMOVERPMS="libnozzle1 libknet1 libqb* corosynclib libcorosync* resource-
 cleanbr() {
  if [ -n "$(which zypper 2>/dev/null)" ]; then
   zypper remove -y $REMOVERPMS || true
-  zypper removerepo knet-build || true
+  zypper removerepo kronosnet-build || true
   zypper removerepo libqb-build || true
   zypper removerepo corosync-build || true
   zypper removerepo pcmk-build || true
@@ -18,7 +18,7 @@ cleanbr() {
  fi
  if [ -n "$(which yum 2>/dev/null)" ]; then
   yum remove -y $REMOVERPMS || true
-  rm -rf /etc/yum.repos.d/knet-build.repo || true
+  rm -rf /etc/yum.repos.d/kronosnet-build.repo || true
   rm -rf /etc/yum.repos.d/libqb-build.repo || true
   rm -rf /etc/yum.repos.d/corosync-build.repo || true
   rm -rf /etc/yum.repos.d/pcmk-build.repo || true
@@ -61,11 +61,11 @@ installrpmdeps() {
 
  cleanbr
  if [ -n "$(which zypper 2>/dev/null)" ]; then
-  if [ -n "$KNET_REPO_PATH" ]; then
-   zypper addrepo $KNET_REPO_PATH knet-build || $ret
-   zypper modifyrepo -p 1 -e -f -G knet-build || $ret
-   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $KNET_REPO_PATH; then
-    zypper removerepo knet-build || true
+  if [ -n "$KRONOSNET_REPO_PATH" ]; then
+   zypper addrepo $KRONOSNET_REPO_PATH kronosnet-build || $ret
+   zypper modifyrepo -p 1 -e -f -G kronosnet-build || $ret
+   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $KRONOSNET_REPO_PATH; then
+    zypper removerepo kronosnet-build || true
    fi
   fi
   if [ -n "$LIBQB_REPO_PATH" ]; then
@@ -141,8 +141,8 @@ installrpmdeps() {
   zypper install -y $RPMDEPS || removerpmdeps 1
  fi
  if [ -n "$(which yum 2>/dev/null)" ]; then
-  if [ -n "$KNET_REPO" ]; then
-   wget -4 -O /etc/yum.repos.d/knet-build.repo $KNET_REPO || $ret
+  if [ -n "$KRONOSNET_REPO" ]; then
+   wget -4 -O /etc/yum.repos.d/kronosnet-build.repo $KRONOSNET_REPO || $ret
   fi
   if [ -n "$LIBQB_REPO" ]; then
    wget -4 -O /etc/yum.repos.d/libqb-build.repo $LIBQB_REPO || $ret

@@ -99,7 +99,7 @@ fi
 
 # blacklist PARALLELMAKE as necessary
 case "$DEST" in
- knet|pcs)
+ kronosnet|pcs)
   export PARALLELMAKE=""
  ;;
 esac
@@ -125,7 +125,7 @@ case "$DEST" in
  booth)
   extraopts="--with-ocfdir=\$$\{prefix\}/lib/ocf"
  ;;
- knet|corosync)
+ kronosnet|corosync)
   if [ -n "$RUSTBINDINGS" ] && [ "$RUSTBINDINGS" = yes ]; then
    extraopts="--enable-rust-bindings"
   fi

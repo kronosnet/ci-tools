@@ -21,7 +21,7 @@ if [ -n "$RUSTBINDINGS" ] && [ "$RUSTBINDINGS" = yes ]; then
 fi
 
 pkg upgrade -y
-pkg install -y rsync git gcc automake autoconf autotools pkgconf gettext gettext-tools openssl nss libgcrypt liblz4 lzo2 lzma bzip2 libxml2 libqb doxygen groff dbus gmake curl jq check py${pyver}-pexpect py${pyver}-pycurl py${pyver}-requests py${pyver}-boto3 py${pyver}-google-api-python-client libxslt glib docbook-xsl libltdl e2fsprogs-libuuid libxslt ncurses bison byacc flex help2man gnutls asciidoc getopt p5-Locale-gettext openipmi zstd py${pyver}-keystoneauth1 py${pyver}-python-keystoneclient py${pyver}-python-novaclient py${pyver}-suds cmocka gsnmp $rustdeps
+pkg install -y rsync git gcc automake autoconf autotools pkgconf gettext gettext-tools openssl31 nss libgcrypt liblz4 lzo2 lzma bzip2 libxml2 libqb doxygen groff dbus gmake curl jq check py${pyver}-pexpect py${pyver}-pycurl py${pyver}-requests py${pyver}-boto3 py${pyver}-google-api-python-client libxslt glib docbook-xsl libltdl e2fsprogs-libuuid libxslt ncurses bison byacc flex help2man gnutls asciidoc getopt p5-Locale-gettext openipmi zstd py${pyver}-keystoneauth1 py${pyver}-python-keystoneclient py${pyver}-python-novaclient py${pyver}-suds cmocka gsnmp $rustdeps
 pkg install -y net-snmp || true
 pkg clean -a -y
 pkg autoremove -y

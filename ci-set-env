@@ -176,7 +176,7 @@ if [ "$build" != "rpm" ]; then
  PCMK_INSTALL_PATH=/srv/pcmk/origin/${pcmkver}/
 
  # those projects only have main branch
- QDEVICE_INSTALL_PATH=/srv/qdevice/origin/main/
+ COROSYNC_QDEVICE_INSTALL_PATH=/srv/qdevice/origin/main/
  SBD_INSTALL_PATH=/srv/sbd/origin/main-pcmk-${pcmkver}/
  FAS_INSTALL_PATH=/srv/fas/origin/main/
  RAS_INSTALL_PATH=/srv/ras/origin/main/
@@ -233,17 +233,17 @@ if [ "$build" != "rpm" ]; then
   PKG_CONFIG_PATH=$COROSYNC_CONFIG_PATH pkg-config --modversion corosync || true
  fi
 
- if [ -n "$QDEVICE_INSTALL_PATH" ] && [ -d "$QDEVICE_INSTALL_PATH" ]; then
-  if [ -d $QDEVICE_INSTALL_PATH/lib64 ]; then
-   QDEVICE_LIB=lib64
+ if [ -n "$COROSYNC_QDEVICE_INSTALL_PATH" ] && [ -d "$COROSYNC_QDEVICE_INSTALL_PATH" ]; then
+  if [ -d $COROSYNC_QDEVICE_INSTALL_PATH/lib64 ]; then
+   COROSYNC_QDEVICE_LIB=lib64
   else
-   QDEVICE_LIB=lib
+   COROSYNC_QDEVICE_LIB=lib
   fi
-  QDEVICE_CONFIG_PATH=$QDEVICE_INSTALL_PATH/share/pkgconfig
-  export EXTERNAL_CONFIG_PATH=$EXTERNAL_CONFIG_PATH:$QDEVICE_CONFIG_PATH
-  export EXTERNAL_LD_LIBRARY_PATH=$EXTERNAL_LD_LIBRARY_PATH:$QDEVICE_INSTALL_PATH/$QDEVICE_LIB/
-  echo corosync-qdevice build info: $(cat $QDEVICE_INSTALL_PATH/.build-info)
-  PKG_CONFIG_PATH=$QDEVICE_CONFIG_PATH pkg-config --modversion corosync-qdevice || true
+  COROSYNC_QDEVICE_CONFIG_PATH=$COROSYNC_QDEVICE_INSTALL_PATH/share/pkgconfig
+  export EXTERNAL_CONFIG_PATH=$EXTERNAL_CONFIG_PATH:$COROSYNC_QDEVICE_CONFIG_PATH
+  export EXTERNAL_LD_LIBRARY_PATH=$EXTERNAL_LD_LIBRARY_PATH:$COROSYNC_QDEVICE_INSTALL_PATH/$COROSYNC_QDEVICE_LIB/
+  echo corosync-qdevice build info: $(cat $COROSYNC_QDEVICE_INSTALL_PATH/.build-info)
+  PKG_CONFIG_PATH=$COROSYNC_QDEVICE_CONFIG_PATH pkg-config --modversion corosync-qdevice || true
  fi
 
  if [ -n "$PCMK_INSTALL_PATH" ] && [ -d "$PCMK_INSTALL_PATH" ]; then
@@ -316,8 +316,8 @@ else
  GFS2UTILS_REPO=https://ci.kronosnet.org/builds/gfs2-utils-main-${NODE_NAME}.repo
  GFS2UTILS_REPO_PATH=https://ci.kronosnet.org/builds/gfs2-utils/${NODE_NAME}/main/latest/
 
- QDEVICE_REPO=https://ci.kronosnet.org/builds/corosync-qdevice-main-${NODE_NAME}.repo
- QDEVICE_REPO_PATH=https://ci.kronosnet.org/builds/corosync-qdevice/${NODE_NAME}/main/latest/
+ COROSYNC_QDEVICE_REPO=https://ci.kronosnet.org/builds/corosync-qdevice-main-${NODE_NAME}.repo
+ COROSYNC_QDEVICE_REPO_PATH=https://ci.kronosnet.org/builds/corosync-qdevice/${NODE_NAME}/main/latest/
 
  SBD_REPO=https://ci.kronosnet.org/builds/sbd-main-pcmk-${pcmkver}-${NODE_NAME}.repo
  SBD_REPO_PATH=https://ci.kronosnet.org/builds/sbd/${NODE_NAME}/main-pcmk-${pcmkver}/latest/
@@ -384,8 +384,8 @@ export COROSYNC_REPO
 export COROSYNC_REPO_PATH
 export PCMK_REPO
 export PCMK_REPO_PATH
-export QDEVICE_REPO
-export QDEVICE_REPO_PATH
+export COROSYNC_QDEVICE_REPO
+export COROSYNC_QDEVICE_REPO_PATH
 export SBD_REPO
 export SBD_REPO_PATH
 export FAS_REPO

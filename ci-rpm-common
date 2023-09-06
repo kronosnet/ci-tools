@@ -7,7 +7,7 @@ cleanbr() {
   zypper removerepo libqb-build || true
   zypper removerepo corosync-build || true
   zypper removerepo pcmk-build || true
-  zypper removerepo qdevice-build || true
+  zypper removerepo corosync-qdevice-build || true
   zypper removerepo sbd-build || true
   zypper removerepo fas-build || true
   zypper removerepo ras-build || true
@@ -22,7 +22,7 @@ cleanbr() {
   rm -rf /etc/yum.repos.d/libqb-build.repo || true
   rm -rf /etc/yum.repos.d/corosync-build.repo || true
   rm -rf /etc/yum.repos.d/pcmk-build.repo || true
-  rm -rf /etc/yum.repos.d/qdevice-build.repo || true
+  rm -rf /etc/yum.repos.d/corosync-qdevice-build.repo || true
   rm -rf /etc/yum.repos.d/sbd-build.repo || true
   rm -rf /etc/yum.repos.d/fas-build.repo || true
   rm -rf /etc/yum.repos.d/ras-build.repo || true
@@ -89,11 +89,11 @@ installrpmdeps() {
     zypper removerepo pcmk-build || true
    fi
   fi
-  if [ -n "$QDEVICE_REPO_PATH" ]; then
-   zypper addrepo $QDEVICE_REPO_PATH qdevice-build || $ret
-   zypper modifyrepo -p 1 -e -f -G qdevice-build || $ret
-   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $QDEVICE_REPO_PATH; then
-    zypper removerepo qdevice-build || true
+  if [ -n "$COROSYNC_QDEVICE_REPO_PATH" ]; then
+   zypper addrepo $COROSYNC_QDEVICE_REPO_PATH corosync-qdevice-build || $ret
+   zypper modifyrepo -p 1 -e -f -G corosync-qdevice-build || $ret
+   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $COROSYNC_QDEVICE_REPO_PATH; then
+    zypper removerepo corosync-qdevice-build || true
    fi
   fi
   if [ -n "$SBD_REPO_PATH" ]; then
@@ -153,8 +153,8 @@ installrpmdeps() {
   if [ -n "$PCMK_REPO" ]; then
    wget -4 -O /etc/yum.repos.d/pcmk-build.repo $PCMK_REPO || $ret
   fi
-  if [ -n "$QDEVICE_REPO" ]; then
-   wget -4 -O /etc/yum.repos.d/qdevice-build.repo $QDEVICE_REPO || $ret
+  if [ -n "$COROSYNC_QDEVICE_REPO" ]; then
+   wget -4 -O /etc/yum.repos.d/corosync-qdevice-build.repo $COROSYNC_QDEVICE_REPO || $ret
   fi
   if [ -n "$SBD_REPO" ]; then
    wget -4 -O /etc/yum.repos.d/sbd-build.repo $SBD_REPO || $ret

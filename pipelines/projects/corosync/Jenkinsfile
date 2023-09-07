@@ -75,11 +75,11 @@ pipeline {
 									    'nodelabel': 'covscan',
 									    'extravars': ['kronosnetver': 'stable1-proposed']])
 
-		    buildrpms_kmain = buildRunMap('kmain-buildrpms', info, ['voting': false,
+		    buildrpms_kmain = buildRunMap('kmain-buildrpms', info, ['voting': true,
 									     'nodelabel': 'buildrpms',
 									     'extravars': ['kronosnetver': 'main',
 											   'publishrpm': info['maininstall']]])
-		    buildrpms_kstable = buildRunMap('kstable-buildrpms', info, ['voting': false,
+		    buildrpms_kstable = buildRunMap('kstable-buildrpms', info, ['voting': true,
 										'nodelabel': 'buildrpms',
 										'extravars': ['kronosnetver': 'stable1-proposed',
 											      'publishrpm': info['stableinstall']]])

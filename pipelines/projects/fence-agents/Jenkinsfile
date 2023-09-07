@@ -53,7 +53,7 @@ pipeline {
 		    covscan = buildRunMap('covscan', info, ['voting': true,
 							    'nodelabel': 'covscan'])
 
-		    buildrpms = buildRunMap('buildrpms', info, ['voting': false,
+		    buildrpms = buildRunMap('buildrpms', info, ['voting': true,
 		                                                'nodelabel': 'buildrpms'])
 
 		    // Run them (errors are caught in info[:])

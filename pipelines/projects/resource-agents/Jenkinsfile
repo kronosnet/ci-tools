@@ -45,7 +45,7 @@ pipeline {
 		    nonvoting = buildRunMap('nonvoting', info, ['voting': false,
 								'nodelabel': 'nonvoting'])
 
-		    buildrpms = buildRunMap('buildrpms', info, ['voting': false,
+		    buildrpms = buildRunMap('buildrpms', info, ['voting': true,
 		                                                'nodelabel': 'buildrpms',
 								'extravars': ['DISTROCONFOPTS': '--with-ras-set=linux-ha']])
 

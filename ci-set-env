@@ -59,9 +59,6 @@ export CC=$compiler
 if [ -z "$python" ]; then
  python=python3
 fi
-if [ "$python" = "python2" ] && [ "$DEST" = "pcmk" ]; then
- python=python3
-fi
 python=`which $python`
 $python --version || true
 if [ "$DEST" != "pcs" ]; then
@@ -134,22 +131,22 @@ if [ -n "${pull_id}" ] && [ "${pull_id}" != 1 ]; then
  export CITARGET="origin/${target_branch}"
 fi
 
-# CITARGET is used only here to setup pcmk versions
+# CITARGET is used only here to setup pacemaker versions
 # and CFLAGS / rpmrepo variables, and in coverity scan check.
 echo CITARGET $CITARGET
 
 # Latest Pacemaker release branch
-PCMK_RELEASE=2.1
+PACEMAKER_RELEASE=2.1
 
 # origin/main should use all main branches built
 # from sources
 if [ "$CITARGET" = "origin/main" ]; then
- if [ -z "${pcmkver}" ]; then
-  export pcmkver=main
+ if [ -z "${pacemakerver}" ]; then
+  export pacemakerver=main
  fi
 else
- if [ -z "${pcmkver}" ]; then
-  export pcmkver="${PCMK_RELEASE}"
+ if [ -z "${pacemakerver}" ]; then
+  export pacemakerver="${PACEMAKER_RELEASE}"
  fi
 fi
 
@@ -173,14 +170,14 @@ if [ "$build" != "rpm" ]; then
   COROSYNC_INSTALL_PATH=/srv/corosync/origin/camelback/
  fi
 
- PCMK_INSTALL_PATH=/srv/pcmk/origin/${pcmkver}/
+ PACEMAKER_INSTALL_PATH=/srv/pacemaker/origin/${pacemakerver}/
 
  # those projects only have main branch
  COROSYNC_QDEVICE_INSTALL_PATH=/srv/qdevice/origin/main/
- SBD_INSTALL_PATH=/srv/sbd/origin/main-pcmk-${pcmkver}/
+ SBD_INSTALL_PATH=/srv/sbd/origin/main-pacemaker-${pacemakerver}/
  FENCE_AGENTS_INSTALL_PATH=/srv/fence-agents/origin/main/
  RESOURCE_AGENTS_INSTALL_PATH=/srv/resource-agents/origin/main/
- BOOTH_INSTALL_PATH=/srv/booth/origin/main-pcmk-${pcmkver}/
+ BOOTH_INSTALL_PATH=/srv/booth/origin/main-pacemaker-${pacemakerver}/
 
  case "$DEST" in
   corosync)
@@ -192,8 +189,8 @@ if [ "$build" != "rpm" ]; then
    ;;
   sbd|booth|pcs)
    # booth and sbd only have a main branch, but they need
-   # different settings when building against pcmk main or release
-   if [ "${pcmkver}" = "${PCMK_RELEASE}" ]; then
+   # different settings when building against pacemaker main or release
+   if [ "${pacemakerver}" = "${PACEMAKER_RELEASE}" ]; then
     KRONOSNET_INSTALL_PATH=/srv/kronosnet/origin/stable1-proposed/
     COROSYNC_INSTALL_PATH=/srv/corosync/origin/camelback/
    fi
@@ -246,17 +243,17 @@ if [ "$build" != "rpm" ]; then
   PKG_CONFIG_PATH=$COROSYNC_QDEVICE_CONFIG_PATH pkg-config --modversion corosync-qdevice || true
  fi
 
- if [ -n "$PCMK_INSTALL_PATH" ] && [ -d "$PCMK_INSTALL_PATH" ]; then
-  if [ -d $PCMK_INSTALL_PATH/lib64/pkgconfig ]; then
-   PCMK_LIB=lib64
+ if [ -n "$PACEMAKER_INSTALL_PATH" ] && [ -d "$PACEMAKER_INSTALL_PATH" ]; then
+  if [ -d $PACEMAKER_INSTALL_PATH/lib64/pkgconfig ]; then
+   PACEMAKER_LIB=lib64
   else
-   PCMK_LIB=lib
+   PACEMAKER_LIB=lib
   fi
-  PCMK_CONFIG_PATH=$PCMK_INSTALL_PATH/$PCMK_LIB/pkgconfig
-  export EXTERNAL_CONFIG_PATH=$EXTERNAL_CONFIG_PATH:$PCMK_CONFIG_PATH
-  export EXTERNAL_LD_LIBRARY_PATH=$EXTERNAL_LD_LIBRARY_PATH:$PCMK_INSTALL_PATH/$PCMK_LIB/
-  echo pacemaker build info: $(cat $PCMK_INSTALL_PATH/.build-info)
-  PKG_CONFIG_PATH=$PCMK_CONFIG_PATH pkg-config --modversion pacemaker || true
+  PACEMAKER_CONFIG_PATH=$PACEMAKER_INSTALL_PATH/$PACEMAKER_LIB/pkgconfig
+  export EXTERNAL_CONFIG_PATH=$EXTERNAL_CONFIG_PATH:$PACEMAKER_CONFIG_PATH
+  export EXTERNAL_LD_LIBRARY_PATH=$EXTERNAL_LD_LIBRARY_PATH:$PACEMAKER_INSTALL_PATH/$PACEMAKER_LIB/
+  echo pacemaker build info: $(cat $PACEMAKER_INSTALL_PATH/.build-info)
+  PKG_CONFIG_PATH=$PACEMAKER_CONFIG_PATH pkg-config --modversion pacemaker || true
  fi
 
  if [ -n "$SBD_INSTALL_PATH" ] && [ -d "$SBD_INSTALL_PATH" ]; then
@@ -319,8 +316,8 @@ else
  COROSYNC_QDEVICE_REPO=https://ci.kronosnet.org/builds/corosync-qdevice-main-${NODE_NAME}.repo
  COROSYNC_QDEVICE_REPO_PATH=https://ci.kronosnet.org/builds/corosync-qdevice/${NODE_NAME}/main/latest/
 
- SBD_REPO=https://ci.kronosnet.org/builds/sbd-main-pcmk-${pcmkver}-${NODE_NAME}.repo
- SBD_REPO_PATH=https://ci.kronosnet.org/builds/sbd/${NODE_NAME}/main-pcmk-${pcmkver}/latest/
+ SBD_REPO=https://ci.kronosnet.org/builds/sbd-main-pacemaker-${pacemakerver}-${NODE_NAME}.repo
+ SBD_REPO_PATH=https://ci.kronosnet.org/builds/sbd/${NODE_NAME}/main-pacemaker-${pacemakerver}/latest/
 
  FENCE_AGENTS_REPO=https://ci.kronosnet.org/builds/fence-agents-main-${NODE_NAME}.repo
  FENCE_AGENTS_REPO_PATH=https://ci.kronosnet.org/builds/fence-agents/${NODE_NAME}/main/latest/
@@ -328,23 +325,23 @@ else
  RESOURCE_AGENTS_REPO=https://ci.kronosnet.org/builds/resource-agents-main-${NODE_NAME}.repo
  RESOURCE_AGENTS_REPO_PATH=https://ci.kronosnet.org/builds/resource-agents/${NODE_NAME}/main/latest/
 
- BOOTH_REPO=https://ci.kronosnet.org/builds/booth-main-pcmk-${pcmkver}-${NODE_NAME}.repo
- BOOTH_REPO_PATH=https://ci.kronosnet.org/builds/booth/${NODE_NAME}/main-pcmk-${pcmkver}/latest/
+ BOOTH_REPO=https://ci.kronosnet.org/builds/booth-main-pacemaker-${pacemakerver}-${NODE_NAME}.repo
+ BOOTH_REPO_PATH=https://ci.kronosnet.org/builds/booth/${NODE_NAME}/main-pacemaker-${pacemakerver}/latest/
 
  if [ "$CITARGET" = "origin/main" ]; then
   KRONOSNET_REPO=https://ci.kronosnet.org/builds/kronosnet-main-${NODE_NAME}.repo
   KRONOSNET_REPO_PATH=https://ci.kronosnet.org/builds/kronosnet/${NODE_NAME}/main/latest/
   COROSYNC_REPO=https://ci.kronosnet.org/builds/corosync-main-${NODE_NAME}.repo
   COROSYNC_REPO_PATH=https://ci.kronosnet.org/builds/corosync/${NODE_NAME}/main/latest/
-  PCMK_REPO=https://ci.kronosnet.org/builds/pacemaker-main-${NODE_NAME}.repo
-  PCMK_REPO_PATH=https://ci.kronosnet.org/builds/pacemaker/${NODE_NAME}/main/latest/
+  PACEMAKER_REPO=https://ci.kronosnet.org/builds/pacemaker-main-${NODE_NAME}.repo
+  PACEMAKER_REPO_PATH=https://ci.kronosnet.org/builds/pacemaker/${NODE_NAME}/main/latest/
  else
   KRONOSNET_REPO=https://ci.kronosnet.org/builds/kronosnet-stable1-proposed-${NODE_NAME}.repo
   KRONOSNET_REPO_PATH=https://ci.kronosnet.org/builds/kronosnet/${NODE_NAME}/stable1-proposed/latest/
   COROSYNC_REPO=https://ci.kronosnet.org/builds/corosync-camelback-${NODE_NAME}.repo
   COROSYNC_REPO_PATH=https://ci.kronosnet.org/builds/corosync/${NODE_NAME}/camelback/latest/
-  PCMK_REPO="https://ci.kronosnet.org/builds/pacemaker-${PCMK_RELEASE}-${NODE_NAME}.repo"
-  PCMK_REPO_PATH="https://ci.kronosnet.org/builds/pacemaker/${NODE_NAME}/${PCMK_RELEASE}/latest/"
+  PACEMAKER_REPO="https://ci.kronosnet.org/builds/pacemaker-${PACEMAKER_RELEASE}-${NODE_NAME}.repo"
+  PACEMAKER_REPO_PATH="https://ci.kronosnet.org/builds/pacemaker/${NODE_NAME}/${PACEMAKER_RELEASE}/latest/"
  fi
 
  case "$DEST" in
@@ -358,14 +355,14 @@ else
    ;;
   sbd|booth|pcs)
    # booth and sbd only have a main branch, but they need
-   # different settings when building against pcmk main or release
-   if [ "${pcmkver}" = "${PCMK_RELEASE}" ]; then
+   # different settings when building against pacemaker main or release
+   if [ "${pacemakerver}" = "${PACEMAKER_RELEASE}" ]; then
     KRONOSNET_REPO=https://ci.kronosnet.org/builds/kronosnet-stable1-proposed-${NODE_NAME}.repo
     KRONOSNET_REPO_PATH=https://ci.kronosnet.org/builds/kronosnet/${NODE_NAME}/stable1-proposed/latest/
     COROSYNC_REPO=https://ci.kronosnet.org/builds/corosync-camelback-${NODE_NAME}.repo
     COROSYNC_REPO_PATH=https://ci.kronosnet.org/builds/corosync/${NODE_NAME}/camelback/latest/
-    PCMK_REPO=https://ci.kronosnet.org/builds/pacemaker-${PCMK_RELEASE}-${NODE_NAME}.repo
-    PCMK_REPO_PATH=https://ci.kronosnet.org/builds/pacemaker/${NODE_NAME}/${PCMK_RELEASE}/latest/
+    PACEMAKER_REPO=https://ci.kronosnet.org/builds/pacemaker-${PACEMAKER_RELEASE}-${NODE_NAME}.repo
+    PACEMAKER_REPO_PATH=https://ci.kronosnet.org/builds/pacemaker/${NODE_NAME}/${PACEMAKER_RELEASE}/latest/
    fi
    ;;
  esac
@@ -382,8 +379,8 @@ export GFS2UTILS_REPO
 export GFS2UTILS_REPO_PATH
 export COROSYNC_REPO
 export COROSYNC_REPO_PATH
-export PCMK_REPO
-export PCMK_REPO_PATH
+export PACEMAKER_REPO
+export PACEMAKER_REPO_PATH
 export COROSYNC_QDEVICE_REPO
 export COROSYNC_QDEVICE_REPO_PATH
 export SBD_REPO

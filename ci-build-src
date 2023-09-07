@@ -46,7 +46,7 @@ case $build in
  ;;
  rpm)
   case "$DEST" in
-   pcmk)
+   pacemaker)
     # make sure CI version is alway higher than any distro
     export SPECVERSION=$BUILD_NUMBER
    ;;

@@ -38,7 +38,7 @@ pipeline {
 						 string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
 						 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
 						 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
-						 string(name: 'pcmkver', value: 'main'),
+						 string(name: 'pacemakerver', value: 'main'),
 						 string(name: 'compiler', value: 'gcc')]
 			    }
 			}
@@ -49,7 +49,7 @@ pipeline {
 						 string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
 						 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
 						 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
-						 string(name: 'pcmkver', value: '2.1'),
+						 string(name: 'pacemakerver', value: '2.1'),
 						 string(name: 'compiler', value: 'gcc')]
 			    }
 			}
@@ -60,7 +60,7 @@ pipeline {
 						 string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
 						 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
 						 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
-						 string(name: 'pcmkver', value: 'main'),
+						 string(name: 'pacemakerver', value: 'main'),
 						 string(name: 'covoptions', value: "${info['covopts']}")]
 			    }
 			}
@@ -71,7 +71,7 @@ pipeline {
 						 string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
 						 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
 						 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
-						 string(name: 'pcmkver', value: '2.1'),
+						 string(name: 'pacemakerver', value: '2.1'),
 						 string(name: 'covoptions', value: "${info['covopts']}")]
 			    }
 			}
@@ -83,7 +83,7 @@ pipeline {
 						 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
 						 string(name: 'publishrpm', value: "${info['install']}"),
 						 string(name: 'publishprrpm', value: "${info['publish_pr_rpm']}"),
-						 string(name: 'pcmkver', value: 'main'),
+						 string(name: 'pacemakerver', value: 'main'),
 						 string(name: 'bootstrap', value: '0')]
 			    }
 			}
@@ -95,7 +95,7 @@ pipeline {
 						 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
 						 string(name: 'publishrpm', value: "${info['install']}"),
 						 string(name: 'publishprrpm', value: "${info['publish_pr_rpm']}"),
-						 string(name: 'pcmkver', value: '2.1'),
+						 string(name: 'pacemakerver', value: '2.1'),
 						 string(name: 'bootstrap', value: '0')]
 			    }
 			}
@@ -108,7 +108,7 @@ pipeline {
 							 string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
 							 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
 							 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
-							 string(name: 'pcmkver', value: 'main'),
+							 string(name: 'pacemakerver', value: 'main'),
 							 string(name: 'compiler', value: 'gcc')]
 				    }
 				    catch (err) {
@@ -126,7 +126,7 @@ pipeline {
 							 string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
 							 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
 							 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
-							 string(name: 'pcmkver', value: '2.1'),
+							 string(name: 'pacemakerver', value: '2.1'),
 							 string(name: 'compiler', value: 'gcc')]
 				    }
 				    catch (err) {
@@ -143,7 +143,7 @@ pipeline {
 					    parameters: [string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
 							 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
 							 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
-							 string(name: 'pcmkver', value: 'main')]
+							 string(name: 'pacemakerver', value: 'main')]
 				    }
 				    catch (err) {
 					nonvoting_fail++
@@ -159,7 +159,7 @@ pipeline {
 					    parameters: [string(name: 'ghprbActualCommit', value: "${info['actual_commit']}"),
 							 string(name: 'ghprbPullId', value: "${info['pull_id']}"),
 							 string(name: 'ghprbTargetBranch', value: "${info['target_branch']}"),
-							 string(name: 'pcmkver', value: '2.1')]
+							 string(name: 'pacemakerver', value: '2.1')]
 				    }
 				    catch (err) {
 					nonvoting_fail++

@@ -28,9 +28,9 @@ fenceagentsextratests() {
  fi
 }
 
-pcmkextratests() {
+pacemakerextratests() {
  # pacemaker extra tests
- if [ "$DEST" != pcmk ]; then
+ if [ "$DEST" != pacemaker ]; then
   return
  fi
 
@@ -149,4 +149,4 @@ done
 
 cleanlibqb
 fenceagentsextratests
-pcmkextratests
+pacemakerextratests

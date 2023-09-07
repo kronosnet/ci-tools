@@ -11,7 +11,7 @@ if [ -n "$install" ] && [ "$install" = 1 ]; then
  installpath=/srv/$DEST/${actual_commit}
  case "$DEST" in
   sbd|booth)
-   installpath=${installpath}-pcmk-${pcmkver}/
+   installpath=${installpath}-pacemaker-${pacemakerver}/
    ;;
   *)
    installpath=${installpath}/
@@ -19,7 +19,7 @@ if [ -n "$install" ] && [ "$install" = 1 ]; then
  esac
  echo rm -rf $installpath
  rm -rf $installpath
- if [ "$DEST" = "pcmk" ]; then
+ if [ "$DEST" = "pacemaker" ]; then
   echo "$MAKE clean"
   $MAKE clean
   echo "./configure --prefix=$installpath --exec-prefix=$installpath --sysconfdir="$installpath/etc" --with-initdir="$installpath/etc/init.d" --with-ocfdir="$installpath/lib/ocf"  --with-systemdsystemunitdir="$installpath/usr/lib/systemd/system" $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
@@ -32,7 +32,7 @@ if [ -n "$install" ] && [ "$install" = 1 ]; then
  echo "https://ci.kronosnet.org/job/$JOB_NAME/$BUILD_NUMBER/consoleFull" > $installpath/.build-info
  echo "Creating cross projects symlinks hacks for pcs testing"
  case "$DEST" in
-  pcmk)
+  pacemaker)
    cd $installpath/lib/ocf
    rm -f lib
    ln -sf /srv/resource-agents/origin/main/lib/ocf/lib
@@ -42,9 +42,9 @@ if [ -n "$install" ] && [ "$install" = 1 ]; then
    cd pacemaker
    rm -f booth-site
    if [ "${actual_commit}" = "origin/main" ]; then
-    ln -sf /srv/booth/origin/main-pcmk-main/lib/ocf/resource.d/pacemaker/booth-site
+    ln -sf /srv/booth/origin/main-pacemaker-main/lib/ocf/resource.d/pacemaker/booth-site
    else
-    ln -sf /srv/booth/origin/main-pcmk-2.1/lib/ocf/resource.d/pacemaker/booth-site
+    ln -sf /srv/booth/origin/main-pacemaker-${PACEMAKER_RELEASE}/lib/ocf/resource.d/pacemaker/booth-site
    fi
   ;;
  esac

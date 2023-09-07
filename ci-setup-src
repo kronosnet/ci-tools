@@ -10,7 +10,7 @@ fi
 if [ -f ./configure ]; then
  # workaround bug in pacemaker test suite
  case "$DEST" in
-  pcmk)
+  pacemaker)
    echo "./configure $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
    ./configure $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
    ;;
@@ -52,10 +52,10 @@ if [ -f ./configure ]; then
      fi
      ;;
     sbd)
-     installpath=${installpath}-pcmk-${pcmkver}/
+     installpath=${installpath}-pacemaker-${pacemakerver}/
      ;;
     booth)
-     installpath=${installpath}-pcmk-${pcmkver}/
+     installpath=${installpath}-pacemaker-${pacemakerver}/
      extraopts="--with-ocfdir=$installpath/lib/ocf"
      ;;
     *)

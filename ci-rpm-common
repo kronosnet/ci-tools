@@ -10,7 +10,7 @@ cleanbr() {
   zypper removerepo corosync-qdevice-build || true
   zypper removerepo sbd-build || true
   zypper removerepo fence-agents-build || true
-  zypper removerepo ras-build || true
+  zypper removerepo resource-agents-build || true
   zypper removerepo booth-build || true
   zypper removerepo dlm-build || true
   zypper removerepo gfs2utils-build || true
@@ -25,7 +25,7 @@ cleanbr() {
   rm -rf /etc/yum.repos.d/corosync-qdevice-build.repo || true
   rm -rf /etc/yum.repos.d/sbd-build.repo || true
   rm -rf /etc/yum.repos.d/fence-agents-build.repo || true
-  rm -rf /etc/yum.repos.d/ras-build.repo || true
+  rm -rf /etc/yum.repos.d/resource-agents-build.repo || true
   rm -rf /etc/yum.repos.d/booth-build.repo || true
   rm -rf /etc/yum.repos.d/dlm-build.repo || true
   rm -rf /etc/yum.repos.d/gfs2utils-build.repo || true
@@ -110,11 +110,11 @@ installrpmdeps() {
     zypper removerepo fence-agents-build || true
    fi
   fi
-  if [ -n "$RAS_REPO_PATH" ]; then
-   zypper addrepo $RAS_REPO_PATH ras-build || $ret
-   zypper modifyrepo -p 1 -e -f -G ras-build || $ret
-   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $RAS_REPO_PATH; then
-    zypper removerepo ras-build || true
+  if [ -n "$RESOURCE_AGENTS_REPO_PATH" ]; then
+   zypper addrepo $RESOURCE_AGENTS_REPO_PATH resource-agents-build || $ret
+   zypper modifyrepo -p 1 -e -f -G resource-agents-build || $ret
+   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $RESOURCE_AGENTS_REPO_PATH; then
+    zypper removerepo resource-agents-build || true
    fi
   fi
   if [ -n "$BOOTH_REPO_PATH" ]; then
@@ -162,8 +162,8 @@ installrpmdeps() {
   if [ -n "$FENCE_AGENTS_REPO" ]; then
    wget -4 -O /etc/yum.repos.d/fence-agents-build.repo $FENCE_AGENTS_REPO || $ret
   fi
-  if [ -n "$RAS_REPO" ]; then
-   wget -4 -O /etc/yum.repos.d/ras-build.repo $RAS_REPO || $ret
+  if [ -n "$RESOURCE_AGENTS_REPO" ]; then
+   wget -4 -O /etc/yum.repos.d/resource-agents-build.repo $RESOURCE_AGENTS_REPO || $ret
   fi
   if [ -n "$BOOTH_REPO" ]; then
    wget -4 -O /etc/yum.repos.d/booth-build.repo $BOOTH_REPO || $ret

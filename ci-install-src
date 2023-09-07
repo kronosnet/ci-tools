@@ -35,10 +35,10 @@ if [ -n "$install" ] && [ "$install" = 1 ]; then
   pcmk)
    cd $installpath/lib/ocf
    rm -f lib
-   ln -sf /srv/ras/origin/main/lib/ocf/lib
+   ln -sf /srv/resource-agents/origin/main/lib/ocf/lib
    cd resource.d
    rm -f heartbeat
-   ln -sf /srv/ras/origin/main/lib/ocf/resource.d/heartbeat
+   ln -sf /srv/resource-agents/origin/main/lib/ocf/resource.d/heartbeat
    cd pacemaker
    rm -f booth-site
    if [ "${actual_commit}" = "origin/main" ]; then

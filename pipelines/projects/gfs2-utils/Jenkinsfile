@@ -52,8 +52,7 @@ pipeline {
 									    'nodelabel': 'nonvoting-clang',
 									    'excludes': 'freebsd.*',
 									    'extravars': ['compiler': 'clang',
-											  'install': 0,
-											  'title': 'CLANG test']])
+											  'install': 0]])
 
 		    covscan = buildRunMap('covscan', info, ['voting': true,
 							    'nodelabel': 'covscan'])

@@ -1,4 +1,6 @@
-def call(String target)
+
+// Return the whole node array
+def call()
 {
     def labels = [:]
     labels['anvil-ci-bm-phy01'] = ['centos-8','stable','x86-64','rpm','yum']
@@ -50,6 +52,14 @@ def call(String target)
     labels['ubuntu-22-04-lts-x86-64'] = ['ubuntu22.04','stable','x86-64','voting','apt','nonvoting-clang']
     labels['ubuntu-23-04-x86-64'] = ['ubuntu23.04','stable','x86-64','voting','apt','nonvoting-clang']
     labels['ubuntu-devel-x86-64'] = ['ubuntu-devel','unstable','x86-64','nonvoting','apt','nonvoting-clang']
+
+    return labels
+}
+
+// Return the nodes that have a specific label
+def call(String target)
+{
+    def labels = call()
 
     def nodelist = []
     for (i in labels) {

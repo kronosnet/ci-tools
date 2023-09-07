@@ -1,21 +1,6 @@
 
 import jenkins.model.*
 
-// Returns all nodes that have the label.
-// labelled NonCPS so it runs (effectively) atomically
-// without saving state.
-@NonCPS
-def getLabelledNodes(String label) {
-    def nodelist = []
-    for (thisAgent in jenkins.model.Jenkins.instance.nodes) {
-	labelarray = thisAgent.labelString.split(' ')
-        if (labelarray.contains(label)) {
-            nodelist += thisAgent.name
-        }
-    }
-    return nodelist
-}
-
 // If bootstrap == 1 then there are things we don't need to do
 def optimiseOut(Map info, Map extras, String stageName)
 {

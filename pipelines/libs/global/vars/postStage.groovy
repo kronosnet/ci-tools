@@ -4,14 +4,15 @@ def call(Map info)
     def publish_timeout = 15 // Minutes
 
     // Don't do this for the weekly jobs
-    if (info['fullrebuild'] == 0 &&
-	info['cov_results_urls'].size() > 0) { // .. and only when there are some covscan results
-	// Archive the accumulated covscan results
-	stage("Publish Coverity results") {
-	    node('built-in') {
-		lock('ci-cov-repos') { // This script needs to be serialised
-		    timeout (time: publish_timeout, unit: 'MINUTES') {
-			sh "~/ci-tools/ci-cov-repos ${info['project']} ${info['covtgtdir']}"
+    if (info['fullrebuild'] == 0) {
+	if (info['cov_results_urls'].size() > 0) { // .. and only when there are some covscan results
+	    // Archive the accumulated covscan results
+	    stage("Publish Coverity results") {
+		node('built-in') {
+		    lock('ci-cov-repos') { // This script needs to be serialised
+			timeout (time: publish_timeout, unit: 'MINUTES') {
+			    sh "~/ci-tools/ci-cov-repos ${info['project']} ${info['covtgtdir']}"
+			}
 		    }
 		}
 	    }

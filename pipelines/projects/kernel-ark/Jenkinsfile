@@ -91,6 +91,8 @@ pipeline {
 				git remote add gfs2 git://git.kernel.org/pub/scm/linux/kernel/git/gfs2/linux-gfs2.git
 				echo "Adding remote linux-dlm.git"
 				git remote add dlm git://git.kernel.org/pub/scm/linux/kernel/git/teigland/linux-dlm.git
+				echo "Adding remote kernel-ark.git for config"
+				git remote add kernel-ark-config https://gitlab.com/netcoder/kernel-ark.git
 			    fi
 			'''
 		    }
@@ -107,6 +109,8 @@ pipeline {
 			    git fetch gfs2
 			    echo == fetch dlm ==
 			    git fetch dlm
+			    echo == fetch kernel-ark-config ==
+			    git fetch kernel-ark-config
 			    echo == reset tree to origin/$ARK_BRANCH ==
 			    git reset --hard origin/$ARK_BRANCH
 			'''
@@ -121,14 +125,14 @@ pipeline {
 			'''
 		    }
 		}
-		stage('Merging kernel-ark / gfs2 / dlm trees') {
+		stage('Merging kernel-ark / gfs2 / dlm / kernel-ark-config trees') {
 		    steps {
 			sh '''
 			    cd $BUILDDIR/kernel-ark
 			    echo == checkout ci-test branch ==
 			    git checkout -b ci-test
-			    echo == merge gfs2/for-next and dlm/next ==
-			    git merge --log=999 --no-ff -m 'Automatic merge of gfs2/for-next and dlm/next' gfs2/for-next dlm/next
+			    echo == merge gfs2/for-next dlm/next and kernel-ark-config/ci_test_config ==
+			    git merge --log=999 --no-ff -m 'Automatic merge of gfs2/for-next dlm/next and kernel-ark-config/ci_test_config' gfs2/for-next dlm/next kernel-ark-config/ci_test_config
 			    git show --no-patch
 			    echo == apply workaround for debuginfo package build ==
 			    git revert --no-edit 7dc0430e5e007a7441a8f5109276df99b4cf48a7
@@ -149,7 +153,7 @@ pipeline {
 			sh '''
 			    cd $BUILDDIR/kernel-ark
 			    echo == build srpm ==
-			    make -j $(nproc) CONFIG_KASAN=y CONFIG_UBSAN=y dist-srpm
+			    make -j $(nproc) dist-srpm
 			'''
 		    }
 		}

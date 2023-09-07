@@ -9,7 +9,7 @@ cleanbr() {
   zypper removerepo pcmk-build || true
   zypper removerepo corosync-qdevice-build || true
   zypper removerepo sbd-build || true
-  zypper removerepo fas-build || true
+  zypper removerepo fence-agents-build || true
   zypper removerepo ras-build || true
   zypper removerepo booth-build || true
   zypper removerepo dlm-build || true
@@ -24,7 +24,7 @@ cleanbr() {
   rm -rf /etc/yum.repos.d/pcmk-build.repo || true
   rm -rf /etc/yum.repos.d/corosync-qdevice-build.repo || true
   rm -rf /etc/yum.repos.d/sbd-build.repo || true
-  rm -rf /etc/yum.repos.d/fas-build.repo || true
+  rm -rf /etc/yum.repos.d/fence-agents-build.repo || true
   rm -rf /etc/yum.repos.d/ras-build.repo || true
   rm -rf /etc/yum.repos.d/booth-build.repo || true
   rm -rf /etc/yum.repos.d/dlm-build.repo || true
@@ -103,11 +103,11 @@ installrpmdeps() {
     zypper removerepo sbd-build || true
    fi
   fi
-  if [ -n "$FAS_REPO_PATH" ]; then
-   zypper addrepo $FAS_REPO_PATH fas-build || $ret
-   zypper modifyrepo -p 1 -e -f -G fas-build || $ret
-   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $FAS_REPO_PATH; then
-    zypper removerepo fas-build || true
+  if [ -n "$FENCE_AGENTS_REPO_PATH" ]; then
+   zypper addrepo $FENCE_AGENTS_REPO_PATH fence-agents-build || $ret
+   zypper modifyrepo -p 1 -e -f -G fence-agents-build || $ret
+   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $FENCE_AGENTS_REPO_PATH; then
+    zypper removerepo fence-agents-build || true
    fi
   fi
   if [ -n "$RAS_REPO_PATH" ]; then
@@ -159,8 +159,8 @@ installrpmdeps() {
   if [ -n "$SBD_REPO" ]; then
    wget -4 -O /etc/yum.repos.d/sbd-build.repo $SBD_REPO || $ret
   fi
-  if [ -n "$FAS_REPO" ]; then
-   wget -4 -O /etc/yum.repos.d/fas-build.repo $FAS_REPO || $ret
+  if [ -n "$FENCE_AGENTS_REPO" ]; then
+   wget -4 -O /etc/yum.repos.d/fence-agents-build.repo $FENCE_AGENTS_REPO || $ret
   fi
   if [ -n "$RAS_REPO" ]; then
    wget -4 -O /etc/yum.repos.d/ras-build.repo $RAS_REPO || $ret

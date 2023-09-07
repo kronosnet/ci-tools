@@ -17,7 +17,7 @@ case $build in
     echo "cov-build --dir=./cov --no-command --fs-capture-search pcs --fs-capture-search pcs_test $MAKECOVOPTS"
     cov-build --dir=./cov --no-command --fs-capture-search pcs --fs-capture-search pcs_test $MAKECOVOPTS
    ;;
-   fas)
+   fence-agents)
     echo "cov-build --dir=./cov $MAKE $MAKECOVOPTS"
     cov-build --dir=./cov $MAKE $MAKECOVOPTS
     echo "cov-build --dir=./cov --no-command --fs-capture-search agents $MAKECOVOPTS"

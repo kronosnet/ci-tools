@@ -17,9 +17,9 @@ cleanlibqb() {
  fi
 }
 
-fasextratests() {
+fenceagentsextratests() {
  # fence-agents extra tests
- if [ "$DEST" = fas ]; then
+ if [ "$DEST" = "fence-agents" ]; then
   if [ -d fence/agents/lib ]; then
    PYTHONPATH=fence/agents/lib $PYTHON fence/agents/lib/tests/test_fencing.py
   else
@@ -148,5 +148,5 @@ for i in $CHECKS; do
 done
 
 cleanlibqb
-fasextratests
+fenceagentsextratests
 pcmkextratests

@@ -119,6 +119,7 @@ gpgcheck=0
 metadata_expire=1d
 skip_if_unavailable=True
 module_hotfixes=1
+priority=1
 EOF
 
 			done
@@ -145,6 +146,7 @@ gpgcheck=0
 metadata_expire=1d
 skip_if_unavailable=True
 module_hotfixes=1
+priority=1
 EOF
 			if [ -h "$x" ]; then
 				continue

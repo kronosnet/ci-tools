@@ -68,10 +68,10 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	// Get any job-specific configuration variables
 	extras += getProjectProperties(info, extras, agentName, info['target_branch'])
 
-	// EXTRAVERS is needed for building the repos in postStage, and is overridden
-	// (where needed) in getProjectProperties()
+	// We need EXTRAVER to to build the repos, but it's not always present
+	def extraver = ''
 	if (extras.containsKey('EXTRAVER')) {
-	    info['EXTRAVER'] = extras['EXTRAVER']
+	    extraver = extras['EXTRAVER']
 	}
 
 	// Disable 'make check' if we are bootstrapping
@@ -144,9 +144,12 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 				       info, locals, {}, { postFnError(info, locals) })
 		    } else {
 			cmdWithTimeout(collect_timeout,
-				       "~/ci-tools/ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/${agentName}/${info['actual_commit']}/${extras['EXTRAVER']}/${env.BUILD_NUMBER}/ rpm",
+				       "~/ci-tools/ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/${agentName}/${info['actual_commit']}/${extraver}/${env.BUILD_NUMBER}/ rpm",
 				       info, locals, {}, { postFnError(info, locals) })
 		    }
+		    // Keep a list of EXTRAVERs, it's more efficient (and less racy)
+		    // to de-duplicate these at the end, in postStage()
+		    info['EXTRAVER_LIST'] += extraver
 		}
 	    }
 	}

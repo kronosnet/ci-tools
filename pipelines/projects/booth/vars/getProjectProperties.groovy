@@ -10,30 +10,32 @@ def call(Map info, Map extras, String agentName, String branch)
 {
     def props = [:]
 
-    props['EXTRAVER'] = ''
-    props['DISTROCONFOPTS'] = ''
-
     props['MAKEOPTS'] = ''
     props['PARALLELMAKE'] = ''
     props['MAKEINSTALLOPTS'] = ''
     props['TOPTS'] = ''
     props['EXTRACHECKS'] = ''
     props['EXTERNAL_LD_LIBRARY_PATH'] = ''
-    props['SPECVERSION'] = env.BUILD_NUMBER
-
-    if (agentName.startsWith('debian')) {
-	props['DISTROCONFOPTS'] += '--with-debug'
-    }
+    props['DISTROCONFOPTS'] = '--without-glue'
+    props['TESTUSELDPATH'] = 'yes'
+    props['BOOTH_RUNTESTS_ROOT_USER'] = '1'
+    props['extraver'] = "pacemaker-${extras['pacemakerver']}"
 
     if (agentName.startsWith('rhel') ||
 	agentName.startsWith('fedora') ||
-	agentName.startsWith('opensuse') ||
 	agentName.startsWith('centos')) {
-	props['RPMDEPS'] = 'libknet1-devel'
+	props['RPMDEPS'] = 'corosynclib-devel pacemaker-libs-devel'
     }
-    if (agentName.startsWith("freebsd")) {
-	props['DISTROCONFOPTS'] += ' MAKE=gmake'
+
+    if (agentName.startsWith('opensuse-tumbleweed')) {
+	props['RPMDEPS'] = 'corosynclib-devel libpacemaker3-devel'
     }
+
+    if (agentName.startsWith('opensuse-15')) {
+	props['RPMDEPS'] = 'corosynclib-devel libpacemaker-devel'
+    }
+
+    props['RPMDEPS'] += ' libqb-devel'
 
     return props
 }

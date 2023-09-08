@@ -10,7 +10,6 @@ def call(Map info, Map extras, String agentName, String branch)
 {
     def props = [:]
 
-    props['DEST'] = info['project']
     props['DISTROCONFOPTS'] = ''
 
     props['MAKEOPTS'] = ''

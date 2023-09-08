@@ -138,12 +138,13 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	    stage("${stageName} on ${agentName} - get RPM artifacts") {
 		node('built-in') {
 		    if (info['isPullRequest']) {
+			// TODO: fix pr path and adjust for EXTRAVER
 			cmdWithTimeout(collect_timeout,
 				       "~/ci-tools/ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/pr/${info['pull_id']}/${agentName} rpm",
 				       info, locals, {}, { postFnError(info, locals) })
 		    } else {
 			cmdWithTimeout(collect_timeout,
-				       "~/ci-tools/ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/${agentName}/${info['actual_commit']}/${env.BUILD_NUMBER}/ rpm",
+				       "~/ci-tools/ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/${agentName}/${info['actual_commit']}/${extras['EXTRAVER']}/${env.BUILD_NUMBER}/ rpm",
 				       info, locals, {}, { postFnError(info, locals) })
 		    }
 		}

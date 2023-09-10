@@ -66,7 +66,7 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	extras += getNodeProperties(agentName)
 
 	// Get any job-specific configuration variables
-	extras += getProjectProperties(info, extras, agentName, info['target_branch'])
+	extras += getProjectProperties(info, extras, agentName, info['target'])
 
 	// We need EXTRAVER to to build the repos, but it's not always present
 	def extraver = ''

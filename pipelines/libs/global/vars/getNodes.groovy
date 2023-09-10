@@ -9,7 +9,7 @@ def call(String target)
     labels['anvil-ci-centos-9-stream'] = ['centos-9','unstable','x86-64','rpm','yum','anvil']
     labels['anvil-ci-rhel-8'] = ['rhel-8','stable','x86-64','rpm','yum','anvil']
     labels['anvil-ci-rhel-9'] = ['rhel-9','stable','x86-64','rpm','yum','anvil']
-    labels['centos-8-x86-64'] = ['centos-8','stable','x86-64','voting','rpm','yum','nonvoting-clang','buildrpms']
+    labels['centos-8-x86-64'] = ['centos-8','stable','x86-64','voting','rpm','yum','nonvoting-clang','buildrpms', 'pcs-stable']
     labels['centos-9-power9-ppc64le'] = ['centos-9','unstable','power9-ppc64le','nonvoting','rpm','yum','nonvoting-clang','buildrpms']
     labels['centos-9-s390x'] = ['centos-9','unstable','s390x','nonvoting','rpm','yum','nonvoting-clang','buildrpms']
     labels['centos-9-x86-64'] = ['centos-9','unstable','x86-64','nonvoting','rpm','yum','nonvoting-clang','buildrpms']
@@ -32,11 +32,11 @@ def call(String target)
     labels['freebsd-13-x86-64'] = ['freebsd-13','stable','x86-64','voting','freebsd','nonvoting-clang']
     labels['freebsd-devel-x86-64'] = ['freebsd-devel','unstable','x86-64','nonvoting','freebsd','nonvoting-clang']
     labels['jenkins-jumphost'] = ['yum']
-    labels['opensuse-15-x86-64'] = ['opensuse-15','stable','x86-64','voting','rpm','zypper','nonvoting-clang','buildrpms']
+    labels['opensuse-15-x86-64'] = ['opensuse-15','stable','x86-64','voting','rpm','zypper','nonvoting-clang','buildrpms', 'pcs-stable']
     labels['opensuse-tumbleweed-x86-64'] = ['opensuse-tumbleweed','unstable','x86-64','nonvoting','rpm','zypper','nonvoting-clang','buildrpms']
-    labels['rhel88z-power9-ppc64le'] = ['rhel88z','stable','power9','ppc64le','voting','rpm','yum','nonvoting-clang','buildrpms']
-    labels['rhel88z-s390x'] = ['rhel88z','stable','s390x','voting','rpm','yum','nonvoting-clang','buildrpms']
-    labels['rhel88z-x86-64'] = ['rhel88z','stable','x86-64','voting','rpm','yum','nonvoting-clang','buildrpms']
+    labels['rhel88z-power9-ppc64le'] = ['rhel88z','stable','power9','ppc64le','voting','rpm','yum','nonvoting-clang','buildrpms', 'pcs-stable']
+    labels['rhel88z-s390x'] = ['rhel88z','stable','s390x','voting','rpm','yum','nonvoting-clang','buildrpms', 'pcs-stable']
+    labels['rhel88z-x86-64'] = ['rhel88z','stable','x86-64','voting','rpm','yum','nonvoting-clang','buildrpms', 'pcs-stable']
     labels['rhel8-ci-test-x86-64'] = ['rhel88z','stable','x86-64','rpm','yum','ci-test','test-voting','test-buildrpms']
     labels['rhel8-coverity-x86-64'] = ['rhel88z','stable','x86-64','voting','rhel8-coverity','yum','covscan']
     labels['rhel92z-power9-ppc64le'] = ['rhel92z','stable','power9-ppc64le','voting','rpm','yum','nonvoting-clang','buildrpms']
@@ -60,5 +60,3 @@ def call(String target)
     }
     return nodelist
 }
-
-

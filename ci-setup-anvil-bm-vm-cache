@@ -131,7 +131,17 @@ fi
 
 state=running
 virsh shutdown an-cache
-while ([ "$state" != "" ] && [ "$state" == "running" ]); do sleep 5; state=$(virsh dominfo an-cache | grep -w "State:" | awk '{ print $2}'); done;
+loop=0
+while ([ "$state" != "" ] && [ "$state" == "running" ]); do
+ sleep 5
+ state=$(virsh dominfo an-cache | grep -w "State:" | awk '{ print $2}')
+ loop=$((loop + 1))
+ # wait 2 minutes
+ if [ "$loop" = "24" ]; then
+  echo "an-cache did not shutdown after 2 minutes!"
+  virsh destroy an-cache || true
+ fi
+done
 virsh undefine an-cache || true
 
 touch "${BUILD}-latest.qcow2-${TODAY}"

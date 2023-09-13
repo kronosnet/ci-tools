@@ -27,7 +27,7 @@ def call(Map info, Map extras, String agentName, String branch)
     }
 
     if (agentName.startsWith('freebsd')) {
-	props['DISTROCONFOPTS'] += ' --disable-systemd --disable-snmp'
+	props['DISTROCONFOPTS'] += ' --disable-systemd'
     }
 
     return props

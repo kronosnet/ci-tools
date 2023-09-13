@@ -6,14 +6,13 @@ cd /root
 
 $HOME/ci-tools/ci-update-common
 
-JOBNAME=$(echo ${JOB_BASE_NAME}  | sed -e 's/=.*//g')
 
-case ${JOBNAME} in
- *unstable)
+case "${NODE_NAME}" in
+ *tumbleweed*)
   upgrade=dup
   glue=cluster-glue-devel
   ;;
- *stable)
+ *)
   upgrade=update
   bundler=ruby2.5-rubygem-bundler
   glue=libglue-devel

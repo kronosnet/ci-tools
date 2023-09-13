@@ -14,11 +14,6 @@ case "${NODE_NAME}" in
  ;;
 esac
 
-# not all yum based distro have python3, deal with it
-if [ -z "$python" ]; then
- python=python3
-fi
-
 yum clean all
 
 case "${NODE_NAME}" in
@@ -53,9 +48,6 @@ done
 EXTRADEPS=""
 
 case "${NODE_NAME}" in
- fedora*)
-  EXTRADEPS="python3-devel $EXTRADEPS"
- ;;
  centos*|rhel*|anvil-ci-centos*|anvil-ci-rhel*)
   EXTRADEPS="platform-python-devel $EXTRADEPS"
  ;;
@@ -94,7 +86,6 @@ case "${NODE_NAME}" in
   EXTRADEPS="glibc-all-langpacks $EXTRADEPS"
  ;;
 esac
-
 
 yum -y install             \
  OpenIPMI-devel            \

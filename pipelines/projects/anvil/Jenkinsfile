@@ -84,6 +84,9 @@ pipeline {
 	}
 
 	stage('functional testing') {
+	    when {
+		expression { info['authcheck'] == true && info['is_draft'] == false }
+	    }
 	    steps {
 		script {
 		    def fntesting = build job: "${project}/${project}-build-all-functional-testing",

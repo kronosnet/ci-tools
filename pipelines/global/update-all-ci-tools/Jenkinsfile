@@ -1,0 +1,75 @@
+def runStuff(String nodeName, Map info)
+{
+    node("${nodeName}") {
+	stage("do it on ${nodeName}") {
+
+	    // Update the labels for this node
+	    upateLabels(info)
+
+	    // Update ci-tools
+	    sh """
+cd $HOME
+if [ "$reinstall" = 1 ]; then
+ rm -rf ci-tools
+fi
+if [ -d ci-tools ]; then
+ cd ci-tools
+ git pull
+ cd -
+else
+ git clone https://github.com/kronosnet/ci-tools.git
+fi
+
+if [ "${NODE_NAME}" = master ] || [ "${NODE_NAME}" = built-in ]; then
+ rm -rf $HOME/ci-tools/jenkins-cli.jar
+ wget -O $HOME/ci-tools/jenkins-cli.jar https://ci.kronosnet.org/jnlpJars/jenkins-cli.jar >/dev/null 2>&1
+fi
+"""
+	}
+    }
+}
+
+def buildRun(Map info)
+{
+    def runmap = [:]
+    def allnodes = getAllNodes()
+
+    for (i=0; i<allnodes.size(); i++) {
+	def agentName = allnodes[i]
+	runmap["_"+agentName] = {
+	    runStuff(agentName, info)
+	}
+    }
+    return runmap
+}
+
+pipeline {
+    agent { label 'built-in' }
+
+    stages {
+	stage('info') {
+	    steps {
+		script {
+		    info = [:]
+		    info = getBuildInfoCommon(info)
+		}
+	    }
+	}
+	// This is the main stage that covers everything
+	stage('go') {
+	    steps {
+		script {
+		    map = buildRun(info)
+		    println(map)
+		    parallel map
+		}
+	    }
+	}
+    }
+    post {
+	info['state'] = 'completed'
+	info['project'] = 'update-all-ci-tools'
+	info['branch'] = ''
+	sendEmails(info)
+    }
+}

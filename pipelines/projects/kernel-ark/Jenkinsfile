@@ -17,6 +17,7 @@ def iscsi = '0'
 def block = '110'
 def testvariant = 'kernel'
 def tests = 'all'
+def timeStamp = Calendar.getInstance().getTime().format('YYYYMMdd-hhmmss',TimeZone.getTimeZone('UTC'))
 
 pipeline {
     agent { label "${provider}" }
@@ -37,6 +38,7 @@ pipeline {
     }
 
     environment {
+	BUILDNODE = "${env.NODE_NAME}"
 	BUILDDIR = "${env.WORKSPACE}"
 	ARK_BRANCH = 'os-build'
 	CACHEDIR = '/srv/kcache'
@@ -183,21 +185,22 @@ pipeline {
 		}
 		stage('Collect rpms') {
 		    steps {
-			script {
-			    timeStamp = Calendar.getInstance().getTime().format('YYYYMMdd-hhmmss',TimeZone.getTimeZone('UTC'))
+			node('built-in') {
+			    timeout (time: 15, unit: 'MINUTES') {
+				sh "~/ci-tools/ci-get-artifacts ${BUILDNODE} ${BUILDDIR} builds/kernel/rhel9-kbuild/origin/ci-test/${timeStamp}/ rpm"
+			    }
 			}
-			build job: 'global/get-artifacts',
-			    parameters: [string(name: 'sourcenode', value: "${env.NODE_NAME}"),
-					 string(name: 'sourcedir', value: "${env.WORKSPACE}/"),
-					 string(name: 'destdir', value: "builds/kernel/rhel9-kbuild/origin/ci-test/${timeStamp}/"),
-					 string(name: 'transferset', value: 'rpm')]
 		    }
 		}
 		stage('Publish rpms') {
 		    steps {
-			build job: 'global/build-rpm-repos',
-			    parameters: [string(name: 'project', value: 'kernel'),
-					 string(name: 'branch', value: 'origin/ci-test')]
+			node('built-in') {
+			    lock('ci-rpm-repos') { // This script needs to be serialised
+				timeout (time: 15, unit: 'MINUTES') {
+				   sh "~/ci-tools/ci-rpm-repos kernel origin/ci-test"
+				}
+			    }
+			}
 		    }
 		}
 	    }

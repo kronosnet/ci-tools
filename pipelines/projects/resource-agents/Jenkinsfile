@@ -1,4 +1,4 @@
-// Jenkinsfile for the kronosnet project
+// Jenkinsfile for the resource-agents project
 
 @Library(['GlobalLib', 'GithubLib', 'ProjectLib']) _
 

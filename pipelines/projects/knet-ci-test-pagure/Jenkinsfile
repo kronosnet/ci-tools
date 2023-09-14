@@ -1,4 +1,4 @@
-// Jenkinsfile for the a knet CI main project
+// Jenkinsfile for the a knet CI (pagure) project
 
 // REMEMBER that due to the generic pipeline config in Jenkins
 // the pipeline job itself exists inside a ci-test-project folder

@@ -32,7 +32,7 @@ fi
 def buildRun(Map info)
 {
     def runmap = [:]
-    def allnodes = getAllNodes()
+    def allnodes = getLabelledNodes('')
 
     for (i=0; i<allnodes.size(); i++) {
 	def agentName = allnodes[i]
@@ -51,11 +51,11 @@ pipeline {
 	    steps {
 		script {
 		    info = [:]
-		    info = getBuildInfoCommon(info)
+		    getBuildInfoCommon(info)
 		}
 	    }
 	}
-	// This is the main stage that covers everything
+
 	stage('go') {
 	    steps {
 		script {

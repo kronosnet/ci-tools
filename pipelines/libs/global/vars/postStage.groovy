@@ -24,9 +24,13 @@ def call(Map info)
 	    stage("Publish RPMs") {
 		node('built-in') {
 		    lock('ci-rpm-repos') { // This script needs to be serialised
+			def repopath = "${info['actual_commit']}"
+			if (info['isPullRequest']) {
+			    repopath = "pr/${info['pull_id']}"
+			}
 			for (ver in info['EXTRAVER_LIST'].stream().distinct().collect()) { // Remove duplicates
 			    timeout (time: publish_timeout, unit: 'MINUTES') {
-				sh "~/ci-tools/ci-rpm-repos ${info['project']} ${info['actual_commit']} ${ver}"
+				sh "~/ci-tools/ci-rpm-repos ${info['project']} ${repopath} ${ver}"
 			    }
 			}
 		    }

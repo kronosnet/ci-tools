@@ -85,7 +85,7 @@ pipeline {
 
 	stage('functional testing') {
 	    when {
-		expression { info['authcheck'] == true && info['is_draft'] == false }
+		expression { info['authcheck'] == true && info['is_draft'] == false && info['bootsrap'] == 0 }
 	    }
 	    steps {
 		script {

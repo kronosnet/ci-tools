@@ -20,7 +20,7 @@ cd "$DEPLOYDIR/images"
 if [ -n "$SRCURL" ]; then
  echo "Downloading latest $NAME cloud image"
 
- latestimage=$(lftp -e "set ssl:verify-certificate no; cd "$SRCPATH"; cls -1 *${IMG}*.qcow2; quit" "$SRCURL" 2>/dev/null | sort -u | tail -n 1)
+ latestimage=$(lftp -e "set ssl:verify-certificate no; cd "$SRCPATH"; cls -1 *${IMG}*.qcow2; quit" "$SRCURL" 2>/dev/null | sort -u | grep -v "\-latest" | tail -n 1)
 
  if [ -z "$latestimage" ]; then
   echo "Error determining latest $NAME cloud image"

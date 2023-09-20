@@ -12,12 +12,11 @@ def fromnodes = 3
 def tonodes = 3
 def rhelver = '9'
 def zstream = 'no'
-def upstream = 'next-stable-kernel'
+def upstream = 'next-stable'
 def iscsi = '0'
 def block = '110'
 def testvariant = 'kernel'
 def tests = 'all'
-def timeStamp = Calendar.getInstance().getTime().format('YYYYMMdd-hhmmss',TimeZone.getTimeZone('UTC'))
 
 pipeline {
     agent { label "${provider}" }
@@ -28,7 +27,6 @@ pipeline {
 	string(name: 'testtimeout', defaultValue: '60', description: 'timeout for running any test (in minutes)')
 	string(name: 'tagtimeout', defaultValue: '360', description: 'timeout for running any tag (in minutes)')
 	string(name: 'dryrun', defaultValue: '0', description: 'set to 1 to see what the pipeline would do, without actually doing anything')
-	string(name: 'skipkernelbuild', defaultValue: '0', description: 'set to 1 to only run tests on current kernel')
     }
 
     options {
@@ -40,7 +38,6 @@ pipeline {
     environment {
 	BUILDNODE = "${env.NODE_NAME}"
 	BUILDDIR = "${env.WORKSPACE}"
-	ARK_BRANCH = 'os-build'
 	CACHEDIR = '/srv/kcache'
     }
 
@@ -55,6 +52,7 @@ pipeline {
 		    info['rhelver'] = rhelver
 		    info['zstream'] = zstream
 		    info['upstream'] = upstream
+		    info['customrepo'] = "${env.WORKSPACE}/rpms"
 		    info['iscsi'] = iscsi
 		    info['block'] = block
 		    info['tests'] = tests
@@ -75,9 +73,6 @@ pipeline {
 	    }
 	}
 	stage('kernel build') {
-	    when {
-		expression { "${params.skipkernelbuild}" == '0' }
-	    }
 	    stages {
 		// This is the main stage that covers everything
 		stage('Populating kernel-ark cache') {
@@ -88,34 +83,41 @@ pipeline {
 				cd $CACHEDIR
 				echo "Cloning kernel-ark.git"
 				git clone https://gitlab.com/cki-project/kernel-ark.git
-				cd kernel-ark
+			    fi
+			'''
+		    }
+		}
+		stage('Adding remotes') {
+		    steps {
+			sh '''
+			    cd $CACHEDIR/kernel-ark
+			    if ! git remote get-url gfs2; then
 				echo "Adding remote linux-gfs2.git"
 				git remote add gfs2 git://git.kernel.org/pub/scm/linux/kernel/git/gfs2/linux-gfs2.git
+			    fi
+			    if ! git remote get-url dlm; then
 				echo "Adding remote linux-dlm.git"
 				git remote add dlm git://git.kernel.org/pub/scm/linux/kernel/git/teigland/linux-dlm.git
+			    fi
+			    if ! git remote get-url kernel-ark-config; then
 				echo "Adding remote kernel-ark.git for config"
 				git remote add kernel-ark-config https://gitlab.com/netcoder/kernel-ark.git
 			    fi
 			'''
 		    }
 		}
-		stage('Updating kernel-ark cache') {
+		stage('Updating remotes') {
 		    steps {
-			sh '''
+			sh """
 			    cd $CACHEDIR/kernel-ark
-			    echo == reset tree to $ARK_BRANCH ==
-			    git checkout $ARK_BRANCH
-			    echo == fetch kernel-ark ==
-			    git fetch origin
-			    echo == fetch gfs2 ==
-			    git fetch gfs2
-			    echo == fetch dlm ==
-			    git fetch dlm
-			    echo == fetch kernel-ark-config ==
-			    git fetch kernel-ark-config
-			    echo == reset tree to origin/$ARK_BRANCH ==
-			    git reset --hard origin/$ARK_BRANCH
-			'''
+			    remotes=\$(git remote)
+			    for remote in \$remotes; do
+				echo == fetch \$remote ==
+				git fetch \$remote
+			    done
+			    echo == reset tree to origin/os-build ==
+			    git reset --hard origin/os-build
+			"""
 		    }
 		}
 		stage('Cloning cache to build workspace') {
@@ -127,7 +129,7 @@ pipeline {
 			'''
 		    }
 		}
-		stage('Merging kernel-ark / gfs2 / dlm / kernel-ark-config trees') {
+		stage('Merging trees') {
 		    steps {
 			sh '''
 			    cd $BUILDDIR/kernel-ark
@@ -141,7 +143,7 @@ pipeline {
 			'''
 		    }
 		}
-		stage('Installing kernel-ark BuildRequires') {
+		stage('Installing BuildRequires') {
 		    steps {
 			sh '''
 			    cd $BUILDDIR/kernel-ark
@@ -180,6 +182,9 @@ pipeline {
 				--define "_rpmdir $CIRPMDIR/RPMS" \
 				$RPMBUILDOPTS \
 				-rb $srcrpm
+
+			    mkdir -p $BUILDDIR/rpms
+			    find . -name "*.rpm" -exec mv {} $BUILDDIR/rpms \\;
 			'''
 		    }
 		}
@@ -187,7 +192,7 @@ pipeline {
 		    steps {
 			node('built-in') {
 			    timeout (time: 15, unit: 'MINUTES') {
-				sh "~/ci-tools/ci-get-artifacts ${BUILDNODE} ${BUILDDIR} builds/kernel/rhel9-kbuild/origin/ci-test/${timeStamp}/ rpm"
+				sh "~/ci-tools/ci-get-artifacts ${BUILDNODE} ${BUILDDIR}/rpms builds/kernel/rhel9-kbuild/origin/${BRANCH_NAME}/${BUILD_NUMBER}/ rpm"
 			    }
 			}
 		    }
@@ -197,7 +202,7 @@ pipeline {
 			node('built-in') {
 			    lock('ci-rpm-repos') { // This script needs to be serialised
 				timeout (time: 15, unit: 'MINUTES') {
-				   sh "~/ci-tools/ci-rpm-repos kernel origin/ci-test"
+				   sh "~/ci-tools/ci-rpm-repos kernel origin/${BRANCH_NAME}"
 				}
 			    }
 			}

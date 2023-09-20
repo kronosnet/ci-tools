@@ -10,9 +10,13 @@ def call(Map info)
 	    if [ -n "${info['iscsi']}" ]; then
 		iscsiopts="-i ${info['iscsi']}"
 	    fi
+	    customrepoopts=""
+	    if [ -n "${info['customrepo']}" ]; then
+		customrepoopts="-m ${info['customrepo']}"
+	    fi
 	    echo "Deploy test cluster"
 	    cd $HOME/ci-tools/fn-testing
-	    ./validate-cloud -c deploy -d -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -r ${info['rhelver']} -z ${info['zstream']} -u ${info['upstream']} \$iscsiopts
+	    ./validate-cloud -c deploy -d -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -r ${info['rhelver']} -z ${info['zstream']} -u ${info['upstream']} \$customrepoopts \$iscsiopts
 	"""
     }
 }

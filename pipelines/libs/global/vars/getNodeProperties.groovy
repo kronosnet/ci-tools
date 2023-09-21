@@ -36,7 +36,7 @@ def call(String node)
     node_env['fedora-rawhide-x86-64'] = ['RUSTBINDINGS=yes']
     node_env['freebsd-12-x86-64'] = ['python=python3.9', 'USEGMAKE=1']
     node_env['freebsd-13-x86-64'] = ['python=python3.9', 'RUSTBINDINGS=yes', 'USEGMAKE=1']
-    node_env['freebsd-devel-x86-64'] = ['CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1', 'python=python3.9', 'RUSTBINDINGS=yes', 'USEGMAKE=1']
+    node_env['freebsd-devel-x86-64'] = ['python=python3.9', 'RUSTBINDINGS=yes', 'USEGMAKE=1']
     node_env['jenkins-jumphost'] = []
     node_env['opensuse-15-x86-64'] = []
     node_env['opensuse-tumbleweed-x86-64'] = []

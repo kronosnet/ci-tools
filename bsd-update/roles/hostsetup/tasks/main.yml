@@ -16,8 +16,11 @@
     reboot_timeout: 300
     post_reboot_delay: 60
 
+- name: pre update config files
+  shell: etcupdate diff
+
 - name: update config files
-  shell: mergemaster -a
+  shell: etcupdate
 
 - name: install userland
   shell: cd /usr/src && make -j `nproc` installworld

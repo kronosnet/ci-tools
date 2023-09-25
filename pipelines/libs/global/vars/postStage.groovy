@@ -41,16 +41,6 @@ def call(Map info)
 	println("fullrebuild set - rpm & covscan repos not updated")
     }
 
-    // Clean up the tarball containing the sources
-    if (info['tarfile'] != null) {
-	// If this fails, tough.
-	try {
-	    shNoTrace("rm /var/www/ci.kronosnet.org/buildsources/${info['tarfile']}",
-		      "rm <redacted-web-dir>/${info['tarfile']}")
-	} catch (err) {}
-
-    }
-
     // Fail the pipeline if any voting jobs failed
     info['state'] = 'success'
     if (info['voting_fail'] > 0) {

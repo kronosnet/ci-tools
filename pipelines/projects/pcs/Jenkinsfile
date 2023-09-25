@@ -131,7 +131,7 @@ pipeline {
     // Finish up and send emails
     post {
 	always {
-	    sendEmails(info)
+	    projectFinishUp(info)
 	}
     }
 }

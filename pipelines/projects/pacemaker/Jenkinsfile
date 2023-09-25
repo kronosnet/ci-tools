@@ -42,15 +42,12 @@ pipeline {
 		    voting = buildRunMap('voting', info, ['voting': true,
 							  'nodelabel': 'voting'])
 
-		    // TODO drop CHECKS: check for both nonvoting and nonvoting_clang
 		    nonvoting = buildRunMap('nonvoting', info, ['voting': false,
-								'nodelabel': 'nonvoting',
-								'extravars': ['CHECKS': 'check']])
+								'nodelabel': 'nonvoting'])
 
 		    nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
 									    'nodelabel': 'nonvoting-clang',
 									    'extravars': ['compiler': 'clang',
-											  'CHECKS': 'check',
 											  'install': 0]])
 
 		    covscan = buildRunMap('covscan', info, ['voting': true,

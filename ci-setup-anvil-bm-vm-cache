@@ -114,6 +114,15 @@ while [ "$bootdone" = "no" ]; do
  fi
 done
 
+if [ "$error" = "1" ]; then
+ destroy_vm an-cache
+ exit 1
+fi
+
+# add c9s dvd iso for caching
+ssh $CACHENODES mkdir -p /mnt/shared/files
+scp "$DEPLOYDIR/images/CentOS-Stream-9-latest-x86_64-dvd1.iso" $CACHENODES:/mnt/shared/files/CentOS-Stream-9-latest-x86_64-dvd1.iso
+
 # cleanup image
 # centos-9-stream cloud init workaround
 ssh $CACHENODES "grep -q yum_add_repo /etc/cloud/cloud.cfg || sed -i 's/cloud_config_modules:/&\n - yum_add_repo/' /etc/cloud/cloud.cfg"
@@ -123,11 +132,6 @@ ssh $CACHENODES rm -f /etc/yum.repos.d/alteeve* /etc/yum.repos.d/anvil*
 ssh $CACHENODES cloud-init clean
 ssh $CACHENODES rm -f /etc/sysconfig/network-scripts/ifcfg-eth*
 ssh $CACHENODES subscription-manager unregister || true
-
-if [ "$error" = "1" ]; then
- destroy_vm an-cache
- exit 1
-fi
 
 state=running
 virsh shutdown an-cache

@@ -93,31 +93,6 @@ export PARALLELMAKE
 
 echo ===== SOURCE TREE INFO =====
 
-# new world order has PIPELINE_VER defined
-# this can go away once we drop the old jobs
-# backward compat env vars mapping
-# logic could be simplified but this is all going away
-if [ -z "${PIPELINE_VER}" ]; then
- # common to github and pagure
- export actual_commit=${ghprbActualCommit}
-
- # github specific
- export pull_id=${ghprbPullId}
- export target_branch=${ghprbTargetBranch}
-
- # pagure specific
- if [ -n "${BRANCH_TO}" ] && [ "${BRANCH_TO}" != "None" ]; then
-  export target_branch=${BRANCH_TO}
-  export pull_id=yes
- else
-  # check if BRANCH is defined from pagure
-  if [ -n "${BRANCH}" ]; then
-   export target_branch=${BRANCH}
-   export pull_id=1
-  fi
- fi
-fi
-
 if [ -z "${actual_commit}" ]; then
  echo "Unable to proceed without actual_commit information"
  exit 1

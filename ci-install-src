@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -ev
+set -e
 
 if [ -n "$build" ]; then
   echo "$build detected, nothing to do here!"

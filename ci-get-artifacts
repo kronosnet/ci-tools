@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 publish=/var/www/ci.kronosnet.org/
 

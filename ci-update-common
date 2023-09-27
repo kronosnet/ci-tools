@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -ev
+set -e
 
 rm -rf $HOME/rpmbuild
 rm -rf /usr/src/packages/BUILDROOT/*

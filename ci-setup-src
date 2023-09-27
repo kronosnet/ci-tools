@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -ev
+set -e
 
 if [ -f ./autogen.sh ]; then
  echo "./autogen.sh"

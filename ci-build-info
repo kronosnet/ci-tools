@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -ev
+set -e
 
 echo ===== PACKAGE LIST =====
 # BSD

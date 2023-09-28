@@ -29,9 +29,5 @@ def call(Map info, Map extras, String agentName, String branch)
 	props['DISTROCONFOPTS'] += ' --enable-debug'
     }
 
-    if (agentName.startsWith("freebsd")) {
-	props['DISTROCONFOPTS'] += ' MAKE=gmake'
-    }
-
     return props
 }

@@ -31,9 +31,6 @@ def call(Map info, Map extras, String agentName, String branch)
 	agentName.startsWith('centos')) {
 	props['RPMDEPS'] = 'libknet1-devel'
     }
-    if (agentName.startsWith("freebsd")) {
-	props['DISTROCONFOPTS'] += ' MAKE=gmake'
-    }
 
     return props
 }

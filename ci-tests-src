@@ -35,7 +35,7 @@ pacemakerextratests() {
  fi
 
  if [ "$build" = "rpm" ]; then
-  make -C rpm rpmlint
+  $MAKE -C rpm rpmlint
  else
   ./cts/cts-regression -V
  fi
@@ -118,8 +118,8 @@ case "${project}" in
    . .venv/bin/activate
    export PATH="$(pwd)/.venv"/bin/:$PATH
   fi
-  make $PARALLELMAKE check
-  make $PARALLELMAKE distcheck DISTCHECK_CONFIGURE_FLAGS="--enable-parallel-tests --enable-destructive-tests $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
+  $MAKE $PARALLELMAKE check
+  $MAKE $PARALLELMAKE distcheck DISTCHECK_CONFIGURE_FLAGS="--enable-parallel-tests --enable-destructive-tests $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
   exit 0
  ;;
  booth)

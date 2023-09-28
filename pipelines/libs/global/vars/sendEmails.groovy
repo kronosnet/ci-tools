@@ -138,9 +138,14 @@ def call(Map info)
 	info['email_extra_text'] += cov_urls
     }
 
+    // Not everyone generates split logs */
+    def split_logs = ''
+    if (info.containsKey('have_split_logs')) {
+	split_logs = "\nSplit logs: ${env.BUILD_URL}artifact/"
+    }
+
     def email_trailer = """total runtime: ${jobDuration}
-${info['email_extra_text']}
-Split logs: ${env.BUILD_URL}artifact/
+${info['email_extra_text']}${split_logs}
 Full log:   ${env.BUILD_URL}consoleText
 ${info['exception_text']}
 """

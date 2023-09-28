@@ -4,7 +4,7 @@ def call(Map info)
     cleanWs(disableDeferredWipeout: true, deleteDirs: true)
     node('built-in') {
 	script {
-	    sendEmails(info)
+	    projectFinishUp(info)
 	}
     }
 }

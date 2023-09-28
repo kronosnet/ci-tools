@@ -164,6 +164,7 @@ def processRunSuccess(Map info, Map locals)
 	dir('..') {
 	    sh "mv ${locals['logfile']} SUCCESS_${locals['logfile']}"
 	    archiveArtifacts artifacts: "SUCCESS_${locals['logfile']}", fingerprint: false
+	    info['have_split_logs'] = true
 	}
     }
 
@@ -194,6 +195,7 @@ def processRunException(Map info, Map locals)
 	dir ('..') {
 	    sh "mv ${locals['logfile']} FAILED_${locals['logfile']}"
 	    archiveArtifacts artifacts: "FAILED_${locals['logfile']}", fingerprint: false
+	    info['have_split_logs'] = true
 	}
     }
 

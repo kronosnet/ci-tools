@@ -4,6 +4,10 @@ set -e
 
 . $HOME/ci-tools/ci-set-env
 
+echo ===== current build env =====
+env | sort
+echo =============================
+
 ci-build-info
 ci-setup-rpm
 ci-setup-src

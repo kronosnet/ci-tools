@@ -29,7 +29,7 @@ if [ -n "$install" ] && [ "$install" = 1 ]; then
  fi
  echo "$MAKE $MAKEINSTALLOPTS install"
  $MAKE $MAKEINSTALLOPTS install
- echo "https://ci.kronosnet.org/job/$JOB_NAME/$BUILD_NUMBER/consoleFull" > $installpath/.build-info
+ echo "$JOB_URL/$BUILD_NUMBER/" > $installpath/.build-info
  echo "Creating cross projects symlinks hacks for pcs testing"
  case "$DEST" in
   pacemaker)

@@ -89,24 +89,12 @@ if [ -z "${actual_commit}" ]; then
  exit 1
 fi
 
-export CITARGET=${actual_commit}
-
-# pull_id and target_branch are used only here.
-# they should be calculated in getBuildInfo directly
-if [ -n "${pull_id}" ] && [ "${pull_id}" != 1 ]; then
- export CITARGET="origin/${target_branch}"
-fi
-
-# CITARGET is used only here to setup pacemaker versions
-# and CFLAGS / rpmrepo variables, and in coverity scan check.
-echo CITARGET $CITARGET
-
 # Latest Pacemaker release branch
 PACEMAKER_RELEASE=2.1
 
 # origin/main should use all main branches built
 # from sources
-if [ "$CITARGET" = "origin/main" ]; then
+if [ "${target}" = "main" ]; then
  if [ -z "${pacemakerver}" ]; then
   export pacemakerver=main
  fi
@@ -128,7 +116,7 @@ if [ "$build" != "rpm" ]; then
 
  # origin/main should use all main branches built
  # from sources
- if [ "$CITARGET" = "origin/main" ]; then
+ if [ "${target}" = "main" ]; then
   KRONOSNET_INSTALL_PATH=/srv/kronosnet/origin/main/
   COROSYNC_INSTALL_PATH=/srv/corosync/origin/main/
  else
@@ -294,7 +282,7 @@ else
  BOOTH_REPO=https://ci.kronosnet.org/builds/booth-main-pacemaker-${pacemakerver}-${NODE_NAME}.repo
  BOOTH_REPO_PATH=https://ci.kronosnet.org/builds/booth/${NODE_NAME}/main-pacemaker-${pacemakerver}/latest/
 
- if [ "$CITARGET" = "origin/main" ]; then
+ if [ "${target}" = "main" ]; then
   KRONOSNET_REPO=https://ci.kronosnet.org/builds/kronosnet-main-${NODE_NAME}.repo
   KRONOSNET_REPO_PATH=https://ci.kronosnet.org/builds/kronosnet/${NODE_NAME}/main/latest/
   COROSYNC_REPO=https://ci.kronosnet.org/builds/corosync-main-${NODE_NAME}.repo

@@ -53,21 +53,21 @@ case $build in
   ret=0
   # this will trigger only with build-after-merge
   if [ "${install}" = 1 ] || [ "${covinstall}" = 1 ]; then
-   mkdir -p /srv/covscan/$DEST/$CITARGET/$extraver/
-   mv cov.json cov.txt /srv/covscan/$DEST/$CITARGET/$extraver/
+   mkdir -p /srv/covscan/$DEST/origin/${target}/$extraver/
+   mv cov.json cov.txt /srv/covscan/$DEST/origin/${target}/$extraver/
   else
-   if [ ! -d /srv/covscan/$DEST/$CITARGET ]; then
-    echo "WARNING: target branch $CITARGET no available for compare. Skipping."
+   if [ ! -d /srv/covscan/$DEST/origin/${target} ]; then
+    echo "WARNING: target branch origin/${target} no available for compare. Skipping."
     exit 0
    fi
-   csdiff -xc --no-color /srv/covscan/$DEST/$CITARGET/$extraver/cov.json cov.json > cov.diff
+   csdiff -xc --no-color /srv/covscan/$DEST/origin/${target}/$extraver/cov.json cov.json > cov.diff
    errors="$(cat cov.diff | grep ^Error: | wc -l)"
    if [ "$errors" -ne "0" ]; then
     echo "===== NEW COVERITY SCAN ERRORS FIXED ====="
     cat cov.diff
     echo "===== END NEW COVERITY SCAN ERRORS FIXED ====="
    fi
-   csdiff -c --no-color /srv/covscan/$DEST/$CITARGET/$extraver/cov.json cov.json > cov.diff
+   csdiff -c --no-color /srv/covscan/$DEST/origin/${target}/$extraver/cov.json cov.json > cov.diff
    errors="$(cat cov.diff | grep ^Error: | wc -l)"
    if [ "$errors" -ne "0" ]; then
     echo "===== NEW COVERITY SCAN ERRORS DETECTED ====="

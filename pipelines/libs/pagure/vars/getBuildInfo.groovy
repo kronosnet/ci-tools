@@ -51,7 +51,6 @@ def call(String project, String upstream_repo)
     // Set parameters for the sub-jobs.
     if (isPullRequest) {
 	info['actual_commit'] = "origin/${env.BRANCH_TO}"
-	info['target_branch'] = env.BRANCH_TO
 	info['target'] = env.BRANCH_TO
 	info['pull_id'] = env.cause
 	info['checkout'] = env.BRANCH_TO
@@ -66,7 +65,6 @@ def call(String project, String upstream_repo)
 	info['branch'] = "PR-${env.cause}"
     } else {
 	info['actual_commit'] = "origin/${env.BRANCH}"
-	info['target_branch'] = env.BRANCH
 	info['target'] = env.BRANCH
 	info['pull_id'] = '1'
 	if (env.cause == '') {

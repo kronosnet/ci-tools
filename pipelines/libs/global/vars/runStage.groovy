@@ -100,7 +100,7 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	    tee (locals['logfile']) {
 		// Run everything in the checked-out directory
 		dir (info['project']) {
-		    def exports = getShellVariables(info, extras, stageName)
+		    def exports = getShellVariables(info, extras)
 		    cmdWithTimeout(build_timeout,
 				   "${exports} ~/ci-tools/ci-build",
 				   info, locals,

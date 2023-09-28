@@ -20,9 +20,10 @@ def call(Map info, Map extras, String stageName)
 
     if (!extras.containsKey('compiler')) {
 	cienv['compiler'] = 'gcc'
+	cienv['CC'] = cienv['compiler']
+    } else {
+	cienv['CC'] = extras['compiler']
     }
-
-    cienv['CC'] = cienv['compiler']
 
     // Global things
     cienv['PIPELINE_VER'] = '1'

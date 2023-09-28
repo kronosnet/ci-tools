@@ -43,7 +43,6 @@ pipeline {
 		script {
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 		    info = getBuildInfo(project, upstream_repo)
-		    info['bootstrap'] = 1 // for this test job only.
 		}
 	    }
 	}

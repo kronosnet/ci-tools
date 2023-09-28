@@ -4,7 +4,7 @@
 
 // Globals
 def project = 'anvil'
-def nonvoting_fail = 0
+def info = ['project': project, 'branch': 'kmods']
 
 pipeline {
     agent { label 'built-in' }
@@ -17,6 +17,7 @@ pipeline {
 	stage('Prep build env') {
 	    steps {
 		cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+		getBuildInfoCommon(info)
 	    }
 	}
 	stage('Build all kmods') {
@@ -79,7 +80,7 @@ pipeline {
 						 string(name: 'ANVILSRC', value: 'ci')]
 			    }
 			    catch(err) {
-				nonvoting_fail++
+				info['nonvoting_fail']++
 			    }
 			}
 		    }
@@ -98,12 +99,14 @@ pipeline {
     post {
 	success {
 	    script {
-		postFunctions(['project': project, 'state': 'success', 'nonvoting_fail': nonvoting_fail, 'branch': "kmods"])
+		info['state'] = 'success'
+		projectFinishUp(info)
 	    }
 	}
 	failure {
 	    script {
-		postFunctions(['project': project, 'state': 'failure', 'nonvoting_fail': nonvoting_fail, 'branch': "kmods"])
+		info['state'] = 'failure'
+		projectFinishUp(info)
 	    }
 	}
 	always {

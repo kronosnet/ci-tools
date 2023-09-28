@@ -4,11 +4,17 @@
 
 // Globals
 def project = 'ha-functional-testing-weekly'
+def info = ['project': project, 'branch': '']
 
 pipeline {
     agent { label 'built-in' }
 
     stages {
+	stage('Initialisation') {
+	    steps {
+		getBuildInfoCommon(info)
+	    }
+	}
 	stage('smoke tests') {
 	    parallel {
 		// no more than 3 OSP environments at a time
@@ -88,15 +94,15 @@ pipeline {
     }
     post {
 	success {
-	    // Notify interested users if non-voting jobs fail
 	    script {
-		postFunctions(['project': project, 'state': 'success'])
+		info['state'] = 'success'
+		projectFinishUp(info)
 	    }
 	}
 	failure {
-	    // Notify interested users if voting jobs fail
 	    script {
-		postFunctions(['project': project, 'state': 'failure'])
+		info['state'] = 'failure'
+		projectFinishUp(info)
 	    }
 	}
     }

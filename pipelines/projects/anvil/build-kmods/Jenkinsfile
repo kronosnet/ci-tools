@@ -4,6 +4,7 @@
 
 // Globals
 def project = 'anvil'
+def info = ['project': project, 'branch': "kmod $BASEDISTRO $REPOSRC $ANVILSRC"]
 
 pipeline {
     agent { label 'anvil-bm' }
@@ -17,6 +18,7 @@ pipeline {
 	stage('Prep build env') {
 	    steps {
 		cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+		getBuildInfoCommon(info)
 		sh """
 		    DEST=${project} /root/ci-tools/ci-destroy-anvil-bm-vm
 		"""
@@ -33,12 +35,14 @@ pipeline {
     post {
 	success {
 	    script {
-		postFunctions(['project': project, 'state': 'success', 'branch': "kmod $BASEDISTRO $REPOSRC $ANVILSRC"])
+		info['state'] = 'success'
+		projectFinishUp(info)
 	    }
 	}
 	failure {
 	    script {
-		postFunctions(['project': project, 'state': 'failure', 'branch': "kmod $BASEDISTRO $REPOSRC $ANVILSRC"])
+		info['state'] = 'failure'
+		projectFinishUp(info)
 	    }
 	}
 	always {

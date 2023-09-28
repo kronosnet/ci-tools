@@ -1,9 +1,10 @@
-// Jenkinsfile for building anvil kmods
+// Jenkinsfile for building anvil cache
 
 @Library(['GlobalLib', 'ProjectLib']) _
 
 // Globals
 def project = 'anvil'
+def info = ['project': project]
 
 String[] distros = ['rhel-8', 'centos-8-stream', 'rhel-9', 'centos-9-stream']
 
@@ -15,7 +16,13 @@ pipeline {
     }
 
     stages {
+	stage('initialisation') {
+	    steps {
+		getBuildInfoCommon(info)
+	    }
+	}
 	stage('Update cache matrix') {
+
 	    matrix {
 		agent {
 		    label "${PLATFORM}"
@@ -38,7 +45,7 @@ pipeline {
 				    """
 			    	}
 				for (distro in distros) {
-				    def state = 'success'
+				    info['state'] = 'success'
 				    stage("Build cache ${PLATFORM} ${distro}") {
 					try {
 					    sh """
@@ -46,9 +53,10 @@ pipeline {
 					    """
 					}
 					catch(err) {
-					    state = 'failure'
+					    info['state'] = 'failure'
 					}
-					postFunctions(['project': project, 'state': state, 'branch': "cache ${PLATFORM} ${distro}"])
+					info['branch'] = "cache ${PLATFORM} ${distro}"
+					projectFinishUp(info)
 				    }
 				}
 				stage("Clean build env ${PLATFORM}") {

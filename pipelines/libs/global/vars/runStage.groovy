@@ -74,7 +74,7 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	    extraver = extras['EXTRAVER']
 	}
 
-	// converting ci-tools/ci-set-env to groovy maps
+	// Converting ci-tools/ci-set-env to groovy maps
 	extras += ci_set_env(info, extras, stageName)
 
 	def build_timeout = getBuildTimeout()

@@ -4,7 +4,7 @@ set -e
 
 . $HOME/ci-tools/ci-rpm-common
 
-case "$DEST" in
+case "${project}" in
  dlm)
   export PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
  ;;
@@ -12,7 +12,7 @@ esac
 
 case $build in
  coverity)
-  case "$DEST" in
+  case "${project}" in
    pcs)
     echo "cov-build --dir=./cov --no-command --fs-capture-search pcs --fs-capture-search pcs_test $MAKECOVOPTS"
     cov-build --dir=./cov --no-command --fs-capture-search pcs --fs-capture-search pcs_test $MAKECOVOPTS
@@ -42,7 +42,7 @@ case $build in
   find cov.html -type f -exec sed -i -e 's#'${WORKSPACE}'##g' {} \;
  ;;
  rpm)
-  case "$DEST" in
+  case "${project}" in
    pacemaker)
     # make sure CI version is alway higher than any distro
     export SPECVERSION=$BUILD_NUMBER
@@ -58,7 +58,7 @@ case $build in
   fi
  ;;
  *)
-  case "$DEST" in
+  case "${project}" in
    pcs)
     if [ -f .venv/bin/activate ]; then
      . .venv/bin/activate

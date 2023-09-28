@@ -8,8 +8,8 @@ if [ -n "$build" ]; then
 fi
 
 if [ -n "$install" ] && [ "$install" = 1 ]; then
- installpath=/srv/$DEST/origin/${target}
- case "$DEST" in
+ installpath=/srv/${project}/origin/${target}
+ case "${project}" in
   sbd|booth)
    installpath=${installpath}-pacemaker-${pacemakerver}/
    ;;
@@ -19,7 +19,7 @@ if [ -n "$install" ] && [ "$install" = 1 ]; then
  esac
  echo rm -rf $installpath
  rm -rf $installpath
- if [ "$DEST" = "pacemaker" ]; then
+ if [ "${project}" = "pacemaker" ]; then
   echo "$MAKE clean"
   $MAKE clean
   echo "./configure --prefix=$installpath --exec-prefix=$installpath --sysconfdir="$installpath/etc" --with-initdir="$installpath/etc/init.d" --with-ocfdir="$installpath/lib/ocf"  --with-systemdsystemunitdir="$installpath/usr/lib/systemd/system" $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
@@ -31,7 +31,7 @@ if [ -n "$install" ] && [ "$install" = 1 ]; then
  $MAKE $MAKEINSTALLOPTS install
  echo "$JOB_URL/$BUILD_NUMBER/" > $installpath/.build-info
  echo "Creating cross projects symlinks hacks for pcs testing"
- case "$DEST" in
+ case "${project}" in
   pacemaker)
    cd $installpath/lib/ocf
    rm -f lib

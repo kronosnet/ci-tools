@@ -9,7 +9,7 @@ fi
 
 if [ -f ./configure ]; then
  # workaround bug in pacemaker test suite
- case "$DEST" in
+ case "${project}" in
   pacemaker)
    echo "./configure $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
    ./configure $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
@@ -44,8 +44,8 @@ if [ -f ./configure ]; then
    ./configure --enable-destructive-tests --enable-parallel-tests $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
    ;;
   *)
-   installpath=/srv/$DEST/origin/${target}
-   case "$DEST" in
+   installpath=/srv/${project}/origin/${target}
+   case "${project}" in
     kronosnet|corosync)
      if [ -n "$RUSTBINDINGS" ] && [ "$RUSTBINDINGS" = yes ]; then
       extraopts="--enable-rust-bindings"

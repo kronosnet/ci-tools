@@ -9,7 +9,7 @@ cleanlibqb() {
  # make sure to clean before and after the test run
  # this code works because we do NOT allow multiple builds of libqb
  # in parallel!
- if [ "$DESTS" = libqb ]; then
+ if [ "${project}S" = libqb ]; then
   if [ -d "/dev/shm" ]; then
    find /dev/shm -name qb-\*-test\* | xargs rm -rf
   fi
@@ -19,7 +19,7 @@ cleanlibqb() {
 
 fenceagentsextratests() {
  # fence-agents extra tests
- if [ "$DEST" = "fence-agents" ]; then
+ if [ "${project}" = "fence-agents" ]; then
   if [ -d fence/agents/lib ]; then
    PYTHONPATH=fence/agents/lib $PYTHON fence/agents/lib/tests/test_fencing.py
   else
@@ -30,7 +30,7 @@ fenceagentsextratests() {
 
 pacemakerextratests() {
  # pacemaker extra tests
- if [ "$DEST" != pacemaker ]; then
+ if [ "${project}" != pacemaker ]; then
   return
  fi
 
@@ -53,21 +53,21 @@ case $build in
   ret=0
   # this will trigger only with build-after-merge
   if [ "${install}" = 1 ] || [ "${covinstall}" = 1 ]; then
-   mkdir -p /srv/covscan/$DEST/origin/${target}/$extraver/
-   mv cov.json cov.txt /srv/covscan/$DEST/origin/${target}/$extraver/
+   mkdir -p /srv/covscan/${project}/origin/${target}/$extraver/
+   mv cov.json cov.txt /srv/covscan/${project}/origin/${target}/$extraver/
   else
-   if [ ! -d /srv/covscan/$DEST/origin/${target} ]; then
+   if [ ! -d /srv/covscan/${project}/origin/${target} ]; then
     echo "WARNING: target branch origin/${target} no available for compare. Skipping."
     exit 0
    fi
-   csdiff -xc --no-color /srv/covscan/$DEST/origin/${target}/$extraver/cov.json cov.json > cov.diff
+   csdiff -xc --no-color /srv/covscan/${project}/origin/${target}/$extraver/cov.json cov.json > cov.diff
    errors="$(cat cov.diff | grep ^Error: | wc -l)"
    if [ "$errors" -ne "0" ]; then
     echo "===== NEW COVERITY SCAN ERRORS FIXED ====="
     cat cov.diff
     echo "===== END NEW COVERITY SCAN ERRORS FIXED ====="
    fi
-   csdiff -c --no-color /srv/covscan/$DEST/origin/${target}/$extraver/cov.json cov.json > cov.diff
+   csdiff -c --no-color /srv/covscan/${project}/origin/${target}/$extraver/cov.json cov.json > cov.diff
    errors="$(cat cov.diff | grep ^Error: | wc -l)"
    if [ "$errors" -ne "0" ]; then
     echo "===== NEW COVERITY SCAN ERRORS DETECTED ====="
@@ -75,10 +75,10 @@ case $build in
     echo "===== END NEW COVERITY SCAN ERRORS DETECTED ====="
     ret=1
     cat cov.diff | cshtml - > cov-index.html
-    echo "New errors can be found here: https://ci.kronosnet.org/coverity/$DEST/${NODE_NAME}/${BUILD_NUMBER}/new/"
+    echo "New errors can be found here: https://ci.kronosnet.org/coverity/${project}/${NODE_NAME}/${BUILD_NUMBER}/new/"
    fi
   fi
-  echo "Complete html report can be found here: https://ci.kronosnet.org/coverity/$DEST/${NODE_NAME}/${BUILD_NUMBER}/"
+  echo "Complete html report can be found here: https://ci.kronosnet.org/coverity/${project}/${NODE_NAME}/${BUILD_NUMBER}/"
 
   exit $ret
   ;;
@@ -98,13 +98,13 @@ if [ -n "$CHECKS" ] && [ "$CHECKS" = "nochecks" ]; then
 fi
 
 # blacklist PARALLELMAKE as necessary
-case "$DEST" in
+case "${project}" in
  kronosnet|pcs)
   export PARALLELMAKE=""
  ;;
 esac
 
-case "$DEST" in
+case "${project}" in
  pcs)
   case "${NODE_NAME}" in
    debian*|ubuntu*)

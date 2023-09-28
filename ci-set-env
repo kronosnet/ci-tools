@@ -28,7 +28,7 @@ if [ -z "$python" ]; then
 fi
 python=`which $python`
 $python --version || true
-if [ "$DEST" != "pcs" ]; then
+if [ "${project}" != "pcs" ]; then
  export PYTHON=$python
 fi
 
@@ -104,7 +104,7 @@ if [ "$build" != "rpm" ]; then
  RESOURCE_AGENTS_INSTALL_PATH=/srv/resource-agents/origin/main/
  BOOTH_INSTALL_PATH=/srv/booth/origin/main-pacemaker-${pacemakerver}/
 
- case "$DEST" in
+ case "${project}" in
   corosync)
    # corosync supports both kronosnet stable and main
    # we need to test build both
@@ -269,7 +269,7 @@ else
   PACEMAKER_REPO_PATH="https://ci.kronosnet.org/builds/pacemaker/${NODE_NAME}/${PACEMAKER_RELEASE}/latest/"
  fi
 
- case "$DEST" in
+ case "${project}" in
   corosync)
    # corosync supports both kronosnet stable and main
    # we need to test build both

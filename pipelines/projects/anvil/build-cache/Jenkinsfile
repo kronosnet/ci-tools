@@ -41,7 +41,7 @@ pipeline {
 				stage("Prep build env ${PLATFORM}") {
 				    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 				    sh """
-					DEST=${project} /root/ci-tools/ci-destroy-anvil-bm-vm
+					/root/ci-tools/ci-destroy-anvil-bm-vm
 				    """
 			    	}
 				for (distro in distros) {
@@ -49,7 +49,7 @@ pipeline {
 				    stage("Build cache ${PLATFORM} ${distro}") {
 					try {
 					    sh """
-						DEST=${project} /root/ci-tools/ci-setup-anvil-bm-vm-cache ${distro} none none
+						/root/ci-tools/ci-setup-anvil-bm-vm-cache ${distro} none none
 					    """
 					}
 					catch(err) {
@@ -62,7 +62,7 @@ pipeline {
 				stage("Clean build env ${PLATFORM}") {
 				    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 				    sh """
-					DEST=${project} /root/ci-tools/ci-destroy-anvil-bm-vm
+					/root/ci-tools/ci-destroy-anvil-bm-vm
 				    """
 				}
 			    }

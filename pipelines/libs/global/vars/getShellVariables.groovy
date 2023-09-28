@@ -1,7 +1,6 @@
 // Create var=value pairs for the shell from everything
 // in 'info', plus some other things the running scripts need
 
-
 def mapToShellVars(Map info)
 {
     def exports=''
@@ -13,15 +12,8 @@ def mapToShellVars(Map info)
 
 def call(Map info, Map extras)
 {
-    // Normally this is 'project', but some jobs have different names
-    // eg pacemaker -> pcmk
-    if (!info.containsKey('DEST')) {
-	info['DEST'] = info['project']
-    }
     def exports = mapToShellVars(info)
     exports += mapToShellVars(extras)
 
-    // Global things
-    exports += "PIPELINE_VER=1"
     return exports
 }

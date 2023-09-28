@@ -68,27 +68,14 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	// Get any job-specific configuration variables
 	extras += getProjectProperties(info, extras, agentName, info['target'])
 
-	// We need EXTRAVER to to build the repos, but it's not always present
+	// We need EXTRAVER to build the repos, but it's not always present
 	def extraver = ''
 	if (extras.containsKey('EXTRAVER')) {
 	    extraver = extras['EXTRAVER']
 	}
 
-	// Disable 'make check' if we are bootstrapping
-	if (info['bootstrap'] == 1) {
-	    extras['CHECKS'] = 'nochecks'
-	}
-
-	extras['build'] = ''
-	if (stageName.endsWith('covscan')) {
-	    extras['build'] = 'coverity'
-	}
-	if (stageName.endsWith('buildrpms')) {
-	    extras['build'] = 'rpm'
-	}
-	if (stageName.endsWith('crosscompile')) {
-	    extras['build'] = 'crosscompile'
-	}
+	// converting ci-tools/ci-set-env to groovy maps
+	extras += ci-set-env(info, extras, stageName)
 
 	def build_timeout = getBuildTimeout()
 

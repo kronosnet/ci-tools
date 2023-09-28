@@ -24,6 +24,10 @@ def call(Map info, String agentName, String stageName, Boolean voting, Map extra
 
 def doRunStage(Map info, String agentName, String stageName, Boolean voting, String stageType, Map extravars)
 {
+    // This is useful, but it also makes sure that runStage appears properly in the logs
+    // if it has nothing to do. (Jenkins hates quiet scripts)
+    println('doRunStage info='+info+', extravars='+extravars)
+
     // Timeout (minutes) for the collection stages
     def collect_timeout = 10
 

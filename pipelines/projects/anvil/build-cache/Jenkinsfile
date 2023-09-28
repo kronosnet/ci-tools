@@ -16,8 +16,9 @@ pipeline {
     }
 
     stages {
-	stage('initialisation') {
+	stage('Initialisation') {
 	    steps {
+		println('Initialising variables')
 		getBuildInfoCommon(info)
 	    }
 	}

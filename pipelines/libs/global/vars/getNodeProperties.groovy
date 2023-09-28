@@ -1,8 +1,13 @@
 // List of properties for each node
+//
+// Each entry in this map is a node, and that
+// map entry contains a String array of envronment variables
+//
+// When called for a node, a new map (props) is created that contains
+// key=value pairs which are added to extras[:] in the caller,
+// and then subsequently passed down to the node's shell environment
+// when the job is run.
 
-// NOTE:
-// properties that are <project>DISTROCONFOPTS are here as reminders *only*
-// and really belong in the getProjectProperties file
 def call(String node)
 {
     def node_env=[:]

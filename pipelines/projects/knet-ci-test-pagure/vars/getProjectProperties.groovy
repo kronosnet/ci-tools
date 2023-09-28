@@ -30,7 +30,8 @@ def call(Map info, Map extras, String agentName, String branch)
 	agentName.startsWith('fedora') ||
 	agentName.startsWith('opensuse') ||
 	agentName.startsWith('centos')) {
-	props['RPMDEPS'] = 'libknet1-devel'
+	//props['RPMDEPS'] = 'libknet1-devel'
+	props['RPMDEPS'] = ''
     }
     if (agentName.startsWith("freebsd")) {
 	props['DISTROCONFOPTS'] += ' MAKE=gmake'

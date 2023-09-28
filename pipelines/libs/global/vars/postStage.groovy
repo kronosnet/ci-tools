@@ -1,6 +1,10 @@
 // Called after the main stages to build the RPM and covscan repos for this build
 def call(Map info)
 {
+    // This is useful, but it also makes sure that postStage appears properly in the logs
+    // if it has nothing to do. (Jenkins hates quiet scripts)
+    println('postStage info='+info)
+
     def publish_timeout = 15 // Minutes
 
     // Don't do this for the weekly jobs

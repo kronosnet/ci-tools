@@ -64,19 +64,6 @@ pipeline {
 								'nodelabel': 'test-buildrpms'])
 
 
-		    // This is the libqb list ...
-		    // voting = buildRunMap('voting', info, ['voting': true,
-		    // 					  'nodelabel': 'voting',
-		    // 					  'nodelist': ['debian-unstable-cross-x86-64']])
-		    // nonvoting = buildRunMap('nonvoting', info, ['voting': false,
-		    // 						'nodelabel': 'nonvoting'])
-		    // nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
-		    // 							    'nodelabel': 'nonvoting-clang'])
-		    // covscan = buildRunMap('covscan', info, ['voting': true,
-		    // 					    'nodelabel': 'covscan'])
-		    // buildrpms = buildRunMap('buildrpms', info, ['voting': false,
-		    //                                             'nodelabel': 'buildrpms'])
-
 		    // Run them (errors are caught in info[:])
 		    try {
 			parallel voting + nonvoting + nonvoting_clang + covscan + buildrpms

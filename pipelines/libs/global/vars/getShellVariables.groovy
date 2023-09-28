@@ -11,7 +11,7 @@ def mapToShellVars(Map info)
 }
 
 
-def call(Map info, Map extras, String job_type)
+def call(Map info, Map extras)
 {
     // Normally this is 'project', but some jobs have different names
     // eg pacemaker -> pcmk
@@ -22,6 +22,6 @@ def call(Map info, Map extras, String job_type)
     exports += mapToShellVars(extras)
 
     // Global things
-    exports += "PIPELINE_VER=1 JOB_BASE_NAME=${info['project']}-${job_type}"
+    exports += "PIPELINE_VER=1"
     return exports
 }

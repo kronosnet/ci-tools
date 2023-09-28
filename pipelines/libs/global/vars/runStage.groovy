@@ -79,6 +79,17 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 	    extras['CHECKS'] = 'nochecks'
 	}
 
+	extras['build'] = ''
+	if (stageName.endsWith('covscan')) {
+	    extras['build'] = 'coverity'
+	}
+	if (stageName.endsWith('buildrpms')) {
+	    extras['build'] = 'rpm'
+	}
+	if (stageName.endsWith('crosscompile')) {
+	    extras['build'] = 'crosscompile'
+	}
+
 	def build_timeout = getBuildTimeout()
 
 	stage("${stageTitle} on ${agentName} - build") {

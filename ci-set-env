@@ -84,11 +84,6 @@ export PARALLELMAKE
 
 echo ===== SOURCE TREE INFO =====
 
-if [ -z "${actual_commit}" ]; then
- echo "Unable to proceed without actual_commit information"
- exit 1
-fi
-
 # Latest Pacemaker release branch
 PACEMAKER_RELEASE=2.1
 

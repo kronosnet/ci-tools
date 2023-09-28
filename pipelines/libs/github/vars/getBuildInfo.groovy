@@ -31,7 +31,6 @@ def call(String project)
 
     // Set parameters for the sub-jobs.
     if (isPullRequest) {
-	info['actual_commit'] = env.GIT_COMMIT
 	info['target'] = env.CHANGE_TARGET
 	info['pull_id'] = env.CHANGE_ID
 	info['install'] = 0
@@ -55,7 +54,6 @@ def call(String project)
 	//     is_draft = false
 	// }
     } else {
-	info['actual_commit'] = "origin/${env.BRANCH_NAME}"
 	info['target'] = env.BRANCH_NAME
 	info['pull_id'] = 1
 	info['publish_rpm'] = 1 // TODO Remove once all in new pipelines

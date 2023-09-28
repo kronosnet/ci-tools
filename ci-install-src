@@ -8,7 +8,7 @@ if [ -n "$build" ]; then
 fi
 
 if [ -n "$install" ] && [ "$install" = 1 ]; then
- installpath=/srv/$DEST/${actual_commit}
+ installpath=/srv/$DEST/origin/${target}
  case "$DEST" in
   sbd|booth)
    installpath=${installpath}-pacemaker-${pacemakerver}/
@@ -41,7 +41,7 @@ if [ -n "$install" ] && [ "$install" = 1 ]; then
    ln -sf /srv/resource-agents/origin/main/lib/ocf/resource.d/heartbeat
    cd pacemaker
    rm -f booth-site
-   if [ "${actual_commit}" = "origin/main" ]; then
+   if [ "${target}" = "main" ]; then
     ln -sf /srv/booth/origin/main-pacemaker-main/lib/ocf/resource.d/pacemaker/booth-site
    else
     ln -sf /srv/booth/origin/main-pacemaker-${PACEMAKER_RELEASE}/lib/ocf/resource.d/pacemaker/booth-site

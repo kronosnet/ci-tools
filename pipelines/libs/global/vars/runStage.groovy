@@ -116,7 +116,7 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 		    if (info['isPullRequest']) {
 			info['covtgtdir'] = "pr${info['pull_id']}"
 		    } else {
-			info['covtgtdir'] = "${info['actual_commit']}"
+			info['covtgtdir'] = "origin/${info['target']}"
 		    }
 		    def covdir = "coverity/${info['project']}/${agentName}/${info['covtgtdir']}/${env.BUILD_NUMBER}/"
 		    cmdWithTimeout(collect_timeout,
@@ -144,7 +144,7 @@ def doRunStage(Map info, String agentName, String stageName, Boolean voting, Str
 				       info, locals, {}, { postFnError(info, locals) })
 		    } else {
 			cmdWithTimeout(collect_timeout,
-				       "~/ci-tools/ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/${agentName}/${info['actual_commit']}/${extraver}/${env.BUILD_NUMBER}/ rpm",
+				       "~/ci-tools/ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/${agentName}/origin/${info['target']}/${extraver}/${env.BUILD_NUMBER}/ rpm",
 				       info, locals, {}, { postFnError(info, locals) })
 		    }
 		    // Keep a list of EXTRAVERs, it's more efficient (and less racy)

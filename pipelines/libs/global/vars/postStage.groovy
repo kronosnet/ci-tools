@@ -24,7 +24,7 @@ def call(Map info)
 	    stage("Publish RPMs") {
 		node('built-in') {
 		    lock('ci-rpm-repos') { // This script needs to be serialised
-			def repopath = "${info['actual_commit']}"
+			def repopath = "origin/${info['target']}"
 			if (info['isPullRequest']) {
 			    repopath = "pr/${info['pull_id']}"
 			}

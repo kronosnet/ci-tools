@@ -44,7 +44,7 @@ if [ -f ./configure ]; then
    ./configure --enable-destructive-tests --enable-parallel-tests $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
    ;;
   *)
-   installpath=/srv/$DEST/${actual_commit}
+   installpath=/srv/$DEST/origin/${target}
    case "$DEST" in
     kronosnet|corosync)
      if [ -n "$RUSTBINDINGS" ] && [ "$RUSTBINDINGS" = yes ]; then

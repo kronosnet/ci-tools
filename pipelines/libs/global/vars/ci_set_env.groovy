@@ -18,6 +18,12 @@ def call(Map info, Map extras, String stageName)
 	cienv['build'] = 'crosscompile'
     }
 
+    if (!extras.containsKey('compiler')) {
+	cienv['compiler'] = 'gcc'
+    }
+
+    cienv['CC'] = cienv['compiler']
+
     // Global things
     cienv['PIPELINE_VER'] = '1'
 

@@ -15,13 +15,9 @@ if [ "${USEGMAKE}" = 1 ]; then
 fi
 $MAKE --version || true
 
-if [ -z "$compiler" ]; then
- compiler=gcc
-fi
-$compiler --version || true
+$CC --version || true
 
 ld --version || true
-export CC=$compiler
 
 if [ -z "$python" ]; then
  python=python3

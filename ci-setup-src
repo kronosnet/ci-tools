@@ -36,10 +36,11 @@ if [ -f ./configure ]; then
    esac
    rm -rf .venv
    $PYTHON -m venv $usesitepackages .venv
+   unset PYTHON
    . .venv/bin/activate
    export PATH="$(pwd)/.venv"/bin/:$PATH
-   $PYTHON -m pip install setuptools-scm setuptools-rust wheel
-   $PYTHON -m pip install concurrencytest cryptography lxml pycurl six pyparsing
+   python3 -m pip install setuptools-scm setuptools-rust wheel
+   python3 -m pip install concurrencytest cryptography lxml pycurl six pyparsing
    echo "./configure --enable-destructive-tests --enable-parallel-tests $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
    ./configure --enable-destructive-tests --enable-parallel-tests $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
    ;;

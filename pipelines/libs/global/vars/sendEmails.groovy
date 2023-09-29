@@ -17,55 +17,41 @@ def is_main_lib()
     return ret
 }
 
+// Returns a value from a map if it exists, else a default.
+// 'normal' is untyped so it will take an int or a string
+def ifExists(Map i, normal, String key)
+{
+    if (i.containsKey(key)) {
+	return i[key]
+    } else {
+	return normal
+    }
+}
+
+// Make a suffix character depeneding on the value of
+// a variable (eg for adding 's' to ones)
+def makeSuffix(String suffix, Closure c)
+{
+    if (c()) {
+	return suffix
+    } else {
+	return ''
+    }
+}
 
 // Send completion emails
 def call(Map info)
 {
-    def nonvoting_fail = 0
-    def voting_fail = 0
-    def stages_fail = 0
-    def nonvoting_run = 0
-    def voting_run = 0
-    def stages_run = 0
-    def state = "script error"
+    def nonvoting_fail = ifExists(info, 0, 'nonvoting_fail')
+    def voting_fail = ifExists(info, 0, 'voting_fail')
+    def stages_fail = ifExists(info, 0, 'stages_fail')
+    def nonvoting_run = ifExists(info, 0, 'nonvoting_run')
+    def voting_run = ifExists(info, 0, 'voting_run')
+    def stages_run = ifExists(info, 0, 'stages_run')
+    def state = ifExists(info, 'script error', 'state')
+    def project = ifExists(info, env.BUILD_TAG, 'project')
+    def branch = ifExists(info, env.BRANCH_NAME, 'branch')
     def email_addrs = ''
-    def project = env.BUILD_TAG
-    def branch = env.BRANCH_NAME
-
-    if (info.containsKey('voting_fail')) {
-	voting_fail = info['voting_fail']
-    }
-    if (info.containsKey('nonvoting_fail')) {
-	nonvoting_fail = info['nonvoting_fail']
-    }
-    if (info.containsKey('stages_fail')) {
-	stages_fail = info['stages_fail']
-    }
-    if (info.containsKey('voting_run')) {
-	voting_run = info['voting_run']
-    }
-    if (info.containsKey('nonvoting_run')) {
-	nonvoting_run = info['nonvoting_run']
-    }
-    if (info.containsKey('stages_run')) {
-	stages_run = info['stages_run']
-    }
-
-    if (info.containsKey('state')) {
-	state = info['state']
-    }
-    if (info.containsKey('project')) {
-	project = info['project']
-    }
-    if (info.containsKey('branch')) {
-	branch = info['branch']
-    }
-    if (!info.containsKey('email_extra_text')) {
-	info['email_extra_text'] = ''
-    }
-    if (!info.containsKey('exception_text')) {
-	info['exception_text'] = ''
-    }
 
     if (state == 'build-ignored') {
 	println('build has been ignored, not sending emails')
@@ -151,30 +137,12 @@ ${info['exception_text']}
 """
 
     // Make it look nice
-    def voting_colon = ''
-    if (voting_fail > 0) {
-	voting_colon = ':'
-    }
-    def nonvoting_colon = ''
-    if (nonvoting_fail > 0) {
-	nonvoting_colon = ':'
-    }
-    def stages_colon = ''
-    if (stages_fail > 0) {
-	stages_colon = ':'
-    }
-    def voting_s = 's'
-    if (voting_run == 1) {
-	voting_s = ''
-    }
-    def nonvoting_s = 's'
-    if (nonvoting_run == 1) {
-	nonvoting_s = ''
-    }
-    def stage_s = 's'
-    if (stages_run == 1) {
-	stage_s = ''
-    }
+    def voting_colon = makeSuffix(':', {voting_fail > 0} )
+    def nonvoting_colon = makeSuffix(':', {nonvoting_fail > 0} )
+    def stages_colon = makeSuffix(':', {stages_fail > 0} )
+    def voting_s = makeSuffix('s', {voting_run == 1} )
+    def nonvoting_s = makeSuffix('s', {nonvoting_run == 1} )
+    def stage_s = makeSuffix('s', {stages_run == 1} )
 
     // Now build the email bits
     def subject = ''
@@ -186,6 +154,7 @@ ${info['exception_text']}
 		subject = "${email_title} completed with state: ${state}"
 		body = """
 ${stages_fail}/${stages_run} Stage${stage_s} failed${stages_colon} ${info['stages_fail_nodes']}
+
 ${email_trailer}
 """
 	} else if (nonvoting_fail > 0) {
@@ -193,6 +162,7 @@ ${email_trailer}
 	    subject = "${email_title} succeeded but with ${nonvoting_fail}/${nonvoting_run} non-voting fail${nonvoting_s}"
 	    body = """
 failed job${nonvoting_s}: ${info['nonvoting_fail_nodes']}
+
 ${email_trailer}
 """
 	} else {
@@ -212,6 +182,7 @@ ${email_trailer}
 	body = """
 ${nonvoting_fail}/${nonvoting_run} Non-voting fail${nonvoting_s}${nonvoting_colon} ${info['nonvoting_fail_nodes']}
 ${voting_fail}/${voting_run} Voting fail${voting_s}${voting_colon} ${info['voting_fail_nodes']}
+
 ${email_trailer}
 """
     }

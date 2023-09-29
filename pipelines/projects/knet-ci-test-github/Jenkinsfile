@@ -25,7 +25,6 @@ pipeline {
 	    steps {
 		script {
 		    info = getBuildInfo(project)
-		    info['bootstrap'] = 1 // for this test job only.
 		}
 	    }
 	}

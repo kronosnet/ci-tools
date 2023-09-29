@@ -9,7 +9,6 @@ TODO List for ci.kronosnet.org
   [ ] add i386 cross compiler for gfs2-utils
   [ ] Sunset Debian 10 (EOL Jun 30 2024)
   [ ] Upgrade jumphost
-  [ ] Drop concept of epel=new and python2
 
 - CI Roadmap
   [ ] abidiff check

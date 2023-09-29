@@ -88,7 +88,7 @@ if [ "$build" != "rpm" ]; then
  PACEMAKER_INSTALL_PATH=/srv/pacemaker/origin/${pacemakerver}/
 
  # those projects only have main branch
- COROSYNC_QDEVICE_INSTALL_PATH=/srv/qdevice/origin/main/
+ COROSYNC_QDEVICE_INSTALL_PATH=/srv/corosync-qdevice/origin/main/
  SBD_INSTALL_PATH=/srv/sbd/origin/main-pacemaker-${pacemakerver}/
  FENCE_AGENTS_INSTALL_PATH=/srv/fence-agents/origin/main/
  RESOURCE_AGENTS_INSTALL_PATH=/srv/resource-agents/origin/main/

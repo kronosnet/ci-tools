@@ -29,8 +29,8 @@ def call(Map info, Map extras, String stageName)
 	cienv['MAKE'] = 'make'
     }
 
-    if (!extras.containsKey('python')) {
-	cienv['python'] = 'python3'
+    if (!extras.containsKey('PYTHON')) {
+	cienv['PYTHON'] = 'python3'
     }
 
     def path = sh(script: "echo \$PATH", returnStdout: true).trim()

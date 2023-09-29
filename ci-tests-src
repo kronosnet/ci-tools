@@ -21,9 +21,9 @@ fenceagentsextratests() {
  # fence-agents extra tests
  if [ "${project}" = "fence-agents" ]; then
   if [ -d fence/agents/lib ]; then
-   PYTHONPATH=fence/agents/lib $PYTHON fence/agents/lib/tests/test_fencing.py
+   PYTHONPATH=fence/agents/lib ${python} fence/agents/lib/tests/test_fencing.py
   else
-   PYTHONPATH=lib $PYTHON lib/tests/test_fencing.py
+   PYTHONPATH=lib ${python} lib/tests/test_fencing.py
   fi
  fi
 }

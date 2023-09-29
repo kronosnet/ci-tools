@@ -29,6 +29,10 @@ def call(Map info, Map extras, String stageName)
 	cienv['MAKE'] = 'make'
     }
 
+    if (!extras.containsKey('python')) {
+	cienv['python'] = 'python3'
+    }
+
     def path = sh(script: "echo \$PATH", returnStdout: true).trim()
     def home = sh(script: "echo \$HOME", returnStdout: true).trim()
     cienv['PATH'] = "/opt/coverity/bin:${path}:${home}/ci-tools"

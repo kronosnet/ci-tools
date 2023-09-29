@@ -13,14 +13,8 @@ $CC --version || true
 echo ld: ld
 ld --version || true
 
-if [ -z "$python" ]; then
- python=python3
-fi
-python=`which $python`
+echo python: $python
 $python --version || true
-if [ "${project}" != "pcs" ]; then
- export PYTHON=$python
-fi
 
 case "${NODE_NAME}" in
  freebsd-12*|freebsd-13*)

@@ -1,16 +1,16 @@
 echo ===== PATH INFO =====
 
-export PATH="$PATH:$HOME/ci-tools"
-
-if [ -d /opt/coverity/bin ]; then
- export PATH=/opt/coverity/bin:$PATH
-fi
-
 echo PATH: $PATH
 
 echo ===== TOOLCHAIN INFO =====
+
+echo MAKE: $MAKE
 $MAKE --version || true
+
+echo CC: $CC
 $CC --version || true
+
+echo ld: ld
 ld --version || true
 
 if [ -z "$python" ]; then

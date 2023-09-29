@@ -29,6 +29,8 @@ def call(Map info, Map extras, String stageName)
 	cienv['MAKE'] = 'make'
     }
 
+    cienv['PATH'] = "/opt/coverity/bin:\$PATH:\$HOME/ci-tools"
+
     // Global things
     cienv['PIPELINE_VER'] = '1'
 

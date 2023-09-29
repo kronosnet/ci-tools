@@ -3,7 +3,7 @@
 def call(Map info, String agentName, String stageName, Boolean voting, Map extravars)
 {
     // Are we voting or non-voting?
-    // used to record stats in info[]
+    // - used to record stats in info[]
     def stageType = ''
     if (voting) {
 	stageType = 'voting'

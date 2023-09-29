@@ -28,7 +28,7 @@ def ifExists(Map i, normal, String key)
     }
 }
 
-// Make a suffix character depeneding on the value of
+// Make a suffix character depending on the value of
 // a variable (eg for adding 's' to ones)
 def makeSuffix(String suffix, Closure c)
 {

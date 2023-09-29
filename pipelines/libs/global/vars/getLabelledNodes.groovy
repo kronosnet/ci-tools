@@ -25,7 +25,7 @@ def call()
     return doGetLabelledNodes('')
 }
 
-// get labelled nodes
+// Get nodes with a specific label
 def call(String label)
 {
     return doGetLabelledNodes(label)

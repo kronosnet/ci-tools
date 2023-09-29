@@ -1,6 +1,5 @@
 // Create var=value pairs for the shell from everything
-// in 'info', plus some other things the running scripts need
-
+// in 'info' and 'extras'
 def mapToShellVars(Map info)
 {
     def exports=''

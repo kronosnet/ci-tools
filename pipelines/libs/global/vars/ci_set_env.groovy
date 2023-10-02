@@ -48,6 +48,8 @@ def call(Map info, Map extras, String stageName, String agentName)
 	numcpu = sh(script: "nproc", returnStdout: true).trim()
     }
 
+    cienv['PARALLELMAKE'] = "-j ${numcpu}"
+
     def paralleloutput = sh(script: """
 				    rm -f Makefile.stub
 				    echo "all:" > Makefile.stub
@@ -55,8 +57,8 @@ def call(Map info, Map extras, String stageName, String agentName)
 				    if ${cienv['MAKE']} -f Makefile.stub ${cienv['PARALLELMAKE']} -O >/dev/null 2>&1; then
 					PARALLELOUTPUT="-O"
 				    fi
-				    if ${cienv['MAKE']} -f Makefile.stub ${cienv['PARALLELMAKE']} -Ocurse >/dev/null 2>&1; then
-					PARALLELOUTPUT="-Ocurse"
+				    if ${cienv['MAKE']} -f Makefile.stub ${cienv['PARALLELMAKE']} -Orecurse >/dev/null 2>&1; then
+					PARALLELOUTPUT="-Orecurse"
 				    fi
 				    rm -f Makefile.stub
 				    echo \$PARALLELOUTPUT

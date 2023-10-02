@@ -27,6 +27,9 @@ def call(Map info, Map extras, String stageName, String agentName)
 
     if (!extras.containsKey('MAKE')) {
 	cienv['MAKE'] = 'make'
+    } else {
+	// this is only necessary to simply paralleloutput check
+	cienv['MAKE'] = extras['MAKE']
     }
 
     if (!extras.containsKey('PYTHON')) {
@@ -45,7 +48,21 @@ def call(Map info, Map extras, String stageName, String agentName)
 	numcpu = sh(script: "nproc", returnStdout: true).trim()
     }
 
-    cienv['PARALLELMAKE'] = "-j ${numcpu}"
+    def paralleloutput = sh(script: """
+				    rm -f Makefile.stub
+				    echo "all:" > Makefile.stub
+				    PARALLELOUTPUT=""
+				    if ${cienv['MAKE'} -f Makefile.stub ${cienv['PARALLELMAKE']} -O >/dev/null 2>&1; then
+					PARALLELOUTPUT="-O"
+				    fi
+				    if ${cienv['MAKE'} -f Makefile.stub ${cienv['PARALLELMAKE']} -Ocurse >/dev/null 2>&1; then
+					PARALLELOUTPUT="-Ocurse"
+				    fi
+				    rm -f Makefile.stub
+				    echo \$PARALLELOUTPUT
+				    """, returnStdout: true).trim()
+
+    cienv['PARALLELMAKE'] = "-j ${numcpu} ${paralleloutput}"
 
     // Global things
     cienv['PIPELINE_VER'] = '1'

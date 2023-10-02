@@ -2,13 +2,9 @@
 // Return a map of key=value pairs that will
 // be passed into the environment on the building node.
 //
-// info contains all of the global build information
-//      (do NOT change anything in here)
-// extras contains 'extra' variables added for this run only
-//      during the buildRunMap phase
+// localinfo contains all of the global information
 // agentName is the node we are building on,
-// branch is the git branch we are building (for)
-def call(Map info, Map extras, String agentName, String branch)
+def call(Map localinfo, String agentName)
 {
     def props = [:]
 
@@ -24,7 +20,7 @@ def call(Map info, Map extras, String agentName, String branch)
     props['DISTROCONFOPTS'] = ''
 
     if (agentName.startsWith("debian-unstable-cross")) {
-	if (extras['ARCH'] == 'ARM') {
+	if (localinfo['ARCH'] == 'ARM') {
 	    props['compiler'] = 'arm-linux-gnueabihf-gcc'
 	    props['DISTROCONFOPTS'] += ' --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf'
 	}

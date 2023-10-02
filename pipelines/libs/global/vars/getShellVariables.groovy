@@ -1,18 +1,16 @@
 // Create var=value pairs for the shell from everything
-// in 'info' and 'extras'
-def mapToShellVars(Map info)
+// in 'info'
+def mapToShellVars(Map localinfo)
 {
-    def exports=''
+    def exports = ''
 
-    info.each { exports += "${it.key}='${it.value}' " }
+    localinfo.each { exports += "${it.key}='${it.value}' " }
     return exports
 }
 
 
-def call(Map info, Map extras)
+def call(Map localinfo)
 {
-    def exports = mapToShellVars(info)
-    exports += mapToShellVars(extras)
-
+    def exports = mapToShellVars(localinfo)
     return exports
 }

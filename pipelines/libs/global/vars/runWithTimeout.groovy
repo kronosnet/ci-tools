@@ -3,16 +3,15 @@
 // Parameters:
 //  time   - timeout in minutes
 //  fn     - Closure to call
-//  info   - The job-global info map
-//  locals - a map with args specific to this call
+//  state  - a map with args specific to the state of this call
 //  success_callback - a closure called if the run succeeded
 //  failure_callback - a closure called if the run failed,
-//                     return code in locals['RET']
-//                     exception caught in locals['EXP']
+//                     return code in state['RET']
+//                     exception caught in state['EXP']
 //
-// locals['CALLRET'] will always contain the return code of the closure (if any)
+// state['CALLRET'] will always contain the return code of the closure (if any)
 //
-// Callbacks will be called with the result set in locals['RET']
+// Callbacks will be called with the result set in state['RET']
 // Valid values are:
 //   OK      - it all went well
 //   TIMEOUT - the job timed-out
@@ -20,7 +19,7 @@
 //   ERROR   - a shell script caused an error
 // All other exceptions will be rethrown
 //
-def call(Integer time, Closure fn, Map info, Map locals,
+def call(Integer time, Closure fn, Map state,
 	 Closure success_callback, Closure error_callback)
 {
     println("runWithTimeout "+time);
@@ -28,10 +27,10 @@ def call(Integer time, Closure fn, Map info, Map locals,
 
     try {
 	timeout(time: time, unit: 'MINUTES') {
-	    locals['CALLRET'] = fn()
+	    state['CALLRET'] = fn()
 	}
     } catch (hudson.AbortException ae) {
-	locals['EXP'] = ae
+	state['EXP'] = ae
 	println("runWithTimeout caught AbortException "+ae)
 	// This is actually an abort
 	// https://gist.github.com/stephansnyt/3ad161eaa6185849872c3c9fce43ca81?permalink_comment_id=2198976
@@ -44,7 +43,7 @@ def call(Integer time, Closure fn, Map info, Map locals,
 	    retval = 'ERROR'
 	}
     } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException err) {
-	locals['EXP'] = err
+	state['EXP'] = err
 	println("runWithTimeout caught FlowInterrupted exception "+err)
 	// If no 'cause' is given then we don't know what happened
 	// so just rethrow it.
@@ -67,7 +66,7 @@ def call(Integer time, Closure fn, Map info, Map locals,
     }
 
     // Value has to be in the Map so it's mutated after the 'fn' closure
-    locals['RET'] = retval
+    state['RET'] = retval
     if (retval == 'OK') {
 	success_callback()
     } else {

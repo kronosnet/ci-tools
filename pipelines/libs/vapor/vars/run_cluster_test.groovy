@@ -27,13 +27,13 @@ def run_test(Map info)
     }
 }
 
-def post_run_test(Map info, Map locals)
+def post_run_test(Map info, Map runstate)
 {
     // don´t collect anything on user abort or attempt to recover
     // simply return the error and be done.
-    if (locals['RET'] == 'ABORT') {
+    if (runstate['RET'] == 'ABORT') {
 	currentBuild.result = 'ABORTED'
-	throw (locals['EXP'])
+	throw (runstate['EXP'])
     }
 
     // always collect logs from a test run
@@ -43,7 +43,7 @@ def post_run_test(Map info, Map locals)
 	tar Jcvpf ${info['logsrc']}.tar.xz ${info['logsrc']}/
 	rm -rf ${info['logsrc']}
     """
-    if (locals['RET'] == 'OK') {
+    if (runstate['RET'] == 'OK') {
 	info['logdst'] = "SUCCESS_${info['logsrc']}.tar.xz"
     } else {
 	info['logdst'] = "FAILED_${info['logsrc']}.tar.xz"
@@ -74,13 +74,13 @@ def call(Map info)
     logsrc = logsrc.replace(',','_').replace(':','_')
     info['logsrc'] = "${logsrc}"
 
-    // define locals for return status/errors
-    def locals = [:]
+    // define runstate for return status/errors
+    def runstate = [:]
 
-    runWithTimeout(info['runtesttimeout'], { run_test(info) }, info, locals, { post_run_test(info, locals) }, { post_run_test(info, locals) })
+    runWithTimeout(info['runtesttimeout'], { run_test(info) }, runstate, { post_run_test(info, runstate) }, { post_run_test(info, runstate) })
 
     // handle errors et all
-    if (locals['RET'] != 'OK') {
+    if (runstate['RET'] != 'OK') {
 	recover_cluster(info)
 	catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
 	    sh 'exit 1'

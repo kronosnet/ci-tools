@@ -4,7 +4,7 @@
 // map entry contains a String array of envronment variables
 //
 // When called for a node, a new map (props) is created that contains
-// key=value pairs which are added to extras[:] in the caller,
+// key=value pairs which are added to localinfo[:] in the caller,
 // and then subsequently passed down to the node's shell environment
 // when the job is run.
 

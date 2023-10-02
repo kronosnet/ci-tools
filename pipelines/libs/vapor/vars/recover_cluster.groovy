@@ -16,17 +16,17 @@ def run_reboot(Map info)
     """
 }
 
-def hard_recover(Map info, Map locals)
+def hard_recover(Map info, Map runstate)
 {
-    if (locals['RET'] == 'ABORT') {
+    if (runstate['RET'] == 'ABORT') {
 	currentBuild.result = 'ABORTED'
-	throw (locals['EXP'])
+	throw (runstate['EXP'])
     }
     timeout(time: 20, unit: 'MINUTES') {
 	run_reboot(info)
 	access_cluster(info)
 	run_cleanup(info)
-	locals['RET'] = 'OK'
+	runstate['RET'] = 'OK'
     }
 }
 
@@ -37,11 +37,11 @@ def call(Map info)
 	return
     }
 
-    def locals = [:]
+    def runstate = [:]
 
-    runWithTimeout(30, { run_cleanup(info) }, info, locals, { }, { hard_recover(info, locals) })
+    runWithTimeout(30, { run_cleanup(info) }, runstate, { }, { hard_recover(info, runstate) })
 
-    if (locals['RET'] != 'OK') {
-	throw (locals['EXP'])
+    if (runstate['RET'] != 'OK') {
+	throw (runstate['EXP'])
     }
 }

@@ -1,9 +1,9 @@
-def call(Map info, Map extras, String stageName, String agentName)
+def call(Map localinfo, String stageName, String agentName)
 {
     def cienv = [:]
 
     // Disable 'make check' if we are bootstrapping
-    if (info['bootstrap'] == 1) {
+    if (localinfo['bootstrap'] == 1) {
 	cienv['CHECKS'] = 'nochecks'
     }
 
@@ -18,21 +18,21 @@ def call(Map info, Map extras, String stageName, String agentName)
 	cienv['build'] = 'crosscompile'
     }
 
-    if (!extras.containsKey('compiler')) {
+    if (!localinfo.containsKey('compiler')) {
 	cienv['compiler'] = 'gcc'
 	cienv['CC'] = cienv['compiler']
     } else {
-	cienv['CC'] = extras['compiler']
+	cienv['CC'] = localinfo['compiler']
     }
 
-    if (!extras.containsKey('MAKE')) {
+    if (!localinfo.containsKey('MAKE')) {
 	cienv['MAKE'] = 'make'
     } else {
 	// this is only necessary to simply paralleloutput check
-	cienv['MAKE'] = extras['MAKE']
+	cienv['MAKE'] = localinfo['MAKE']
     }
 
-    if (!extras.containsKey('PYTHON')) {
+    if (!localinfo.containsKey('PYTHON')) {
 	cienv['PYTHON'] = 'python3'
     }
 

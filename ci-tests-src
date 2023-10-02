@@ -98,11 +98,10 @@ if [ -n "$CHECKS" ] && [ "$CHECKS" = "nochecks" ]; then
 fi
 
 # blacklist PARALLELMAKE as necessary
-case "${project}" in
- kronosnet|pcs)
+if [ -n "$PARALLELTEST" ] && [ "$PARALLELTEST" = "no" ]; then
+  echo "${project} does not support parallel test. disabling PARALLELMAKE"
   export PARALLELMAKE=""
- ;;
-esac
+fi
 
 case "${project}" in
  pcs)

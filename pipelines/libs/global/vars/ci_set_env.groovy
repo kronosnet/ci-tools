@@ -1,4 +1,4 @@
-def call(Map info, Map extras, String stageName)
+def call(Map info, Map extras, String stageName, String agentName)
 {
     def cienv = [:]
 
@@ -36,6 +36,16 @@ def call(Map info, Map extras, String stageName)
     def path = sh(script: "echo \$PATH", returnStdout: true).trim()
     def home = sh(script: "echo \$HOME", returnStdout: true).trim()
     cienv['PATH'] = "/opt/coverity/bin:${path}:${home}/ci-tools"
+
+    def numcpu = ''
+    if (agentName.startsWith('freebsd-12') ||
+        agentName.startsWith('freebsd-13')) {
+	numcpu = sh(script: "sysctl -n hw.ncpu", returnStdout: true).trim()
+    } else {
+	numcpu = sh(script: "nproc", returnStdout: true).trim()
+    }
+
+    cienv['PARALLELMAKE'] = "-j ${numcpu}"
 
     // Global things
     cienv['PIPELINE_VER'] = '1'

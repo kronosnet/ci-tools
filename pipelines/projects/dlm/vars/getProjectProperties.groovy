@@ -13,7 +13,6 @@ def call(Map info, Map extras, String agentName, String branch)
     props['DISTROCONFOPTS'] = ''
 
     props['MAKEOPTS'] = ''
-    props['PARALLELMAKE'] = ''
     props['MAKEINSTALLOPTS'] = ''
     props['TOPTS'] = ''
     props['EXTRACHECKS'] = ''

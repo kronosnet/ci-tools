@@ -17,7 +17,6 @@ def call(Map info, Map extras, String agentName, String branch)
     }
 
     props['MAKEOPTS'] = ''
-    props['PARALLELMAKE'] = ''
     props['MAKEINSTALLOPTS'] = ''
     props['TOPTS'] = '--always-clean-testvol'
     props['EXTRACHECKS'] = ''

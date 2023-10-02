@@ -16,14 +16,7 @@ ld --version || true
 echo python: $PYTHON
 $PYTHON --version || true
 
-case "${NODE_NAME}" in
- freebsd-12*|freebsd-13*)
-  PARALLELMAKE="-j $(sysctl -n hw.ncpu)"
- ;;
- *)
-  PARALLELMAKE="-j $(nproc)"
- ;;
-esac
+echo parallelmake: $PARALLELMAKE
 
 PARALLEOUTPUT=""
 

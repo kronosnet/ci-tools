@@ -52,10 +52,10 @@ def call(Map info, Map extras, String stageName, String agentName)
 				    rm -f Makefile.stub
 				    echo "all:" > Makefile.stub
 				    PARALLELOUTPUT=""
-				    if ${cienv['MAKE'} -f Makefile.stub ${cienv['PARALLELMAKE']} -O >/dev/null 2>&1; then
+				    if ${cienv['MAKE']} -f Makefile.stub ${cienv['PARALLELMAKE']} -O >/dev/null 2>&1; then
 					PARALLELOUTPUT="-O"
 				    fi
-				    if ${cienv['MAKE'} -f Makefile.stub ${cienv['PARALLELMAKE']} -Ocurse >/dev/null 2>&1; then
+				    if ${cienv['MAKE']} -f Makefile.stub ${cienv['PARALLELMAKE']} -Ocurse >/dev/null 2>&1; then
 					PARALLELOUTPUT="-Ocurse"
 				    fi
 				    rm -f Makefile.stub

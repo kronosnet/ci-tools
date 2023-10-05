@@ -129,8 +129,13 @@ def call(Map info)
     if (info.containsKey('have_split_logs')) {
 	split_logs = "\nSplit logs: ${env.BUILD_URL}artifact/"
     }
+    def runreason = ''
+    if (currentBuild.getBuildCauses().shortDescription.size() > 0) {
+	runreason = "Run reason: ${currentBuild.getBuildCauses().shortDescription[0]}"
+    }
 
-    def email_trailer = """total runtime: ${jobDuration}
+    def email_trailer = """${runreason}
+Total runtime: ${jobDuration}
 ${info['email_extra_text']}${split_logs}
 Full log:   ${env.BUILD_URL}consoleText
 ${info['exception_text']}
@@ -161,7 +166,7 @@ ${email_trailer}
 	    // Only non-voting fails
 	    subject = "${email_title} succeeded but with ${nonvoting_fail}/${nonvoting_run} non-voting fail${nonvoting_s}"
 	    body = """
-failed job${nonvoting_s}: ${info['nonvoting_fail_nodes']}
+Failed job${nonvoting_s}: ${info['nonvoting_fail_nodes']}
 
 ${email_trailer}
 """

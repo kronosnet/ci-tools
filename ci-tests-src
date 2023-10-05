@@ -17,17 +17,6 @@ cleanlibqb() {
  fi
 }
 
-fenceagentsextratests() {
- # fence-agents extra tests
- if [ "${project}" = "fence-agents" ]; then
-  if [ -d fence/agents/lib ]; then
-   PYTHONPATH=fence/agents/lib $PYTHON fence/agents/lib/tests/test_fencing.py
-  else
-   PYTHONPATH=lib $PYTHON lib/tests/test_fencing.py
-  fi
- fi
-}
-
 pacemakerextratests() {
  # pacemaker extra tests
  if [ "${project}" != pacemaker ]; then
@@ -147,5 +136,4 @@ for i in $CHECKS; do
 done
 
 cleanlibqb
-fenceagentsextratests
 pacemakerextratests

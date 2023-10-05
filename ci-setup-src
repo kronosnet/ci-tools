@@ -35,8 +35,7 @@ if [ -f ./configure ]; then
      ;;
    esac
    rm -rf .venv
-   $PYTHON -m venv $usesitepackages .venv
-   unset PYTHON
+   python3 -m venv $usesitepackages .venv
    . .venv/bin/activate
    export PATH="$(pwd)/.venv"/bin/:$PATH
    python3 -m pip install setuptools-scm setuptools-rust wheel

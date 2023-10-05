@@ -13,9 +13,6 @@ $CC --version || true
 echo ld: ld
 ld --version || true
 
-echo python: $PYTHON
-$PYTHON --version || true
-
 echo parallelmake: $PARALLELMAKE
 
 echo ===== SOURCE TREE INFO =====

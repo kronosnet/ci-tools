@@ -16,6 +16,8 @@ def call(String node)
     node_env['anvil-ci-bm-phy02'] = []
     node_env['anvil-ci-bm-phy03'] = []
     node_env['anvil-ci-bm-phy04'] = []
+    node_env['anvil-ci-bm-phy05'] = []
+    node_env['anvil-ci-bm-phy06'] = []
     node_env['anvil-ci-centos-8-stream'] = []
     node_env['anvil-ci-centos-9-stream'] = []
     node_env['anvil-ci-rhel-8'] = []

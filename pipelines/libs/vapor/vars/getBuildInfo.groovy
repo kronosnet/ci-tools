@@ -23,6 +23,7 @@ def call(String project, String projectid)
     info['upstream'] = env.upstream
     info['iscsi'] = ''
     info['block'] = ''
+    info['customrepo'] = ''
     info['tests'] = env.tests
     info['testvariant'] = env.testvariant
     info['testlist'] = env.testlist

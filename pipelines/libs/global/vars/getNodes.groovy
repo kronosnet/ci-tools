@@ -32,7 +32,6 @@ def call()
     labels['fedora-rawhide-power9-ppc64le'] = ['fedora-rawhide','unstable','power9-ppc64le','nonvoting','rpm','yum','nonvoting-clang','buildrpms']
     labels['fedora-rawhide-s390x'] = ['fedora-rawhide','unstable','s390x','nonvoting','rpm','yum','nonvoting-clang','buildrpms']
     labels['fedora-rawhide-x86-64'] = ['fedora-rawhide','unstable','x86-64','nonvoting','rpm','yum','nonvoting-clang','buildrpms']
-    labels['freebsd-12-x86-64'] = ['freebsd-12','stable','x86-64','voting','freebsd','nonvoting-clang']
     labels['freebsd-13-x86-64'] = ['freebsd-13','stable','x86-64','voting','freebsd','nonvoting-clang']
     labels['freebsd-devel-x86-64'] = ['freebsd-devel','unstable','x86-64','nonvoting','freebsd','nonvoting-clang']
     labels['jenkins-jumphost'] = ['yum']

@@ -41,7 +41,6 @@ def call(String node)
     node_env['fedora-rawhide-power9-ppc64le'] = ['RUSTBINDINGS=yes']
     node_env['fedora-rawhide-s390x'] = ['RUSTBINDINGS=yes']
     node_env['fedora-rawhide-x86-64'] = ['RUSTBINDINGS=yes']
-    node_env['freebsd-12-x86-64'] = ['MAKE=gmake']
     node_env['freebsd-13-x86-64'] = ['RUSTBINDINGS=yes', 'MAKE=gmake']
     node_env['freebsd-devel-x86-64'] = ['RUSTBINDINGS=yes', 'MAKE=gmake']
     node_env['jenkins-jumphost'] = []

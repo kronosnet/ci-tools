@@ -14,7 +14,7 @@ def call(Map localinfo, String agentName)
     props['EXTRACHECKS'] = ''
     props['EXTERNAL_LD_LIBRARY_PATH'] = ''
     props['SPECVERSION'] = env.BUILD_NUMBER
-    props['RPMDEPS'] = ''
+    props['RPMDEPS'] = 'libqb-devel'
 
     return props
 }

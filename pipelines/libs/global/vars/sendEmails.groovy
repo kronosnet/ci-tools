@@ -145,9 +145,9 @@ ${info['exception_text']}
     def voting_colon = makeSuffix(':', {voting_fail > 0} )
     def nonvoting_colon = makeSuffix(':', {nonvoting_fail > 0} )
     def stages_colon = makeSuffix(':', {stages_fail > 0} )
-    def voting_s = makeSuffix('s', {voting_run == 1} )
-    def nonvoting_s = makeSuffix('s', {nonvoting_run == 1} )
-    def stage_s = makeSuffix('s', {stages_run == 1} )
+    def voting_s = makeSuffix('s', {voting_fail != 1} )
+    def nonvoting_s = makeSuffix('s', {nonvoting_fail != 1} )
+    def stage_s = makeSuffix('s', {stages_fail != 1} )
 
     // Now build the email bits
     def subject = ''

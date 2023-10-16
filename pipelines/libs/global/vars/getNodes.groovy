@@ -52,6 +52,7 @@ def call()
     labels['ubuntu-20-04-lts-x86-64'] = ['ubuntu20.04','stable','x86-64','voting','apt','nonvoting-clang']
     labels['ubuntu-22-04-lts-x86-64'] = ['ubuntu22.04','stable','x86-64','voting','apt','nonvoting-clang']
     labels['ubuntu-23-04-x86-64'] = ['ubuntu23.04','stable','x86-64','voting','apt','nonvoting-clang']
+    labels['ubuntu-23-10-x86-64'] = ['ubuntu23.10','stable','x86-64','voting','apt','nonvoting-clang']
     labels['ubuntu-devel-x86-64'] = ['ubuntu-devel','unstable','x86-64','nonvoting','apt','nonvoting-clang']
 
     return labels

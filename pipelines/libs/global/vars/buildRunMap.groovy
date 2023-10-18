@@ -107,6 +107,11 @@ def call(String joblabel, Map info, Map options)
     if (options.containsKey('voting')) {
 	voting = options['voting']
     }
+    // If 'bootstrap' is set (full rebuild) then all
+    // jobs should be 'voting' so we can spot failures.
+    if (info['bootstrap'] == 1) {
+	voting = true
+    }
 
     return buildTheRunMap(nodeList, joblabel, info, voting, extravars, excludes)
 }

@@ -5,7 +5,6 @@ def sanity_tests_common() {
     ]
 }
 
-
 // pcs variant
 def pcs_smoke_tests_common() {
     return \
@@ -30,9 +29,7 @@ def pcs_basic_tags_common() {
 }
 
 def pcs_advanced_tests_common() {
-    return [
-	'pcs,cli,ResourceMove',
-    ]
+    return [ ]
 }
 
 def pcs_advanced_tags_common() {
@@ -67,6 +64,14 @@ def pcs_all_tests_2_nodes() {
     return \
 	pcs_smoke_tests_common() +
 	pcs_basic_tests_common()
+}
+
+def pcs_all_tests_3_nodes() {
+    return \
+	pcs_smoke_tests_common() +
+	pcs_basic_tests_common() +
+	pcs_advanced_tests_common() +
+	['pcs,cli,ResourceMove']
 }
 
 // commmon sets, even if we don´t use them all

@@ -15,7 +15,6 @@ def call(Map localinfo, String agentName)
     props['MAKEINSTALLOPTS'] = ''
     props['TOPTS'] = ''
     props['EXTRACHECKS'] = ''
-    props['EXTERNAL_LD_LIBRARY_PATH'] = ''
     props['SPECVERSION'] = env.BUILD_NUMBER
 
     if (agentName.startsWith('debian')) {

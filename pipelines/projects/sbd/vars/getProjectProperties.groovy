@@ -12,7 +12,6 @@ def call(Map localinfo, String agentName)
     props['MAKEINSTALLOPTS'] = ''
     props['TOPTS'] = ''
     props['EXTRACHECKS'] = ''
-    props['EXTERNAL_LD_LIBRARY_PATH'] = ''
     props['DISTROCONFOPTS'] = ''
     props['TESTUSELDPATH'] = 'yes'
     props['BOOTH_RUNTESTS_ROOT_USER'] = '1'

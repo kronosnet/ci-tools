@@ -14,7 +14,6 @@ def call(Map localinfo, String agentName)
     props['MAKEINSTALLOPTS'] = ''
     props['TOPTS'] = ''
     props['EXTRACHECKS'] = ''
-    props['EXTERNAL_LD_LIBRARY_PATH'] = ''
 
     if (agentName.startsWith('rhel') ||
 	agentName.startsWith('fedora') ||

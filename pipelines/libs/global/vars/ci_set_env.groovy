@@ -68,6 +68,8 @@ def call(Map localinfo, String stageName, String agentName)
 	}
     }
 
+    cienv['EXTERNAL_LD_LIBRARY_PATH'] = ''
+
     // Global things
     cienv['PIPELINE_VER'] = '1'
 

@@ -13,7 +13,6 @@ def call(Map localinfo, String agentName)
     props['TOPTS'] = ''
     props['CHECKS'] = ''
     props['EXTRACHECKS'] = ''
-    props['EXTERNAL_LD_LIBRARY_PATH'] = ''
     props['SPECVERSION'] = env.BUILD_NUMBER
     props['RPMDEPS'] = 'corosynclib-devel'
     props['DISTROCONFOPTS'] = '--enable-systemd'

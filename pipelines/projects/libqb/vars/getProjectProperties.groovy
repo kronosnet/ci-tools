@@ -12,7 +12,6 @@ def call(Map localinfo, String agentName)
     props['MAKEINSTALLOPTS'] = ''
     props['TOPTS'] = ''
     props['EXTRACHECKS'] = ''
-    props['EXTERNAL_LD_LIBRARY_PATH'] = ''
     props['SPECVERSION'] = env.BUILD_NUMBER
 
     // Give the tests time to run, even if the CI is busy

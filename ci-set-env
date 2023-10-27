@@ -19,8 +19,6 @@ echo parallelmake: $PARALLELMAKE
 if [ "$build" != "rpm" ]; then
  echo ===== PKG_CONFIG_PATH info =====
 
- EXTERNAL_LD_LIBRARY_PATH=""
-
  # all projects should build against libqb main
  # exceptions below
  LIBQB_INSTALL_PATH=/srv/libqb/origin/main/

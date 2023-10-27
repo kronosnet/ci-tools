@@ -13,7 +13,6 @@ def call(Map localinfo, String agentName)
     props['MAKEINSTALLOPTS'] = ''
     props['TOPTS'] = ''
     props['EXTRACHECKS'] = ''
-    props['EXTERNAL_LD_LIBRARY_PATH'] = ''
     props['DISTROCONFOPTS'] = ''
     props['extraver'] = "pacemaker-${localinfo['pacemakerver']}"
 

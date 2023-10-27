@@ -19,8 +19,24 @@ def pcs_smoke_tags_common() {
 def pcs_basic_tests_common() {
     return [
 	'pcs,cli,Auth',
+	'pcs,cli,ClusterCibPush',  // cib-push command, crucial for system role
 	'pcs,cli,ClusterStartStop',
+	'pcs,cli,DaemonSanity',  // critical HTTP headers
+	'pcs,cli,NodeAddRemove',
+	'pcs,cli,NodeMaintenance',
+	'pcs,cli,NodeMaintenance',
+	'pcs,cli,OperationDefaults',  // resource create with default operations
+	'pcs,cli,Properties',
+	'pcs,cli,ResourceManageUnmanageMonitor',
+	'pcs,cli,ResourceSafeDisable',  // critical feature
+	'pcs,cli,rhbz1380372',  // cluster stop when one node fails
+	'pcs,cli,rhbz1382004',  // resource create produces invalid cib
+	'pcs,cli,rhbz1387106',  // handle utf8 chars in output of subprocesses
+	'pcs,cli,rhbz1390609',  // deleting of pacemaker remote causes fencing
+	'pcs,cli,rhbz1574898',  // pcs resource debug-* commands
 	'pcs,cli,Stonith',
+	'pcs,cli,StonithLevel',
+	'pcs,cli,Tags',
     ]
 }
 
@@ -29,7 +45,20 @@ def pcs_basic_tags_common() {
 }
 
 def pcs_advanced_tests_common() {
-    return [ ]
+    return [
+	'pcs,cli,BackupRestore', // cluster config backup + restore
+	'pcs,cli,ClusterAuthkey',  // change corosync authkey
+	'pcs,cli,ClusterConfigUpdate', // update corosync.conf
+	'pcs,cli,QuorumDevice',
+	'pcs,cli,rhbz1328870',  // pcs command fails right after pcsd starts
+	'pcs,cli,rhbz1362493',  // location constraint with rsc-pattern
+	'pcs,cli,rhbz1419661',  // systemd services with @ and : in name
+	'pcs,cli,rhbz1443418',  // allow to set ids of resource operations
+	'pcs,cli,rhbz1502715',  // pcs resource update of a guest-node resource
+	'pcs,cli,rhbz1568353',  // don't create empty elemets in cib
+	'pcs,cli,SetupRandomPorts',
+	'pcs,cli,Timeouts',  // pcs to pcs connection timeout
+    ]
 }
 
 def pcs_advanced_tags_common() {
@@ -71,7 +100,10 @@ def pcs_all_tests_3_nodes() {
 	pcs_smoke_tests_common() +
 	pcs_basic_tests_common() +
 	pcs_advanced_tests_common() +
-	['pcs,cli,ResourceMove']
+	[
+	  'pcs,cli,DefaultsSet',  // rsc and op defaults, uses resource move
+	  'pcs,cli,ResourceMove',
+	]
 }
 
 // commmon sets, even if we don´t use them all

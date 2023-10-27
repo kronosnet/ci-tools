@@ -56,6 +56,18 @@ def call(Map localinfo, String stageName, String agentName)
 
     cienv['PARALLELMAKE'] = "-j ${numcpu} ${paralleloutput}"
 
+    // pacemaker version handling
+    // Latest Pacemaker release branch
+    cienv['PACEMAKER_RELEASE'] = '2.1'
+
+    if (!localinfo.containsKey('pacemakerver')) {
+	if (localinfo['target'] == 'main') {
+	    cienv['pacemakerver'] = 'main'
+	} else {
+	    cienv['pacemakerver'] = cienv['PACEMAKER_RELEASE']
+	}
+    }
+
     // Global things
     cienv['PIPELINE_VER'] = '1'
 

@@ -15,23 +15,6 @@ ld --version || true
 
 echo parallelmake: $PARALLELMAKE
 
-echo ===== SOURCE TREE INFO =====
-
-# Latest Pacemaker release branch
-PACEMAKER_RELEASE=2.1
-
-# origin/main should use all main branches built
-# from sources
-if [ "${target}" = "main" ]; then
- if [ -z "${pacemakerver}" ]; then
-  export pacemakerver=main
- fi
-else
- if [ -z "${pacemakerver}" ]; then
-  export pacemakerver="${PACEMAKER_RELEASE}"
- fi
-fi
-
 # rpm builds should use standard packages
 if [ "$build" != "rpm" ]; then
  echo ===== PKG_CONFIG_PATH info =====

@@ -24,6 +24,7 @@ def pcs_basic_tests_common() {
 	'pcs,cli,DaemonSanity',  // critical HTTP headers
 	'pcs,cli,NodeAddRemove',
 	'pcs,cli,NodeMaintenance',
+	'pcs,cli,NodeStandby',
 	'pcs,cli,OperationDefaults',  // resource create with default operations
 	'pcs,cli,Properties',
 	'pcs,cli,ResourceManageUnmanageMonitor',

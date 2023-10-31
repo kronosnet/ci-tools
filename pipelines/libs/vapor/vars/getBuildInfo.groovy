@@ -31,7 +31,7 @@ def call(String project, String projectid)
     if (env.testtimeout) {
 	info['testtimeout'] = "${env.testtimeout}" as int
     } else {
-	info['testtimeout'] = 60
+	info['testtimeout'] = 120
     }
     if (env.tagtimeout) {
 	info['tagtimeout'] = "${env.tagtimeout}" as int

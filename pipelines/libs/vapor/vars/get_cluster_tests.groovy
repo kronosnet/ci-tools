@@ -50,6 +50,7 @@ def pcs_advanced_tests_common() {
 	'pcs,cli,ClusterAuthkey',  // change corosync authkey
 	'pcs,cli,ClusterConfigUpdate', // update corosync.conf
 	'pcs,cli,QuorumDevice',
+	'pcs,cli,RemoteGuestNodes',
 	'pcs,cli,rhbz1328870',  // pcs command fails right after pcsd starts
 	'pcs,cli,rhbz1362493',  // location constraint with rsc-pattern
 	'pcs,cli,rhbz1419661',  // systemd services with @ and : in name

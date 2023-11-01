@@ -132,7 +132,7 @@ def call(Map info)
 
     // Not every finds the consoleText useful
     def console_log = "${env.BUILD_URL}consoleText"
-    if (info['emailOptions'].contains('showConsole')) {
+    if (info.containsKey('emailOptions') && info['emailOptions'].contains('showConsole')) {
 	console_log = "${env.BUILD_URL}pipeline-console"
     }
 

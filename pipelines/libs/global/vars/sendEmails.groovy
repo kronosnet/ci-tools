@@ -129,14 +129,6 @@ def call(Map info)
     if (info.containsKey('have_split_logs')) {
 	split_logs = "\nSplit logs: ${env.BUILD_URL}artifact/"
     }
-
-    // Not every finds the consoleText useful
-    def console_log = "${env.BUILD_URL}consoleText"
-    if (info.containsKey('emailOptions') && info['emailOptions'].contains('showConsole')) {
-	console_log = "${env.BUILD_URL}pipeline-console"
-    }
-
-    // Show why we were initiated
     def runreason = ''
     if (currentBuild.getBuildCauses().shortDescription.size() > 0) {
 	runreason = "Run reason: ${currentBuild.getBuildCauses().shortDescription[0]}"
@@ -145,7 +137,7 @@ def call(Map info)
     def email_trailer = """${runreason}
 Total runtime: ${jobDuration}
 ${info['email_extra_text']}${split_logs}
-Full log:   ${console_log}
+Full log:   ${env.BUILD_URL}consoleText
 ${info['exception_text']}
 """
 

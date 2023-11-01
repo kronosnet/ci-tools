@@ -9,7 +9,9 @@ def sanity_tests_common() {
 def pcs_smoke_tests_common() {
     return \
 	sanity_tests_common() +
-	['pcs,cli,Setup']
+    [
+	'pcs,cli,Setup',
+    ]
 }
 
 def pcs_smoke_tags_common() {
@@ -101,10 +103,10 @@ def pcs_all_tests_3_nodes() {
 	pcs_smoke_tests_common() +
 	pcs_basic_tests_common() +
 	pcs_advanced_tests_common() +
-	[
-	  'pcs,cli,DefaultsSet',  // rsc and op defaults, uses resource move
-	  'pcs,cli,ResourceMove',
-	]
+    [
+	'pcs,cli,DefaultsSet',  // rsc and op defaults, uses resource move
+	'pcs,cli,ResourceMove',
+    ]
 }
 
 // commmon sets, even if we don´t use them all
@@ -114,7 +116,7 @@ def default_smoke_tests_common() {
     [
 	'pacemaker,resource,IPv4,recovery',
 	'pacemaker,recovery,RecoveryActiveNode',
-	'setup,setup_sbd,sbd-only'
+	'setup,setup_sbd,sbd-only',
     ]
 }
 
@@ -143,7 +145,7 @@ def default_basic_tests_common() {
 	'pacemaker,resource,Filesystem',
 	'pacemaker,resource,FilesystemGroup',
 	'pacemaker,usecase,ha-apache',
-	'pacemaker,usecase,NFS_Server-AP,lvmlockd,exclusive'
+	'pacemaker,usecase,NFS_Server-AP,lvmlockd,exclusive',
     ]
 }
 
@@ -163,7 +165,7 @@ def default_advanced_tests_common() {
 	'pacemaker,recovery,RecoveryRandomMultiNode,variant:iterations,iterations:10',
 	'pacemaker,recovery,RecoveryRandomMultiNodeNQ,variant:iterations,iterations:10',
 	'pacemaker,recovery,RecoveryNodeNetworkFailure,sbd-only,network_disruptor',
-	'pacemaker,recovery,RecoveryNodeNetworkFailure,sbd-with-one-device,network_disruptor'
+	'pacemaker,recovery,RecoveryNodeNetworkFailure,sbd-with-one-device,network_disruptor',
     ]
 }
 
@@ -197,11 +199,11 @@ def default_all_tags_generic_nodes() {
 	default_advanced_tags_common()
 }
 
-// pre node num override
+// per node num override
 def default_smoke_tests_1_nodes() {
     return [
 	'lvm,snapper,display_snap,nostack,singlenode',
-	'lvm,raid_sanity,display_raid,raid4,singlenode'
+	'lvm,raid_sanity,display_raid,raid4,singlenode',
     ]
 }
 
@@ -216,17 +218,30 @@ def default_all_tests_2_nodes() {
 	default_basic_tests_common()
 }
 
+def default_all_tests_3_nodes() {
+    return \
+	default_all_tests_generic_nodes() +
+    [
+	'pcs,cli,DefaultsSet',  // rsc and op defaults, uses resource move
+	'pcs,cli,ResourceMove',
+    ]
+}
+
 def default_all_tests_4_nodes() {
     return \
 	default_all_tests_generic_nodes() +
-	['pacemaker,usecase,apachewebfarm,haproxy']
+    [
+	'pacemaker,usecase,apachewebfarm,haproxy',
+    ]
 }
 
 // kernel variant
 def kernel_smoke_tests_common() {
     return \
 	sanity_tests_common() +
-	['skeet']
+    [
+	'skeet',
+    ]
 }
 
 def kernel_smoke_tags_common() {
@@ -239,7 +254,7 @@ def kernel_basic_tests_common() {
 
 def kernel_basic_tags_common() {
     return [
-	'brawl_quick'
+	'brawl_quick',
     ]
 }
 

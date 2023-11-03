@@ -23,12 +23,14 @@ def pcs_basic_tests_common() {
 	'pcs,cli,Auth',
 	'pcs,cli,ClusterCibPush',  // cib-push command, crucial for system role
 	'pcs,cli,ClusterStartStop',
+	'pcs,cli,CVE-2018-1086',
 	'pcs,cli,DaemonSanity',  // critical HTTP headers
 	'pcs,cli,NodeAddRemove',
 	'pcs,cli,NodeMaintenance',
 	'pcs,cli,NodeStandby',
 	'pcs,cli,OperationDefaults',  // resource create with default operations
 	'pcs,cli,Properties',
+	'pcs,cli,ResourceCreate',
 	'pcs,cli,ResourceManageUnmanageMonitor',
 	'pcs,cli,ResourceSafeDisable',  // critical feature
 	'pcs,cli,rhbz1380372',  // cluster stop when one node fails
@@ -105,7 +107,7 @@ def pcs_all_tests_3_nodes() {
 	pcs_advanced_tests_common() +
     [
 	'pcs,cli,DefaultsSet',  // rsc and op defaults, uses resource move
-	'pcs,cli,ResourceMove',
+	'pcs,cli,ResourceMove', // only works in 3-node clusters
     ]
 }
 

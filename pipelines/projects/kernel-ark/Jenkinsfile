@@ -117,6 +117,8 @@ pipeline {
 			    done
 			    echo == reset tree to origin/os-build ==
 			    git reset --hard origin/os-build
+			    echo == clean tree ==
+			    git clean -dfx
 			"""
 		    }
 		}

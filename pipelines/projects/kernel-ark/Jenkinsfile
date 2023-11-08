@@ -139,8 +139,8 @@ pipeline {
 			    git checkout kernel-ark-config/ci_test_config
 			    echo == checkout -b ci-test branch ==
 			    git checkout -b ci-test
-			    echo == rebase to origin/$ARK_BRANCH ==
-			    git rebase origin/$ARK_BRANCH
+			    echo == rebase to origin/os-build ==
+			    git rebase origin/os-build
 			    echo == merge gfs2/for-next and dlm/next ==
 			    git merge --log=999 --no-ff -m 'Automatic merge of gfs2/for-next and dlm/next' gfs2/for-next dlm/next
 			    git show --no-patch

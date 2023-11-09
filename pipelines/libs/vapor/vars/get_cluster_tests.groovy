@@ -21,8 +21,10 @@ def pcs_smoke_tags_common() {
 def pcs_basic_tests_common() {
     return [
 	'pcs,cli,Auth',
+	'pcs,cli,ClusterCibConcurrentDiff',
 	'pcs,cli,ClusterCibPush',  // cib-push command, crucial for system role
 	'pcs,cli,ClusterStartStop',
+	'pcs,cli,CVE-2018-1079',
 	'pcs,cli,CVE-2018-1086',
 	'pcs,cli,DaemonSanity',  // critical HTTP headers
 	'pcs,cli,NodeAddRemove',

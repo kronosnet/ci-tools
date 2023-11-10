@@ -23,6 +23,7 @@ def pcs_basic_tests_common() {
 	'pcs,cli,Auth',
 	'pcs,cli,ClusterCibConcurrentDiff',
 	'pcs,cli,ClusterCibPush',  // cib-push command, crucial for system role
+	'pcs,cli,ClusterSetupParametrized',
 	'pcs,cli,ClusterStartStop',
 	'pcs,cli,CVE-2018-1079',
 	'pcs,cli,CVE-2018-1086',
@@ -55,6 +56,7 @@ def pcs_advanced_tests_common() {
 	'pcs,cli,BackupRestore', // cluster config backup + restore
 	'pcs,cli,ClusterAuthkey',  // change corosync authkey
 	'pcs,cli,ClusterConfigUpdate', // update corosync.conf
+	'pcs,cli,DefaultsSet',  // rsc and op defaults
 	'pcs,cli,QuorumDevice',
 	'pcs,cli,RemoteGuestNodes',
 	'pcs,cli,rhbz1328870',  // pcs command fails right after pcsd starts
@@ -108,7 +110,6 @@ def pcs_all_tests_3_nodes() {
 	pcs_basic_tests_common() +
 	pcs_advanced_tests_common() +
     [
-	'pcs,cli,DefaultsSet',  // rsc and op defaults, uses resource move
 	'pcs,cli,ResourceMove', // only works in 3-node clusters
     ]
 }

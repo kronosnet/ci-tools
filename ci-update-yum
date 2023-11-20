@@ -38,6 +38,12 @@ case "${NODE_NAME}" in
  ;;
 esac
 
+case "${NODE_NAME}" in
+ *centos-9*)
+  POSTOPTS="--nobest"
+ ;;
+esac
+
 yum -y $EXTRAOPTS update $POSTOPTS
 
 # handle special packages that are not available everywhere

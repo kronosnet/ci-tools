@@ -1,4 +1,4 @@
-createopts="--image rhel-9.2.0.x86_64"
+createopts="--image rhel-9.3.0.x86_64"
 deployopts=""
 testopts=""
 

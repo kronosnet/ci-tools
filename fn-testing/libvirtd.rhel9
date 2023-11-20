@@ -1,4 +1,4 @@
-createopts="--image rhel-9.2.0.x86_64.qcow2 --flavor-workstation rhelha-vapor-workstation-extra-large --flavor rhelha-vapor-node-extra-large"
+createopts="--image rhel-9.3.0.x86_64.qcow2 --flavor-workstation rhelha-vapor-workstation-extra-large --flavor rhelha-vapor-node-extra-large"
 deployopts=""
 testopts=""
 

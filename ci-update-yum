@@ -189,12 +189,6 @@ yum -y install             \
 
 case "${NODE_NAME}" in
  *kbuild*|*vapor*)
-  if ! rpm -qa | grep rhos-release; then
-    yum -y install http://download.eng.brq.redhat.com/rcm-guest/puddles/OpenStack/rhos-release/rhos-release-latest.noarch.rpm
-    rhos-release --without-ceph 17.0
-  else
-    rhos-release --without-ceph -u
-  fi
   yum -y update
   yum -y install python3-devel python3-pip python3-wheel \
 		 brewkoji createrepo ansible \

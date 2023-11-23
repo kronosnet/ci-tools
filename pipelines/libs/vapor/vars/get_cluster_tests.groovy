@@ -1,25 +1,9 @@
-def sanity_tests_common() {
-    return [
-	'cleanup',
-	'setup',
-    ]
-}
+def call(Map info)
+{
+    println(info)
 
-// pcs variant
-def pcs_smoke_tests_common() {
-    return \
-	sanity_tests_common() +
-    [
-	'pcs,cli,Setup',
-    ]
-}
-
-def pcs_smoke_tags_common() {
-    return [ ]
-}
-
-def pcs_basic_tests_common() {
-    return [
+    // Some common test groups we use
+    pcs_basic_tests = [
 	'pcs,cli,Auth',
 	'pcs,cli,ClusterCibConcurrentDiff',
 	'pcs,cli,ClusterCibPush',  // cib-push command, crucial for system role
@@ -43,16 +27,10 @@ def pcs_basic_tests_common() {
 	'pcs,cli,rhbz1574898',  // pcs resource debug-* commands
 	'pcs,cli,Stonith',
 	'pcs,cli,StonithLevel',
-	'pcs,cli,Tags',
+	'pcs,cli,Tags'
     ]
-}
 
-def pcs_basic_tags_common() {
-    return [ ]
-}
-
-def pcs_advanced_tests_common() {
-    return [
+    pcs_advanced_tests = [
 	'pcs,cli,BackupRestore', // cluster config backup + restore
 	'pcs,cli,ClusterAuthkey',  // change corosync authkey
 	'pcs,cli,ClusterConfigUpdate', // update corosync.conf
@@ -68,74 +46,28 @@ def pcs_advanced_tests_common() {
 	'pcs,cli,SetupRandomPorts',
 	'pcs,cli,Timeouts',  // pcs to pcs connection timeout
     ]
-}
 
-def pcs_advanced_tags_common() {
-    return [ ]
-}
-
-def pcs_smoke_tests_generic_nodes() {
-    return \
-	pcs_smoke_tests_common()
-}
-
-def pcs_all_tests_generic_nodes() {
-    return \
-	pcs_smoke_tests_common() +
-	pcs_basic_tests_common() +
-	pcs_advanced_tests_common()
-}
-
-def pcs_smoke_tags_generic_nodes() {
-    return \
-	pcs_smoke_tags_common()
-}
-
-def pcs_all_tags_generic_nodes() {
-    return \
-	pcs_smoke_tags_common() +
-	pcs_basic_tags_common() +
-	pcs_advanced_tags_common()
-}
-
-def pcs_all_tests_2_nodes() {
-    return \
-	pcs_smoke_tests_common() +
-	pcs_basic_tests_common()
-}
-
-def pcs_all_tests_3_nodes() {
-    return \
-	pcs_smoke_tests_common() +
-	pcs_basic_tests_common() +
-	pcs_advanced_tests_common() +
-    [
-	'pcs,cli,ResourceMove', // only works in 3-node clusters
+    advanced_tests = [
+	'pacemaker,recovery,RecoverySwitchFailure,variant:iterations,iterations:10',
+	'pacemaker,recovery,RecoveryNodeNetworkFailure',
+	'pacemaker,recovery,RecoveryRandomMultiNode,variant:iterations,iterations:10',
+	'pacemaker,recovery,RecoveryRandomMultiNodeNQ,variant:iterations,iterations:10',
+	'pacemaker,recovery,RecoveryNodeNetworkFailure,sbd-only,network_disruptor',
+	'pacemaker,recovery,RecoveryNodeNetworkFailure,sbd-with-one-device,network_disruptor',
     ]
-}
 
-// commmon sets, even if we don´t use them all
-def default_smoke_tests_common() {
-    return \
-	pcs_smoke_tests_common() +
-    [
+    sanity_tests = [
+	'cleanup',
+	'setup'
+    ]
+
+    smoke_tests = [
 	'pacemaker,resource,IPv4,recovery',
 	'pacemaker,recovery,RecoveryActiveNode',
-	'setup,setup_sbd,sbd-only',
+	'setup,setup_sbd,sbd-only'
     ]
-}
 
-def default_smoke_tags_common() {
-    return \
-	pcs_smoke_tags_common() +
-	[ ]
-}
-
-// 2 nodes and up
-def default_basic_tests_common() {
-    return \
-	pcs_basic_tests_common() +
-    [
+    basic_tests = [
 	'lvm,lvm_config,cluster-lvmlockd',
 	'pacemaker,recovery,RecoveryActiveNode,variant:iterations,iterations:10',
 	'pacemaker,recovery,RecoveryRandomNode,variant:iterations,iterations:10',
@@ -150,21 +82,10 @@ def default_basic_tests_common() {
 	'pacemaker,resource,Filesystem',
 	'pacemaker,resource,FilesystemGroup',
 	'pacemaker,usecase,ha-apache',
-	'pacemaker,usecase,NFS_Server-AP,lvmlockd,exclusive',
+	'pacemaker,usecase,NFS_Server-AP,lvmlockd,exclusive'
     ]
-}
 
-def default_basic_tags_common() {
-    return \
-	pcs_basic_tags_common() +
-	[ ]
-}
-
-// 3 nodes and up
-def default_advanced_tests_common() {
-    return \
-	pcs_advanced_tests_common() +
-    [
+    advanced_tests = [
 	'pacemaker,recovery,RecoverySwitchFailure,variant:iterations,iterations:10',
 	'pacemaker,recovery,RecoveryNodeNetworkFailure',
 	'pacemaker,recovery,RecoveryRandomMultiNode,variant:iterations,iterations:10',
@@ -172,131 +93,46 @@ def default_advanced_tests_common() {
 	'pacemaker,recovery,RecoveryNodeNetworkFailure,sbd-only,network_disruptor',
 	'pacemaker,recovery,RecoveryNodeNetworkFailure,sbd-with-one-device,network_disruptor',
     ]
-}
 
-def default_advanced_tags_common() {
-    return \
-	pcs_advanced_tags_common() +
-	[ ]
-}
+    // Define the actual tests to run
+    def tests = [:]
 
-def default_smoke_tests_generic_nodes() {
-    return \
-	default_smoke_tests_common()
-}
+    // kernel tests are always run on 3 nodes by design
+    tests['kernel,smoke,tests,generic'] = sanity_tests + 'skeet'
+    tests['kernel,all,tests,generic'] = tests['kernel,smoke,tests,generic']
+    tests['kernel,all,tags,generic'] = ['brawl_quick']
 
-def default_smoke_tags_generic_nodes() {
-    return \
-	default_smoke_tags_common()
-}
+    tests['pcs,smoke,tests,generic'] = sanity_tests + 'pcs,cli,Setup'
 
-def default_all_tests_generic_nodes() {
-    return \
-	default_smoke_tests_common() +
-	default_basic_tests_common() +
-	default_advanced_tests_common()
-}
+    tests['pcs,all,tests,generic'] = tests['pcs,smoke,tests,generic'] + pcs_basic_tests
+    // we don´t test pcs on one node, but the list is consistent and will be used for 2 nodes as well
+    tests['pcs,all,tests,1'] = tests['pcs,all,tests,generic'] + pcs_advanced_tests
+    tests['pcs,all,tests,3'] = tests['pcs,all,tests,1'] + 'pcs,cli,ResourceMove'
+    tests['pcs,all,tests,4'] = tests['pcs,all,tests,1']
 
-def default_all_tags_generic_nodes() {
-    return \
-	default_smoke_tags_common() +
-	default_basic_tags_common() +
-	default_advanced_tags_common()
-}
+    tests['default,smoke,tests,generic'] = tests['pcs,smoke,tests,generic'] + smoke_tests
+    tests['default,smoke,tests,1'] = ['lvm,snapper,display_snap,nostack,singlenode',
+				      'lvm,raid_sanity,display_raid,raid4,singlenode']
 
-// per node num override
-def default_smoke_tests_1_nodes() {
-    return [
-	'lvm,snapper,display_snap,nostack,singlenode',
-	'lvm,raid_sanity,display_raid,raid4,singlenode',
-    ]
-}
+    tests['default,all,tests,generic'] = tests['default,smoke,tests,generic'] + pcs_advanced_tests + advanced_tests
+    tests['default,all,tests,1'] = tests['default,smoke,tests,1']
+    tests['default,all,tests,2'] = tests['pcs,smoke,tests,generic'] + smoke_tests + pcs_basic_tests + basic_tests
+    tests['default,all,tests,3'] = tests['default,all,tests,2'] + pcs_advanced_tests + advanced_tests + 'pcs,cli,ResourceMove'
+    tests['default,all,tests,4'] = tests['default,all,tests,2'] + pcs_advanced_tests + advanced_tests + 'pacemaker,usecase,apachewebfarm,haproxy'
 
-def default_all_tests_1_nodes() {
-    return \
-	default_smoke_tests_1_nodes()
-}
+    // Get the right tests set
+    def ret = []
 
-def default_all_tests_2_nodes() {
-    return \
-	default_smoke_tests_common() +
-	default_basic_tests_common()
-}
+    // These need to be 'proper' Java strings, not groovy Gstring things
+    def String array_ptr1 = "${info['testvariant']},${info['tests']},${info['testtype']},${info['nodes']}"
+    def String array_ptr2 = "${info['testvariant']},${info['tests']},${info['testtype']},generic"
 
-def default_all_tests_3_nodes() {
-    return \
-	default_all_tests_generic_nodes() +
-    [
-	'pcs,cli,DefaultsSet',  // rsc and op defaults, uses resource move
-	'pcs,cli,ResourceMove',
-    ]
-}
-
-def default_all_tests_4_nodes() {
-    return \
-	default_all_tests_generic_nodes() +
-    [
-	'pacemaker,usecase,apachewebfarm,haproxy',
-    ]
-}
-
-// kernel variant
-def kernel_smoke_tests_common() {
-    return \
-	sanity_tests_common() +
-    [
-	'skeet',
-    ]
-}
-
-def kernel_smoke_tags_common() {
-    return [ ]
-}
-
-def kernel_basic_tests_common() {
-    return [ ]
-}
-
-def kernel_basic_tags_common() {
-    return [
-	'brawl_quick',
-    ]
-}
-
-def kernel_smoke_tests_generic_nodes() {
-    return \
-	kernel_smoke_tests_common()
-}
-
-def kernel_all_tests_generic_nodes() {
-    return \
-	kernel_smoke_tests_common() +
-	kernel_basic_tests_common()
-}
-
-def kernel_smoke_tags_generic_nodes() {
-    return \
-	kernel_smoke_tags_common()
-}
-
-def kernel_all_tags_generic_nodes() {
-    return \
-	kernel_smoke_tags_common() +
-	kernel_basic_tags_common()
-}
-
-// wrapper
-def call(Map info)
-{
-    method = "${info['testvariant']}_${info['tests']}_${info['testtype']}_${info['nodes']}_nodes"
-    try {
-	"$method"()
-    } catch (java.lang.Throwable ex) {
-	method = "${info['testvariant']}_${info['tests']}_${info['testtype']}_generic_nodes"
-	try {
-	    "$method"()
-	} catch (java.lang.Throwable genex) {
-	    return [ ]
-	}
+    // If there's an exact match then use it. Otherwise use the ,generic version
+    if (tests.containsKey(array_ptr1)) {
+	ret = tests[array_ptr1]
+    } else if (tests.containsKey(array_ptr2)) {
+	ret = tests[array_ptr2]
     }
+
+    return ret
 }

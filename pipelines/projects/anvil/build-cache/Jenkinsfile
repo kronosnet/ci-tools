@@ -31,7 +31,7 @@ pipeline {
 		axes {
 		    axis {
 			name 'PLATFORM'
-			values 'anvil-ci-bm-phy01', 'anvil-ci-bm-phy02', 'anvil-ci-bm-phy03', 'anvil-ci-bm-phy04', 'anvil-ci-bm-phy05', 'anvil-ci-bm-phy06'
+			values 'anvil-ci-bm-phy01', 'anvil-ci-bm-phy02', 'anvil-ci-bm-phy03', 'anvil-ci-bm-phy04', 'anvil-ci-bm-phy05', 'anvil-ci-bm-phy06', 'anvil-ci-bm-phy07'
 		    }
 	        }
 

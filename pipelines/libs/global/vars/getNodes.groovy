@@ -9,6 +9,7 @@ def call()
     labels['anvil-ci-bm-phy04'] = ['centos-8','stable','x86-64','rpm','yum','anvil-bm']
     labels['anvil-ci-bm-phy05'] = ['centos-8','stable','x86-64','rpm','yum','anvil-bm']
     labels['anvil-ci-bm-phy06'] = ['centos-8','stable','x86-64','rpm','yum','anvil-bm']
+    labels['anvil-ci-bm-phy07'] = ['centos-8','stable','x86-64','rpm','yum','anvil-bm']
     labels['anvil-ci-centos-8-stream'] = ['centos-8','stable','x86-64','rpm','yum','anvil', 'anvilvoting', 'anvilbuildrpms']
     labels['anvil-ci-centos-9-stream'] = ['centos-9','unstable','x86-64','rpm','yum','anvil', 'anvilvoting', 'anvilbuildrpms']
     labels['anvil-ci-rhel-8'] = ['rhel-8','stable','x86-64','rpm','yum','anvil', 'anvilvoting', 'anvilbuildrpms']

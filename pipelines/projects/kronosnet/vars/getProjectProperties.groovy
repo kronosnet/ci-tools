@@ -12,7 +12,6 @@ def call(Map localinfo, String agentName)
     props['PARALLELTEST'] = 'no'
     props['MAKEINSTALLOPTS'] = ''
     props['EXTRACHECKS'] = ''
-    props['SPECVERSION'] = env.BUILD_NUMBER
     props['RPMDEPS'] = 'libqb-devel doxygen2man'
 
     props['DISTROCONFOPTS'] = ''

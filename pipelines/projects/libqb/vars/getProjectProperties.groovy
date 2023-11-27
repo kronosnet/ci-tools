@@ -11,7 +11,6 @@ def call(Map localinfo, String agentName)
     props['MAKEOPTS'] = ''
     props['MAKEINSTALLOPTS'] = ''
     props['EXTRACHECKS'] = ''
-    props['SPECVERSION'] = env.BUILD_NUMBER
 
     // Give the tests time to run, even if the CI is busy
     props['CK_TIMEOUT_MULTIPLIER'] = 10

@@ -11,7 +11,6 @@ def call(Map localinfo, String agentName)
     props['MAKEOPTS'] = ''
     props['MAKEINSTALLOPTS'] = ''
     props['EXTRACHECKS'] = ''
-    props['SPECVERSION'] = env.BUILD_NUMBER
     props['RPMDEPS'] = 'corosynclib-devel'
 
     props['DISTROCONFOPTS'] = '--enable-cpg-plugin'

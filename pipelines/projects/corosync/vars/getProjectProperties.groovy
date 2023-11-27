@@ -12,7 +12,6 @@ def call(Map localinfo, String agentName)
     props['MAKEINSTALLOPTS'] = ''
     props['EXTRACHECKS'] = ''
     props['extraver'] = "kronosnet-${localinfo['kronosnetver']}"
-    props['SPECVERSION'] = env.BUILD_NUMBER
     props['RPMDEPS'] = 'libnozzle1-devel libknet1-devel libqb-devel'
     props['DISTROCONFOPTS'] = '--enable-snmp --enable-dbus --enable-systemd --enable-nozzle'
 

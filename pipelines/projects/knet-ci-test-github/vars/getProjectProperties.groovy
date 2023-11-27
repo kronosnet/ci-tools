@@ -14,7 +14,6 @@ def call(Map localinfo, String agentName)
     props['MAKEOPTS'] = ''
     props['MAKEINSTALLOPTS'] = ''
     props['EXTRACHECKS'] = ''
-    props['SPECVERSION'] = env.BUILD_NUMBER
 
     if (agentName.startsWith('debian')) {
 	props['DISTROCONFOPTS'] += '--with-debug'

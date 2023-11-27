@@ -12,7 +12,6 @@ def call(Map localinfo, String agentName)
 
     props['MAKEOPTS'] = ''
     props['MAKEINSTALLOPTS'] = ''
-    props['TOPTS'] = ''
     props['EXTRACHECKS'] = ''
 
     if (agentName.startsWith('rhel') ||

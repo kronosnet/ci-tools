@@ -11,7 +11,6 @@ def call(Map localinfo, String agentName)
     props['MAKEOPTS'] = ''
     props['PARALLELTEST'] = 'no'
     props['MAKEINSTALLOPTS'] = ''
-    props['TOPTS'] = ''
     props['EXTRACHECKS'] = ''
     props['DISTROCONFOPTS'] = ''
     props['extraver'] = "pacemaker-${localinfo['pacemakerver']}"

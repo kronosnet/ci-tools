@@ -10,7 +10,6 @@ def call(Map localinfo, String agentName)
 
     props['MAKEOPTS'] = ''
     props['MAKEINSTALLOPTS'] = ''
-    props['TOPTS'] = ''
     props['EXTRACHECKS'] = ''
     props['SPECVERSION'] = env.BUILD_NUMBER
     props['RPMDEPS'] = 'corosynclib-devel'

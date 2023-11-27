@@ -10,7 +10,6 @@ def call(Map localinfo, String agentName)
 
     props['MAKEOPTS'] = ''
     props['MAKEINSTALLOPTS'] = ''
-    props['TOPTS'] = ''
     props['EXTRACHECKS'] = ''
     props['DISTROCONFOPTS'] = '--without-glue'
     props['TESTUSELDPATH'] = 'yes'

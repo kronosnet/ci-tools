@@ -10,7 +10,6 @@ def call(Map localinfo, String agentName)
 
     props['MAKEOPTS'] = ''
     props['MAKEINSTALLOPTS'] = ''
-    props['TOPTS'] = ''
     props['EXTRACHECKS'] = ''
     props['extraver'] = "kronosnet-${localinfo['kronosnetver']}"
     props['SPECVERSION'] = env.BUILD_NUMBER

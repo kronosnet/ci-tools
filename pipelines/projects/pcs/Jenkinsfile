@@ -42,11 +42,13 @@ pipeline {
 
 		    voting = buildRunMap('voting', info, ['voting': true,
 							  'nodelabel': 'pcs-stable',
-							  'extravars': ['pacemakerver': '2.1']])
+							  'extravars': ['depbuildname': 'pacemaker',
+									'depbuildversion': '2.1']])
 
 		    buildrpms = buildRunMap('buildrpms', info, ['voting': true,
 								'nodelabel': 'pcs-stable',
-								'extravars': ['pacemakerver': '2.1']])
+								'extravars': ['depbuildname': 'pacemaker',
+									      'depbuildversion': '2.1']])
 
 		    // Run them (errors are caught in info[:])
 		    try {
@@ -74,34 +76,41 @@ pipeline {
 		    voting_pmain = buildRunMap('pmain-voting', info, ['voting': true,
 								      'nodelabel': 'voting',
 								      'excludes': '(freebsd|debian10|centos-8|rhel8|opensuse-15|ubuntu-20).*',
-								      'extravars': ['pacemakerver': 'main']])
+								      'extravars': ['depbuildname': 'pacemaker',
+										    'depbuildversion': 'main']])
 		    voting_pstable = buildRunMap('pstable-voting', info, ['voting': true,
 									  'nodelabel': 'voting',
 									  'excludes': '(freebsd|debian10|centos-8|rhel8|opensuse-15|ubuntu-20).*',
-									  'extravars': ['pacemakerver': '2.1']])
+									  'extravars': ['depbuildname': 'pacemaker',
+											'depbuildversion': '2.1']])
 
 		    nonvoting_pmain = buildRunMap('pmain-nonvoting', info, ['voting': false,
 									    'nodelabel': 'nonvoting',
 									    'excludes': 'freebsd.*',
-									    'extravars': ['pacemakerver': 'main']])
+									    'extravars': ['depbuildname': 'pacemaker',
+											  'depbuildversion': 'main']])
 		    nonvoting_pstable = buildRunMap('pstable-nonvoting', info, ['voting': false,
 										'nodelabel': 'nonvoting',
 										'excludes': 'freebsd.*',
-										'extravars': ['pacemakerver': '2.1']])
+										'extravars': ['depbuildname': 'pacemaker',
+											      'depbuildversion': '2.1']])
 
 		    covscan_pmain = buildRunMap('pmain-covscan', info, ['voting': true,
 									'nodelabel': 'covscan',
 									'excludes': 'rhel8.*',
-									'extravars': ['pacemakerver': 'main']])
+									'extravars': ['depbuildname': 'pacemaker',
+										      'depbuildversion': 'main']])
 		    covscan_pstable = buildRunMap('pstable-covscan', info, ['voting': true,
 									    'nodelabel': 'covscan',
 									    'excludes': 'rhel8.*',
-									    'extravars': ['pacemakerver': '2.1']])
+									    'extravars': ['depbuildname': 'pacemaker',
+											  'depbuildversion': '2.1']])
 
 		    buildrpms_pmain = buildRunMap('pmain-buildrpms', info, ['voting': true,
-									     'nodelabel': 'buildrpms',
-									     'excludes': '(centos-8|rhel8|opensuse-15).*',
-									     'extravars': ['pacemakerver': 'main']])
+									    'nodelabel': 'buildrpms',
+									    'excludes': '(centos-8|rhel8|opensuse-15).*',
+									    'extravars': ['depbuildname': 'pacemaker',
+											  'depbuildversion': 'main']])
 
 		    // Run them (errors are caught in info[:])
 		    try {

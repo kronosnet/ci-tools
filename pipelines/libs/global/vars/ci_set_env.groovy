@@ -32,6 +32,13 @@ def call(Map localinfo, String stageName, String agentName)
 	cienv['MAKE'] = localinfo['MAKE']
     }
 
+    if (localinfo.containsKey('depbuildname')) {
+	cienv["${localinfo['depbuildname']}ver"] = localinfo['depbuildversion']
+	cienv['extraver'] = localinfo['depbuildname']+'-'+localinfo['depbuildversion']
+    } else {
+	cienv['extraver'] = ''
+    }
+
     def path = sh(script: "echo \$PATH", returnStdout: true).trim()
     def home = sh(script: "echo \$HOME", returnStdout: true).trim()
     cienv['PATH'] = "/opt/coverity/bin:${path}:${home}/ci-tools"

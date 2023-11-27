@@ -74,12 +74,6 @@ def doRunStage(String agentName, Map info, Map localinfo)
 	// Get any job-specific configuration variables
 	localinfo += getProjectProperties(localinfo, agentName)
 
-	// We need EXTRAVER to build the repos, but it's not always present
-	def extraver = ''
-	if (localinfo.containsKey('EXTRAVER')) {
-	    extraver = localinfo['EXTRAVER']
-	}
-
 	// Converting ci-tools/ci-set-env to groovy maps
 	localinfo += ci_set_env(localinfo, localinfo['stageName'], agentName)
 
@@ -136,18 +130,18 @@ def doRunStage(String agentName, Map info, Map localinfo)
 	    stage("${localinfo['stageName']} on ${agentName} - get RPM artifacts") {
 		node('built-in') {
 		    if (localinfo['isPullRequest']) {
-			// TODO: fix pr path and adjust for EXTRAVER
+			// TODO: fix pr path and adjust for 'extraver'
 			cmdWithTimeout(collect_timeout,
 				       "~/ci-tools/ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/pr/${info['pull_id']}/${agentName} rpm",
 				       stagestate, {}, { postFnError(stagestate) })
 		    } else {
 			cmdWithTimeout(collect_timeout,
-				       "~/ci-tools/ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/${agentName}/origin/${info['target']}/${extraver}/${env.BUILD_NUMBER}/ rpm",
+				       "~/ci-tools/ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/${agentName}/origin/${info['target']}/${info['extraver']}/${env.BUILD_NUMBER}/ rpm",
 				       stagestate, {}, { postFnError(stagestate) })
 		    }
 		    // Keep a list of EXTRAVERs, it's more efficient (and less racy)
 		    // to de-duplicate these at the end, in postStage()
-		    info['EXTRAVER_LIST'] += extraver
+		    info['EXTRAVER_LIST'] += info['extraver']
 		}
 	    }
 	}

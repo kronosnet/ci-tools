@@ -13,7 +13,6 @@ def call(Map localinfo, String agentName)
     props['MAKEINSTALLOPTS'] = ''
     props['EXTRACHECKS'] = ''
     props['DISTROCONFOPTS'] = ''
-    props['extraver'] = "pacemaker-${localinfo['pacemakerver']}"
 
     if (localinfo['target'] == 'main') {
 	if (agentName.startsWith('rhel') ||

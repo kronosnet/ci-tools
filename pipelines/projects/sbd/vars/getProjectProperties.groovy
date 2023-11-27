@@ -14,7 +14,6 @@ def call(Map localinfo, String agentName)
     props['DISTROCONFOPTS'] = ''
     props['TESTUSELDPATH'] = 'yes'
     props['BOOTH_RUNTESTS_ROOT_USER'] = '1'
-    props['extraver'] = "pacemaker-${localinfo['pacemakerver']}"
 
     if (agentName.startsWith('rhel') ||
 	agentName.startsWith('fedora') ||

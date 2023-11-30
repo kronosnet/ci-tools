@@ -63,11 +63,10 @@ case $build in
     cat cov.diff
     echo "===== END NEW COVERITY SCAN ERRORS DETECTED ====="
     ret=1
-    cat cov.diff | cshtml - > cov-index.html
-    echo "New errors can be found here: https://ci.kronosnet.org/coverity/${project}/${NODE_NAME}/${BUILD_NUMBER}/new/"
+    mkdir cov.html/new
+    cat cov.diff | cshtml - > cov.html/new/index.html
    fi
   fi
-  echo "Complete html report can be found here: https://ci.kronosnet.org/coverity/${project}/${NODE_NAME}/${BUILD_NUMBER}/"
 
   exit $ret
   ;;

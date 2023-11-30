@@ -30,18 +30,6 @@ clean_prs() {
 }
 
 process_builds() {
-	# builds
-	for build in $(ls); do
-		echo "Processing $build"
-		cd $build
-		if [ -d new ]; then
-			cd new
-			rm -f index.html
-			ln -sf cov-index.html index.html
-			cd ..
-		fi
-		cd ..
-	done
 	# remove old builds (keep last 10)
 	builds="$(ls -1 | sort -n)"
 	numbuilds="$(echo "$builds" | wc -l)"

@@ -5,7 +5,7 @@ set -e
 project="$1"
 branch="$2"
 if [ -n "$3" ]; then
-    extraverdir="/$3"
+    extraver="/$3"
 fi
 
 if [ -z "$project" ]; then

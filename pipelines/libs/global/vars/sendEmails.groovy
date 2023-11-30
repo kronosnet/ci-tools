@@ -117,11 +117,8 @@ def call(Map info)
 	for (u in info['new_cov_results_urls']) {
 	    cov_urls += "http://ci.kronosnet.org/${u}\n"
 	}
-	// A bit of a code mess but it keeps the emails tidy
-	if (info['email_extra_text'] != '') {
-	    info['email_extra_text'] += '\n'
-	}
 	info['email_extra_text'] += cov_urls
+	// No extra newlines here as we know there will be covscans next
     }
 
     if (info['cov_results_urls'].size() > 0) {

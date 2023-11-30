@@ -104,6 +104,10 @@ def doRunStage(String agentName, Map info, Map localinfo)
 	    return false
 	}
 
+	// Keep a list of EXTRAVERs, it's more efficient (and less racy)
+	// to de-duplicate these at the end, in postStage()
+	info['EXTRAVER_LIST'] += localinfo['extraver']
+
 	// Gather covscan results
 	// 'fullrebuild' is param set by a parent job to prevent uploads from weekly jobs
 	//    and will normally be 0
@@ -116,11 +120,16 @@ def doRunStage(String agentName, Map info, Map localinfo)
 		    } else {
 			info['covtgtdir'] = "origin/${info['target']}"
 		    }
-		    def covdir = "coverity/${info['project']}/${agentName}/${info['covtgtdir']}/${env.BUILD_NUMBER}/"
+		    def covdir = "coverity/${info['project']}/${agentName}/${info['covtgtdir']}/${localinfo['extraver']}/${env.BUILD_NUMBER}"
 		    cmdWithTimeout(collect_timeout,
 				   "~/ci-tools/ci-get-artifacts ${agentName} ${workspace} ${covdir} cov",
 				   stagestate, {}, { postFnError(stagestate) })
 		    info['cov_results_urls'] += covdir
+
+		    // Make a note of any new errors
+		    if (stagestate['new_cov_errors']) {
+			info['new_cov_results_urls'] += covdir + '/new'
+		    }
 		}
 	    }
 	}
@@ -136,15 +145,13 @@ def doRunStage(String agentName, Map info, Map localinfo)
 				       stagestate, {}, { postFnError(stagestate) })
 		    } else {
 			cmdWithTimeout(collect_timeout,
-				       "~/ci-tools/ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/${agentName}/origin/${info['target']}/${info['extraver']}/${env.BUILD_NUMBER}/ rpm",
+				       "~/ci-tools/ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/${agentName}/origin/${info['target']}/${localinfo['extraver']}/${env.BUILD_NUMBER}/ rpm",
 				       stagestate, {}, { postFnError(stagestate) })
 		    }
-		    // Keep a list of EXTRAVERs, it's more efficient (and less racy)
-		    // to de-duplicate these at the end, in postStage()
-		    info['EXTRAVER_LIST'] += info['extraver']
 		}
 	    }
 	}
+
 	cleanWs(disableDeferredWipeout: true, deleteDirs: true)
     }
     return true
@@ -199,8 +206,13 @@ def processRunException(Map info, Map localinfo, Map stagestate)
     }
 
     // Tell runStage()
+    stagestate['new_cov_errors'] = false
     if (localinfo['stageName'].endsWith('covscan') && fileExists('cov.json')) {
 	stagestate['failed'] = false // Coverity failed but we want the results
+
+	if (fileExists('cov.html/new/index.html')) { // New errors
+	    stagestate['new_cov_errors'] = true
+	}
     } else {
 	stagestate['failed'] = true
     }

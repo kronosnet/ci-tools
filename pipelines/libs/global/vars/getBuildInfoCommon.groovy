@@ -14,6 +14,7 @@ def call(Map info)
     info['state'] = 'script error'
     info['covtgtdir'] = ''
     info['cov_results_urls'] = []
+    info['new_cov_results_urls'] = []
     info['EXTRAVER_LIST'] = []
 
     // Make sure the params are in here so they get propogated to the scripts

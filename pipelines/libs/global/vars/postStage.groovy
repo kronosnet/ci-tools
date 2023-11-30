@@ -14,8 +14,10 @@ def call(Map info)
 	    stage("Publish Coverity results") {
 		node('built-in') {
 		    lock('ci-cov-repos') { // This script needs to be serialised
-			timeout (time: publish_timeout, unit: 'MINUTES') {
-			    sh "~/ci-tools/ci-cov-repos ${info['project']} ${info['covtgtdir']}"
+			for (ver in info['EXTRAVER_LIST'].stream().distinct().collect()) { // Remove duplicates
+			    timeout (time: publish_timeout, unit: 'MINUTES') {
+				sh "~/ci-tools/ci-cov-repos ${info['project']} ${info['covtgtdir']} ${ver}"
+			    }
 			}
 		    }
 		}

@@ -4,6 +4,9 @@ set -e
 
 project="$1"
 branch="$2"
+if [ -n "$3" ]; then
+    extraverdir="/$3"
+fi
 
 if [ -z "$project" ]; then
 	echo "no project specificed"
@@ -56,8 +59,8 @@ process_cov_repos() {
 	cd $covdir/$project/
 	# we are in project dir
 	for node in $(ls); do
-		echo "Node $node / $branch"
-		cd $node/$branch
+		echo "Node $node / $branch / $extraver"
+		cd ${node}/${branch}/${extraver}
 		process_builds
 		cd $covdir/$project/
 	done

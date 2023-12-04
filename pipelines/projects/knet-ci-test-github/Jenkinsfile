@@ -41,6 +41,7 @@ pipeline {
 	    steps {
 		script {
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+		    info['email_extra_text'] = 'This is EXTRA text'
 
 		    // The 'short' test list
 		    voting = buildRunMap('voting', info, ['voting': true,

@@ -112,25 +112,19 @@ def call(Map info)
     }
 
     // Add links to coverity scans
+    def cov_urls=''
     if (info['new_cov_results_urls'].size() > 0) {
-	def cov_urls = '\nNew Coverity errors:\n'
+	cov_urls = '\nNew Coverity errors:\n'
 	for (u in info['new_cov_results_urls']) {
 	    cov_urls += "http://ci.kronosnet.org/${u}\n"
 	}
-	info['email_extra_text'] += cov_urls
-	// No extra newlines here as we know there will be covscans next
     }
 
     if (info['cov_results_urls'].size() > 0) {
-	def cov_urls = '\nFull Coverity results:\n'
+	cov_urls += '\nFull Coverity results:\n'
 	for (u in info['cov_results_urls']) {
 	    cov_urls += "http://ci.kronosnet.org/${u}\n"
 	}
-	// A bit of a code mess but it keeps the emails tidy
-	if (info['email_extra_text'] != '') {
-	    info['email_extra_text'] += '\n'
-	}
-	info['email_extra_text'] += cov_urls
     }
 
     // Not everyone generates split logs */
@@ -153,8 +147,10 @@ def call(Map info)
 
     def email_trailer = """${runreason}
 Total runtime: ${jobDuration}
-${info['email_extra_text']}${split_logs}
+${split_logs}
 Full log:   ${console_log}
+${cov_urls}
+${info['email_extra_text']}
 ${info['exception_text']}
 """
 
@@ -182,8 +178,7 @@ ${email_trailer}
 	} else if (nonvoting_fail > 0) {
 	    // Only non-voting fails
 	    subject = "${email_title} succeeded but with ${nonvoting_fail}/${nonvoting_run} non-voting fail${nonvoting_s}"
-	    body = """
-Failed job${nonvoting_s}: ${info['nonvoting_fail_nodes']}
+	    body = """Failed job${nonvoting_s}: ${info['nonvoting_fail_nodes']}
 
 ${email_trailer}
 """

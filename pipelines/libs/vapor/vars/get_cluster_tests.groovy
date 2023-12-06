@@ -85,15 +85,6 @@ def call(Map info)
 	'pacemaker,usecase,NFS_Server-AP,lvmlockd,exclusive'
     ]
 
-    advanced_tests = [
-	'pacemaker,recovery,RecoverySwitchFailure,variant:iterations,iterations:10',
-	'pacemaker,recovery,RecoveryNodeNetworkFailure',
-	'pacemaker,recovery,RecoveryRandomMultiNode,variant:iterations,iterations:10',
-	'pacemaker,recovery,RecoveryRandomMultiNodeNQ,variant:iterations,iterations:10',
-	'pacemaker,recovery,RecoveryNodeNetworkFailure,sbd-only,network_disruptor',
-	'pacemaker,recovery,RecoveryNodeNetworkFailure,sbd-with-one-device,network_disruptor',
-    ]
-
     // Define the actual tests to run
     def tests = [:]
 

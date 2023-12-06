@@ -13,6 +13,7 @@ provider=""
 rhelver=""
 nodes="4"
 zstream="no"
+brewbuild=""
 upstream="none"
 tests="setup"
 teststags=""
@@ -40,6 +41,7 @@ print_usage() {
 	echo " -r rhelver                 rhel version: 7, 8, 9 (required)"
 	echo " -z                         use zstream (default: none)"
 	echo " -m                         use custom repo (default: none)"
+	echo " -x                         brew build (default: none)"
 	echo " -u upstream                upstream branch: next-stable, next-stable-kernel, main, main-kernel (default: none)"
 	echo " -n nodes                   cluster nodes: 0, 32 (default: 4)"
 	echo " -i size                    iscsi storage size (default: 10)"
@@ -55,7 +57,7 @@ print_usage() {
 	echo " -P                         project identifier (default: '')"
 }
 
-while getopts "j:c:p:m:r:n:u:t:T:z:edhi:s:b:a:P:" optflag; do
+while getopts "j:c:p:m:r:n:u:t:T:z:edhi:s:b:a:P:x:" optflag; do
 	case "$optflag" in
 	c)
 		command="$OPTARG"
@@ -86,6 +88,9 @@ while getopts "j:c:p:m:r:n:u:t:T:z:edhi:s:b:a:P:" optflag; do
 		;;
 	z)
 		zstream="$OPTARG"
+		;;
+	x)
+		brewbuild="$OPTARG"
 		;;
 	d)
 		debug="yes"
@@ -195,6 +200,9 @@ if [ "$zstream" == "yes" ]; then
 fi
 if [ "$customrepopath" != "" ]; then
 	deploybaseopts="$deploybaseopts --usecustomrepo $customrepopath"
+fi
+if [ "$brewbuild" != "" ]; then
+	deploybaseopts="$deploybaseopts --package $brewbuild"
 fi
 
 testbaseopts=""

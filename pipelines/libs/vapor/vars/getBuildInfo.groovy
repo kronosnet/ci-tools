@@ -20,6 +20,11 @@ def call(String project, String projectid)
     }
     info['rhelver'] = env.rhelver
     info['zstream'] = env.zstream
+    if (env.brewbuild) {
+	info['brewbuild'] = env.brewbuild
+    } else {
+	info['brewbuild'] = ''
+    }
     info['upstream'] = env.upstream
     info['iscsi'] = ''
     info['block'] = ''

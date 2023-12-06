@@ -198,7 +198,7 @@ pipeline {
 		    steps {
 			node('built-in') {
 			    timeout (time: 15, unit: 'MINUTES') {
-				sh "~/ci-tools/ci-get-artifacts ${BUILDNODE} ${BUILDDIR}/rpms builds/kernel/rhel9-kbuild/origin/${BRANCH_NAME}/${BUILD_NUMBER}/ rpm"
+				sh "$HOME/ci-tools/ci-get-artifacts ${BUILDNODE} ${BUILDDIR}/rpms builds/kernel/rhel9-kbuild/origin/${BRANCH_NAME}/${BUILD_NUMBER}/ rpm"
 			    }
 			}
 		    }
@@ -208,7 +208,7 @@ pipeline {
 			node('built-in') {
 			    lock('ci-rpm-repos') { // This script needs to be serialised
 				timeout (time: 15, unit: 'MINUTES') {
-				   sh "~/ci-tools/ci-rpm-repos kernel origin/${BRANCH_NAME}"
+				   sh "$HOME/ci-tools/ci-rpm-repos kernel origin/${BRANCH_NAME}"
 				}
 			    }
 			}

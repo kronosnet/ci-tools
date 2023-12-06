@@ -2,7 +2,7 @@
 
 set -e
 
-cd /root
+cd $HOME
 
 $HOME/ci-tools/ci-update-common
 

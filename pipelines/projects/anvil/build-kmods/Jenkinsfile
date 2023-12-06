@@ -20,14 +20,14 @@ pipeline {
 		cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 		getBuildInfoCommon(info)
 		sh """
-		    /root/ci-tools/ci-destroy-anvil-bm-vm
+		    $HOME/ci-tools/ci-destroy-anvil-bm-vm
 		"""
 	    }
 	}
 	stage('Build kmod') {
 	    steps {
 		sh """
-		    /root/ci-tools/ci-setup-anvil-bm-vm-kmods $BASEDISTRO $REPOSRC $ANVILSRC
+		    $HOME/ci-tools/ci-setup-anvil-bm-vm-kmods $BASEDISTRO $REPOSRC $ANVILSRC
 		"""
 	    }
 	}
@@ -47,7 +47,7 @@ pipeline {
 	}
 	always {
 	    sh """
-		/root/ci-tools/ci-destroy-anvil-bm-vm
+		$HOME/ci-tools/ci-destroy-anvil-bm-vm
 	    """
 	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 	}

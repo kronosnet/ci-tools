@@ -37,9 +37,7 @@ def call(String project)
 	info['maininstall'] = 0
 	info['stableinstall'] = 0
 	info['covinstall'] = 0
-	info['publish_rpm'] = 0  // TODO Remove once all in new pipelines
-	info['publish_pr_rpm'] = buildPRRPMs(['isPullRequest': isPullRequest, 'branch': info['target']])
-	info['publishrpm'] = info['publish_pr_rpm']
+	info['publishrpm'] = buildPRRPMs(['isPullRequest': isPullRequest, 'branch': info['target']])
 
 	// Check for PRs marked 'draft' - this is Github-specific
 	is_draft = pullRequest.isDraft()
@@ -56,7 +54,6 @@ def call(String project)
     } else {
 	info['target'] = env.BRANCH_NAME
 	info['pull_id'] = 1
-	info['publish_rpm'] = 1 // TODO Remove once all in new pipelines
 	info['publishrpm'] = 1
 	info['install'] = isThisAnInstallBranch(info['target'])
 	if ("${info['install']}" == '1') {

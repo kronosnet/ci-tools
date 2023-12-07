@@ -76,6 +76,7 @@ else
 		echo "Switching WORKSPACE/ci-tools to $CITBRANCH"
 		git checkout $CITBRANCH
 		CITHOME="$WORKSPACE/ci-tools"
+		cd - > /dev/null
 	fi
 fi
 

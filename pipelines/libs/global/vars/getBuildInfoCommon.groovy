@@ -22,6 +22,10 @@ def call(Map info)
     info['bootstrap'] = params.bootstrap as int
     info['fullrebuild'] = params.fullrebuild as int
 
+    // Put the library branch name into the environment
+    // so that shell scripts can get it
+    env.CITBRANCH = env.'library.GlobalLib.version'
+
     // fullrebuild overrides some things
     if (info['fullrebuild'] == 1) {
 	info['install'] = 0

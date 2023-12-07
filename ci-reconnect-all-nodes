@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# ENTRY POINT (old / done)
+
 set -e
 
 connect="$1"
@@ -9,7 +11,7 @@ nodelist=$(ls -1 $HOME/nodes)
 for node in $nodelist; do
 	echo disconnecting node $node
 	n=0
-	while [ $(./jcli disconnect-node $node) ] && [ "$n" -lt 5 ]; do
+	while [ $($CITHOME/jcli disconnect-node $node) ] && [ "$n" -lt 5 ]; do
 		echo "Retrying disconnect"
 		n=$(expr $n + 1)
 	done
@@ -18,6 +20,6 @@ done
 if [ -n "$connect" ]; then
 	for node in $nodelist; do
 		echo connecting node $node
-		./jcli connect-node $node
+		$CITHOME/jcli connect-node $node
 	done
 fi

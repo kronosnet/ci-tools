@@ -7,8 +7,7 @@ def call(Map info)
     timeout(time: 60, unit: 'MINUTES') {
 	sh """
 	    echo "Deleting test cluster"
-	    cd $HOME/ci-tools/fn-testing
-	    ./validate-cloud -c delete -d -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -r ${info['rhelver']}
+	    $HOME/ci-tools/ci-wrap fn-testing/validate-cloud -c delete -d -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -r ${info['rhelver']}
 	"""
     }
 }

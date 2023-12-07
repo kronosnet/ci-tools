@@ -4,7 +4,9 @@ set -e
 
 rm -rf $HOME/rpmbuild
 rm -rf /usr/src/packages/BUILDROOT/*
-rm -rf /srv/workspace/*
+if [ "$CITBRANCH" = "main" ]; then
+	rm -rf /srv/workspace/*
+fi
 # the test job can only clean up to a certain point
 # this is more likely to avoid qb leaks
 rm -rf /dev/shm/qb*
@@ -12,4 +14,4 @@ rm -rf /dev/shm/testvol*
 rm -rf /tmp/libqb*
 rm -rf /tmp/booth-tests*
 
-$HOME/ci-tools/ci-generate-start-node
+$CITHOME/ci-generate-start-node

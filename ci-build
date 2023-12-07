@@ -1,16 +1,18 @@
 #!/bin/sh
 
+# ENTRY POINT (done)
+
 set -e
 
-. $HOME/ci-tools/ci-set-env
+. $CITHOME/ci-set-env
 
 echo ===== current build env =====
 env | sort
 echo =============================
 
-ci-build-info
-ci-setup-rpm
-ci-setup-src
-ci-build-src
-ci-tests-src
-ci-install-src
+$CITHOME/ci-build-info
+$CITHOME/ci-setup-rpm
+$CITHOME/ci-setup-src
+$CITHOME/ci-build-src
+$CITHOME/ci-tests-src
+$CITHOME/ci-install-src

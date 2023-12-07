@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# ENTRY POINT (old)
+
 set -e
 
 rm -f /root/.pre_upgrade_done

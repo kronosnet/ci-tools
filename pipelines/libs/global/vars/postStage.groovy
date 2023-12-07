@@ -16,7 +16,7 @@ def call(Map info)
 		    lock('ci-cov-repos') { // This script needs to be serialised
 			for (ver in info['EXTRAVER_LIST'].stream().distinct().collect()) { // Remove duplicates
 			    timeout (time: publish_timeout, unit: 'MINUTES') {
-				sh "$HOME/ci-tools/ci-cov-repos ${info['project']} ${info['covtgtdir']} ${ver}"
+				sh "$HOME/ci-tools/ci-wrap ci-cov-repos ${info['project']} ${info['covtgtdir']} ${ver}"
 			    }
 			}
 		    }
@@ -36,7 +36,7 @@ def call(Map info)
 			}
 			for (ver in info['EXTRAVER_LIST'].stream().distinct().collect()) { // Remove duplicates
 			    timeout (time: publish_timeout, unit: 'MINUTES') {
-				sh "$HOME/ci-tools/ci-rpm-repos ${info['project']} ${repopath} ${ver}"
+				sh "$HOME/ci-tools/ci-wrap ci-rpm-repos ${info['project']} ${repopath} ${ver}"
 			    }
 			}
 		    }

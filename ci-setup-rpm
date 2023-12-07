@@ -2,7 +2,7 @@
 
 set -e
 
-. $HOME/ci-tools/ci-rpm-common
+. $CITHOME/ci-rpm-common
 
 if [ "$build" = "rpm" ]; then
  if [ -n "$RPMDEPS" ]; then

@@ -6,8 +6,8 @@ def call(Map info)
     }
     sh """
 	echo "Waiting for cluster to boot"
-	cd $HOME/ci-tools/fn-testing
-	wsip=\$(./validate-cloud -c ip -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -r ${info['rhelver']})
+	wsip=\$($HOME/ci-tools/ci-wrap fn-testing/validate-cloud -c ip -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -r ${info['rhelver']})
+	wsip=\$(echo \$wsip | awk '{print \$NF}')
 	waittimeout=600
 
 	while ! nc -z \$wsip 22 && [ "\$waittimeout" -gt "0" ]; do

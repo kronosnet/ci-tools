@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# ENTRY POINT (old)
+
 set -e
 
 function print_usage() {

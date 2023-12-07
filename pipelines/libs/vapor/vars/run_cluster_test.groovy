@@ -5,15 +5,13 @@ def run_test(Map info)
 	if (info['dryrun'] == '0') {
 	    sh """
 		echo "Running test"
-		cd $HOME/ci-tools/fn-testing
-		./validate-cloud -c test -d -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -j "jenkins:${BUILD_URL}" -r ${info['rhelver']} -n ${info['nodes']} -e ${info['testopt']} ${info['runtest']} -a "${WORKSPACE}/${info['logsrc']}"
+		$HOME/ci-tools/ci-wrap fn-testing/validate-cloud -c test -d -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -j "jenkins:${BUILD_URL}" -r ${info['rhelver']} -n ${info['nodes']} -e ${info['testopt']} ${info['runtest']} -a "${WORKSPACE}/${info['logsrc']}"
 	    """
 	} else {
 	    // keep this for debugging
 	    sh """
 		echo "FAKE RUNNING TEST"
-		cd $HOME/ci-tools/fn-testing
-		echo ./validate-cloud -c test -d -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -j "jenkins:${BUILD_URL}" -r ${info['rhelver']} -n ${info['nodes']} -e ${info['testopt']} ${info['runtest']} -a "${WORKSPACE}/${info['logsrc']}"
+		echo $HOME/ci-tools/ci-wrap fn-testing/validate-cloud -c test -d -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -j "jenkins:${BUILD_URL}" -r ${info['rhelver']} -n ${info['nodes']} -e ${info['testopt']} ${info['runtest']} -a "${WORKSPACE}/${info['logsrc']}"
 		echo "SLEEP 5"
 		sleep 5
 		if [ "${info['runtest']}" = "fake_failure" ]; then

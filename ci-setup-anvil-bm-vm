@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# ENTRY POINT (mix)
+
 set -e
 
 . $HOME/ci-tools/ci-setup-anvil-vm-env

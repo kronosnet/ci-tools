@@ -48,17 +48,9 @@ fi
 if [ -n "$CITHOME" ]; then
 	echo "CITHOME already present in the environment. Nothing to do."
 else
-	if [ -n "$CITBRANCH" ]; then
-		echo "CITBRANCH manual override detected: $CITBRANCH"
-	else
-		# Use GlobalLib version to determine ci-tools version
-		CITBRANCH="$(env | sort -u | grep "library.GlobalLib.version" | sed -e 's#.*=##g')"
-		if [ -n "$CITBRANCH" ]; then
-			echo "library.GlobalLib.version detected: $CITBRANCH"
-		else
-			echo "No library.GlobalLib.version detected! defaulting to main"
-			CITBRANCH=main
-		fi
+	if [ -z "$CITBRANCH" ]; then
+		echo "CITBRANCH not detected! defaulting to main"
+		CITBRANCH=main
 	fi
 	if [ "$CITBRANCH" = "main" ]; then
 		CITHOME="$HOME/ci-tools"
@@ -67,6 +59,7 @@ else
 			WORKSPACE="$(mktemp -d -t ci-tools-XXXXX)"
 			wipetmp=yes
 		fi
+		echo "CITBRANCH set to $CITBRANCH"
 		echo "Using $WORKSPACE"
 		(
 			flock -e 200
@@ -86,7 +79,9 @@ else
 fi
 
 export CITHOME
+export CITBRANCH
 
+echo "CITBRANCH:  $CITBRANCH"
 echo "CITHOME:    $CITHOME"
 echo "CITCMD:     $citcmd"
 echo "CITCMDARGS: $@"

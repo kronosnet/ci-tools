@@ -1,10 +1,10 @@
 #!/bin/sh
 
+# ENTRY POINT (old / done)
+
 set -e
 
-cd $HOME
-
-$HOME/ci-tools/ci-update-common
+$CITHOME/ci-update-common
 
 export DEBIAN_FRONTEND=noninteractive
 

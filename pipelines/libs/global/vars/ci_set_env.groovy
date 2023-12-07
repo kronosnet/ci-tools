@@ -40,8 +40,9 @@ def call(Map localinfo, String stageName, String agentName)
     }
 
     def path = sh(script: "echo \$PATH", returnStdout: true).trim()
-    def home = sh(script: "echo \$HOME", returnStdout: true).trim()
-    cienv['PATH'] = "/opt/coverity/bin:${path}:${home}/ci-tools"
+    cienv['PATH'] = "/opt/coverity/bin:${path}"
+    // def home = sh(script: "echo \$HOME", returnStdout: true).trim()
+    // cienv['PATH'] = "/opt/coverity/bin:${path}:${home}/ci-tools"
 
     def numcpu = sh(script: "nproc", returnStdout: true).trim()
 

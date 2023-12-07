@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# ENTRY POINT (done)
+
 set -e
 
 publish=/var/www/ci.kronosnet.org/

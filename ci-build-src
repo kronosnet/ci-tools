@@ -2,7 +2,7 @@
 
 set -e
 
-. $HOME/ci-tools/ci-rpm-common
+. $CITHOME/ci-rpm-common
 
 case "${project}" in
  dlm)

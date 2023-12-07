@@ -89,7 +89,7 @@ def doRunStage(String agentName, Map info, Map localinfo)
 		dir (localinfo['project']) {
 		    def exports = getShellVariables(localinfo)
 		    cmdWithTimeout(build_timeout,
-				   "${exports} $HOME/ci-tools/ci-build",
+				   "${exports} $HOME/ci-tools/ci-wrap ci-build",
 				   stagestate,
 				   { processRunSuccess(info, localinfo, stagestate) },
 				   { processRunException(info, localinfo, stagestate) })
@@ -122,7 +122,7 @@ def doRunStage(String agentName, Map info, Map localinfo)
 		    }
 		    def covdir = "coverity/${info['project']}/${agentName}/${info['covtgtdir']}/${localinfo['extraver']}/${env.BUILD_NUMBER}"
 		    cmdWithTimeout(collect_timeout,
-				   "$HOME/ci-tools/ci-get-artifacts ${agentName} ${workspace} ${covdir} cov",
+				   "$HOME/ci-tools/ci-wrap ci-get-artifacts ${agentName} ${workspace} ${covdir} cov",
 				   stagestate, {}, { postFnError(stagestate) })
 		    info['cov_results_urls'] += covdir
 
@@ -141,11 +141,11 @@ def doRunStage(String agentName, Map info, Map localinfo)
 		    if (localinfo['isPullRequest']) {
 			// TODO: fix pr path and adjust for 'extraver'
 			cmdWithTimeout(collect_timeout,
-				       "$HOME/ci-tools/ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/pr/${info['pull_id']}/${agentName} rpm",
+				       "$HOME/ci-tools/ci-wrap ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/pr/${info['pull_id']}/${agentName} rpm",
 				       stagestate, {}, { postFnError(stagestate) })
 		    } else {
 			cmdWithTimeout(collect_timeout,
-				       "$HOME/ci-tools/ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/${agentName}/origin/${info['target']}/${localinfo['extraver']}/${env.BUILD_NUMBER}/ rpm",
+				       "$HOME/ci-tools/ci-wrap ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/${agentName}/origin/${info['target']}/${localinfo['extraver']}/${env.BUILD_NUMBER}/ rpm",
 				       stagestate, {}, { postFnError(stagestate) })
 		    }
 		}

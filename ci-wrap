@@ -1,0 +1,94 @@
+#!/bin/sh -e
+
+# make sure to clean up after ourselves
+
+wipetmp=no
+
+trap cleanup EXIT
+
+cleanup() {
+	if [ "$wipetmp" = "yes" ]; then
+		echo "Cleaning workspace!"
+		rm -rf $WORKSPACE
+	fi
+}
+
+# prep args et all
+citcmd="$1"
+
+# first pass sanity checks
+if [ -z "$citcmd" ]; then
+	echo "no ci-tools command specified!"
+	exit 1
+fi
+
+# if citcmd is empty, this will fail, so check
+# first, then shift for arguments
+shift
+
+# let´s try to avoid a recursive bomb of doom
+# NOTE: avoiding path mangling et all, just
+# basic protection vs copy/paste errors
+# while we do conversions, since this wrapper
+# will vanish eventually
+if [ "$citcmd" = "ci-wrap" ]; then
+	echo "not allowed to self-call"
+	exit 1
+fi
+
+if [ ! -d "$HOME/ci-tools" ]; then
+	echo "ci-tools not installed on this node!"
+	exit 1
+fi
+
+# if CITHOME is already set, we are being called
+# recursively and we don´t need to redo the
+# git dance + env setting
+
+if [ -n "$CITHOME" ]; then
+	echo "CITHOME already present in the environment. Nothing to do."
+else
+	if [ -n "$CITBRANCH" ]; then
+		echo "CITBRANCH manual override detected: $CITBRANCH"
+	else
+		# Use GlobalLib version to determine ci-tools version
+		CITBRANCH="$(env | sort -u | grep "library.GlobalLib.version" | sed -e 's#.*=##g')"
+		if [ -n "$CITBRANCH" ]; then
+			echo "library.GlobalLib.version detected: $CITBRANCH"
+		else
+			echo "No library.GlobalLib.version detected! defaulting to main"
+			CITBRANCH=main
+		fi
+	fi
+	if [ "$CITBRANCH" = "main" ]; then
+		CITHOME="$HOME/ci-tools"
+	else
+		if [ -z "$WORKSPACE" ]; then
+			WORKSPACE="$(mktemp -d -t ci-tools-XXXXX)"
+			wipetmp=yes
+		fi
+		echo "Using $WORKSPACE"
+		echo "Copy HOME/ci-tools to WORKSPACE"
+		cp -rp $HOME/ci-tools $WORKSPACE/
+		echo "Updating WORKSPACE copy of ci-tools"
+		cd $WORKSPACE/ci-tools
+		git pull
+		echo "Switching WORKSPACE/ci-tools to $CITBRANCH"
+		git checkout $CITBRANCH
+		CITHOME="$WORKSPACE/ci-tools"
+	fi
+fi
+
+export CITHOME
+
+echo "CITHOME:    $CITHOME"
+echo "CITCMD:     $citcmd"
+echo "CITCMDARGS: $@"
+
+# second pass sanity checks (executed on checkout branch)
+if [ ! -f "$CITHOME/$citcmd" ]; then
+	echo "command $CITHOME/$citcmd does not exist!"
+	exit 1
+fi
+
+$CITHOME/$citcmd "$@"

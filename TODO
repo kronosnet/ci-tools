@@ -8,13 +8,10 @@ TODO List for ci.kronosnet.org
   [ ] fix rpm publishing conditional on rpm build job
   [ ] add i386 cross compiler for gfs2-utils
   [ ] Sunset Debian 10 (EOL Jun 30 2024)
-  [ ] Upgrade jumphost
 
 - CI Roadmap
   [ ] abidiff check
   [ ] crazy net tests
-
-- Add build variable tree per project
 
 - Fix plot to support knet_bench output
 

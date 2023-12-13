@@ -8,11 +8,8 @@ def call(Map localinfo, String agentName)
 {
     def props = [:]
 
-    props['MAKEOPTS'] = ''
     props['PARALLELTEST'] = 'no'
-    props['MAKEINSTALLOPTS'] = ''
-    props['EXTRACHECKS'] = ''
-    props['DISTROCONFOPTS'] = ''
+    props['RPMDEPS'] = ''
 
     if (localinfo['target'] == 'main') {
 	if (agentName.startsWith('rhel') ||

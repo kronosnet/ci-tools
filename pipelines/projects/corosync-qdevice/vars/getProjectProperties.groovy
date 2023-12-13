@@ -8,10 +8,6 @@ def call(Map localinfo, String agentName)
 {
     def props = [:]
 
-    props['MAKEOPTS'] = ''
-    props['MAKEINSTALLOPTS'] = ''
-    props['CHECKS'] = ''
-    props['EXTRACHECKS'] = ''
     props['RPMDEPS'] = 'corosynclib-devel'
     props['DISTROCONFOPTS'] = '--enable-systemd'
 

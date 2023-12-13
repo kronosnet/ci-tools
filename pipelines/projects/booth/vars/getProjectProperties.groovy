@@ -8,12 +8,10 @@ def call(Map localinfo, String agentName)
 {
     def props = [:]
 
-    props['MAKEOPTS'] = ''
-    props['MAKEINSTALLOPTS'] = ''
-    props['EXTRACHECKS'] = ''
     props['DISTROCONFOPTS'] = '--without-glue'
     props['TESTUSELDPATH'] = 'yes'
     props['BOOTH_RUNTESTS_ROOT_USER'] = '1'
+    props['RPMDEPS'] = ''
 
     if (agentName.startsWith('rhel') ||
 	agentName.startsWith('fedora') ||

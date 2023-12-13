@@ -8,10 +8,5 @@ def call(Map localinfo, String agentName)
 {
     def props = [:]
 
-    props['MAKEOPTS'] = ''
-    props['MAKEINSTALLOPTS'] = ''
-    props['EXTRACHECKS'] = ''
-    props['RPMDEPS'] = ''
-
     return props
 }

@@ -8,12 +8,6 @@ def call(Map localinfo, String agentName)
 {
     def props = [:]
 
-    props['DISTROCONFOPTS'] = ''
-
-    props['MAKEOPTS'] = ''
-    props['MAKEINSTALLOPTS'] = ''
-    props['EXTRACHECKS'] = ''
-
     if (agentName.startsWith('rhel') ||
 	agentName.startsWith('fedora') ||
 	agentName.startsWith('centos')) {

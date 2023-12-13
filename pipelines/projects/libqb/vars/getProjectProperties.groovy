@@ -8,10 +8,6 @@ def call(Map localinfo, String agentName)
 {
     def props = [:]
 
-    props['MAKEOPTS'] = ''
-    props['MAKEINSTALLOPTS'] = ''
-    props['EXTRACHECKS'] = ''
-
     // Give the tests time to run, even if the CI is busy
     props['CK_TIMEOUT_MULTIPLIER'] = 10
 

@@ -8,17 +8,12 @@ def call(Map localinfo, String agentName)
 {
     def props = [:]
 
-    props['MAKEOPTS'] = ''
-    props['MAKEINSTALLOPTS'] = ''
-    props['EXTRACHECKS'] = ''
     props['SPECVERSION'] = env.BUILD_NUMBER
     props['RPMDEPS'] = 'corosynclib-devel'
     props['MAKERPMOPTS'] = 'RPMDEST=subtree'
 
-    props['DISTROCONFOPTS'] = ''
-
     if (agentName.startsWith("rhel8")) {
-	props['DISTROCONFOPTS'] += ' --with-cibsecrets=yes --with-concurrent-fencing-default=true --enable-legacy-links=yes'
+	props['DISTROCONFOPTS'] = ' --with-cibsecrets=yes --with-concurrent-fencing-default=true --enable-legacy-links=yes'
     }
 
     return props

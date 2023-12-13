@@ -8,18 +8,13 @@ def call(Map localinfo, String agentName)
 {
     def props = [:]
 
-    props['MAKEOPTS'] = ''
     props['PARALLELTEST'] = 'no'
-    props['MAKEINSTALLOPTS'] = ''
-    props['EXTRACHECKS'] = ''
     props['RPMDEPS'] = 'libqb-devel doxygen2man'
-
-    props['DISTROCONFOPTS'] = ''
 
     if (agentName.startsWith("debian-unstable-cross")) {
 	if (localinfo['ARCH'] == 'ARM') {
 	    props['compiler'] = 'arm-linux-gnueabihf-gcc'
-	    props['DISTROCONFOPTS'] += ' --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf'
+	    props['DISTROCONFOPTS'] = ' --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf'
 	}
     }
 

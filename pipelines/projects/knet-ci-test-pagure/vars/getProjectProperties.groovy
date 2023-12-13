@@ -8,15 +8,8 @@ def call(Map localinfo, String agentName)
 {
     def props = [:]
 
-    props['DISTROCONFOPTS'] = ''
-
-    props['MAKEOPTS'] = ''
-    props['MAKEINSTALLOPTS'] = ''
-    props['CHECKS'] = ''
-    props['EXTRACHECKS'] = ''
-
     if (agentName.startsWith('debian')) {
-	props['DISTROCONFOPTS'] += '--with-debug'
+	props['DISTROCONFOPTS'] = '--with-debug'
     }
 
     if (agentName.startsWith('rhel') ||
@@ -24,7 +17,6 @@ def call(Map localinfo, String agentName)
 	agentName.startsWith('opensuse') ||
 	agentName.startsWith('centos')) {
 	//props['RPMDEPS'] = 'libknet1-devel'
-	props['RPMDEPS'] = ''
     }
 
     return props

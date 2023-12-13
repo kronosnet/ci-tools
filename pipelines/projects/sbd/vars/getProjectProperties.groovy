@@ -8,10 +8,6 @@ def call(Map localinfo, String agentName)
 {
     def props = [:]
 
-    props['MAKEOPTS'] = ''
-    props['MAKEINSTALLOPTS'] = ''
-    props['EXTRACHECKS'] = ''
-    props['DISTROCONFOPTS'] = ''
     props['TESTUSELDPATH'] = 'yes'
     props['BOOTH_RUNTESTS_ROOT_USER'] = '1'
 

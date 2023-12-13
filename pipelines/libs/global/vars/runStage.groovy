@@ -95,6 +95,12 @@ def doRunStage(String agentName, Map info, Map localinfo)
 				   { processRunException(info, localinfo, stagestate) })
 		}
 	    }
+	    // This marks it red in the graph view
+	    if (stagestate['failed']) {
+		catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+		    shNoTrace("exit 1", "Marking this stage as a failure")
+		}
+	    }
 	}
 
 	println('STAGESTATE: '+stagestate)

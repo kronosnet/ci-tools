@@ -99,7 +99,7 @@ pipeline {
 		    if (fntesting.result != 'SUCCESS') {
 			info['email_extra_text'] = "\nfunctional testing failed:\n"
 			catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-			    sh 'exit 1'
+			    shNoTrace("exit 1", "Marking this stage as a failure")
 			}
 		    } else {
 			info['email_extra_text'] = "\nfunctional testing results:\n"

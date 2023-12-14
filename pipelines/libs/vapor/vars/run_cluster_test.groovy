@@ -81,7 +81,7 @@ def call(Map info)
     if (runstate['RET'] != 'OK') {
 	recover_cluster(info)
 	catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-	    sh 'exit 1'
+	    shNoTrace("exit 1", "Marking this stage as a failure")
 	}
     }
 }

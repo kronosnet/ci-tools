@@ -198,6 +198,11 @@ case "${NODE_NAME}" in
 		 tox crudini libxml2 \
 		 nmap-ncat \
 		 python3-vapor
+ if ! which ibmcloud > /dev/null 2>&1; then
+  curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+ else
+  ibmcloud update -f
+ fi
  ;;
 esac
 

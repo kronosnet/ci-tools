@@ -17,7 +17,7 @@ esac
 yum clean all
 
 case "${NODE_NAME}" in
- centos-*|anvil-ci-centos-*|anvil-ci-bm*)
+ centos-*|anvil-ci-centos-*|anvil-ci-almalinux-*|anvil-ci-bm*)
   yum -y install epel-release
  ;;
  rhel8*|anvil-ci-rhel-8)

@@ -12,6 +12,7 @@ def call(String node)
 {
     def node_env=[:]
     def props = [:]
+    node_env['anvil-ci-almalinux-9'] = []
     node_env['anvil-ci-bm-phy01'] = []
     node_env['anvil-ci-bm-phy02'] = []
     node_env['anvil-ci-bm-phy03'] = []

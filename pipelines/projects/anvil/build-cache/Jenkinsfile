@@ -6,7 +6,7 @@
 def project = 'anvil'
 def info = ['project': project]
 
-String[] distros = ['rhel-8', 'centos-8-stream', 'rhel-9', 'centos-9-stream']
+String[] distros = ['rhel-8', 'centos-8-stream', 'rhel-9']
 
 pipeline {
     agent { label 'built-in' }

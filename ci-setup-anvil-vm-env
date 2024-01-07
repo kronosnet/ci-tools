@@ -34,13 +34,6 @@ cleanup_simengine() {
 }
 
 case "$BUILD" in
- centos-9-stream)
-  SRCURL=https://cloud.centos.org/
-  SRCPATH=/centos/9-stream/x86_64/images/
-  NAME="Centos 9 Stream"
-  IMG="GenericCloud"
-  KVMVAR="centos-stream9"
- ;;
  centos-8-stream)
   SRCURL=https://cloud.centos.org/
   SRCPATH=/centos/8-stream/x86_64/images/

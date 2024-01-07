@@ -70,21 +70,6 @@ pipeline {
 					 string(name: 'ANVILSRC', value: 'ci')]
 		    }
 		}
-		stage('centos-9-stream ci') {
-		    steps {
-			script {
-			    try {
-				build job: "${project}/${project}-build-kmods",
-				    parameters: [string(name: 'BASEDISTRO', value: 'centos-9-stream'),
-						 string(name: 'REPOSRC', value: 'ci'),
-						 string(name: 'ANVILSRC', value: 'ci')]
-			    }
-			    catch(err) {
-				info['nonvoting_fail']++
-			    }
-			}
-		    }
-		}
 		stage('rhel-9 ci') {
 		    steps {
 			build job: "${project}/${project}-build-kmods",

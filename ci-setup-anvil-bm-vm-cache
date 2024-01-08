@@ -127,10 +127,10 @@ scp "$DEPLOYDIR/images/CentOS-Stream-9-latest-x86_64-dvd1.iso" $CACHENODES:/mnt/
 # centos-9-stream cloud init workaround
 ssh $CACHENODES "grep -q yum_add_repo /etc/cloud/cloud.cfg || sed -i 's/cloud_config_modules:/&\n - yum_add_repo/' /etc/cloud/cloud.cfg"
 # allow cloud-init to regenerate anvil/alteeve repos
-ssh $CACHENODES rm -f /etc/yum.repos.d/alteeve* /etc/yum.repos.d/anvil*
+ssh $CACHENODES "rm -f /etc/yum.repos.d/alteeve* /etc/yum.repos.d/anvil*"
 # extra cleaning after cloud-init
 ssh $CACHENODES cloud-init clean
-ssh $CACHENODES rm -f /etc/sysconfig/network-scripts/ifcfg-eth*
+ssh $CACHENODES "rm -f /etc/sysconfig/network-scripts/ifcfg-eth*"
 ssh $CACHENODES subscription-manager unregister || true
 
 state=running

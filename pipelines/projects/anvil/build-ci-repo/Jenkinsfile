@@ -4,7 +4,7 @@
 
 // Globals
 def project = 'anvil'
-def info = ['project': project, 'branch': "anvil CI tools repo"]
+def info = ['project': project, 'branch': "CI tools repo"]
 
 pipeline {
     agent { label 'anvil-ci-almalinux-9' }

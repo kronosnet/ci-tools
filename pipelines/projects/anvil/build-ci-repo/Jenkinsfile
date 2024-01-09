@@ -1,0 +1,49 @@
+// Jenkinsfile for building anvil ci tools repo
+
+@Library(['GlobalLib', 'ProjectLib']) _
+
+// Globals
+def project = 'anvil'
+def info = ['project': project, 'branch': "anvil CI tools repo"]
+
+pipeline {
+    agent { label 'anvil-ci-almalinux-9' }
+
+    options {
+	skipDefaultCheckout(true)
+    }
+
+    stages {
+	// First check we are allowed to run, then set some params for that run
+	stage('Prep build env') {
+	    steps {
+		cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+		getBuildInfoCommon(info)
+	    }
+	}
+	stage('Build anvil ci tools repo') {
+	    steps {
+		sh """
+		    $HOME/ci-tools/ci-wrap ci-setup-anvil-bm-repo
+		"""
+	    }
+	}
+    }
+    post {
+	success {
+	    script {
+		info['state'] = 'success'
+		projectFinishUp(info)
+	    }
+	}
+	failure {
+	    script {
+		info['state'] = 'failure'
+		projectFinishUp(info)
+	    }
+	}
+	always {
+	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+	}
+    }
+}

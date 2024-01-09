@@ -1,0 +1,192 @@
+#!/bin/sh
+
+# ENTRY POINT (done)
+
+set -e
+
+# some of those are dups but required to deploy a BM from scratch
+yum install -y mock rpm-build createrepo_c yum-utils
+
+BUILDDIR=$HOME
+cd $BUILDDIR
+
+# prep srpms dir for mock builds
+SRPMSDIR=$BUILDDIR/srpms
+rm -rf $SRPMSDIR
+mkdir -p $SRPMSDIR
+
+# use published repo as cache
+REPODIR=$HOME/ci-repo
+rm -rf $REPODIR
+rsync -av --progress anvil-ci-proxy:/var/www/html/ci-repo .
+mkdir -p $REPODIR/.cache
+
+# download packages from Fedora
+cd $BUILDDIR
+srpms="pysnmp python-smi cloud-utils"
+echo "Downloading Fedora 39 srpms: $srpms"
+
+localmirror=$BUILDDIR/fedmirror
+rm -rf $localmirror
+mkdir -p $localmirror
+cd $localmirror
+
+cat > $localmirror/fedora-src.repo << EOF
+[anvil-fedora-source]
+name=Fedora \$releasever - Source
+metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-source-\$releasever&arch=\$basearch
+enabled=1
+repo_gpgcheck=0
+type=rpm
+gpgcheck=0
+skip_if_unavailable=False
+
+[anvil-updates-source]
+name=Fedora \$releasever - Updates Source
+metalink=https://mirrors.fedoraproject.org/metalink?repo=updates-released-source-f\$releasever&arch=\$basearch
+enabled=1
+repo_gpgcheck=0
+type=rpm
+gpgcheck=0
+skip_if_unavailable=False
+EOF
+
+dnf download --source \
+	--config $localmirror/fedora-src.repo \
+	--releasever 39 \
+	--disablerepo="*" \
+	--enablerepo=anvil-fedora-source --enablerepo=anvil-updates-source \
+	--installroot=$localmirror/installroot \
+	$srpms
+
+cd $BUILDDIR
+mv $localmirror/*.src.rpm $SRPMSDIR/
+rm -rf $localmirror
+
+# create fake jre package for neo4j 3.x
+rm -rf $HOME/rpmbuild
+mkdir -p $HOME/rpmbuild/SPECS
+cat <<EOF > $HOME/rpmbuild/SPECS/jre.spec
+#----------- spec file starts ---------------
+Name:                   jre
+Version:                1.8.0
+Release:                1
+Vendor:                 dummy
+Group:                  dummy
+Summary:                Provides %{name}
+License:                %{vendor}
+# in Provides: you add whatever you want to fool the system
+Buildroot:              %{_tmppath}/%{name}-%{version}-root
+Provides:               %{name} = %{version}
+Requires:               java-1.8.0-openjdk
+%description
+%{summary}
+%files
+EOF
+rpmbuild -bs $HOME/rpmbuild/SPECS/jre.spec
+mv $HOME/rpmbuild/SRPMS/*.rpm $SRPMSDIR/
+rm -rf $HOME/rpmbuild
+
+# rebuild qem-kvm with IPMI support
+cd $BUILDDIR
+mkdir -p qemu-tmp
+cd qemu-tmp
+yum download --source qemu-kvm
+cd $BUILDDIR
+rm -rf $HOME/rpmbuild
+rpm -i $BUILDDIR/qemu-tmp/*.rpm
+rm -rf $BUILDDIR/qemu-tmp
+
+currentepoch=$(grep ^Epoch: $HOME/rpmbuild/SPECS/qemu-kvm.spec | awk '{print $NF}')
+anvilepoch=$((currentepoch + 1))
+sed -i -e 's#Epoch:.*#Epoch: '$anvilepoch'#g' $HOME/rpmbuild/SPECS/qemu-kvm.spec
+sed -i '/%build/a \
+echo "CONFIG_IPMI=y" >> configs/devices/rh-virtio.mak \
+echo "CONFIG_IPMI_LOCAL=y" >> configs/devices/rh-virtio.mak \
+echo "CONFIG_IPMI_EXTERN=y" >> configs/devices/rh-virtio.mak \
+echo "CONFIG_PCI_IPMI_KCS=y" >> configs/devices/rh-virtio.mak \
+echo "CONFIG_PCI_IPMI_BT=y" >> configs/devices/rh-virtio.mak \
+echo "CONFIG_ISA_IPMI_KCS=y" >> configs/devices/rh-virtio.mak \
+echo "CONFIG_ISA_IPMI_BT=y" >> configs/devices/rh-virtio.mak \
+echo "CONFIG_IPMI_SSIF=y" >> configs/devices/rh-virtio.mak ' $HOME/rpmbuild/SPECS/qemu-kvm.spec
+
+rpmbuild -bs $HOME/rpmbuild/SPECS/qemu-kvm.spec
+mv $HOME/rpmbuild/SRPMS/*.rpm $SRPMSDIR/
+rm -rf $HOME/rpmbuild
+
+# build Simengine
+cd $HOME
+rm -rf $HOME/simengine
+rm -rf $HOME/rpmbuild
+rpmdev-setuptree 2>/dev/null
+
+git clone https://github.com/Alteeve/simengine.git
+cd simengine/rpm/specfiles
+cp -v patches/*.patch $(rpm --eval "%{_topdir}/SOURCES/")
+cp -v *.spec $(rpm --eval "%{_topdir}/SPECS/")
+cd $(rpm --eval "%{_topdir}/SPECS/")
+# don´t build -demo and -dashboard
+rm -f simengine-demo.spec simengine-dashboard.spec
+for i in *.spec; do
+	spectool -g -R $i
+	rpmbuild -bs $i
+done
+cd $HOME
+mv $HOME/rpmbuild/SRPMS/*.rpm $SRPMSDIR/
+cp $HOME/simengine/storage-emulation-tests/guest/storcli64 $REPODIR/storcli64
+sed -i -e 's#env python#python3#g' $REPODIR/storcli64
+rm -rf $HOME/simengine
+rm -rf $HOME/rpmbuild
+
+# do sequencial mock build
+cd $SRPMSDIR
+
+RESULTDIR=$BUILDDIR/local-build
+for i in *.src.rpm; do
+	if [ ! -f $REPODIR/.cache/${i} ]; then
+		echo "Building missing ${i}"
+		rm -rf $RESULTDIR
+		mkdir -p $RESULTDIR
+		mock -r /etc/mock/almalinux-9-x86_64.cfg --nocheck --rebuild $i --resultdir=$RESULTDIR
+		rm -rf $RESULTDIR/*debuginfo*
+		mv $RESULTDIR/*.rpm $REPODIR/
+		cp $i $REPODIR/.cache/
+		rm -rf $RESULTDIR
+	else
+		echo "Skipping already built ${i}"
+	fi
+done
+
+rm -rf $RESULTDIR
+
+# neo4j binary download
+localmirror=$BUILDDIR/neo4j
+rm -rf $localmirror
+mkdir -p $localmirror
+cd $localmirror
+
+cat > $localmirror/neo4j.repo << EOF
+[neo4j]
+name=Neo4j Yum Repo
+baseurl=http://yum.neo4j.com/stable
+enabled=1
+gpgcheck=0
+EOF
+
+neover=$(dnf search --config neo4j.repo --disablerepo="*" --enablerepo=neo4j --installroot=$(pwd)/installroot --showduplicates neo4j 2>/dev/null | grep neo4j-3 | sort -V | tail -n 1 | awk '{print $1}')
+cshellver=$(dnf search --config neo4j.repo --disablerepo="*" --enablerepo=neo4j --installroot=$(pwd)/installroot --showduplicates cypher-shell 2>/dev/null | grep cypher-shell-1 | sort -V | tail -n 1 | awk '{print $1}')
+dnf download --config neo4j.repo --disablerepo="*" --enablerepo=neo4j --installroot=$(pwd)/installroot $neover $cshellver
+
+cd $BUILDDIR
+mv $localmirror/*.rpm $REPODIR/
+rm -rf $localmirror
+
+cd $REPODIR
+createrepo -x .cache .
+
+cd $BUILDDIR
+rsync -av --progress --delete-after $REPODIR/ anvil-ci-proxy:/var/www/html/ci-repo/
+rm -rf $REPODIR
+rm -rf $SRPMSDIR
+
+exit 0

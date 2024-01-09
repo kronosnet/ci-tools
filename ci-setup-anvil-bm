@@ -2,150 +2,33 @@
 
 set -e
 
-# some of those are dups but required to deploy a BM from scratch
-yum install -y fence-agents-common resource-agents mock wget rpm-build createrepo_c yum-utils
-
-BUILDDIR=/root
-localmirror=$BUILDDIR/fedmirror
-
-cd $BUILDDIR
-
-# build update qemu-kvm from fedora (required for Simengine bmc support)
-rm -rf $BUILDDIR/qemu-local-build
-mkdir -p $BUILDDIR/qemu-local-build
-
-cd qemu-local-build
-createrepo .
-yum-config-manager --add-repo file:///$(pwd)
-echo "module_hotfixes=1" >> /etc/yum.repos.d/root_qemu-local-build.repo
-echo "gpgcheck=0" >> /etc/yum.repos.d/root_qemu-local-build.repo
-cd ..
-
-srpms="edk2 ipxe qemu cloud-utils"
-echo "Downloading $srpms"
-rm -rf $localmirror
-mkdir -p $localmirror
-cd $localmirror
-
-cat > $localmirror/fedora-src.repo << EOF
-[anvil-fedora-source]
-name=Fedora \$releasever - Source
-metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-source-\$releasever&arch=\$basearch
+cat <<EOF>  /etc/yum.repos.d/anvil-ci-tools.repo
+[anvil-ci-tools]
+name=Anvil CI Tools
+baseurl=http://anvil-ci-repo.ci.alteeve.com/ci-repo/
 enabled=1
-repo_gpgcheck=0
-type=rpm
+module_hotfixes=1
 gpgcheck=0
-skip_if_unavailable=False
-
-[anvil-updates-source]
-name=Fedora \$releasever - Updates Source
-metalink=https://mirrors.fedoraproject.org/metalink?repo=updates-released-source-f\$releasever&arch=\$basearch
-enabled=1
-repo_gpgcheck=0
-type=rpm
-gpgcheck=0
-skip_if_unavailable=False
-
-[anvil-fedora-modular-source]
-name=Fedora Modular \$releasever - Source
-metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-modular-source-\$releasever&arch=\$basearch
-enabled=1
-repo_gpgcheck=0
-type=rpm
-gpgcheck=0
-skip_if_unavailable=False
-
-[anvil-updates-modular-source]
-name=Fedora Modular \$releasever - Updates Source
-metalink=https://mirrors.fedoraproject.org/metalink?repo=updates-released-modular-source-f\$releasever&arch=\$basearch
-enabled=1
-repo_gpgcheck=0
-type=rpm
-gpgcheck=0
-skip_if_unavailable=False
 EOF
-
-dnf download --source \
-	--config $localmirror/fedora-src.repo \
-	--releasever 35 \
-	--disablerepo="*" \
-	--enablerepo=anvil-fedora-source --enablerepo=anvil-updates-source \
-	--enablerepo=anvil-fedora-modular-source --enablerepo=anvil-updates-modular-source \
-	--installroot=$localmirror/installroot \
-	$srpms
-
-cd $BUILDDIR
-
-mock -r /etc/mock/centos-stream-8-x86_64.cfg --nocheck --rebuild $localmirror/edk2*.src.rpm --resultdir=$BUILDDIR/qemu-local-build
-rm -rf $BUILDDIR/qemu-local-build/*debuginfo*
-mock -r /etc/mock/centos-stream-8-x86_64.cfg --install $BUILDDIR/qemu-local-build/edk2-tools*x86*
-mock -r /etc/mock/centos-stream-8-x86_64.cfg --nocheck --rebuild $localmirror/ipxe*.src.rpm --resultdir=$BUILDDIR/qemu-local-build --no-clean
-rm -rf $BUILDDIR/qemu-local-build/*debuginfo*
-mock -r /etc/mock/centos-stream-8-x86_64.cfg --nocheck --rebuild $localmirror/cloud-utils*.src.rpm --resultdir=$BUILDDIR/qemu-local-build
-rm -rf $BUILDDIR/qemu-local-build/*debuginfo*
-
-rm -rf $HOME/rpmbuild
-rpm -i $localmirror/qemu*
-sed -i -e 's#%dnl.*##g' -e 's#Epoch:.*#Epoch: 20#g' -e 's#,jack,#,#g' -e 's#capstone=system#capstone=auto#g' $HOME/rpmbuild/SPECS/qemu.spec
-rpmbuild -bs $HOME/rpmbuild/SPECS/qemu.spec
-mock -r /etc/mock/centos-stream-8-x86_64.cfg --nocheck --rebuild $HOME/rpmbuild/SRPMS/qemu*.src.rpm --resultdir=$BUILDDIR/qemu-local-build
-rm -rf $BUILDDIR/qemu-local-build/*debuginfo*
-
-rm -rf $HOME/rpmbuild
-rm -rf $localmirror
-
-cd qemu-local-build
-rm -rf *debuginfo*
-createrepo .
-cd ..
 
 yum clean all
-yum install -y qemu-img qemu-kvm libvirt virt-install lftp httpd fence-virtd-libvirt fence-virtd-tcp postgresql ansible cloud-utils cloud-utils-growpart
+yum install -y qemu-img qemu-kvm libvirt virt-install lftp fence-virtd-libvirt fence-virtd-tcp postgresql ansible cloud-utils cloud-utils-growpart neo4j simengine-core
 
-## setup simengine
-# setup Neo4j repo
-rpm --import https://debian.neo4j.com/neotechnology.gpg.key
-cat <<EOF>  /etc/yum.repos.d/neo4j.repo
-[neo4j]
-name=Neo4j Yum Repo
-baseurl=http://yum.neo4j.com/stable
-enabled=1
-gpgcheck=1
-EOF
-neover=$(yum search --showduplicates neo4j |grep neo4j-3 | sed -e 's#neo4j-##g' -e 's#-1.noarch.*##g' | sort -V | tail -n 1)
-yum install -y neo4j-$neover
 systemctl stop neo4j
 systemctl enable neo4j
 systemctl start neo4j
-
-dnf -y module remove --all nodejs:10
-dnf -y module reset nodejs
-dnf -y module switch-to nodejs:12
-
-# build Simengine - model is created after libvirt is configured
-rm -rf simengine rpmbuild
-git clone https://github.com/Seneca-CDOT/simengine.git
-cd simengine/rpm/specfiles
-./buildall
-cd -
-rm -f $BUILDDIR/storcli64
-cp simengine/storage-emulation-tests/guest/storcli64 $BUILDDIR/
-sed -i -e 's#env python#python3#g' $BUILDDIR/storcli64
-yum install -y rpmbuild/RPMS/*/*.rpm
-rm -rf simengine rpmbuild
-
 systemctl enable simengine-core
 
 ## VIRT SETUP
 
 # enable nested virt
-if [ ! -f /etc/modprobe.d/netsted_virt.conf ] && [ "$(cat /sys/module/kvm_intel/parameters/nested)" = 0 ]; then
+if [ ! -f /etc/modprobe.d/netsted_virt.conf ]; then
  systemctl stop libvirtd
  rmmod kvm-intel
  echo 'options kvm-intel nested=y' > /etc/modprobe.d/netsted_virt.conf
  modprobe kvm-intel
 fi
-if [ "$(cat /sys/module/kvm_intel/parameters/nested)" = 0 ]; then
+if [ "$(cat /sys/module/kvm_intel/parameters/nested)" != Y ]; then
  echo "WARNING!!! FAILED TO ENABLE NESTED VIRTUALIZATION!"
 fi
 
@@ -153,8 +36,8 @@ fi
 systemctl start libvirtd
 systemctl enable libvirtd
 if [ -n "$(virsh net-list --all --name | grep default)" ]; then
- virsh net-destroy default
- virsh net-undefine default
+ virsh net-destroy default || true
+ virsh net-undefine default || true
 fi
 
 tmpfile=$(mktemp)
@@ -206,27 +89,15 @@ EOF
 done
 rm -f $tmpfile
 
-for i in public libvirt; do
- for x in http https; do
-  firewall-cmd --zone=$i --add-service=$x
-  firewall-cmd --zone=$i --permanent --add-service=$x
- done
-done
+# fence_virtd
 firewall-cmd --zone=libvirt --add-port=1229/tcp
 firewall-cmd --zone=libvirt --permanent --add-port=1229/tcp
-# required by simengine dashboard websocket
-firewall-cmd --zone=public --add-port=8000/tcp
-firewall-cmd --zone=public --permanent --add-port=8000/tcp
 # required by simengine to access UPS/PDU and BMCs
 firewall-cmd --zone=libvirt --add-port=161/udp
 firewall-cmd --zone=libvirt --permanent --add-port=161/udp
 firewall-cmd --zone=libvirt --add-port=623/udp
 firewall-cmd --zone=libvirt --permanent --add-port=623/udp
 firewall-cmd --reload
-
-systemctl enable httpd
-systemctl stop httpd
-systemctl start httpd
 
 if ! grep -q ifn1 /etc/fence_virt.conf; then
  sed -i \

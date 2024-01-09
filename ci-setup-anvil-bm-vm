@@ -120,7 +120,7 @@ for i in $ALLNODES; do
      "-device isa-ipmi-bt,bmc=bmc0"
      "-serial mon:tcp::$monportbase,server,telnet,nowait"
      "-chardev socket,id=simengine-storage-tcp,host=localhost,port=$storageportbase,reconnect=2"
-     "-device virtio-serial"
+     "-device virtio-serial,bus=pcie.0,addr=10"
      "-device virtserialport,chardev=simengine-storage-tcp,name=systems.cdot.simengine.storage.net"
    )
    vmportbase=$((vmportbase + 1))

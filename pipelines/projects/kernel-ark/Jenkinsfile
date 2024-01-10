@@ -101,7 +101,7 @@ pipeline {
 			    fi
 			    if ! git remote get-url kernel-ark-config; then
 				echo "Adding remote kernel-ark.git for config"
-				git remote add kernel-ark-config https://gitlab.com/netcoder/kernel-ark.git
+				git remote add kernel-ark-config https://gitlab.com/linux-gfs2/kernel-ark.git
 			    fi
 			'''
 		    }
@@ -135,15 +135,10 @@ pipeline {
 		    steps {
 			sh '''
 			    cd $BUILDDIR/kernel-ark
-			    echo == checkout kernel-ark-config/ci_test_config ==
-			    git checkout kernel-ark-config/ci_test_config
-			    echo == checkout -b ci-test branch ==
-			    git checkout -b ci-test
-			    echo == rebase to origin/os-build ==
-			    git rebase origin/os-build
-			    echo == merge gfs2/for-next and dlm/next ==
-			    git merge --log=999 --no-ff -m 'Automatic merge of gfs2/for-next and dlm/next' gfs2/for-next dlm/next
-			    git show --no-patch
+			    for branch in gfs2/for-next dlm/next kernel-ark-config/ci_test_config; do
+				git merge --log=999 --no-ff -m "Automatic merge of $branch" $branch
+				git show --no-patch
+			    done
 			    echo == apply workaround for debuginfo package build ==
 			    git revert --no-edit 7dc0430e5e007a7441a8f5109276df99b4cf48a7
 			'''

@@ -44,12 +44,12 @@ case "$BUILD" in
  rhel-8)
   NAME="RHEL 8"
   KVMVAR="rhel8-unknown"
-  CRED="/root/rh-cred"
+  CRED="$HOME/rh-cred"
  ;;
  rhel-9)
   NAME="RHEL 9"
   KVMVAR="rhel9-unknown"
-  CRED="/root/rh-cred"
+  CRED="$HOME/rh-cred"
  ;;
  none)
  ;;
@@ -114,6 +114,8 @@ if [ ! -d "$TEMPLATESDIR" ]; then
  exit 1
 fi
 
+rsync -a anvil-ci-proxy:ci-creds/* $HOME/
+
 if [ -n "$CRED" ]; then
  if [ ! -f "$CRED" ]; then
   echo "Unable to access $CRED file"
@@ -127,12 +129,12 @@ if [ -n "$CRED" ]; then
  fi
 fi
 
-if [ ! -f "/root/alteeve-key" ]; then
+if [ ! -f "$HOME/alteeve-key" ]; then
  echo "Unable to access alteeve-key"
  exit 1
 fi
 
-export AKEY=$(cat /root/alteeve-key)
+export AKEY=$(cat $HOME/alteeve-key)
 
 mkdir -p "$DEPLOYDIR/images"
 mkdir -p "$DEPLOYDIR/cache"

@@ -17,6 +17,8 @@ done
 
 cd "$DEPLOYDIR/images"
 
+rsync -av --progress anvil-ci-proxy:ci-cache/* .
+
 if [ -n "$SRCURL" ]; then
  echo "Downloading latest $NAME cloud image"
 

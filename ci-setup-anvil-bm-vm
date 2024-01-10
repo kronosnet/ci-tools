@@ -212,7 +212,7 @@ cd anvil-test-suite
 set +e
 ./run-tests $runtestopts -t $TESTS -b $BREAKPOINT
 ret=$?
-cd /root/ci-tools
+cd $HOME/ci-tools
 
 # collecting all build info
 rm -rf $DEPLOYDIR/logs/

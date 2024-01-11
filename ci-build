@@ -4,8 +4,6 @@
 
 set -e
 
-. $CITHOME/ci-set-env
-
 $CITHOME/ci-build-info
 $CITHOME/ci-setup-rpm
 $CITHOME/ci-setup-src

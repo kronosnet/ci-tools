@@ -68,7 +68,7 @@ def call(Map localinfo, String stageName, String agentName)
     // Latest Pacemaker release branch
     cienv['PACEMAKER_RELEASE'] = '2.1'
 
-    if (!localinfo.containsKey('pacemakerver')) {
+    if (!cienv.containsKey('pacemakerver')) {
 	if (localinfo['target'] == 'main') {
 	    cienv['pacemakerver'] = 'main'
 	} else {

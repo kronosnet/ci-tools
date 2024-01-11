@@ -4,9 +4,6 @@ set -e
 
 rm -rf $HOME/rpmbuild
 rm -rf /usr/src/packages/BUILDROOT/*
-if [ "$CITBRANCH" = "main" ]; then
-	rm -rf /srv/workspace/*
-fi
 # the test job can only clean up to a certain point
 # this is more likely to avoid qb leaks
 rm -rf /dev/shm/qb*

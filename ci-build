@@ -6,10 +6,6 @@ set -e
 
 . $CITHOME/ci-set-env
 
-echo ===== current build env =====
-env | sort
-echo =============================
-
 $CITHOME/ci-build-info
 $CITHOME/ci-setup-rpm
 $CITHOME/ci-setup-src

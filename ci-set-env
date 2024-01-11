@@ -1,20 +1,3 @@
-echo ===== PATH INFO =====
-
-echo PATH: $PATH
-
-echo ===== TOOLCHAIN INFO =====
-
-echo MAKE: $MAKE
-$MAKE --version || true
-
-echo CC: $CC
-$CC --version || true
-
-echo ld: ld
-ld --version || true
-
-echo parallelmake: $PARALLELMAKE
-
 # rpm builds should use standard packages
 if [ "$build" != "rpm" ]; then
  echo ===== PKG_CONFIG_PATH info =====

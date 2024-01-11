@@ -33,12 +33,6 @@ case "${NODE_NAME}" in
 esac
 
 case "${NODE_NAME}" in
- anvil-ci-bm*)
-  EXTRAOPTS="--exclude=neo4j --exclude=cypher-shell"
- ;;
-esac
-
-case "${NODE_NAME}" in
  *centos-9*)
   POSTOPTS="--nobest"
  ;;
@@ -54,14 +48,14 @@ done
 EXTRADEPS=""
 
 case "${NODE_NAME}" in
- centos*|rhel*|anvil-ci-centos*|anvil-ci-rhel*)
+ centos*|rhel*|anvil-ci-centos*|anvil-ci-rhel*|anvil-ci-alma*)
   EXTRADEPS="platform-python-devel $EXTRADEPS"
  ;;
 esac
 
 case "${NODE_NAME}" in
  anvil-ci*)
-  EXTRADEPS="fence-agents-common resource-agents mock wget rpm-build createrepo_c yum-utils $EXTRADEPS"
+  EXTRADEPS="fence-agents-common resource-agents $EXTRADEPS"
  ;;
 esac
 

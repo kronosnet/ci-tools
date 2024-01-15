@@ -13,6 +13,7 @@ def call(Map info)
     info['email_extra_text'] = ''
     info['covtgtdir'] = ''
     info['cov_results_urls'] = []
+    info['rpmlist'] = []
     info['new_cov_results_urls'] = []
     info['EXTRAVER_LIST'] = []
 

@@ -4,8 +4,8 @@ def call(Map info)
     cleanWs(disableDeferredWipeout: true, deleteDirs: true)
     node('built-in') {
 	script {
-	    // Show 'pipeline console' rather than full text
-	    info['emailOptions'] = ['showConsole']
+	    // Show main build URL rather than full text
+	    info['emailOptions'] = ['showTop']
 	    projectFinishUp(info)
 	}
     }

@@ -138,6 +138,9 @@ def call(Map info)
     if (info.containsKey('emailOptions') && info['emailOptions'].contains('showConsole')) {
 	console_log = "${env.BUILD_URL}pipeline-console"
     }
+    if (info.containsKey('emailOptions') && info['emailOptions'].contains('showTop')) {
+	console_log = "${env.BUILD_URL}"
+    }
 
     // Show why we were initiated
     def runreason = ''
@@ -145,11 +148,19 @@ def call(Map info)
 	runreason = "Run reason: ${currentBuild.getBuildCauses().shortDescription[0]}"
     }
 
+    def rpm_urls = ''
+    if (info.containsKey('rpmlist') && info['rpmlist'].size() > 0) {
+	rpm_urls = "RPMS:\n"
+	for (r in info['rpmlist']) {
+	    rpm_urls += "${r}\n"
+	}
+	rpm_urls += "\n"
+    }
     def email_trailer = """${runreason}
 Total runtime: ${jobDuration}
 ${split_logs}
 Full log:   ${console_log}
-${cov_urls}
+${rpm_urls}${cov_urls}
 ${info['email_extra_text']}
 ${info['exception_text']}
 """
@@ -169,8 +180,8 @@ ${info['exception_text']}
 	// If this pipeline has 'stages' rather than voting/non-voting, then show 'stages' failed
 	// FN testing jobs 'complete' but can have stage failures.
 	if (stages_fail > 0) {
-		subject = "${email_title} completed with state: ${state}"
-		body = """
+	    subject = "${email_title} completed with ${stages_fail} test failures"
+	    body = """
 ${stages_fail}/${stages_run} Stage${stage_s} failed${stages_colon} ${info['stages_fail_nodes']}
 
 ${email_trailer}

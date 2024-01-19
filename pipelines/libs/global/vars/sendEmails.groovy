@@ -181,8 +181,7 @@ ${info['exception_text']}
 	// FN testing jobs 'complete' but can have stage failures.
 	if (stages_fail > 0) {
 	    subject = "${email_title} completed with ${stages_fail} test failures"
-	    body = """
-${stages_fail}/${stages_run} Stage${stage_s} failed${stages_colon} ${info['stages_fail_nodes']}
+	    body = """${stages_fail}/${stages_run} Stage${stage_s} failed${stages_colon} ${info['stages_fail_nodes']}
 
 ${email_trailer}
 """
@@ -207,8 +206,7 @@ ${email_trailer}
     } else {
 	// Normal failure with voting/nonvoting jobs
 	subject = "${email_title} completed with state: ${state}"
-	body = """
-${nonvoting_fail}/${nonvoting_run} Non-voting fail${nonvoting_s}${nonvoting_colon} ${info['nonvoting_fail_nodes']}
+	body = """${nonvoting_fail}/${nonvoting_run} Non-voting fail${nonvoting_s}${nonvoting_colon} ${info['nonvoting_fail_nodes']}
 ${voting_fail}/${voting_run} Voting fail${voting_s}${voting_colon} ${info['voting_fail_nodes']}
 
 ${email_trailer}

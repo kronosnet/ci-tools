@@ -135,7 +135,7 @@ for i in $ALLNODES; do
   --disk path="$DEPLOYDIR/snapshots/$i-vol.qcow2",device=disk \
   --disk path="$DEPLOYDIR/snapshots/$i-vol2.qcow2",device=disk \
   --graphics vnc \
-  --os-type Linux --os-variant $KVMVAR \
+  --os-variant $KVMVAR \
   $netconf \
   --qemu-commandline="${qemu_command_list[*]}" \
   --noautoconsole

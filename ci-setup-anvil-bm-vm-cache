@@ -82,7 +82,7 @@ virt-install --name an-cache \
  --disk path="$DEPLOYDIR/cache/an-cache-seed.img",device=cdrom \
  --disk path="$DEPLOYDIR/cache/${BUILD}-latest.qcow2",device=disk \
  --graphics vnc \
- --os-type Linux --os-variant $KVMVAR \
+ --os-variant $KVMVAR \
  --network network:ifn1_bridge1,model=e1000 \
  --noautoconsole
 

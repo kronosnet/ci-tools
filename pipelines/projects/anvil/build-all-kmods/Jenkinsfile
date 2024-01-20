@@ -70,6 +70,14 @@ pipeline {
 					 string(name: 'ANVILSRC', value: 'ci')]
 		    }
 		}
+		stage('almalinux-9 ci') {
+		    steps {
+			build job: "${project}/${project}-build-kmods",
+			    parameters: [string(name: 'BASEDISTRO', value: 'almalinux-9'),
+					 string(name: 'REPOSRC', value: 'ci'),
+					 string(name: 'ANVILSRC', value: 'ci')]
+		    }
+		}
 		stage('rhel-9 ci') {
 		    steps {
 			build job: "${project}/${project}-build-kmods",

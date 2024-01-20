@@ -37,14 +37,21 @@ case "$BUILD" in
  centos-8-stream)
   SRCURL=https://cloud.centos.org/
   SRCPATH=/centos/8-stream/x86_64/images/
-  NAME="Centos 8 Stream"
   IMG="GenericCloud"
+  NAME="Centos 8 Stream"
   KVMVAR="centos-stream8"
  ;;
  rhel-8)
   NAME="RHEL 8"
   KVMVAR="rhel8-unknown"
   CRED="$HOME/rh-cred"
+ ;;
+ almalinux-9)
+  SRCURL=https://repo.almalinux.org/
+  SRCPATH=/almalinux/9/cloud/x86_64/images/
+  IMG="GenericCloud"
+  NAME="AlmaLinux 9"
+  KVMVAR="rhel9-unknown"
  ;;
  rhel-9)
   NAME="RHEL 9"

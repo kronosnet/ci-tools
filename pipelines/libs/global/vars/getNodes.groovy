@@ -3,7 +3,7 @@
 def call()
 {
     def labels = [:]
-    labels['anvil-ci-almalinux-9'] = ['almalinux-9','stable','x86-64','rpm','yum']
+    labels['anvil-ci-almalinux-9'] = ['almalinux-9','stable','x86-64','rpm','yum','anvil', 'anvilvoting', 'anvilbuildrpms']
     labels['anvil-ci-bm-phy01'] = ['almalinux-9','stable','x86-64','rpm','yum','anvil-bm']
     labels['anvil-ci-bm-phy02'] = ['almalinux-9','stable','x86-64','rpm','yum','anvil-bm']
     labels['anvil-ci-bm-phy03'] = ['almalinux-9','stable','x86-64','rpm','yum','anvil-bm']

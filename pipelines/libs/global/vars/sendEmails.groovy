@@ -148,19 +148,19 @@ def call(Map info)
 	runreason = "Run reason: ${currentBuild.getBuildCauses().shortDescription[0]}"
     }
 
-    def rpm_urls = ''
-    if (info.containsKey('rpmlist') && info['rpmlist'].size() > 0) {
-	rpm_urls = "RPMS:\n"
-	for (r in info['rpmlist']) {
-	    rpm_urls += "${r}\n"
+    def repo_urls = ''
+    if (info.containsKey('repo_urls') && info['repo_urls'].size() > 0) {
+	repo_urls = "Repositories:\n"
+	for (r in info['repo_urls']) {
+	    repo_urls += "${r}\n"
 	}
-	rpm_urls += "\n"
+	repo_urls += "\n"
     }
     def email_trailer = """${runreason}
 Total runtime: ${jobDuration}
 ${split_logs}
 Full log:   ${console_log}
-${rpm_urls}${cov_urls}
+${repo_urls}${cov_urls}
 ${info['email_extra_text']}
 ${info['exception_text']}
 """

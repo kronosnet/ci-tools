@@ -197,7 +197,7 @@ pipeline {
 			    timeout (time: 15, unit: 'MINUTES') {
 				sh "$HOME/ci-tools/ci-wrap ci-get-artifacts ${BUILDNODE} ${BUILDDIR}/rpms builds/kernel/rhel9-kbuild/origin/${BRANCH_NAME}/${BUILD_NUMBER}/ rpm"
 				script {
-				    info['rpmlist'] = ["https://ci.kronosnet.org/" + "builds/kernel/rhel9-kbuild/origin/${BRANCH_NAME}/${BUILD_NUMBER}"]
+				    info['repo_urls'] = ["https://ci.kronosnet.org/" + "builds/kernel/rhel9-kbuild/origin/${BRANCH_NAME}/${BUILD_NUMBER}/"]
 				}
 			    }
 			}

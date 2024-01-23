@@ -149,12 +149,12 @@ def doRunStage(String agentName, Map info, Map localinfo)
 			cmdWithTimeout(collect_timeout,
 				       "$HOME/ci-tools/ci-wrap ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/pr/${info['pull_id']}/${agentName} rpm",
 				       stagestate, {}, { postFnError(stagestate) })
-			info['rpmlist'] += "https://ci.kronosnet.org/" + "builds/${info['project']}/pr/${info['pull_id']}/${agentName}"
+			info['repo_url'] = "https://ci.kronosnet.org/" + "builds/${info['project']}/pr/${info['pull_id']}/${agentName}"
 		    } else {
 			cmdWithTimeout(collect_timeout,
 				       "$HOME/ci-tools/ci-wrap ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/${agentName}/origin/${info['target']}/${localinfo['extraver']}/${env.BUILD_NUMBER}/ rpm",
 				       stagestate, {}, { postFnError(stagestate) })
-			info['rpmlist'] += "https://ci.kronosnet.org/" + "builds/${info['project']}/${agentName}/origin/${info['target']}/${localinfo['extraver']}/${env.BUILD_NUMBER}/"
+			info['repo_url'] = "https://ci.kronosnet.org/" + "builds/${info['project']}/${agentName}/origin/${info['target']}/${localinfo['extraver']}/${env.BUILD_NUMBER}/"
 
 		    }
 		}

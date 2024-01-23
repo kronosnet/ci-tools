@@ -136,8 +136,10 @@ pipeline {
 			sh '''
 			    cd $BUILDDIR/kernel-ark
 			    for branch in gfs2/for-next dlm/next kernel-ark-config/ci_test_config; do
-				git merge --log=999 --no-ff -m "Automatic merge of $branch" $branch
-				git show --no-patch
+				if ! git merge-base --is-ancestor "$branch" HEAD; then
+				    git merge --log=999 --no-ff -m "Automatic merge of $branch" $branch
+				    git show --no-patch
+				fi
 			    done
 			    echo == apply workaround for debuginfo package build ==
 			    git revert --no-edit 7dc0430e5e007a7441a8f5109276df99b4cf48a7

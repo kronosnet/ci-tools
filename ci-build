@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# ENTRY POINT (done)
+
+set -e
+
+$CITHOME/ci-build-info
+$CITHOME/ci-setup-rpm
+$CITHOME/ci-setup-src
+$CITHOME/ci-build-src
+$CITHOME/ci-tests-src
+$CITHOME/ci-install-src

@@ -30,12 +30,12 @@ def ifExists(Map i, normal, String key)
 
 // Make a suffix character depending on the value of
 // a variable (eg for adding 's' to ones)
-def makeSuffix(String suffix, Closure c)
+def makeSuffix(String true_suffix, String false_suffix, Closure c)
 {
     if (c()) {
-	return suffix
+	return true_suffix
     } else {
-	return ''
+	return false_suffix
     }
 }
 
@@ -52,6 +52,15 @@ def call(Map info)
     def project = ifExists(info, env.BUILD_TAG, 'project')
     def branch = ifExists(info, env.BRANCH_NAME, 'branch')
     def email_addrs = ''
+
+    // Make it look nice
+    def voting_colon = makeSuffix(':', '', {voting_fail > 0} )
+    def nonvoting_colon = makeSuffix(':', '', {nonvoting_fail > 0} )
+    def stages_colon = makeSuffix(':', '', {stages_fail > 0} )
+    def voting_s = makeSuffix('s', '', {voting_fail != 1} )
+    def nonvoting_s = makeSuffix('s', '', {nonvoting_fail != 1} )
+    def stage_s = makeSuffix('s', '', {stages_fail != 1} )
+    def repo_end = makeSuffix('y', 'ies', {info['repo_urls'].size() == 1})
 
     if (state == 'build-ignored') {
 	println('build has been ignored, not sending emails')
@@ -150,11 +159,10 @@ def call(Map info)
 
     def repo_urls = ''
     if (info.containsKey('repo_urls') && info['repo_urls'].size() > 0) {
-	repo_urls = "Repositories:\n"
+	repo_urls = "\nRepositor${repo_end}:\n"
 	for (r in info['repo_urls']) {
 	    repo_urls += "${r}\n"
 	}
-	repo_urls += "\n"
     }
     def email_trailer = """${runreason}
 Total runtime: ${jobDuration}
@@ -164,14 +172,6 @@ ${repo_urls}${cov_urls}
 ${info['email_extra_text']}
 ${info['exception_text']}
 """
-
-    // Make it look nice
-    def voting_colon = makeSuffix(':', {voting_fail > 0} )
-    def nonvoting_colon = makeSuffix(':', {nonvoting_fail > 0} )
-    def stages_colon = makeSuffix(':', {stages_fail > 0} )
-    def voting_s = makeSuffix('s', {voting_fail != 1} )
-    def nonvoting_s = makeSuffix('s', {nonvoting_fail != 1} )
-    def stage_s = makeSuffix('s', {stages_fail != 1} )
 
     // Now build the email bits
     def subject = ''

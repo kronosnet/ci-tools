@@ -72,7 +72,7 @@ def doRunStage(String agentName, Map info, Map localinfo)
 	stagestate['logfile'] = "${localinfo['stageName']}-${agentName}.log"
 
 	// Keep the logs in separate files per node/function so they are easy to find
-	stage("Build") {
+	stage("Build for ${stageTitle} on ${agentName}") {
 	    tee (stagestate['logfile']) {
 		stagestate['runstage'] = 'checkout'
 		def rc = runWithTimeout(collect_timeout, { getSCM(info) }, stagestate,
@@ -156,7 +156,7 @@ def doRunStage(String agentName, Map info, Map localinfo)
 	// 'fullrebuild' is param set by a parent job to prevent uploads from weekly jobs
 	//    and will normally be 0
 	if (localinfo['stageName'].endsWith('covscan') && localinfo['fullrebuild'] == 0) {
-	    stage("Get covscan artifacts") {
+	    stage("Get covscan artifacts for ${stageTitle} on ${agentName}") {
 		// Yes - you can nest 'node's
 		node('built-in') {
 		    if (localinfo['isPullRequest']) {
@@ -180,7 +180,7 @@ def doRunStage(String agentName, Map info, Map localinfo)
 
 	// Gather any RPM builds
 	if (localinfo['stageName'].endsWith('buildrpms') && localinfo['publishrpm'] == 1 && localinfo['fullrebuild'] == 0) {
-	    stage("Get RPM artifacts") {
+	    stage("Get RPM artifacts for ${stageTitle} on ${agentName}") {
 		node('built-in') {
 		    if (localinfo['isPullRequest']) {
 			// TODO: fix pr path and adjust for 'extraver'
@@ -200,7 +200,7 @@ def doRunStage(String agentName, Map info, Map localinfo)
 	}
 
 	// Tidy the workspace (remember we are still on the build node here)
-	stage("Cleanup") {
+	stage("Cleanup for ${stageTitle} on ${agentName}") {
 	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 	}
     }

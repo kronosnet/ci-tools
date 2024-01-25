@@ -48,13 +48,16 @@ def doRunStage(String agentName, Map info, Map localinfo)
 
     // Things to run - in order
     // groovy uses a LinkedHashMap so they retain insertion order
-    def stages = [:]
-    stages['ci-build-info'] = 'Build info'
-    stages['ci-setup-rpm'] = 'Setup RPMs'
-    stages['ci-setup-src'] = 'Setup source'
-    stages['ci-build-src'] = 'Build source'
-    stages['ci-tests-src'] = 'Run tests'
-    stages['ci-install-src'] = 'Install'
+    def stages=[:]
+    stages['Get OS Info'] = 'ci_os_info'
+
+    // Old shell based (will disappear)
+    def shell_stages = [:]
+    shell_stages['Setup RPMs'] = 'ci-setup-rpm'
+    shell_stages['Setupo source'] = 'ci-setup-src'
+    shell_stages['Build source'] = 'ci-build-src'
+    shell_stages['Run tests'] = 'ci-tests-src'
+    shell_stages['Install'] = 'ci-install-src'
 
     // Run stuff! On this node!
     node("${agentName}") {
@@ -97,15 +100,15 @@ def doRunStage(String agentName, Map info, Map localinfo)
 		def build_timeout = getBuildTimeout()
 		def running = true
 
-		// Run all the shell stages
+		// Run all converted groovy stages first
 		for (stageinfo in stages) {
 		    if (running) { // break does weird shit
-			stagestate['runstage'] = stageinfo.value
+			stagestate['runstage'] = stageinfo.key
 
 			// Run everything in the checked-out directory
 			dir (localinfo['project']) {
-			    cmdWithTimeout(build_timeout,
-					   "${exports} $HOME/ci-tools/ci-wrap ${stageinfo.key}",
+			    runWithTimeout(build_timeout,
+					   { "${stageinfo.value}"(localinfo) },
 					   stagestate,
 					   { processRunSuccess(info, localinfo, stagestate) },
 					   { processRunException(info, localinfo, stagestate) })
@@ -116,7 +119,32 @@ def doRunStage(String agentName, Map info, Map localinfo)
 			    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
 				shNoTrace("exit 1", "Marking this stage as a failure")
 			    }
-			    // Don't run any more shell stages if one fails
+			    // Don't run any more stages if one fails
+			    running = false
+			}
+		    }
+		}
+
+		// Run all the shell stages (will disappear)
+		for (stageinfo in shell_stages) {
+		    if (running) { // break does weird shit
+			stagestate['runstage'] = stageinfo.key
+
+			// Run everything in the checked-out directory
+			dir (localinfo['project']) {
+			    cmdWithTimeout(build_timeout,
+					   "${exports} $HOME/ci-tools/ci-wrap ${stageinfo.value}",
+					   stagestate,
+					   { processRunSuccess(info, localinfo, stagestate) },
+					   { processRunException(info, localinfo, stagestate) })
+			}
+
+			// This marks it red in the graph view if it failed
+			if (stagestate['failed']) {
+			    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+				shNoTrace("exit 1", "Marking this stage as a failure")
+			    }
+			    // Don't run any more stages if one fails
 			    running = false
 			}
 		    }

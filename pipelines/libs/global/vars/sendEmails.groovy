@@ -179,12 +179,15 @@ ${info['exception_text']}
     if (state == 'success' || state == 'completed') {
 	// If this pipeline has 'stages' rather than voting/non-voting, then show 'stages' failed
 	// FN testing jobs 'complete' but can have stage failures.
-	if (stages_fail > 0) {
+	if (state == 'completed') {
 	    subject = "${email_title} completed with ${stages_fail} test failures"
-	    body = """${stages_fail}/${stages_run} Stage${stage_s} failed${stages_colon} ${info['stages_fail_nodes']}
+	    body = "${email_trailer}"
+	    if (stages_fail > 0) {
+		body = """${stages_fail}/${stages_run} Stage${stage_s} failed${stages_colon} ${info['stages_fail_nodes']}
 
 ${email_trailer}
 """
+	    }
 	} else if (nonvoting_fail > 0) {
 	    // Only non-voting fails
 	    subject = "${email_title} succeeded but with ${nonvoting_fail}/${nonvoting_run} non-voting fail${nonvoting_s}"

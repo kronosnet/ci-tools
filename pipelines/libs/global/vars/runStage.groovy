@@ -91,7 +91,7 @@ def doRunStage(String agentName, Map info, Map localinfo)
 		localinfo += getProjectProperties(localinfo, agentName)
 
 		// Converting ci-tools/ci-set-env to groovy maps
-		localinfo += ci_set_env(localinfo, localinfo['stageName'], agentName)
+		localinfo += ci_set_env(localinfo, agentName)
 
 		def exports = getShellVariables(localinfo)
 		def build_timeout = getBuildTimeout()

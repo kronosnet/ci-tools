@@ -79,7 +79,7 @@ def get_build_info(Map ldmap, Map localinfo)
     return parse_ld_add(build_info)
 }
 
-def call(Map localinfo, String stageName, String agentName)
+def call(Map localinfo, String agentName)
 {
     def cienv = [:]
 
@@ -89,13 +89,13 @@ def call(Map localinfo, String stageName, String agentName)
     }
 
     cienv['build'] = ''
-    if (stageName.endsWith('covscan')) {
+    if (localinfo['stageName'].endsWith('covscan')) {
 	cienv['build'] = 'coverity'
     }
-    if (stageName.endsWith('buildrpms')) {
+    if (localinfo['stageName'].endsWith('buildrpms')) {
 	cienv['build'] = 'rpm'
     }
-    if (stageName.endsWith('crosscompile')) {
+    if (localinfo['stageName'].endsWith('crosscompile')) {
 	cienv['build'] = 'crosscompile'
     }
 

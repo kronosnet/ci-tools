@@ -2,8 +2,6 @@
 
 set -e
 
-. $CITHOME/ci-rpm-common
-
 cleanlibqb() {
  # libqb test suite will leave craft behind in case of failures
  # make sure to clean before and after the test run
@@ -22,12 +20,7 @@ pacemakerextratests() {
  if [ "${project}" != pacemaker ]; then
   return
  fi
-
- if [ "$build" = "rpm" ]; then
-  $MAKE -C rpm rpmlint
- else
-  ./cts/cts-regression -V
- fi
+ ./cts/cts-regression -V
 }
 
 case $build in

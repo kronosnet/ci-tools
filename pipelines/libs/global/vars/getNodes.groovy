@@ -49,7 +49,7 @@ def call()
     labels['rhel9-ci-test-x86-64'] = ['rhel93z','stable','x86-64','rpm','yum','ci-test','test-voting']
     labels['rhel9-coverity-x86-64'] = ['rhel93z','stable','x86-64','voting','rhel9-coverity','yum','covscan','test-covscan']
     labels['rhel9-kbuild-x86-64'] = ['rhel9','stable','x86-64','yum','libvirtd']
-    labels['rhel9-vapor-x86-64'] = ['rhel9','stable','x86-64','yum','osp','az','gcp','ocpv']
+    labels['rhel9-vapor-x86-64'] = ['rhel9','stable','x86-64','yum','osp','az','gcp','ocpv','ibmvpc']
     labels['ubuntu-20-04-lts-x86-64'] = ['ubuntu20.04','stable','x86-64','voting','apt','nonvoting-clang']
     labels['ubuntu-22-04-lts-x86-64'] = ['ubuntu22.04','stable','x86-64','voting','apt','nonvoting-clang']
     labels['ubuntu-23-10-x86-64'] = ['ubuntu23.10','stable','x86-64','voting','apt','nonvoting-clang']

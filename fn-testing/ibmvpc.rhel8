@@ -1,0 +1,7 @@
+createopts="--image vapor-rhel8-9-x86-64"
+deployopts=""
+testopts=""
+
+ibmvpc_setup() {
+	return 0
+}

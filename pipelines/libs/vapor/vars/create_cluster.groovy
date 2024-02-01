@@ -18,7 +18,7 @@ def call(Map info)
 	    if [ -n "${info['block']}" ]; then
 		blockopts="-s ${info['block']}"
 	    fi
-	    $HOME/ci-tools/ci-wrap fn-testing/validate-cloud -c create -d -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -r ${info['rhelver']} -n ${info['tonodes']} \$iscsiopts \$blockopts
+	    $HOME/ci-tools/ci-wrap fn-testing/validate-cloud -c create ${info['vapordebug']} -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -r ${info['rhelver']} -n ${info['tonodes']} \$iscsiopts \$blockopts
 	"""
     }
 }

@@ -56,6 +56,11 @@ def call(String project, String projectid)
     info['stages_fail_nodes'] = ''
     info['stages_fail'] = 0
     info['stages_run'] = 0
+    // logging
+    info['vapordebug'] = ''
+    if (env.vapordebug == 'yes') {
+	info['vapordebug'] = '-d'
+    }
 
     // Fill in the common parts
     getBuildInfoCommon(info)

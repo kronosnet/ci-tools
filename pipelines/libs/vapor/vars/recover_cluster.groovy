@@ -2,7 +2,7 @@ def run_cleanup(Map info)
 {
     println('Attempt to run cleanup')
     sh """
-	$HOME/ci-tools/ci-wrap fn-testing/validate-cloud -c test -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -r ${info['rhelver']} -n ${info['nodes']} -e -t cleanup >/dev/null 2>&1
+	$HOME/ci-tools/ci-wrap fn-testing/validate-cloud -c test ${info['vapordebug']} -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -r ${info['rhelver']} -n ${info['nodes']} -e -t cleanup >/dev/null 2>&1
     """
 }
 
@@ -10,7 +10,7 @@ def run_reboot(Map info)
 {
     println('Attempt to reboot test env')
     sh """
-	$HOME/ci-tools/ci-wrap fn-testing/validate-cloud -c reboot -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -r ${info['rhelver']} -n ${info['nodes']}
+	$HOME/ci-tools/ci-wrap fn-testing/validate-cloud -c reboot ${info['vapordebug']} -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -r ${info['rhelver']} -n ${info['nodes']}
     """
 }
 

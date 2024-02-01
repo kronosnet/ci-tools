@@ -19,7 +19,7 @@ def call(Map info)
 		brewbuildopts="-x ${info['brewbuild']}"
 	    fi
 	    echo "Deploy test cluster"
-	    $HOME/ci-tools/ci-wrap fn-testing/validate-cloud -c deploy -d -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -r ${info['rhelver']} -z ${info['zstream']} -u ${info['upstream']} \$customrepoopts \$iscsiopts \$brewbuildopts
+	    $HOME/ci-tools/ci-wrap fn-testing/validate-cloud -c deploy ${info['vapordebug']} -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -r ${info['rhelver']} -z ${info['zstream']} -u ${info['upstream']} \$customrepoopts \$iscsiopts \$brewbuildopts
 	"""
     }
 }

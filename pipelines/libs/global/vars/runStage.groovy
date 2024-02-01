@@ -93,8 +93,16 @@ def doRunStage(String agentName, Map info, Map localinfo)
 		// Get any job-specific configuration variables
 		localinfo += getProjectProperties(localinfo, agentName)
 
-		// Converting ci-tools/ci-set-env to groovy maps
-		localinfo += ci_set_env(localinfo, agentName)
+		// Set the build environment
+		rc = runWithTimeout(collect_timeout,
+				    { localinfo += ci_set_env(localinfo, agentName) }, stagestate,
+				    { processRunSuccess(info, localinfo, stagestate) },
+				    { processRunException(info, localinfo, stagestate) })
+		if (rc != 'OK') {
+		    println("RC runWithTimeout (get_ci_info) returned "+rc)
+		    // Big stick here, we can't continue
+		    shNoTrace("exit 1", "Marking this stage as a failure")
+		}
 
 		def exports = getShellVariables(localinfo)
 		def build_timeout = getBuildTimeout()

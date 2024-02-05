@@ -35,7 +35,6 @@ def call(String node)
     node_env['debian-testing-x86-64'] = []
     node_env['debian-unstable-cross-x86-64'] = ['EXTRA_ARCH=armhf']
     node_env['debian-unstable-x86-64'] = []
-    node_env['fedora37-x86-64'] = ['RUSTBINDINGS=yes']
     node_env['fedora38-x86-64'] = ['RUSTBINDINGS=yes']
     node_env['fedora39-power9-ppc64le'] = ['RUSTBINDINGS=yes']
     node_env['fedora39-s390x'] = ['RUSTBINDINGS=yes']

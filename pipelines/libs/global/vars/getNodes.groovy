@@ -26,7 +26,6 @@ def call()
     labels['debian-testing-x86-64'] = ['debian','testing','x86-64','voting','apt','nonvoting-clang']
     labels['debian-unstable-cross-x86-64'] = ['debian','unstable','cross','x86-64','apt']
     labels['debian-unstable-x86-64'] = ['debian','unstable','x86-64','nonvoting','apt','nonvoting-clang']
-    labels['fedora37-x86-64'] = ['fedora37','stable','x86-64','voting','rpm','yum','nonvoting-clang','buildrpms']
     labels['fedora38-x86-64'] = ['fedora38','stable','x86-64','voting','rpm','yum','nonvoting-clang','buildrpms']
     labels['fedora39-power9-ppc64le'] = ['fedora39','stable','power9-ppc64le','voting','rpm','yum','nonvoting-clang','buildrpms']
     labels['fedora39-s390x'] = ['fedora39','stable','x390x','voting','rpm','yum','nonvoting-clang','buildrpms']

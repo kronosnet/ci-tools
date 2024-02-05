@@ -54,7 +54,7 @@ def doRunStage(String agentName, Map info, Map localinfo)
     // Old shell based (will disappear)
     def shell_stages = [:]
     shell_stages['Setup RPMs'] = 'ci-setup-rpm'
-    shell_stages['Setupo source'] = 'ci-setup-src'
+    shell_stages['Setup source'] = 'ci-setup-src'
     shell_stages['Build source'] = 'ci-build-src'
     shell_stages['Run tests'] = 'ci-tests-src'
     shell_stages['Install'] = 'ci-install-src'

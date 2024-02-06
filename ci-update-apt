@@ -13,7 +13,6 @@ apt-get -y dist-upgrade
 apt-get -y autoremove
 apt-get -y install valgrind || true
 rubydeps="ruby-dev ruby ruby-bundler ruby-backports ruby-childprocess ruby-daemons ruby-ethon ruby-ffi ruby-eventmachine ruby-json ruby-open4 ruby-sinatra ruby-ruby2-keywords ruby-mustermann ruby-rack ruby-rack-protection ruby-rack-test ruby-sinatra ruby-test-unit puma"
-apt-get -y install ruby-base64 || true
 apt-get -y install ruby-rack-session || true
 apt-get -y install ruby-rackup || true
 

@@ -182,20 +182,16 @@ def doRunStage(String agentName, Map info, Map localinfo)
 
 	println('STAGESTATE: '+stagestate)
 
-	// Don't run gather jobs if this bit failed
-	if (stagestate['failed']) {
-	    println('this job failed, collection not happening')
-	    return false
-	}
-
 	// Keep a list of EXTRAVERs, it's more efficient (and less racy)
 	// to de-duplicate these at the end, in postStage()
 	info['EXTRAVER_LIST'] += localinfo['extraver']
 
-	// Gather any covscan results
+	// Gather any covscan results - if there are any.
+	// Covscan can fail and we still get here, so we can publish the report.
 	// 'fullrebuild' is param set by a parent job to prevent uploads from weekly jobs
 	//    and will normally be 0
-	if (localinfo['stageName'].endsWith('covscan') && localinfo['fullrebuild'] == 0) {
+	if (localinfo['stageName'].endsWith('covscan') && fileExists("${info['project']}/cov.json") &&
+	    localinfo['fullrebuild'] == 0) {
 	    stage("Get covscan artifacts for ${stageTitle} on ${agentName}") {
 		// Yes - you can nest 'node's
 		node('built-in') {
@@ -217,6 +213,13 @@ def doRunStage(String agentName, Map info, Map localinfo)
 		}
 	    }
 	}
+
+	// Don't run RPM build job if the build failed
+	if (stagestate['failed']) {
+	    println('this job failed, collection not happening')
+	    return false
+	}
+
 
 	// Gather any RPM builds
 	if (localinfo['stageName'].endsWith('buildrpms') && localinfo['publishrpm'] == 1 && localinfo['fullrebuild'] == 0) {
@@ -259,6 +262,9 @@ def processRunException(Map info, Map localinfo, Map stagestate)
 {
     println("processRunException "+stagestate)
 
+    // Tell runStage
+    stagestate['failed'] = true
+
     // We can't have hyphens as keys in info[:] as they get exported
     // as environment variable names.
     def stage = localinfo['stageName'].replace('-','_')
@@ -267,7 +273,7 @@ def processRunException(Map info, Map localinfo, Map stagestate)
 
     // Stats, and save the job name for the email
     info["${localinfo['stageType']}_fail"]++
-    info["${localinfo['stageType']}_fail_nodes"] += env.NODE_NAME + "(${localinfo['stageName']} ${runtype})" + ' '
+    info["${localinfo['stageType']}_fail_nodes"] += env.NODE_NAME + "(${localinfo['stageName']}: ${runtype})" + ' '
     info["${stage}_failed"] = 1 // One of these failed. that's all we need to know
 
     // If the jobs was aborted, then GO AWAY!
@@ -275,17 +281,11 @@ def processRunException(Map info, Map localinfo, Map stagestate)
 	currentBuild.result = 'ABORTED'
     }
 
-    // Tell runStage()
-    stagestate['new_cov_errors'] = false
-    if (localinfo['stageName'].endsWith('covscan') && fileExists('cov.json')) {
-	stagestate['failed'] = false // Coverity failed but we want the results
-
-	// Are there any new covscan errors?
-	if (fileExists('cov.html/new/index.html')) {
-	    stagestate['new_cov_errors'] = true
-	}
+    // Are there any new covscan errors?
+    if (localinfo['stageName'].endsWith('covscan') && fileExists('cov.html/new/index.html')) {
+	stagestate['new_cov_errors'] = true
     } else {
-	stagestate['failed'] = true
+	stagestate['new_cov_errors'] = false
     }
 }
 

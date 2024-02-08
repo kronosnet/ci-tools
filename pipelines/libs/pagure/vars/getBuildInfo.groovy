@@ -8,9 +8,12 @@
 //
 // We also call getAuthCheck() to verify that the
 // user is allowed to run the pipeline at all
-def call(String project, String upstream_repo)
+def call(String project, String upstream_repo, Map info)
 {
     sh 'env|sort'
+
+    // Fill in the common parts
+    getBuildInfoCommon(info)
 
     // Jenkins pipeline is configured as "This project is parametrized" and the envvars
     // come from there.
@@ -29,8 +32,7 @@ def call(String project, String upstream_repo)
     // pagure specific
     isPullRequest = env.BRANCH_TO != 'None' ? true : false
 
-    // Create the main dictionary
-    def info = ['isPullRequest': isPullRequest]
+    info['isPullRequest'] = isPullRequest
     info['project'] = project
     info['upstream_repo'] = upstream_repo
 
@@ -94,9 +96,6 @@ def call(String project, String upstream_repo)
 	return info
     }
     info['covopts'] = getCovOpts(info['target'])
-
-    // Fill in the common parts
-    getBuildInfoCommon(info)
 
     // Copy the SCM into artifacts so that other nodes can use them.
     // catchError makes sure that info[:] is returned even if it fails,

@@ -4,6 +4,7 @@
 
 // Who we are
 def project = 'corosync'
+def info = [:]
 
 // Pipeline code starts here
 pipeline {
@@ -21,7 +22,7 @@ pipeline {
 	stage('Setup build env') {
 	    steps {
 		script {
-		    info = getBuildInfo(project)
+		    getBuildInfo(project, info)
 		}
 	    }
 	}

@@ -6,6 +6,7 @@
 def project = 'anvil'
 def anvilsrc = ''
 def anviltests = 'all'
+def info = [:]
 
 // Pipeline code starts here
 pipeline {
@@ -27,7 +28,7 @@ pipeline {
 	stage('Setup build env') {
 	    steps {
 		script {
-		    info = getBuildInfo(project)
+		    getBuildInfo(project, info)
 		    // set anvilsrc based on PR
 		    if (info['isPullRequest']) {
 			anvilsrc = "pr/${info['pull_id']}"

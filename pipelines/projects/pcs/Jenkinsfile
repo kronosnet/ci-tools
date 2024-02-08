@@ -4,7 +4,7 @@
 
 // Who we are
 def project = 'pcs'
-
+def info = [:]
 
 // Pipeline code starts here
 pipeline {
@@ -22,7 +22,7 @@ pipeline {
 	stage('Setup build env') {
 	    steps {
 		script {
-		    info = getBuildInfo(project)
+		    getBuildInfo(project, info)
 		}
 	    }
 	}

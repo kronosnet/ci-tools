@@ -5,6 +5,7 @@
 // Globals
 def project = 'dlm'
 def upstream_repo = "https://pagure.io/${project}.git"
+def info = [:]
 
 pipeline {
     agent { label 'built-in' }
@@ -24,7 +25,7 @@ pipeline {
 	    steps {
 		script {
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
-		    info = getBuildInfo(project, upstream_repo)
+		    getBuildInfo(project, upstream_repo, info)
 		}
 	    }
 	}

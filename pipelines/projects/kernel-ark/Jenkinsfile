@@ -5,6 +5,7 @@
 // Globals
 def project = 'kernel-ark'
 def projectid = 'kft'
+def info = [:]
 
 // kernel-ark overrides
 def provider = 'libvirtd'
@@ -45,7 +46,7 @@ pipeline {
 	stage('Validate build env') {
 	    steps {
 		script {
-		    info = getBuildInfo(project, projectid)
+		    getBuildInfo(project, projectid, info)
 		    info['provider'] = provider
 		    info['fromnodes'] = fromnodes
 		    info['tonodes'] = tonodes

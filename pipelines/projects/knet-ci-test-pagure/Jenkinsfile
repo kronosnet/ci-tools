@@ -14,6 +14,7 @@
 // need to keep it separated from ci-test as source code control is different
 // inside ci-tools. Some bits have been added to main to deal with this.
 def project = 'ci-test'
+def info = [:]
 
 // the pipeline configured in Jenkins has no knowledge of the repo since
 // it´s a generic pipeline and has no git scm, so we have to deal with it
@@ -42,7 +43,7 @@ pipeline {
 	    steps {
 		script {
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
-		    info = getBuildInfo(project, upstream_repo)
+		    getBuildInfo(project, upstream_repo, info)
 		}
 	    }
 	}

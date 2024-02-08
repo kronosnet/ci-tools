@@ -4,6 +4,7 @@
 
 def project = 'ha-functional-testing'
 def projectid = 'haft'
+def info = [:]
 
 pipeline {
     agent { label "${provider}" }
@@ -16,7 +17,7 @@ pipeline {
 	stage('Prepare test cluster') {
 	    steps {
 		script {
-		    info = getBuildInfo(project, projectid)
+		    getBuildInfo(project, projectid, info)
 		    // apply any overrides here
 		    // prep default test cluster
 		    prep_test_cluster(info)

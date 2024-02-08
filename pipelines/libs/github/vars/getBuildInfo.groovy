@@ -8,16 +8,18 @@
 //
 // We also call getAuthCheck() to verify that the
 // user is allowed to run the pipeline at all
-def call(String project)
+def call(String project, Map info)
 {
     sh 'env|sort'
+
+    getBuildInfoCommon(info)
 
     // Github specific
     isPullRequest = env.CHANGE_ID ? true : false
     is_draft = false
 
     // Create the main dictionary
-    def info = ['isPullRequest': isPullRequest]
+    info['isPullRequest'] =isPullRequest
     info['project'] = project
 
     // Validate the user. This should Abort if disallowed.
@@ -69,8 +71,6 @@ def call(String project)
     }
     info['is_draft'] = is_draft
     info['covopts'] = getCovOpts(info['target'])
-
-    getBuildInfoCommon(info)
 
     // Copy the SCM into artifacts so that other nodes can use them.
     // catchError makes sure that info[:] is returned even if it fails,

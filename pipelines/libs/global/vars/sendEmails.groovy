@@ -70,6 +70,9 @@ def call(Map info)
     if (currentBuild.result == 'FAILURE') {
 	state = 'failure'
     }
+    if (currentBuild.result == 'ABORTED') {
+	state = 'aborted'
+    }
 
     // A script exception was logged
     if (info['exception_text'] != '') {

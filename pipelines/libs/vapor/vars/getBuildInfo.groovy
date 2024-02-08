@@ -1,8 +1,10 @@
-def call(String project, String projectid)
+def call(String project, String projectid, Map info)
 {
     sh 'env|sort'
 
-    def info = [:]
+    // Fill in the common parts
+    getBuildInfoCommon(info)
+
     // config from job parameter
     info['project'] = project
     info['projectid'] = projectid // short for ha-functional-testing
@@ -61,9 +63,6 @@ def call(String project, String projectid)
     if (env.vapordebug == 'yes') {
 	info['vapordebug'] = '-d'
     }
-
-    // Fill in the common parts
-    getBuildInfoCommon(info)
 
     info['state'] = 'completed'
     println("info map: ${info}")

@@ -4,6 +4,7 @@
 
 def project = 'pcs-functional-testing'
 def projectid = 'pcs'
+def info = [:]
 
 // pcs overrides
 def provider = 'osp'
@@ -20,7 +21,7 @@ pipeline {
 	stage('Prepare test cluster') {
 	    steps {
 		script {
-		    info = getBuildInfo(project, projectid)
+		    getBuildInfo(project, projectid, info)
 		    // apply pcs overrides
 		    info['provider'] = provider
 		    info['testvariant' ] = testvariant

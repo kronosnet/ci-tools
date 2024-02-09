@@ -1,7 +1,7 @@
-createopts="--image 9.2.0"
+createopts="--image 9.3.0"
 deployopts=""
 testopts=""
 
 ocpv_setup() {
-	return 0
+	curl -k -s -o ~/.kube/config http://cnvqe-01.lab.eng.tlv2.redhat.com/clusterconfigs/bm-rhel-ha-tlv2/auth/kubeconfig
 }

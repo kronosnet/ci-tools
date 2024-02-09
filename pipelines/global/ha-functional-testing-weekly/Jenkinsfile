@@ -9,84 +9,25 @@ def info = ['project': project, 'branch': '']
 pipeline {
     agent { label 'built-in' }
 
+    parameters {
+	string(name: 'dryrun', defaultValue: '0', description: 'set to 1 to see what the pipeline would do, without actually doing anything')
+    }
+
     stages {
 	stage('Initialisation') {
 	    steps {
 		getBuildInfoCommon(info)
 	    }
 	}
-	stage('smoke tests') {
-	    parallel {
-		// no more than 3 OSP environments at a time
-		stage('rhel8 z-stream next-stable osp') {
-		    steps {
-			build job: 'global/ha-functional-testing',
-			    parameters: [[$class: 'LabelParameterValue', name: 'provider', label: 'osp'],
-					 string(name: 'dryrun', value : "${dryrun}"),
-					 string(name: 'rhelver', value: '8'),
-					 string(name: 'zstream', value : 'yes'),
-					 string(name: 'upstream', value : 'next-stable'),
-					 string(name: 'tests', value : 'smoke')]
-		    }
-		}
-		stage('rhel9 z-stream next-stable osp') {
-		    steps {
-			build job: 'global/ha-functional-testing',
-			    parameters: [[$class: 'LabelParameterValue', name: 'provider', label: 'osp'],
-					 string(name: 'dryrun', value : "${dryrun}"),
-					 string(name: 'rhelver', value: '9'),
-					 string(name: 'zstream', value : 'yes'),
-					 string(name: 'upstream', value : 'next-stable'),
-					 string(name: 'tests', value : 'smoke')]
-		    }
-		}
-		stage('rhel9 z-stream main osp') {
-		    steps {
-			build job: 'global/ha-functional-testing',
-			    parameters: [[$class: 'LabelParameterValue', name: 'provider', label: 'osp'],
-					 string(name: 'dryrun', value : "${dryrun}"),
-					 string(name: 'rhelver', value: '9'),
-					 string(name: 'zstream', value : 'yes'),
-					 string(name: 'upstream', value : 'main'),
-					 string(name: 'tests', value : 'smoke')]
-		    }
-		}
-	    }
-	}
-	stage('regression tests') {
-	    parallel {
-		// no more than 3 OSP environments at a time
-		stage('rhel8 next-stable osp') {
-		    steps {
-			build job: 'global/ha-functional-testing',
-			    parameters: [[$class: 'LabelParameterValue', name: 'provider', label: 'osp'],
-					 string(name: 'dryrun', value : "${dryrun}"),
-					 string(name: 'rhelver', value: '8'),
-					 string(name: 'zstream', value : 'no'),
-					 string(name: 'upstream', value : 'next-stable'),
-					 string(name: 'tests', value : 'all')]
-		    }
-		}
-		stage('rhel9 next-stable osp') {
-		    steps {
-			build job: 'global/ha-functional-testing',
-			    parameters: [[$class: 'LabelParameterValue', name: 'provider', label: 'osp'],
-					 string(name: 'dryrun', value : "${dryrun}"),
-					 string(name: 'rhelver', value: '9'),
-					 string(name: 'zstream', value : 'no'),
-					 string(name: 'upstream', value : 'next-stable'),
-					 string(name: 'tests', value : 'all')]
-		    }
-		}
-		stage('rhel9 main osp') {
-		    steps {
-			build job: 'global/ha-functional-testing',
-			    parameters: [[$class: 'LabelParameterValue', name: 'provider', label: 'osp'],
-					 string(name: 'dryrun', value : "${dryrun}"),
-					 string(name: 'rhelver', value: '9'),
-					 string(name: 'zstream', value : 'no'),
-					 string(name: 'upstream', value : 'main'),
-					 string(name: 'tests', value : 'all')]
+	stage('Run tests') {
+	    steps {
+		script {
+		    def tests = genTestBuilds(params.dryrun, info)
+		    try {
+			parallel tests
+		    } catch (err) {
+			println("Jenkinsfile caught "+err)
+			info['exception_text'] += "\nparallel error caught: {$err}\n"
 		    }
 		}
 	    }

@@ -11,6 +11,7 @@ pipeline {
 
     parameters {
 	string(name: 'dryrun', defaultValue: '0', description: 'set to 1 to see what the pipeline would do, without actually doing anything')
+	string(name: 'failure_rate', defaultValue: '0', description: 'Failure likelihood (0-100) to inject for testing')
     }
 
     stages {
@@ -19,15 +20,25 @@ pipeline {
 		getBuildInfoCommon(info)
 	    }
 	}
-	stage('Run tests') {
+	stage('Collect & run tests') {
 	    steps {
 		script {
-		    def tests = genTestBuilds(params.dryrun, info)
-		    try {
-			parallel tests
-		    } catch (err) {
-			println("Jenkinsfile caught "+err)
-			info['exception_text'] += "\nparallel error caught: {$err}\n"
+		    def (Map smokeruns, Map allruns) = genTestBuilds(params.dryrun, info)
+		    stage('Smoke tests') {
+			try {
+			    parallel smokeruns
+			} catch (err) {
+			    println("Jenkinsfile caught "+err)
+			    info['exception_text'] += "\nparallel error caught in smoke tests: {$err}\n"
+			}
+		    }
+		    stage('All tests') {
+			try {
+			    parallel allruns
+			} catch (err) {
+			    println("Jenkinsfile caught "+err)
+			    info['exception_text'] += "\nparallel error caught in all tests: {$err}\n"
+			}
 		    }
 		}
 	    }

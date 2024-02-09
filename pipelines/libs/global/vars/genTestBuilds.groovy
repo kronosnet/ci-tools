@@ -3,45 +3,74 @@ def call(String dryrun, Map info)
 {
     // Cloud providers and their limits
     def providers = [:]
-    providers['osp'] = ['maxjobs': 3, 'testlevel': 'all']
-    providers['ocpv'] = ['maxjobs': 3, 'testlevel': 'smoke']
-//    providers['aws'] = ['maxjobs': 1, 'testlevel': 'smoke']
-//    providers['ibmvpc'] = ['maxjobs': 255, 'testlevel': 'all']
+    providers['osp'] = ['maxjobs': 3, 'testlevel': 'all', 'rhelvers': ['8', '9']]
+//    providers['ocpv'] = ['maxjobs': 3, 'testlevel': 'smoke', 'rhelvers': ['8', '9']]
+//    providers['ibmvpc'] = ['maxjobs': 0, 'testlevel': 'all', 'rhelvers': ['8','9']]
+//    providers['aws'] = ['maxjobs': 1, 'testlevel': 'smoke', 'rhelvers': ['8', '9']]
 
     // OS/upstream versions as pairs
     def versions = [['8', 'next-stable'], ['9', 'next-stable'], ['9','main']]
     def zstream = ['no','yes']
 
-    // Build a list of possible jobs
-    def jobs = []
+    // Build a list of possible smoke jobs
+    def smokejobs = []
     for (v in versions) {
 	for (b in zstream) {
-	    jobs += ['rhelver': v[0], 'zstream': b, 'upstream': v[1]]
+	    smokejobs += ['rhelver': v[0], 'zstream': b, 'upstream': v[1], 'testlevel': 'smoke']
 	}
     }
 
-    // Build the jobs, and decide what can be run in parallel and what
-    // needs to be serialised
-    def runjobs = [:]
+    // All jobs - this one is global to all providers which pick them off to run
+    // as available
+    def alljobs = []
+    for (v in versions) {
+	for (b in zstream) {
+	    alljobs += ['rhelver': v[0], 'zstream': b, 'upstream': v[1], 'testlevel': 'all']
+	}
+    }
+
+    // Build the jobs list for each provider
+    def all_matrix = [:]
+    def smoke_matrix = [:]
     for (p in providers) {
+	def provider_jobs = [:]
 	def prov = p.key
-	def pinfo = providers[prov]
+	def pinfo = p.value
 
-	// Work out how many stages we need to run in serial to keep under the
-	// provider's instance limit
-	def jobs_per_stage = Math.max(Math.round((jobs.size() / pinfo['maxjobs'])), 1)
+	provider_jobs['provider'] = prov
+	provider_jobs['pinfo'] = pinfo
+	provider_jobs['smokejobs'] = smokejobs
 
-	// And divide them up...
-	def s = 0
-	while (s < jobs.size()) {
-	    def start_s = s
-	    def joblist = []
-	    for (i=0; i < jobs_per_stage &&  s < jobs.size(); i++) {
-		joblist += jobs[s]
-		s += 1
+	// Make a copy of smokejobs per provider as the 'scheduler' removes items
+	// from this list as they get run. At this stage we also remove
+	// jobs for unsupported RHEL versions
+	def provider_smokejobs = []
+	for (sj in smokejobs) {
+	    if (pinfo['rhelvers'].contains(sj['rhelver'])) {
+		provider_smokejobs += sj
 	    }
-	    runjobs["${prov} ${start_s+1}-${s}"] = { runTestStages(['provider': prov, 'pinfo': pinfo, 'jobs': joblist,
-								    'dryrun': dryrun], info) }
+	}
+
+	// If 'maxjobs' is set to 0 then that means we can run as many instances
+	// as we like, so schedule as many jobs as there are 'smoke' tests
+	def maxjobs = pinfo['maxjobs']
+	if (maxjobs == 0) {
+	    maxjobs = provider_smokejobs.size()
+	}
+
+	// Clear out the 'FAIL' status for all smoke jobs
+	for (s in provider_smokejobs) {
+	    provider_jobs["rhel${s['rhelver']} zstream:${s['zstream']} ${s['upstream']} FAIL"] = false
+	}
+
+	// Set up the runners. create 'maxjobs' runners per provder
+	for (i = 1; i <= maxjobs; i++) {
+	    smoke_matrix["${prov} ${i}"] = { runTestList(provider_jobs, info, 'smoke', provider_smokejobs, dryrun) }
+	}
+	if (pinfo['testlevel'] == 'all') {
+	    for (i = 1; i <= maxjobs; i++) {
+		all_matrix["${prov} ${i}"] = { runTestList(provider_jobs, info, 'all', alljobs, dryrun) }
+	    }
 	}
     }
 
@@ -51,75 +80,108 @@ def call(String dryrun, Map info)
     info['stages_fail'] = 0
     info['stages_fail_nodes'] = ''
 
-    // Feed this into 'parallel'
-    return runjobs
+    // Feed these into 'parallel', one after the other ...
+    return new Tuple2(smoke_matrix, all_matrix)
 }
 
-// Called from parallel to run on one node
-def runTestStages(Map stageinfo, Map info)
+// Called from parallel to run ALL valid tests on one node
+def runTestList(Map provider_jobs, Map info, String testtype, ArrayList joblist, String dryrun)
 {
-    def provider = stageinfo['provider']
-    def pinfo = stageinfo['pinfo']
-    def run_all = false
+    def provider = provider_jobs['provider']
+    def pinfo = provider_jobs['pinfo']
+    def smokejobs = provider_jobs['jobs']
+    def found = true
+    def runningjob = [:]
+    def stagename = ''
 
-    println("runComplexStage: ${stageinfo}")
+    // Dummy stage to get the working names to make sense
+    stage("${provider} runner") {
+	println("Starting runner thread on ${provider}")
+    }
 
-    for (s in stageinfo['jobs']) {
-	stage("${provider} rhel${s['rhelver']} zstream:${s['zstream']} ${s['upstream']} smoke") {
-	    info['stages_run']++
-	    def thisjob1 = build job: 'global/ha-functional-testing',
-		parameters: [[$class: 'LabelParameterValue', name: 'provider', label: provider],
-			     string(name: 'dryrun', value : "${stageinfo['dryrun']}"),
-			     string(name: 'rhelver', value: "${s['rhelver']}"),
-			     string(name: 'zstream', value: "${s['zstream']}"),
-			     string(name: 'upstream', value: "${s['upstream']}"),
-			     string(name: 'tests', value: 'smoke')]
+    // 'smoke' tests only need to lock *this* provider,
+    // 'all' tests lock the whole suite
+    def lockname = "${info['project']} runner"
+    if (testtype == 'smoke') {
+	lockname = "${info['project']} ${provider} runner"
+    }
 
-	    // These jobs always post SUCCESS (unless things went BADLY wrong),
-	    // so we need to look into exported variable STAGES_FAIL to see what really happened
-	    if (thisjob1.result == 'SUCCESS' &&
-		thisjob1.buildVariables != null &&
-		thisjob1.buildVariables['STAGES_FAIL'] == '0') {
-		run_all = true
-	    } else {
-		info['stages_fail']++
-		info['stages_fail_nodes'] += "\n- rhel${s['rhelver']} ${s['zstream']} ${s['upstream']} smoke"
+    // Jenkins groovy doesn't like do {} while loops
+    while (found) {
+	found = false
 
-		// Mark the stage as failed
-		catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-		    shNoTrace("exit 1", "Marking this stage as a failure")
+	// Lock this while we find a valid job
+	lock(lockname) {
+	    for (j=0; j<joblist.size() && found==false; j++) {
+		// Find the next job that we can run on this provider
+		def s = joblist[j]
+		stagename = "rhel${s['rhelver']} zstream:${s['zstream']} ${s['upstream']}"
+
+		// Can we run it?
+		if ((provider_jobs["${stagename} FAIL"] == false) && // Smoke ran successfully
+		    pinfo['rhelvers'].contains(s['rhelver'])) {      // RHEL version is supported
+		    runningjob = s
+		    joblist.remove(j)
+		    found = true
 		}
 	    }
 	}
 
-	// If that succeeds, and provider allows 'all', then run the other tests
-	if (run_all && pinfo['testlevel'] == 'all') {
-	    stage("${provider} rhel${s['rhelver']} zstream:${s['zstream']} ${s['upstream']} all") {
-		info['stages_run']++
-		def thisjob2 = build job: 'global/ha-functional-testing',
-		    parameters: [[$class: 'LabelParameterValue', name: 'provider', label: provider],
-				 string(name: 'dryrun', value : "${stageinfo['dryrun']}"),
-				 string(name: 'rhelver', value: "${s['rhelver']}"),
-				 string(name: 'zstream', value: "${s['zstream']}"),
-				 string(name: 'upstream', value: "${s['upstream']}"),
-				 string(name: 'tests', value: 'all')]
+	// Run it
+	if (found) {
+	    info['stages_run']++
+	    stage("${provider} ${stagename} ${runningjob['testlevel']}") {
 
-		// These jobs always post SUCCESS (unless things went BADLY wrong),
-		// so we need to look into exported variable STAGES_FAIL to see what really happened
-		if (thisjob2.result == 'SUCCESS' &&
-		    thisjob2.buildVariables != null &&
-		    thisjob2.buildVariables['STAGES_FAIL'] == '0') {
-		    println("That went well")
-		} else {
+		def state = run_job(provider, runningjob, dryrun)
+		if (state != 'SUCCESS') {
 		    info['stages_fail']++
-		    info['stages_fail_nodes'] += "\n- rhel${s['rhelver']} ${s['zstream']} ${s['upstream']} ${stageinfo['tests']}"
+		    info['stages_fail_nodes'] += "\n- ${provider} ${stagename} ${runningjob['testlevel']}"
 
-		    // Mark the stage as failed
+		    // Mark stage as failed in Jenkins
 		    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
 			shNoTrace("exit 1", "Marking this stage as a failure")
+		    }
+
+		    // If a smoke test failed, tell future runners on this provider not to run 'all'
+		    if (runningjob['testlevel'] == 'smoke') {
+			provider_jobs["${stagename} FAIL"] = true
 		    }
 		}
 	    }
 	}
+    }
+}
+
+// Does what it says on the tin
+def run_job(String provider, Map job, String dryrun)
+{
+    // Allow us to fake failures for testing
+    def fail_rate = params.failure_rate.toInteger()
+    def testlist = 'auto'
+    if (fail_rate > 0 && job['testlevel'] == 'smoke') {
+	if (new Random().nextInt(100) < fail_rate) {
+	    testlist = 'fake_failure'
+	    println("Faking failure for ${provider} ${job}")
+	}
+    }
+
+    // Run it.
+    def thisjob = build job: 'global/ha-functional-testing',
+	parameters: [[$class: 'LabelParameterValue', name: 'provider', label: provider],
+		     string(name: 'dryrun', value : "${dryrun}"),
+		     string(name: 'rhelver', value: "${job['rhelver']}"),
+		     string(name: 'zstream', value: "${job['zstream']}"),
+		     string(name: 'upstream', value: "${job['upstream']}"),
+		     string(name: 'testlist', value: "${testlist}"),
+		     string(name: 'tests', value: "${job['testlevel']}")]
+
+    // These jobs always post SUCCESS (unless things went BADLY wrong),
+    // so we need to look into exported variable STAGES_FAIL to see what really happened
+    if (thisjob.result == 'SUCCESS' &&
+	thisjob.buildVariables != null &&
+	thisjob.buildVariables['STAGES_FAIL'] == '0') {
+	return 'SUCCESS'
+    } else {
+	return 'FAIL'
     }
 }

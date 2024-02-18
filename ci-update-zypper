@@ -9,6 +9,7 @@ $CITHOME/ci-update-common
 case "${NODE_NAME}" in
  *tumbleweed*)
   upgrade=dup
+  bundler=ruby3.3-rubygem-bundler
   glue=cluster-glue-devel
   ;;
  *)

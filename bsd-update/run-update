@@ -35,7 +35,7 @@ function generate_ansible_cfg {
 while getopts "hdw" optflag; do
 	case "$optflag" in
 	d)
-		ansibledebug="-vvv"
+		ansibledebug="-v"
 		;;
 	w)
 		extravars="wipecode=yes $extravars"

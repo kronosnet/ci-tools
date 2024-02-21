@@ -65,7 +65,7 @@ def runTestStages(Map stageinfo, Map info)
     println("runComplexStage: ${stageinfo}")
 
     for (s in stageinfo['jobs']) {
-	stage("rhel${s['rhelver']} ${s['zstream']} ${s['upstream']} smoke") {
+	stage("${provider} rhel${s['rhelver']} zstream:${s['zstream']} ${s['upstream']} smoke") {
 	    info['stages_run']++
 	    def thisjob1 = build job: 'global/ha-functional-testing',
 		parameters: [[$class: 'LabelParameterValue', name: 'provider', label: provider],
@@ -94,7 +94,7 @@ def runTestStages(Map stageinfo, Map info)
 
 	// If that succeeds, and provider allows 'all', then run the other tests
 	if (run_all && pinfo['testlevel'] == 'all') {
-	    stage("rhel${s['rhelver']} ${s['zstream']} ${s['upstream']} all") {
+	    stage("${provider} rhel${s['rhelver']} zstream:${s['zstream']} ${s['upstream']} all") {
 		info['stages_run']++
 		def thisjob2 = build job: 'global/ha-functional-testing',
 		    parameters: [[$class: 'LabelParameterValue', name: 'provider', label: provider],

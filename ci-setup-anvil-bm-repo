@@ -182,7 +182,7 @@ mv $localmirror/*.rpm $REPODIR/
 rm -rf $localmirror
 
 cd $REPODIR
-createrepo -x .cache .
+createrepo --compress-type=gz -x .cache .
 
 cd $BUILDDIR
 rsync -av --progress --delete-after $REPODIR/ anvil-ci-proxy:/var/www/html/ci-repo/

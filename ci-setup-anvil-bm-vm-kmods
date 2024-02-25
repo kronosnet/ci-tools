@@ -108,7 +108,7 @@ if [ "$builddone" = yes ]; then
  cd temp
  ssh anvil-ci-proxy "mkdir -p /var/www/html/kmods/${BUILD}/${REPOSRC}/"
  scp *.rpm anvil-ci-proxy:/var/www/html/kmods/${BUILD}/${REPOSRC}/ || error=1
- ssh anvil-ci-proxy "cd /var/www/html/kmods/${BUILD}/${REPOSRC}/ && createrepo ." || error=1
+ ssh anvil-ci-proxy "cd /var/www/html/kmods/${BUILD}/${REPOSRC}/ && createrepo --compress-type=gz ." || error=1
  cd -
  rm -rf temp
 else

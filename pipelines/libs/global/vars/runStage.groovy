@@ -34,7 +34,7 @@ def call(Map info, String agentName, String stageName, Boolean voting, Map extra
 def doRunStage(String agentName, Map info, Map localinfo)
 {
     // Timeout (minutes) for the collection stages
-    def collect_timeout = 10
+    def collect_timeout = 30
 
     // This map is used for communicating state around the exception handlers
     // and runWithTimeout

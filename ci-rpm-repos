@@ -177,5 +177,7 @@ EOF
 			;;
 	esac
 
+	rsync -av --delete-after $rpmdir/ jweb:$rpmdir/.
+
 	exit 0
 ) 200>/tmp/ci-rpm-repos.lock

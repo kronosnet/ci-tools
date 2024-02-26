@@ -65,5 +65,7 @@ process_cov_repos() {
 
 	clean_prs
 
+	rsync -av --delete-after $covdir/ jweb:$covdir/.
+
 	exit 0
 ) 200>/tmp/ci-cov-repos.lock

@@ -5,7 +5,7 @@ def call(Map info)
     // if it has nothing to do. (Jenkins hates quiet scripts)
     println('postStage info='+info)
 
-    def publish_timeout = 15 // Minutes
+    def publish_timeout = 60 // Minutes
 
     // Don't do this for the weekly jobs
     if (info['fullrebuild'] == 0) {

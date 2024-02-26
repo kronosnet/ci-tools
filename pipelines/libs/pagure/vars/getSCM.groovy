@@ -47,9 +47,19 @@ def call(Map info)
 	}
     } else {
 	dir (info['project']) {
+	    // This is needed to create the directory before we scp stuff into it
+	    shNoTrace('touch .', '')
+
+	    def buildhost = env.NODE_NAME
+	    def workspace = env.WORKSPACE
+
+	    // Get the tarball from the Jenkins host
 	    // Random delay to stop hitting the server too hard
 	    sleep(new Random().nextInt(15))
-	    sh "wget -4 -nv https://ci.kronosnet.org/buildsources/${tarfile}"
+	    node('built-in') {
+		shNoTrace("scp /var/www/ci.kronosnet.org/buildsources/${tarfile} ${buildhost}:${workspace}/${info['project']}",
+			  "scp ${tarfile} ${buildhost}:${workspace}/${info['project']}")
+	    }
 	    sh "tar --no-same-owner -xzf ${tarfile}"
 	    sh "rm ${tarfile}"
 	}

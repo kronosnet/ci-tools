@@ -168,13 +168,17 @@ def doRunStage(String agentName, Map info, Map localinfo)
 	if (stagestate.containsKey('logfile')) {
 	    info['have_split_logs'] = true
 	    dir (env.WORKSPACE) {
+		// This sed removes the 'bold' links which look a bit like an exposed encrypted thing (but aren't)
+		sh """#!/bin/citbash -e
+                   sed \$'s/\\033\\\\[8m.*\\033\\\\[0m//' <${stagestate['logfile']} >TMP_${stagestate['logfile']}"""
+
 		if (stagestate['failed']) {
 		    // Rename the log so we know it all went badly
-		    sh "mv ${stagestate['logfile']} FAILED_${stagestate['logfile']}"
+		    sh "mv TMP_${stagestate['logfile']} FAILED_${stagestate['logfile']}"
 		    archiveArtifacts artifacts: "FAILED_${stagestate['logfile']}", fingerprint: false
 		} else {
 		    // Rename the log so we know it all went fine
-		    sh "mv ${stagestate['logfile']} SUCCESS_${stagestate['logfile']}"
+		    sh "mv TMP_${stagestate['logfile']} SUCCESS_${stagestate['logfile']}"
 		    archiveArtifacts artifacts: "SUCCESS_${stagestate['logfile']}", fingerprint: false
 		}
 	    }

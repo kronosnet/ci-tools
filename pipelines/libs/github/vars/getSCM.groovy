@@ -9,8 +9,8 @@ def call(Map info)
     println("tarfile = ${tarfile}, node=${env.NODE_NAME}")
 
     if (env.NODE_NAME == 'built-in') {
-	shNoTrace("tar --exclude=${tarfile} -czf /var/www/ci.kronosnet.org/buildsources/${tarfile} .",
-		  "tar --exclude=${tarfile} -czf <redacted-web-dir>/${tarfile} .")
+	sh('mkdir -p /var/tmp/jenkins-sources')
+	sh("tar --exclude=${tarfile} -czf /var/tmp/jenkins-sources/${tarfile} .")
 	info['tarfile'] = tarfile
     } else {
 	dir (info['project']) {
@@ -24,8 +24,7 @@ def call(Map info)
 	    // Random delay to stop hitting the server too hard
 	    sleep(new Random().nextInt(15))
 	    node('built-in') {
-		shNoTrace("scp /var/www/ci.kronosnet.org/buildsources/${tarfile} ${buildhost}:${workspace}/${info['project']}",
-			  "scp ${tarfile} ${buildhost}:${workspace}/${info['project']}")
+		sh("scp /var/tmp/jenkins-sources/${tarfile} ${buildhost}:${workspace}/${info['project']}")
 	    }
 	    sh "tar --no-same-owner -xzf ${tarfile}"
 	    sh "rm ${tarfile}"

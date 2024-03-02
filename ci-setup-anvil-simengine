@@ -161,6 +161,12 @@ simengine-cli model power-link -s122 -d132   # [an-ups03]={port-2}==>[an-a01dr01
 simengine-cli model power-link -s58 -d91  # [an-pdu01]={port-8}=>{psu-1}=>[an-striker01]
 simengine-cli model power-link -s68 -d101 # [an-pdu02]={port-8}=>{psu-1}=>[an-striker02]
 
+# Clean all logs and tempdirs before starting
+rm -rf /tmp/simengine
+mkdir -p /tmp/simengine
+rm -f /var/log/simengine/info.log
+touch /var/log/simengine/info.log
+
 systemctl start simengine-core
 
 exit 0

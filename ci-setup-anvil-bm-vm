@@ -216,7 +216,10 @@ cd $HOME/ci-tools
 
 # collecting all build info
 rm -rf $DEPLOYDIR/logs/
-mkdir -p $DEPLOYDIR/logs/$BUILD_NUMBER/
+mkdir -p $DEPLOYDIR/logs/$BUILD_NUMBER/simengine
+
+cp /var/log/simengine/info.log $DEPLOYDIR/logs/$BUILD_NUMBER/simengine/simengine-daemon.log
+tar zcvp -f $DEPLOYDIR/logs/$BUILD_NUMBER/simengine/process_logs.tar.gz /tmp/simengine/
 
 cp $DEPLOYDIR/configs/anvil_striker_auto.cfg $DEPLOYDIR/logs/$BUILD_NUMBER/anvil_striker_auto.cfg
 

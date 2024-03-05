@@ -142,6 +142,9 @@ pipeline {
 				    git show --no-patch
 				fi
 			    done
+			    echo == apply workaround for dracut systemd-pcrphase missing module in rhel9 ==
+			    echo == remove when https://issues.redhat.com/browse/RHEL-27944 is released  ==
+			    git revert --no-edit e5532e76939a8c5cef4c304415768afb9b22ab50
 			'''
 		    }
 		}

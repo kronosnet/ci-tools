@@ -40,8 +40,8 @@ def call(Map info)
 		    fi
 		"""
 	    }
-
-	    sh("tar --exclude=${tarfile} -czf /var/tmp/jenkins-sources${tarfile} .")
+	    sh('mkdir -p /var/tmp/jenkins-sources')
+	    sh("tar --exclude=${tarfile} -czf /var/tmp/jenkins-sources/${tarfile} .")
 	    info['tarfile'] = tarfile
 	}
     } else {
@@ -56,7 +56,6 @@ def call(Map info)
 	    // Random delay to stop hitting the server too hard
 	    sleep(new Random().nextInt(15))
 	    node('built-in') {
-		sh('mkdir -p /var/tmp/jenkins-sources')
 		sh("scp /var/tmp/jenkins-sources/${tarfile} ${buildhost}:${workspace}/${info['project']}")
 	    }
 	    sh "tar --no-same-owner -xzf ${tarfile}"

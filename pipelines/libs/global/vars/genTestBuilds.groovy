@@ -2,11 +2,7 @@
 def call(String dryrun, Map info)
 {
     // Cloud providers and their limits
-    def providers = [:]
-    providers['osp'] = ['maxjobs': 3, 'testlevel': 'all', 'rhelvers': ['8', '9']]
-//    providers['ocpv'] = ['maxjobs': 3, 'testlevel': 'smoke', 'rhelvers': ['8', '9']]
-//    providers['ibmvpc'] = ['maxjobs': 0, 'testlevel': 'all', 'rhelvers': ['8','9']]
-//    providers['aws'] = ['maxjobs': 1, 'testlevel': 'smoke', 'rhelvers': ['8', '9']]
+    def providers = getProviderProperties()
 
     // OS/upstream versions as pairs
     def versions = [['8', 'next-stable'], ['9', 'next-stable'], ['9','main']]
@@ -37,39 +33,42 @@ def call(String dryrun, Map info)
 	def prov = p.key
 	def pinfo = p.value
 
-	provider_jobs['provider'] = prov
-	provider_jobs['pinfo'] = pinfo
-	provider_jobs['smokejobs'] = smokejobs
+	// We don't run weekly jobs for all providers
+	if (pinfo['weekly']) {
+	    provider_jobs['provider'] = prov
+	    provider_jobs['pinfo'] = pinfo
+	    provider_jobs['smokejobs'] = smokejobs
 
-	// Make a copy of smokejobs per provider as the 'scheduler' removes items
-	// from this list as they get run. At this stage we also remove
-	// jobs for unsupported RHEL versions
-	def provider_smokejobs = []
-	for (sj in smokejobs) {
-	    if (pinfo['rhelvers'].contains(sj['rhelver'])) {
-		provider_smokejobs += sj
+	    // Make a copy of smokejobs per provider as the 'scheduler' removes items
+	    // from this list as they get run. At this stage we also remove
+	    // jobs for unsupported RHEL versions
+	    def provider_smokejobs = []
+	    for (sj in smokejobs) {
+		if (pinfo['rhelvers'].contains(sj['rhelver'])) {
+		    provider_smokejobs += sj
+		}
 	    }
-	}
 
-	// If 'maxjobs' is set to 0 then that means we can run as many instances
-	// as we like, so schedule as many jobs as there are 'smoke' tests
-	def maxjobs = pinfo['maxjobs']
-	if (maxjobs == 0) {
-	    maxjobs = provider_smokejobs.size()
-	}
+	    // If 'maxjobs' is set to 0 then that means we can run as many instances
+	    // as we like, so schedule as many jobs as there are 'smoke' tests
+	    def maxjobs = pinfo['maxjobs']
+	    if (maxjobs == 0) {
+		maxjobs = provider_smokejobs.size()
+	    }
 
-	// Clear out the 'FAIL' status for all smoke jobs
-	for (s in provider_smokejobs) {
-	    provider_jobs["rhel${s['rhelver']} zstream:${s['zstream']} ${s['upstream']} FAIL"] = false
-	}
+	    // Clear out the 'FAIL' status for all smoke jobs
+	    for (s in provider_smokejobs) {
+		provider_jobs["rhel${s['rhelver']} zstream:${s['zstream']} ${s['upstream']} FAIL"] = false
+	    }
 
-	// Set up the runners. create 'maxjobs' runners per provder
-	for (i = 1; i <= maxjobs; i++) {
-	    smoke_matrix["${prov} ${i}"] = { runTestList(provider_jobs, info, 'smoke', provider_smokejobs, dryrun) }
-	}
-	if (pinfo['testlevel'] == 'all') {
+	    // Set up the runners. create 'maxjobs' runners per provder
 	    for (i = 1; i <= maxjobs; i++) {
-		all_matrix["${prov} ${i}"] = { runTestList(provider_jobs, info, 'all', alljobs, dryrun) }
+		smoke_matrix["${prov} ${i}"] = { runTestList(provider_jobs, info, 'smoke', provider_smokejobs, dryrun) }
+	    }
+	    if (pinfo['testlevel'] == 'all') {
+		for (i = 1; i <= maxjobs; i++) {
+		    all_matrix["${prov} ${i}"] = { runTestList(provider_jobs, info, 'all', alljobs, dryrun) }
+		}
 	    }
 	}
     }
@@ -132,10 +131,10 @@ def runTestList(Map provider_jobs, Map info, String testtype, ArrayList joblist,
 	    info['stages_run']++
 	    stage("${provider} ${stagename} ${runningjob['testlevel']}") {
 
-		def state = run_job(provider, runningjob, dryrun)
+		def (state, url) = run_job(provider, runningjob, dryrun)
 		if (state != 'SUCCESS') {
 		    info['stages_fail']++
-		    info['stages_fail_nodes'] += "\n- ${provider} ${stagename} ${runningjob['testlevel']}"
+		    info['stages_fail_nodes'] += "\n- ${provider} ${stagename} ${runningjob['testlevel']}: ${url}"
 
 		    // Mark stage as failed in Jenkins
 		    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
@@ -166,22 +165,28 @@ def run_job(String provider, Map job, String dryrun)
     }
 
     // Run it.
-    def thisjob = build job: 'global/ha-functional-testing',
-	parameters: [[$class: 'LabelParameterValue', name: 'provider', label: provider],
-		     string(name: 'dryrun', value : "${dryrun}"),
-		     string(name: 'rhelver', value: "${job['rhelver']}"),
-		     string(name: 'zstream', value: "${job['zstream']}"),
-		     string(name: 'upstream', value: "${job['upstream']}"),
-		     string(name: 'testlist', value: "${testlist}"),
-		     string(name: 'tests', value: "${job['testlevel']}")]
+    def status = 'FAIL'
+    def joburl = 'Aborted'
+    try {
+	def thisjob = build job: 'global/ha-functional-testing',
+	    parameters: [[$class: 'LabelParameterValue', name: 'provider', label: provider],
+			 string(name: 'dryrun', value : "${dryrun}"),
+			 string(name: 'rhelver', value: "${job['rhelver']}"),
+			 string(name: 'zstream', value: "${job['zstream']}"),
+			 string(name: 'upstream', value: "${job['upstream']}"),
+			 string(name: 'testlist', value: "${testlist}"),
+			 string(name: 'tests', value: "${job['testlevel']}")]
 
-    // These jobs always post SUCCESS (unless things went BADLY wrong),
-    // so we need to look into exported variable STAGES_FAIL to see what really happened
-    if (thisjob.result == 'SUCCESS' &&
-	thisjob.buildVariables != null &&
-	thisjob.buildVariables['STAGES_FAIL'] == '0') {
-	return 'SUCCESS'
-    } else {
-	return 'FAIL'
+	// These jobs always post SUCCESS (unless things went BADLY wrong),
+	// so we need to look into exported variable STAGES_FAIL to see what really happened
+	if (thisjob.result == 'SUCCESS' &&
+	    thisjob.buildVariables != null &&
+	    thisjob.buildVariables['STAGES_FAIL'] == '0') {
+	    status = 'SUCCESS'
+	    joburl = thisjob.absoluteUrl
+	}
+    } catch (err) {
+	println("Caught sub-job failure ${err} in ${job['rhelver']} ${job['zstream']} ${job['upstream']}")
     }
+    return new Tuple2(status, joburl)
 }

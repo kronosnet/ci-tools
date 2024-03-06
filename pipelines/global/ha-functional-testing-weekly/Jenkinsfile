@@ -47,7 +47,6 @@ pipeline {
     post {
 	success {
 	    script {
-		info['state'] = 'success'
 		projectFinishUp(info)
 	    }
 	}

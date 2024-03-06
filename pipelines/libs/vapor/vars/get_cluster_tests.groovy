@@ -125,5 +125,20 @@ def call(Map info)
 	ret = tests[array_ptr2]
     }
 
+    // Check for cloud provider-specific limitations
+    def providers = getProviderProperties()
+    def provider = providers[info['provider']]
+
+    // Remove watchdog tests for those providers that don't support it
+    if (!provider['has_watchdog']) {
+	def deletelist = []
+	for (t in ret) {
+	    if (t.contains('sbd')) {
+		deletelist += t
+	    }
+	}
+	ret = ret.minus(deletelist)
+    }
+
     return ret
 }

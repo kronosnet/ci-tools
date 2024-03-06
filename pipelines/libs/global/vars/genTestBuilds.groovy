@@ -2,11 +2,7 @@
 def call(String dryrun, Map info)
 {
     // Cloud providers and their limits
-    def providers = [:]
-    providers['osp'] = ['maxjobs': 3, 'testlevel': 'all', 'rhelvers': ['8', '9']]
-//    providers['ocpv'] = ['maxjobs': 3, 'testlevel': 'smoke', 'rhelvers': ['8', '9']]
-//    providers['ibmvpc'] = ['maxjobs': 0, 'testlevel': 'all', 'rhelvers': ['8','9']]
-//    providers['aws'] = ['maxjobs': 1, 'testlevel': 'smoke', 'rhelvers': ['8', '9']]
+    def providers = getProviderProperties()
 
     // OS/upstream versions as pairs
     def versions = [['8', 'next-stable'], ['9', 'next-stable'], ['9','main']]

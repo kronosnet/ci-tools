@@ -228,6 +228,10 @@ for i in $STRIKERS; do
  scp ${i}:/root/debug.tar.bz2 $DEPLOYDIR/logs/$BUILD_NUMBER/${i}_debug.tar.bz2
 done
 
+for i in $ALLNODES; do
+ ssh $i anvil-manage-daemons --disable --now
+done
+
 cd $DEPLOYDIR/logs/
 tar zcvp -f $BUILD_NUMBER.tar.gz $BUILD_NUMBER/
 scp $BUILD_NUMBER.tar.gz anvil-ci-proxy:/var/www/html/testing-logs/$BUILD_NUMBER.tar.gz

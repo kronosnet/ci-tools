@@ -129,14 +129,27 @@ def call(Map info)
     def providers = getProviderProperties()
     def provider = providers[info['provider']]
 
-    // Remove watchdog tests for those providers that don't support it
-    if ((provider != null) && (provider['has_watchdog'] == false)) {
+    if (provider != null) {
 	def deletelist = []
-	for (t in ret) {
-	    if (t.contains('sbd')) {
-		deletelist += t
+
+	// Remove watchdog tests for those providers that don't support it
+	if (provider['has_watchdog'] == false) {
+	    for (t in ret) {
+		if (t.contains('sbd')) {
+		    deletelist += t
+		}
 	    }
 	}
+
+	// Remove lvm tests for those providers that don't have enough storage
+	if (provider['has_storage'] == false) {
+	    for (t in ret) {
+		if (t.contains('lvm')) {
+		    deletelist += t
+		}
+	    }
+	}
+
 	ret = ret.minus(deletelist)
     }
 

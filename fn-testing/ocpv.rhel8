@@ -3,5 +3,6 @@ deployopts=""
 testopts=""
 
 ocpv_setup() {
+	mkdir -p  ~/.kube
 	curl -k -s -o ~/.kube/config http://cnvqe-01.lab.eng.tlv2.redhat.com/clusterconfigs/bm-rhel-ha-tlv2/auth/kubeconfig
 }

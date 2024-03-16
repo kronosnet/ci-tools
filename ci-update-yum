@@ -55,7 +55,7 @@ esac
 
 case "${NODE_NAME}" in
  anvil-ci*)
-  EXTRADEPS="fence-agents-common resource-agents $EXTRADEPS"
+  EXTRADEPS="fence-agents-common resource-agents selinux-policy-devel $EXTRADEPS"
  ;;
 esac
 

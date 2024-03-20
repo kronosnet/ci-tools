@@ -214,8 +214,8 @@ def call(Map localinfo, String agentName)
 	cienv['LIBQB_REPO_PATH'] = "https://ci.kronosnet.org/builds/libqb/" + agentName + "/main/latest/"
 	cienv['KRONOSNET_REPO'] = "https://ci.kronosnet.org/builds/kronosnet-main-" + agentName + ".repo"
 	cienv['KRONOSNET_REPO_PATH'] = "https://ci.kronosnet.org/builds/kronosnet/" + agentName + "/main/latest/"
-	cienv['COROSYNC_REPO'] = "https://ci.kronosnet.org/builds/corosync-main-" + agentName + ".repo"
-	cienv['COROSYNC_REPO_PATH'] = "https://ci.kronosnet.org/builds/corosync/" + agentName + "/main/latest/"
+	cienv['COROSYNC_REPO'] = "https://ci.kronosnet.org/builds/corosync-main-kronosnet-main-" + agentName + ".repo"
+	cienv['COROSYNC_REPO_PATH'] = "https://ci.kronosnet.org/builds/corosync/" + agentName + "/main-kronosnet-main/latest/"
 	cienv['COROSYNC_QDEVICE_REPO'] = "https://ci.kronosnet.org/builds/corosync-qdevice-main-" + agentName + ".repo"
 	cienv['COROSYNC_QDEVICE_REPO_PATH'] = "https://ci.kronosnet.org/builds/corosync-qdevice/" + agentName + "/main/latest/"
 	cienv['FENCE_AGENTS_REPO'] = "https://ci.kronosnet.org/builds/fence-agents-main-" + agentName + ".repo"
@@ -237,8 +237,8 @@ def call(Map localinfo, String agentName)
 	    (cienv['pacemakerver'] != 'main')) {
 	    cienv['KRONOSNET_REPO'] = "https://ci.kronosnet.org/builds/kronosnet-stable1-proposed-" + agentName + ".repo"
 	    cienv['KRONOSNET_REPO_PATH'] = "https://ci.kronosnet.org/builds/kronosnet/" + agentName + "/stable1-proposed/latest/"
-	    cienv['COROSYNC_REPO'] = "https://ci.kronosnet.org/builds/corosync-camelback-" + agentName + ".repo"
-	    cienv['COROSYNC_REPO_PATH'] = "https://ci.kronosnet.org/builds/corosync/" + agentName + "/camelback/latest/"
+	    cienv['COROSYNC_REPO'] = "https://ci.kronosnet.org/builds/corosync-camelback-kronosnet-stable1-proposed-" + agentName + ".repo"
+	    cienv['COROSYNC_REPO_PATH'] = "https://ci.kronosnet.org/builds/corosync/" + agentName + "/camelback-kronosnet-stable1-proposed/latest/"
 	}
 
 	// corosync supports both kronosnet stable and main

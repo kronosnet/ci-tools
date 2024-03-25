@@ -1,6 +1,6 @@
 // Jenkinsfile for ha-functional-testing-weekly CI project
 
-@Library(['GlobalLib', 'ProjectLib']) _
+@Library(['GlobalLib@cc-devel', 'ProjectLib@cc-devel']) _
 
 // Globals
 def project = 'ha-functional-testing-weekly'
@@ -23,7 +23,8 @@ pipeline {
 	stage('Collect & run tests') {
 	    steps {
 		script {
-		    def (Map smokeruns, Map allruns) = genTestBuilds(params.dryrun, info)
+		    def (Map smokeruns, Map faillist) = genTestBuilds('smoke', params.dryrun, info, [:])
+		    println("CC: Smokeruns: "+smokeruns)
 		    stage('Smoke tests') {
 			try {
 			    parallel smokeruns
@@ -32,6 +33,8 @@ pipeline {
 			    info['exception_text'] += "\nparallel error caught in smoke tests: {$err}\n"
 			}
 		    }
+		    def (Map allruns, Map _notused) = genTestBuilds('all', params.dryrun, info, faillist)
+		    println("CC: Allruns: "+allruns)
 		    stage('All tests') {
 			try {
 			    parallel allruns

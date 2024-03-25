@@ -1,33 +1,56 @@
-// Generate the jobs
-def call(String dryrun, Map info)
-{
-    // Cloud providers and their limits
-    def providers = getProviderProperties()
 
+// Return a list of possible jobs
+def buildJobList(String job_type)
+{
     // OS/upstream versions as pairs
     def versions = [['8', 'next-stable'], ['9', 'next-stable'], ['9','main']]
     def zstream = ['no','yes']
 
-    // Build a list of possible smoke jobs
-    def smokejobs = []
+    def joblist = []
     for (v in versions) {
 	for (b in zstream) {
-	    smokejobs += ['rhelver': v[0], 'zstream': b, 'upstream': v[1], 'testlevel': 'smoke']
+	    joblist += ['rhelver': v[0], 'zstream': b, 'upstream': v[1], 'testlevel': job_type]
 	}
     }
+    return joblist
+}
 
-    // All jobs - this one is global to all providers which pick them off to run
-    // as available
-    def alljobs = []
-    for (v in versions) {
-	for (b in zstream) {
-	    alljobs += ['rhelver': v[0], 'zstream': b, 'upstream': v[1], 'testlevel': 'all']
-	}
+// sort needs to be NonCPS
+@NonCPS
+def sort_jobs(ArrayList alljobs)
+{
+    return alljobs.sort{ it.eligible_providers }
+}
+
+// Build a string containing the name of the current pipeline stage
+def mkstagename(Map job)
+{
+    return "rhel${job['rhelver']} zstream:${job['zstream']} ${job['upstream']}"
+}
+
+// MAIN entry point for this call.
+// I've set it up like this really just to keep all the code in one file
+// as it's all related, and uses a few common dependancies
+def call(String jobtype, String dryrun, Map info, Map provider_failflags)
+{
+    if (jobtype == 'smoke') {
+	return genSmokeJobs(dryrun, info)
+    } else {
+	return genAllJobs(dryrun, info, provider_failflags)
     }
+}
+
+def genSmokeJobs(String dryrun, Map info)
+{
+    // Cloud providers and their limits
+    def providers = getProviderProperties()
+
+    // List of jobs
+    def smokejobs = buildJobList('smoke')
 
     // Build the jobs list for each provider
-    def all_matrix = [:]
     def smoke_matrix = [:]
+    def prov_failflags = [:]
     for (p in providers) {
 	def provider_jobs = [:]
 	def prov = p.key
@@ -57,18 +80,16 @@ def call(String dryrun, Map info)
 	    }
 
 	    // Clear out the 'FAIL' status for all smoke jobs
+	    def failflags = [:]
 	    for (s in provider_smokejobs) {
-		provider_jobs["rhel${s['rhelver']} zstream:${s['zstream']} ${s['upstream']} FAIL"] = false
+		failflags[mkstagename(s)] = false
 	    }
 
+	    provider_jobs['failflags'] = failflags
+	    prov_failflags[prov] = failflags
 	    // Set up the runners. create 'maxjobs' runners per provder
 	    for (i = 1; i <= maxjobs; i++) {
-		smoke_matrix["${prov} ${i}"] = { runTestList(provider_jobs, info, 'smoke', provider_smokejobs, dryrun) }
-	    }
-	    if (pinfo['testlevel'] == 'all') {
-		for (i = 1; i <= maxjobs; i++) {
-		    all_matrix["${prov} ${i}"] = { runTestList(provider_jobs, info, 'all', alljobs, dryrun) }
-		}
+		smoke_matrix["${prov} ${i}"] = { runTestList(provider_jobs, info, provider_smokejobs, prov_failflags, dryrun) }
 	    }
 	}
     }
@@ -79,12 +100,100 @@ def call(String dryrun, Map info)
     info['stages_fail'] = 0
     info['stages_fail_nodes'] = ''
 
-    // Feed these into 'parallel', one after the other ...
-    return new Tuple2(smoke_matrix, all_matrix)
+    // Feed the first of these into parallel, and the second into genAllJobs once they have all run
+    return new Tuple2(smoke_matrix, prov_failflags)
 }
 
-// Called from parallel to run ALL valid tests on one node
-def runTestList(Map provider_jobs, Map info, String testtype, ArrayList joblist, String dryrun)
+// Now we know what failed in the 'smoke' tests, schedule
+// the 'all' tests as efficiently as possible
+def genAllJobs(String dryrun, Map info, Map prov_failflags)
+{
+    def all_matrix = [:]
+
+    // Work out how many providers each job can run on.
+    // schedule them (1...<n>) on to the least busy suitable provider
+    def alljobs = buildJobList('all')
+    def providers = getProviderProperties()
+
+    for (job in alljobs) {
+	job['eligible_providers'] = 0
+	for (p in providers) {
+	    if (p.value['weekly'] && p.value['testlevel'] == 'all') {
+		def provider = p.key
+		def failflags = prov_failflags[provider]
+		def stagename = mkstagename(job)
+		if (failflags[stagename] == false) {
+		    job['eligible_providers'] += 1
+		}
+	    }
+	}
+    }
+
+    // Clear out/initialise some things
+    for (p in providers) {
+	p.value['numjobs'] = 0
+	p.value['alljobs'] = []
+    }
+
+    // Sort by eligible_providers.
+    // This means that all the jobs that can only run on 1 provider
+    // get allocated first.
+    def sorted_jobs = sort_jobs(alljobs)
+    for (job in sorted_jobs) {
+	def stagename = mkstagename(job)
+	def least_busy = null
+
+	// Find the least busy provider that can run this job
+	for (p in providers) {
+	    def provider = p.key
+	    def pinfo = p.value
+	    if (pinfo['weekly'] == true &&
+		pinfo['testlevel'] == 'all' &&
+		prov_failflags[provider][stagename] == false &&
+		pinfo['rhelvers'].contains(job['rhelver'])) {
+
+		if (least_busy == null ||
+		    pinfo['numjobs'] < providers[least_busy]['numjobs']) {
+		    least_busy = p.key
+		    println("${provider} eligible for job ${stagename}")
+		}
+	    }
+	}
+	// Give this job to the least busy, eligible, provider
+	if (least_busy != null) {
+	    providers[least_busy]['alljobs'] += job
+	    providers[least_busy]['numjobs'] += 1
+	}
+    }
+
+    // Set up run map for the job runners
+    for (p in providers) {
+	if (p.value['alljobs'].size() > 0) {
+	    def provider_jobs = [:]
+	    def prov = p.key
+	    def pinfo = p.value
+
+	    provider_jobs['provider'] = prov
+	    provider_jobs['pinfo'] = pinfo
+	    provider_jobs['alljobs'] = pinfo['alljobs']
+
+	    // Don't start more runners than we really need (or are allowed)
+	    def maxjobs = Math.min(pinfo['maxjobs'], pinfo['numjobs'])
+	    if (maxjobs == 0) {
+		maxjobs = pinfo['alljobs'].size()
+	    }
+	    for (i = 1; i <= maxjobs; i++) {
+		all_matrix["${prov} ${i}"] = { runTestList(provider_jobs, info, pinfo['alljobs'], [:], dryrun) }
+	    }
+	}
+    }
+    // Return a tuple, for consistency with 'smoke'
+    return new Tuple2(all_matrix, [:])
+}
+
+// Called from parallel to run a list of tests on one node
+// Both 'smoke' and 'all' call here
+def runTestList(Map provider_jobs, Map info, ArrayList joblist, Map failflags, String dryrun)
 {
     def provider = provider_jobs['provider']
     def pinfo = provider_jobs['pinfo']
@@ -95,14 +204,7 @@ def runTestList(Map provider_jobs, Map info, String testtype, ArrayList joblist,
 
     // Dummy stage to get the working names to make sense
     stage("${provider} runner") {
-	println("Starting runner thread on ${provider}")
-    }
-
-    // 'smoke' tests only need to lock *this* provider,
-    // 'all' tests lock the whole suite
-    def lockname = "${info['project']} runner"
-    if (testtype == 'smoke') {
-	lockname = "${info['project']} ${provider} runner"
+	println("Starting runner thread on ${provider} - joblist: ${joblist}")
     }
 
     // Jenkins groovy doesn't like do {} while loops
@@ -110,24 +212,24 @@ def runTestList(Map provider_jobs, Map info, String testtype, ArrayList joblist,
 	found = false
 
 	// Lock this while we find a valid job
-	lock(lockname) {
-	    for (j=0; j<joblist.size() && found==false; j++) {
-		// Find the next job that we can run on this provider
-		def s = joblist[j]
-		stagename = "rhel${s['rhelver']} zstream:${s['zstream']} ${s['upstream']}"
+	lock("${info['project']} ${provider} runner") {
 
-		// Can we run it?
-		if ((provider_jobs["${stagename} FAIL"] == false) && // Smoke ran successfully
-		    pinfo['rhelvers'].contains(s['rhelver'])) {      // RHEL version is supported
-		    runningjob = s
-		    joblist.remove(j)
-		    found = true
-		}
+	    // Iterator makes it easy to delete items
+	    // It's also safe because we have the lock
+	    def Iterator itr = joblist.iterator();
+	    while (found == false && itr.hasNext()) {
+		// Find the next job that we can run on this provider
+		def s = itr.next()
+
+		runningjob = s
+		itr.remove()
+		found = true
 	    }
 	}
 
 	// Run it
 	if (found) {
+	    stagename = mkstagename(runningjob)
 	    info['stages_run']++
 	    stage("${provider} ${stagename} ${runningjob['testlevel']}") {
 
@@ -143,7 +245,7 @@ def runTestList(Map provider_jobs, Map info, String testtype, ArrayList joblist,
 
 		    // If a smoke test failed, tell future runners on this provider not to run 'all'
 		    if (runningjob['testlevel'] == 'smoke') {
-			provider_jobs["${stagename} FAIL"] = true
+			failflags[provider][stagename] = true
 		    }
 		}
 	    }
@@ -168,6 +270,9 @@ def run_job(String provider, Map job, String dryrun)
     def status = 'FAIL'
     def joburl = 'Aborted'
     try {
+	def name = mkstagename(job)
+	echo "Running job for ${name} on ${provider}, testlist = ${testlist}"
+
 	def thisjob = build job: 'global/ha-functional-testing',
 	    parameters: [[$class: 'LabelParameterValue', name: 'provider', label: provider],
 			 string(name: 'dryrun', value : "${dryrun}"),
@@ -183,8 +288,8 @@ def run_job(String provider, Map job, String dryrun)
 	    thisjob.buildVariables != null &&
 	    thisjob.buildVariables['STAGES_FAIL'] == '0') {
 	    status = 'SUCCESS'
-	    joburl = thisjob.absoluteUrl
 	}
+	joburl = thisjob.absoluteUrl
     } catch (err) {
 	println("Caught sub-job failure ${err} in ${job['rhelver']} ${job['zstream']} ${job['upstream']}")
     }

@@ -23,7 +23,7 @@ pipeline {
 	stage('Collect & run tests') {
 	    steps {
 		script {
-		    def (Map smokeruns, Map allruns) = genTestBuilds(params.dryrun, info)
+		    def (Map smokeruns, Map faillist) = genTestBuilds('smoke', params.dryrun, info, [:])
 		    stage('Smoke tests') {
 			try {
 			    parallel smokeruns
@@ -32,6 +32,7 @@ pipeline {
 			    info['exception_text'] += "\nparallel error caught in smoke tests: {$err}\n"
 			}
 		    }
+		    def (Map allruns, Map _notused) = genTestBuilds('all', params.dryrun, info, faillist)
 		    stage('All tests') {
 			try {
 			    parallel allruns

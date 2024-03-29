@@ -223,14 +223,16 @@ tar zcvp -f $DEPLOYDIR/logs/$BUILD_NUMBER/simengine/process_logs.tar.gz /tmp/sim
 
 cp $DEPLOYDIR/configs/anvil_striker_auto.cfg $DEPLOYDIR/logs/$BUILD_NUMBER/anvil_striker_auto.cfg
 
-for i in $STRIKERS; do
- ssh $i striker-collect-debug -vv --log-secure --output-file /root/debug.tar.bz2
- scp ${i}:/root/debug.tar.bz2 $DEPLOYDIR/logs/$BUILD_NUMBER/${i}_debug.tar.bz2
-done
+if [ "$ret" != "0" ]; then
+ for i in $STRIKERS; do
+  ssh $i striker-collect-debug -vv --log-secure --output-file /root/debug.tar.bz2
+  scp ${i}:/root/debug.tar.bz2 $DEPLOYDIR/logs/$BUILD_NUMBER/${i}_debug.tar.bz2
+ done
 
-for i in $ALLNODES; do
- ssh $i anvil-manage-daemons --disable --now
-done
+ for i in $ALLNODES; do
+  ssh $i anvil-manage-daemons --disable --now
+ done
+fi
 
 cd $DEPLOYDIR/logs/
 tar zcvp -f $BUILD_NUMBER.tar.gz $BUILD_NUMBER/

@@ -219,7 +219,7 @@ rm -rf $DEPLOYDIR/logs/
 mkdir -p $DEPLOYDIR/logs/$BUILD_NUMBER/simengine
 
 cp /var/log/simengine/info.log $DEPLOYDIR/logs/$BUILD_NUMBER/simengine/simengine-daemon.log
-tar zcvp -f $DEPLOYDIR/logs/$BUILD_NUMBER/simengine/process_logs.tar.gz /tmp/simengine/
+tar zcp -f $DEPLOYDIR/logs/$BUILD_NUMBER/simengine/process_logs.tar.gz /tmp/simengine/
 
 cp $DEPLOYDIR/configs/anvil_striker_auto.cfg $DEPLOYDIR/logs/$BUILD_NUMBER/anvil_striker_auto.cfg
 
@@ -235,7 +235,7 @@ if [ "$ret" != "0" ]; then
 fi
 
 cd $DEPLOYDIR/logs/
-tar zcvp -f $BUILD_NUMBER.tar.gz $BUILD_NUMBER/
+tar zcp -f $BUILD_NUMBER.tar.gz $BUILD_NUMBER/
 scp $BUILD_NUMBER.tar.gz anvil-ci-proxy:/var/www/html/testing-logs/$BUILD_NUMBER.tar.gz
 cd -
 rm -rf $DEPLOYDIR/logs

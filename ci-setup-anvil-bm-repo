@@ -23,8 +23,8 @@ mkdir -p $REPODIR/.cache
 
 # download packages from Fedora
 cd $BUILDDIR
-srpms="pysnmp python-smi cloud-utils"
-echo "Downloading Fedora 39 srpms: $srpms"
+srpms="pysnmp python-smi cloud-utils OpenIPMI"
+echo "Downloading Fedora 40 srpms: $srpms"
 
 localmirror=$BUILDDIR/fedmirror
 rm -rf $localmirror
@@ -53,7 +53,7 @@ EOF
 
 dnf download --source \
 	--config $localmirror/fedora-src.repo \
-	--releasever 39 \
+	--releasever 40 \
 	--disablerepo="*" \
 	--enablerepo=anvil-fedora-source --enablerepo=anvil-updates-source \
 	--installroot=$localmirror/installroot \

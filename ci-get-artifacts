@@ -18,6 +18,8 @@ case $transferset in
 	rpm)
 		preptar="$(echo cd $sourcedir \&\& rm -f ci-artifacts.tar \&\& find .  -name \"*.rpm\" \| tar -cvf ci-artifacts.tar -T -)"
 		lock="/tmp/ci-rpm-repos.lock"
+		# this should help to keep PR dirs clean
+		find "$destdir" -name "*.rpm" -exec rm -f {} \;
 	;;
 	cov)
 		preptar="$(echo cd $sourcedir/cov.html \&\& rm -f ../ci-artifacts.tar \&\& tar -cvf ../ci-artifacts.tar .)"
@@ -28,9 +30,6 @@ case $transferset in
 		exit 1
 	;;
 esac
-
-mkdir -p "$destdir"
-cd "$destdir"
 
 ssh "$sourcenode".ci.kronosnet.org $preptar
 

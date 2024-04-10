@@ -15,8 +15,10 @@ def call(Map info)
 		node('built-in') {
 		    lock('ci-cov-repos') { // This script needs to be serialised
 			for (ver in info['EXTRAVER_LIST'].stream().distinct().collect()) { // Remove duplicates
-			    timeout (time: publish_timeout, unit: 'MINUTES') {
-				sh "$HOME/ci-tools/ci-wrap ci-cov-repos ${info['project']} ${info['covtgtdir']} ${ver}"
+			    if (ver != null) {
+				timeout (time: publish_timeout, unit: 'MINUTES') {
+				    sh "$HOME/ci-tools/ci-wrap ci-cov-repos ${info['project']} ${info['covtgtdir']} ${ver}"
+				}
 			    }
 			}
 		    }
@@ -35,8 +37,10 @@ def call(Map info)
 			    repopath = "pr/${info['pull_id']}"
 			}
 			for (ver in info['EXTRAVER_LIST'].stream().distinct().collect()) { // Remove duplicates
-			    timeout (time: publish_timeout, unit: 'MINUTES') {
-				sh "$HOME/ci-tools/ci-wrap ci-rpm-repos ${info['project']} ${repopath} ${ver}"
+			    if (ver != null) {
+				timeout (time: publish_timeout, unit: 'MINUTES') {
+				    sh "$HOME/ci-tools/ci-wrap ci-rpm-repos ${info['project']} ${repopath} ${ver}"
+				}
 			    }
 			}
 		    }

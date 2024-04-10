@@ -85,6 +85,7 @@ def doRunStage(String agentName, Map info, Map localinfo)
 		    println("RC runWithTimeout returned "+rc)
 		    // Big stick here, we can't continue
 		    shNoTrace("exit 1", "Marking this stage as a failure")
+		    return false
 		}
 
 		// Add node-specific properties
@@ -106,7 +107,10 @@ def doRunStage(String agentName, Map info, Map localinfo)
 		    println("RC runWithTimeout (get_ci_info) returned "+rc)
 
 		    // Stop here
-		    running = false
+		    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+			shNoTrace("exit 1", "Marking this stage as a failure")
+		    }
+		    return false
 		}
 
 		// Run all converted groovy stages first
@@ -188,7 +192,9 @@ def doRunStage(String agentName, Map info, Map localinfo)
 
 	// Keep a list of EXTRAVERs, it's more efficient (and less racy)
 	// to de-duplicate these at the end, in postStage()
-	info['EXTRAVER_LIST'] += localinfo['extraver']
+	if (localinfo.containsKey('extraver')) {
+	    info['EXTRAVER_LIST'] += localinfo['extraver']
+	}
 
 	// Gather any covscan results - if there are any.
 	// Covscan can fail and we still get here, so we can publish the report.
@@ -223,7 +229,6 @@ def doRunStage(String agentName, Map info, Map localinfo)
 	    println('this job failed, collection not happening')
 	    return false
 	}
-
 
 	// Gather any RPM builds
 	if (localinfo['stageName'].endsWith('buildrpms') && localinfo['publishrpm'] == 1 && localinfo['fullrebuild'] == 0) {

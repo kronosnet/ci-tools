@@ -22,18 +22,18 @@ pipeline {
 	}
 	stage('Build all kmods') {
 	    parallel {
+		stage('centos-8-stream ci') {
+		    steps {
+			build job: "${project}/${project}-build-kmods",
+			    parameters: [string(name: 'BASEDISTRO', value: 'centos-8-stream'),
+					 string(name: 'REPOSRC', value: 'ci'),
+					 string(name: 'ANVILSRC', value: 'ci')]
+		    }
+		}
 		stage('centos-8-stream enterprise-staging') {
 		    steps {
 			build job: "${project}/${project}-build-kmods",
 			    parameters: [string(name: 'BASEDISTRO', value: 'centos-8-stream'),
-					 string(name: 'REPOSRC', value: 'enterprise-staging'),
-					 string(name: 'ANVILSRC', value: 'none')]
-		    }
-		}
-		stage('rhel-8 enterprise-staging') {
-		    steps {
-			build job: "${project}/${project}-build-kmods",
-			    parameters: [string(name: 'BASEDISTRO', value: 'rhel-8'),
 					 string(name: 'REPOSRC', value: 'enterprise-staging'),
 					 string(name: 'ANVILSRC', value: 'none')]
 		    }
@@ -46,28 +46,28 @@ pipeline {
 					 string(name: 'ANVILSRC', value: 'none')]
 		    }
 		}
-		stage('rhel-8 enterprise') {
-		    steps {
-			build job: "${project}/${project}-build-kmods",
-			    parameters: [string(name: 'BASEDISTRO', value: 'rhel-8'),
-					 string(name: 'REPOSRC', value: 'enterprise'),
-					 string(name: 'ANVILSRC', value: 'none')]
-		    }
-		}
-		stage('centos-8-stream ci') {
-		    steps {
-			build job: "${project}/${project}-build-kmods",
-			    parameters: [string(name: 'BASEDISTRO', value: 'centos-8-stream'),
-					 string(name: 'REPOSRC', value: 'ci'),
-					 string(name: 'ANVILSRC', value: 'ci')]
-		    }
-		}
 		stage('rhel-8 ci') {
 		    steps {
 			build job: "${project}/${project}-build-kmods",
 			    parameters: [string(name: 'BASEDISTRO', value: 'rhel-8'),
 					 string(name: 'REPOSRC', value: 'ci'),
 					 string(name: 'ANVILSRC', value: 'ci')]
+		    }
+		}
+		stage('rhel-8 enterprise-staging') {
+		    steps {
+			build job: "${project}/${project}-build-kmods",
+			    parameters: [string(name: 'BASEDISTRO', value: 'rhel-8'),
+					 string(name: 'REPOSRC', value: 'enterprise-staging'),
+					 string(name: 'ANVILSRC', value: 'none')]
+		    }
+		}
+		stage('rhel-8 enterprise') {
+		    steps {
+			build job: "${project}/${project}-build-kmods",
+			    parameters: [string(name: 'BASEDISTRO', value: 'rhel-8'),
+					 string(name: 'REPOSRC', value: 'enterprise'),
+					 string(name: 'ANVILSRC', value: 'none')]
 		    }
 		}
 		stage('almalinux-9 ci') {
@@ -78,12 +78,44 @@ pipeline {
 					 string(name: 'ANVILSRC', value: 'ci')]
 		    }
 		}
+		stage('almalinux-9 enterprise-staging') {
+		    steps {
+			build job: "${project}/${project}-build-kmods",
+			    parameters: [string(name: 'BASEDISTRO', value: 'almalinux-9'),
+					 string(name: 'REPOSRC', value: 'enterprise-staging'),
+					 string(name: 'ANVILSRC', value: 'none')]
+		    }
+		}
+		stage('almalinux-9 enterprise') {
+		    steps {
+			build job: "${project}/${project}-build-kmods",
+			    parameters: [string(name: 'BASEDISTRO', value: 'almalinux-9'),
+					 string(name: 'REPOSRC', value: 'enterprise'),
+					 string(name: 'ANVILSRC', value: 'none')]
+		    }
+		}
 		stage('rhel-9 ci') {
 		    steps {
 			build job: "${project}/${project}-build-kmods",
 			    parameters: [string(name: 'BASEDISTRO', value: 'rhel-9'),
 					 string(name: 'REPOSRC', value: 'ci'),
 					 string(name: 'ANVILSRC', value: 'ci')]
+		    }
+		}
+		stage('rhel-9 enterprise-staging') {
+		    steps {
+			build job: "${project}/${project}-build-kmods",
+			    parameters: [string(name: 'BASEDISTRO', value: 'rhel-9'),
+					 string(name: 'REPOSRC', value: 'enterprise-staging'),
+					 string(name: 'ANVILSRC', value: 'none')]
+		    }
+		}
+		stage('rhel-9 enterprise') {
+		    steps {
+			build job: "${project}/${project}-build-kmods",
+			    parameters: [string(name: 'BASEDISTRO', value: 'rhel-9'),
+					 string(name: 'REPOSRC', value: 'enterprise'),
+					 string(name: 'ANVILSRC', value: 'none')]
 		    }
 		}
 	    }

@@ -2,6 +2,8 @@
 
 set -e
 
+wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-Alteeve-Official https://www.alteeve.com/an-repo/m3/community/RPM-GPG-KEY-Alteeve-Official
+
 cat <<EOF>  /etc/yum.repos.d/anvil-ci-tools.repo
 [anvil-ci-tools]
 name=Anvil CI Tools

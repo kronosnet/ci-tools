@@ -41,12 +41,12 @@ pipeline {
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 
 		    voting = buildRunMap('voting', info, ['voting': true,
-							  'nodelabel': 'pcs-stable',
+							  'nodelabel': 'pcs-010',
 							  'extravars': ['depbuildname': 'pacemaker',
 									'depbuildversion': '2.1']])
 
 		    buildrpms = buildRunMap('buildrpms', info, ['voting': true,
-								'nodelabel': 'pcs-stable',
+								'nodelabel': 'pcs-010',
 								'extravars': ['depbuildname': 'pacemaker',
 									      'depbuildversion': '2.1']])
 

@@ -61,6 +61,71 @@ pipeline {
 	    }
 	}
 
+	stage('Main stage pcs-0.11') {
+	    when {
+		// getAuthCheck (in getBuildInfo) will usually abort the job if permission is denied,
+		// but this is an extra check.
+		expression { info['authcheck'] == true && info['is_draft'] == false && info['target'] == 'pcs-0.11'}
+	    }
+
+	    // All of the stages that actually do stuff
+	    steps {
+		script {
+		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+
+		    voting_pmain = buildRunMap('pmain-voting', info, ['voting': true,
+								      'nodelabel': 'voting',
+								      'excludes': '(freebsd|debian10|centos-8|rhel8|opensuse-15|ubuntu-20).*',
+								      'extravars': ['depbuildname': 'pacemaker',
+										    'depbuildversion': 'main']])
+		    voting_pstable = buildRunMap('pstable-voting', info, ['voting': true,
+									  'nodelabel': 'voting',
+									  'excludes': '(freebsd|debian10|centos-8|rhel8|opensuse-15|ubuntu-20).*',
+									  'extravars': ['depbuildname': 'pacemaker',
+											'depbuildversion': '2.1']])
+
+		    nonvoting_pmain = buildRunMap('pmain-nonvoting', info, ['voting': false,
+									    'nodelabel': 'nonvoting',
+									    'excludes': 'freebsd.*',
+									    'extravars': ['depbuildname': 'pacemaker',
+											  'depbuildversion': 'main']])
+		    nonvoting_pstable = buildRunMap('pstable-nonvoting', info, ['voting': false,
+										'nodelabel': 'nonvoting',
+										'excludes': 'freebsd.*',
+										'extravars': ['depbuildname': 'pacemaker',
+											      'depbuildversion': '2.1']])
+
+		    covscan_pmain = buildRunMap('pmain-covscan', info, ['voting': true,
+									'nodelabel': 'covscan',
+									'excludes': 'rhel8.*',
+									'extravars': ['depbuildname': 'pacemaker',
+										      'depbuildversion': 'main']])
+		    covscan_pstable = buildRunMap('pstable-covscan', info, ['voting': true,
+									    'nodelabel': 'covscan',
+									    'excludes': 'rhel8.*',
+									    'extravars': ['depbuildname': 'pacemaker',
+											  'depbuildversion': '2.1']])
+
+		    buildrpms_pmain = buildRunMap('pmain-buildrpms', info, ['voting': true,
+									    'nodelabel': 'buildrpms',
+									    'excludes': '(centos-8|rhel8|opensuse-15).*',
+									    'extravars': ['depbuildname': 'pacemaker',
+											  'depbuildversion': 'main']])
+
+		    // Run them (errors are caught in info[:])
+		    try {
+			parallel voting_pmain + voting_pstable +
+			    nonvoting_pmain + nonvoting_pstable +
+			    buildrpms_pmain +
+			    covscan_pmain + covscan_pstable
+		    } catch (err) {
+			println("Jenkinsfile caught "+err)
+			info['exception_text'] += "\nparallel error caught: {$err}\n"
+		    }
+		}
+	    }
+	}
+
 	stage('Main stage main') {
 	    when {
 		// getAuthCheck (in getBuildInfo) will usually abort the job if permission is denied,

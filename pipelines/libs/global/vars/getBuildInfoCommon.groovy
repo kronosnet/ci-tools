@@ -16,6 +16,7 @@ def call(Map info)
     info['repo_urls'] = []
     info['new_cov_results_urls'] = []
     info['EXTRAVER_LIST'] = []
+    info['subjobs'] = []
 
     // A helpful default in case things go bad
     info['state'] = 'script error'

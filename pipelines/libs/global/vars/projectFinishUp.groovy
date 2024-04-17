@@ -10,6 +10,21 @@ def call(Map info)
 	} catch (err) {}
     }
 
+    // Clean up any straggling sub-jobs
+    if (info['subjobs'].size() > 0) {
+	Jenkins.instance.getAllItems(Job).each {
+	    for (b in it.getBuilds()) {
+		if (b.isInProgress()) {
+		    def String name = b
+		    if (info['subjobs'].contains(name)) {
+			println("Stopping job: "+b)
+			b.doStop()
+		    }
+		}
+	    }
+	}
+    }
+
     // Do ... err ... well you get the idea
     sendEmails(info)
 }

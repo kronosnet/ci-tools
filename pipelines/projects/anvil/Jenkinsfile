@@ -90,10 +90,10 @@ pipeline {
 	    }
 	    steps {
 		script {
-		    def fntesting = build job: "${project}/${project}-build-all-functional-testing",
-						propagate: false,
-						parameters: [string(name: 'ANVILSRC', value: "${anvilsrc}"),
-							     string(name: 'TESTS', value: "${anviltests}")]
+		    def fntesting = doBuildJob("${project}/${project}-build-all-functional-testing",
+					       [string(name: 'ANVILSRC', value: "${anvilsrc}"),
+						string(name: 'TESTS', value: "${anviltests}")],
+					       info)
 
 		    def buildnumber = fntesting.getNumber()
 

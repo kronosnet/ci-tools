@@ -33,7 +33,7 @@ def call(Map info)
 				info['email_extra_text'] += """Duplicate job killed: ${this_jobname} (${this_jobnum})
 """
 				// Do it
-				build.doKill()
+				build.doStop()
 			    }
 			}
 		    }

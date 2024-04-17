@@ -233,7 +233,7 @@ def runTestList(Map provider_jobs, Map info, ArrayList joblist, Map failflags, S
 	    info['stages_run']++
 	    stage("${provider} ${stagename} ${runningjob['testlevel']}") {
 
-		def (state, url) = run_job(provider, runningjob, dryrun)
+		def (state, url) = run_job(provider, runningjob, dryrun, info)
 		if (state != 'SUCCESS') {
 		    info['stages_fail']++
 		    info['stages_fail_nodes'] += "\n- ${provider} ${stagename} ${runningjob['testlevel']}: ${url}"
@@ -254,7 +254,7 @@ def runTestList(Map provider_jobs, Map info, ArrayList joblist, Map failflags, S
 }
 
 // Does what it says on the tin
-def run_job(String provider, Map job, String dryrun)
+def run_job(String provider, Map job, String dryrun, Map info)
 {
     // Allow us to fake failures for testing
     def fail_rate = params.failure_rate.toInteger()
@@ -273,14 +273,15 @@ def run_job(String provider, Map job, String dryrun)
 	def name = mkstagename(job)
 	echo "Running job for ${name} on ${provider}, testlist = ${testlist}"
 
-	def thisjob = build job: 'global/ha-functional-testing',
-	    parameters: [[$class: 'LabelParameterValue', name: 'provider', label: provider],
-			 string(name: 'dryrun', value : "${dryrun}"),
-			 string(name: 'rhelver', value: "${job['rhelver']}"),
-			 string(name: 'zstream', value: "${job['zstream']}"),
-			 string(name: 'upstream', value: "${job['upstream']}"),
-			 string(name: 'testlist', value: "${testlist}"),
-			 string(name: 'tests', value: "${job['testlevel']}")]
+	def thisjob = doBuildJob('global/ha-functional-testing',
+				 [[$class: 'LabelParameterValue', name: 'provider', label: provider],
+				  string(name: 'dryrun', value : "${dryrun}"),
+				  string(name: 'rhelver', value: "${job['rhelver']}"),
+				  string(name: 'zstream', value: "${job['zstream']}"),
+				  string(name: 'upstream', value: "${job['upstream']}"),
+				  string(name: 'testlist', value: "${testlist}"),
+				  string(name: 'tests', value: "${job['testlevel']}")],
+				 info)
 
 	// These jobs always post SUCCESS (unless things went BADLY wrong),
 	// so we need to look into exported variable STAGES_FAIL to see what really happened

@@ -41,8 +41,12 @@ pipeline {
 	    // All of the stages that actually do stuff
 	    steps {
 		script {
+
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 		    info['email_extra_text'] = 'This is EXTRA text'
+
+		    doBuildJob('ci-test-github/test-wait',
+			       [string(name:'delay', value:'30')], info)
 
 		    // The 'short' test list
 		    voting = buildRunMap('voting', info, ['voting': true,
@@ -79,7 +83,7 @@ pipeline {
 
 		    // Run them (errors are caught in info[:])
 		    try {
-			parallel voting + nonvoting + nonvoting_clang + covscan_kmain + covscan_kstable + buildrpms
+			parallel voting + nonvoting + nonvoting_clang + buildrpms //+ covscan_kmain + covscan_kstable
 		    } catch (err) {
 			println("Jenkinsfile caught "+err)
 			info['exception_text'] += "\nparallel error caught: {$err}\n"

@@ -11,7 +11,10 @@ def call(Map localinfo, String agentName)
     props['PARALLELTEST'] = 'no'
     props['RPMDEPS'] = ''
 
-    if (localinfo['target'] == 'main') {
+    // pcs-0.10 branch does not Requires any ha upstream packages
+    // pcs-0.11 and main are currently aligned
+    if ((localinfo['target'] == 'main') ||
+	(localinfo['target'] == 'pcs-0.11')) {
 	if (agentName.startsWith('rhel') ||
 	    agentName.startsWith('fedora') ||
 	    agentName.startsWith('centos')) {

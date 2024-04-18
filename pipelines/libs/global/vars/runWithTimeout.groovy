@@ -47,7 +47,10 @@ def call(Integer time, Closure fn, Map state,
 	println("runWithTimeout caught FlowInterrupted exception "+err)
 	// If no 'cause' is given then we don't know what happened
 	// so just rethrow it.
-	if (err.getCauses() == 0) {
+	// Advice on this is patchy and confusing, hopefully this will catch
+	// all the right things
+	def e = err.getCauses()
+	if (e == 0 || e == null || e.size() == 0) {
 	    retval = 'EXCEPTION'
 	    throw (err)
 	}

@@ -182,7 +182,7 @@ yum -y install             \
  $EXTRADEPS
 
 case "${NODE_NAME}" in
- *kbuild*|*vapor*)
+ *vapor*)
   yum -y update
   yum -y install python3-devel python3-pip python3-wheel \
 		 brewkoji createrepo ansible \

@@ -20,7 +20,7 @@ def testvariant = 'kernel'
 def tests = 'all'
 
 pipeline {
-    agent { label "${provider}" }
+    agent { label "kbuild" }
 
     parameters {
 	string(name: 'testlist', defaultValue: 'auto', description: 'override auto generated test list. Set to empty to skip running tests')

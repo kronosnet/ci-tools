@@ -67,8 +67,13 @@ def call(Map info)
 	'setup,setup_sbd,sbd-only'
     ]
 
+    basic_tests_rhel8 = [
+	'lvm,lvm_config,cluster-lvmlockd'
+    ]
+    basic_tests_rhel9 = [
+	'lvm,lvm_config_no-vdo,cluster-lvmlockd'
+    ]
     basic_tests = [
-	'lvm,lvm_config,cluster-lvmlockd',
 	'pacemaker,recovery,RecoveryActiveNode,variant:iterations,iterations:10',
 	'pacemaker,recovery,RecoveryRandomNode,variant:iterations,iterations:10',
 	'pacemaker,recovery,RecoveryRestartPacemaker-AllNodes',
@@ -107,7 +112,9 @@ def call(Map info)
 
     tests['default,all,tests,generic'] = tests['default,smoke,tests,generic'] + pcs_advanced_tests + advanced_tests
     tests['default,all,tests,1'] = tests['default,smoke,tests,1']
-    tests['default,all,tests,2'] = tests['pcs,smoke,tests,generic'] + smoke_tests + pcs_basic_tests + basic_tests
+    tests['default,all,tests,2,rhel8'] = tests['pcs,smoke,tests,generic'] + smoke_tests + pcs_basic_tests + basic_tests + basic_tests_rhel8
+    tests['default,all,tests,2,rhel9'] = tests['pcs,smoke,tests,generic'] + smoke_tests + pcs_basic_tests + basic_tests + basic_tests_rhel9
+    tests['default,all,tests,2'] = tests['pcs,smoke,tests,generic'] + smoke_tests + pcs_basic_tests + basic_tests + basic_tests_rhel9
     tests['default,all,tests,3'] = tests['default,all,tests,2'] + pcs_advanced_tests + advanced_tests + 'pcs,cli,ResourceMove'
     tests['default,all,tests,4'] = tests['default,all,tests,2'] + pcs_advanced_tests + advanced_tests + 'pacemaker,usecase,apachewebfarm,haproxy'
 
@@ -115,11 +122,14 @@ def call(Map info)
     def ret = []
 
     // These need to be 'proper' Java strings, not groovy Gstring things
+    def String array_ptr0 = "${info['testvariant']},${info['tests']},${info['testtype']},${info['nodes']},rhel${info['rhelver']}"
     def String array_ptr1 = "${info['testvariant']},${info['tests']},${info['testtype']},${info['nodes']}"
     def String array_ptr2 = "${info['testvariant']},${info['tests']},${info['testtype']},generic"
 
-    // If there's an exact match then use it. Otherwise use the ,generic version
-    if (tests.containsKey(array_ptr1)) {
+    // If there's an exact match then use it. Otherwise use try generic versions
+    if (tests.containsKey(array_ptr0)) {
+	ret = tests[array_ptr0]
+    } else if (tests.containsKey(array_ptr1)) {
 	ret = tests[array_ptr1]
     } else if (tests.containsKey(array_ptr2)) {
 	ret = tests[array_ptr2]

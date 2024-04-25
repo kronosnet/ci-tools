@@ -45,8 +45,7 @@ pipeline {
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 		    info['email_extra_text'] = 'This is EXTRA text'
 
-		    doBuildJob('ci-test-github/test-wait',
-			       [string(name:'delay', value:'30')], info)
+		    retryFails(1, 3, { sh 'exit 1' }, 'Testing exit <n>', null)
 
 		    // The 'short' test list
 		    voting = buildRunMap('voting', info, ['voting': true,

@@ -1,4 +1,4 @@
-createopts="--image $(az vm image list --all --publisher RedHat  --output table | grep "RedHat:RHEL:8_" | tail -n 1 | awk '{print $NF}')"
+createopts="--image $(az vm image list --all --publisher RedHat  --output table | grep "RedHat:RHEL:8_" | tail -n 1 | awk '{print $NF}') --flavor Standard_D2s_v3 --flavor-workstation Standard_D2s_v3"
 deployopts=""
 testopts=""
 

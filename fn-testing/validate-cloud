@@ -215,7 +215,7 @@ if [ "$post" != "" ]; then
 	testbaseopts="$testbaseopts --post-results"
 fi
 if [ "$testlogdir" != "" ]; then
-	testbaseopts="$testbaseopts --collect-debug-dir=$testlogdir --collect-debug-always"
+	testbaseopts="$testbaseopts --collect-debug-dir=$testlogdir"
 fi
 
 # generic log options, debug off by default

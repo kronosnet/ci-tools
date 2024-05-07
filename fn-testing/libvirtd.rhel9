@@ -1,7 +1,7 @@
 if [ -a /dev/vapor/shared ]; then
 	usedevice="--blockdevice /dev/vapor/shared"
 fi
-createopts="--image rhel-9.3.0.x86_64.qcow2 --flavor-workstation rhelha-vapor-workstation-extra-large --flavor rhelha-vapor-node-extra-large $usedevice"
+createopts="--image rhel-9.4.0.x86_64.qcow2 --flavor-workstation rhelha-vapor-workstation-extra-large --flavor rhelha-vapor-node-extra-large $usedevice"
 deployopts=""
 testopts=""
 

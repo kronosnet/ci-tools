@@ -1,4 +1,4 @@
-// Jenkinsfile for the ha-functiona-testing
+// Jenkinsfile for the ha-functional-testing
 
 @Library(['GlobalLib', 'VaporLib', 'ProjectLib']) _
 

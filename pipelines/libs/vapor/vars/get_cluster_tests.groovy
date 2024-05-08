@@ -116,7 +116,11 @@ def call(Map info)
     tests['default,all,tests,2,rhel9'] = tests['pcs,smoke,tests,generic'] + smoke_tests + pcs_basic_tests + basic_tests + basic_tests_rhel9
     tests['default,all,tests,2'] = tests['pcs,smoke,tests,generic'] + smoke_tests + pcs_basic_tests + basic_tests + basic_tests_rhel9
     tests['default,all,tests,3'] = tests['default,all,tests,2'] + pcs_advanced_tests + advanced_tests + 'pcs,cli,ResourceMove'
+    tests['default,all,tests,3,rhel8'] = tests['default,all,tests,2,rhel8'] + pcs_advanced_tests + advanced_tests + 'pcs,cli,ResourceMove'
+    tests['default,all,tests,3,rhel9'] = tests['default,all,tests,2,rhel9'] + pcs_advanced_tests + advanced_tests + 'pcs,cli,ResourceMove'
     tests['default,all,tests,4'] = tests['default,all,tests,2'] + pcs_advanced_tests + advanced_tests + 'pacemaker,usecase,apachewebfarm,haproxy'
+    tests['default,all,tests,4,rhel8'] = tests['default,all,tests,2,rhel8'] + pcs_advanced_tests + advanced_tests + 'pacemaker,usecase,apachewebfarm,haproxy'
+    tests['default,all,tests,4,rhel9'] = tests['default,all,tests,2,rhel9'] + pcs_advanced_tests + advanced_tests + 'pacemaker,usecase,apachewebfarm,haproxy'
 
     // Get the right tests set
     def ret = []

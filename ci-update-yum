@@ -82,8 +82,17 @@ esac
 
 # rhel9 language pack
 case "${NODE_NAME}" in
- rhel9*)
+ *rhel9*)
   EXTRADEPS="glibc-all-langpacks $EXTRADEPS"
+ ;;
+esac
+
+# rhel9 boto3
+case "${NODE_NAME}" in
+ *rhel9*)
+ ;;
+ *)
+  EXTRADEPS="python3-boto3 $EXTRADEPS"
  ;;
 esac
 
@@ -146,7 +155,6 @@ yum -y install             \
  overpass-fonts            \
  pam-devel                 \
  perl                      \
- python3-boto3             \
  python3-cryptography      \
  python3-devel             \
  python3-httplib2          \

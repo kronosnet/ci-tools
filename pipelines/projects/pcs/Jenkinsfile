@@ -75,12 +75,12 @@ pipeline {
 
 		    voting_pmain = buildRunMap('pmain-voting', info, ['voting': true,
 								      'nodelabel': 'voting',
-								      'excludes': '(freebsd|debian10|centos-8|rhel8|opensuse-15|ubuntu-20).*',
+								      'excludes': '(freebsdrhel8|opensuse-15|ubuntu-20).*',
 								      'extravars': ['depbuildname': 'pacemaker',
 										    'depbuildversion': 'main']])
 		    voting_pstable = buildRunMap('pstable-voting', info, ['voting': true,
 									  'nodelabel': 'voting',
-									  'excludes': '(freebsd|debian10|centos-8|rhel8|opensuse-15|ubuntu-20).*',
+									  'excludes': '(freebsd|rhel8|opensuse-15|ubuntu-20).*',
 									  'extravars': ['depbuildname': 'pacemaker',
 											'depbuildversion': '2.1']])
 
@@ -108,7 +108,7 @@ pipeline {
 
 		    buildrpms_pmain = buildRunMap('pmain-buildrpms', info, ['voting': true,
 									    'nodelabel': 'buildrpms',
-									    'excludes': '(centos-8|rhel8|opensuse-15).*',
+									    'excludes': '(rhel8|opensuse-15).*',
 									    'extravars': ['depbuildname': 'pacemaker',
 											  'depbuildversion': 'main']])
 
@@ -140,12 +140,12 @@ pipeline {
 
 		    voting_pmain = buildRunMap('pmain-voting', info, ['voting': true,
 								      'nodelabel': 'voting',
-								      'excludes': '(freebsd|debian10|centos-8|rhel8|opensuse-15|ubuntu-20).*',
+								      'excludes': '(freebsd|rhel8|opensuse-15|ubuntu-20).*',
 								      'extravars': ['depbuildname': 'pacemaker',
 										    'depbuildversion': 'main']])
 		    voting_pstable = buildRunMap('pstable-voting', info, ['voting': true,
 									  'nodelabel': 'voting',
-									  'excludes': '(freebsd|debian10|centos-8|rhel8|opensuse-15|ubuntu-20).*',
+									  'excludes': '(freebsd|rhel8|opensuse-15|ubuntu-20).*',
 									  'extravars': ['depbuildname': 'pacemaker',
 											'depbuildversion': '2.1']])
 
@@ -173,7 +173,7 @@ pipeline {
 
 		    buildrpms_pmain = buildRunMap('pmain-buildrpms', info, ['voting': true,
 									    'nodelabel': 'buildrpms',
-									    'excludes': '(centos-8|rhel8|opensuse-15).*',
+									    'excludes': '(rhel8|opensuse-15).*',
 									    'extravars': ['depbuildname': 'pacemaker',
 											  'depbuildversion': 'main']])
 

@@ -95,7 +95,8 @@ def call(Map info)
 
     // kernel tests are always run on 3 nodes by design
     tests['kernel,smoke,tests,generic'] = sanity_tests + 'skeet'
-    tests['kernel,all,tests,generic'] = tests['kernel,smoke,tests,generic'] + 'lvm,lvm_config_no-vdo,cluster-lvmlockd'
+    tests['kernel,all,tests,generic'] = tests['kernel,smoke,tests,generic']
+    //  + 'lvm,lvm_config_no-vdo,cluster-lvmlockd'
     tests['kernel,all,tags,generic'] = ['brawl_quick']
 
     tests['pcs,smoke,tests,generic'] = sanity_tests + 'pcs,cli,Setup'

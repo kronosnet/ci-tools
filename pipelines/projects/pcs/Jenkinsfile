@@ -75,7 +75,7 @@ pipeline {
 
 		    voting_pmain = buildRunMap('pmain-voting', info, ['voting': true,
 								      'nodelabel': 'voting',
-								      'excludes': '(freebsdrhel8|opensuse-15|ubuntu-20).*',
+								      'excludes': '(freebsd|rhel8|opensuse-15|ubuntu-20).*',
 								      'extravars': ['depbuildname': 'pacemaker',
 										    'depbuildversion': 'main']])
 		    voting_pstable = buildRunMap('pstable-voting', info, ['voting': true,

@@ -82,7 +82,12 @@ pipeline {
 									  'nodelabel': 'voting',
 									  'excludes': '(freebsd|rhel8|opensuse-15|ubuntu-20).*',
 									  'extravars': ['depbuildname': 'pacemaker',
-											'depbuildversion': '2.1']])
+											'depbuildversion': '3.0']])
+		    voting_poldstable = buildRunMap('poldstable-voting', info, ['voting': true,
+										'nodelabel': 'voting',
+										'excludes': '(freebsd|rhel8|opensuse-15|ubuntu-20).*',
+										'extravars': ['depbuildname': 'pacemaker',
+											      'depbuildversion': '2.1']])
 
 		    nonvoting_pmain = buildRunMap('pmain-nonvoting', info, ['voting': false,
 									    'nodelabel': 'nonvoting',
@@ -93,7 +98,12 @@ pipeline {
 										'nodelabel': 'nonvoting',
 										'excludes': 'freebsd.*',
 										'extravars': ['depbuildname': 'pacemaker',
-											      'depbuildversion': '2.1']])
+											      'depbuildversion': '3.0']])
+		    nonvoting_poldstable = buildRunMap('poldstable-nonvoting', info, ['voting': false,
+										      'nodelabel': 'nonvoting',
+										      'excludes': 'freebsd.*',
+										      'extravars': ['depbuildname': 'pacemaker',
+												    'depbuildversion': '2.1']])
 
 		    covscan_pmain = buildRunMap('pmain-covscan', info, ['voting': true,
 									'nodelabel': 'covscan',
@@ -104,20 +114,25 @@ pipeline {
 									    'nodelabel': 'covscan',
 									    'excludes': 'rhel8.*',
 									    'extravars': ['depbuildname': 'pacemaker',
-											  'depbuildversion': '2.1']])
+											  'depbuildversion': '3.0']])
+		    covscan_poldstable = buildRunMap('poldstable-covscan', info, ['voting': true,
+										  'nodelabel': 'covscan',
+										  'excludes': 'rhel8.*',
+										  'extravars': ['depbuildname': 'pacemaker',
+												'depbuildversion': '2.1']])
 
-		    buildrpms_pmain = buildRunMap('pmain-buildrpms', info, ['voting': true,
-									    'nodelabel': 'buildrpms',
-									    'excludes': '(rhel8|opensuse-15).*',
-									    'extravars': ['depbuildname': 'pacemaker',
-											  'depbuildversion': 'main']])
+		    buildrpms_pstable = buildRunMap('pstable-buildrpms', info, ['voting': true,
+										'nodelabel': 'buildrpms',
+										'excludes': '(rhel8|opensuse-15).*',
+										'extravars': ['depbuildname': 'pacemaker',
+											      'depbuildversion': '3.0']])
 
 		    // Run them (errors are caught in info[:])
 		    try {
-			parallel voting_pmain + voting_pstable +
-			    nonvoting_pmain + nonvoting_pstable +
-			    buildrpms_pmain +
-			    covscan_pmain + covscan_pstable
+			parallel voting_pmain + voting_pstable + voting_poldstable +
+			    nonvoting_pmain + nonvoting_pstable + nonvoting_poldstable +
+			    buildrpms_pstable +
+			    covscan_pmain + covscan_pstable + covscan_poldstable
 		    } catch (err) {
 			println("Jenkinsfile caught "+err)
 			info['exception_text'] += "\nparallel error caught: {$err}\n"
@@ -147,7 +162,12 @@ pipeline {
 									  'nodelabel': 'voting',
 									  'excludes': '(freebsd|rhel8|opensuse-15|ubuntu-20).*',
 									  'extravars': ['depbuildname': 'pacemaker',
-											'depbuildversion': '2.1']])
+											'depbuildversion': '3.0']])
+		    voting_poldstable = buildRunMap('poldstable-voting', info, ['voting': true,
+										'nodelabel': 'voting',
+										'excludes': '(freebsd|rhel8|opensuse-15|ubuntu-20).*',
+										'extravars': ['depbuildname': 'pacemaker',
+											      'depbuildversion': '2.1']])
 
 		    nonvoting_pmain = buildRunMap('pmain-nonvoting', info, ['voting': false,
 									    'nodelabel': 'nonvoting',
@@ -158,7 +178,12 @@ pipeline {
 										'nodelabel': 'nonvoting',
 										'excludes': 'freebsd.*',
 										'extravars': ['depbuildname': 'pacemaker',
-											      'depbuildversion': '2.1']])
+											      'depbuildversion': '3.0']])
+		    nonvoting_poldstable = buildRunMap('poldstable-nonvoting', info, ['voting': false,
+										      'nodelabel': 'nonvoting',
+										      'excludes': 'freebsd.*',
+										      'extravars': ['depbuildname': 'pacemaker',
+												    'depbuildversion': '2.1']])
 
 		    covscan_pmain = buildRunMap('pmain-covscan', info, ['voting': true,
 									'nodelabel': 'covscan',
@@ -169,7 +194,12 @@ pipeline {
 									    'nodelabel': 'covscan',
 									    'excludes': 'rhel8.*',
 									    'extravars': ['depbuildname': 'pacemaker',
-											  'depbuildversion': '2.1']])
+											  'depbuildversion': '3.0']])
+		    covscan_poldstable = buildRunMap('poldstable-covscan', info, ['voting': true,
+										  'nodelabel': 'covscan',
+										  'excludes': 'rhel8.*',
+										  'extravars': ['depbuildname': 'pacemaker',
+												'depbuildversion': '2.1']])
 
 		    buildrpms_pmain = buildRunMap('pmain-buildrpms', info, ['voting': true,
 									    'nodelabel': 'buildrpms',
@@ -179,10 +209,10 @@ pipeline {
 
 		    // Run them (errors are caught in info[:])
 		    try {
-			parallel voting_pmain + voting_pstable +
-			    nonvoting_pmain + nonvoting_pstable +
+			parallel voting_pmain + voting_pstable + voting_poldstable +
+			    nonvoting_pmain + nonvoting_pstable + nonvoting_poldstable +
 			    buildrpms_pmain +
-			    covscan_pmain + covscan_pstable
+			    covscan_pmain + covscan_pstable + covscan_poldstable
 		    } catch (err) {
 			println("Jenkinsfile caught "+err)
 			info['exception_text'] += "\nparallel error caught: {$err}\n"

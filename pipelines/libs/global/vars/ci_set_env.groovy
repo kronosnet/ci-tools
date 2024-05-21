@@ -144,7 +144,7 @@ def call(Map localinfo, String agentName)
 
     // pacemaker version handling
     // Latest Pacemaker release branch
-    cienv['PACEMAKER_RELEASE'] = '2.1'
+    cienv['PACEMAKER_RELEASE'] = '3.0'
 
     if (!cienv.containsKey('pacemakerver')) {
 	if (localinfo['target'] == 'main') {

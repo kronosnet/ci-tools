@@ -1,5 +1,5 @@
 // Return list of branches to be installed
 def call()
 {
-    return ['main', '2.1']
+    return ['main', '3.0', '2.1']
 }

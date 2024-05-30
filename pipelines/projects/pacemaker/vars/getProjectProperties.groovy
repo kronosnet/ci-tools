@@ -10,10 +10,24 @@ def call(Map localinfo, String agentName)
 
     props['SPECVERSION'] = env.BUILD_NUMBER
     props['RPMDEPS'] = 'corosynclib-devel'
-    props['MAKERPMOPTS'] = 'RPMDEST=subtree'
+    props['MAKERPMOPTS'] = ''
+    props['DISTROCONFOPTS'] = ''
 
-    if (agentName.startsWith("rhel8")) {
-	props['DISTROCONFOPTS'] = ' --with-cibsecrets=yes --with-concurrent-fencing-default=true --enable-legacy-links=yes'
+    // Skip one distro just to ensure compiling works both ways
+    if (!agentName.startsWith('debian')) {
+	props['DISTROCONFOPTS'] += '--with-cibsecrets=yes --enable-nls'
+    }
+
+    if (agentName.startsWith('rhel') && localinfo['target'] == '2.1') {
+	props['DISTROCONFOPTS'] += ' --with-concurrent-fencing-default=true'
+    }
+
+    if (agentName.startsWith('rhel8') && localinfo['target'] == '2.1') {
+	props['DISTROCONFOPTS'] += ' --enable-compat-2.0 --enable-legacy-links=yes'
+    }
+
+    if (agentName.startsWith('opensuse') && localinfo['target'] in ['main', '3.0']) {
+	props['MAKERPMOPTS'] += 'WITH="--with linuxha"'
     }
 
     return props

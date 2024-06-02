@@ -148,7 +148,6 @@ for i in *.src.rpm; do
 		rm -rf $RESULTDIR
 		mkdir -p $RESULTDIR
 		mock -r /etc/mock/almalinux-9-x86_64.cfg --nocheck --rebuild $i --resultdir=$RESULTDIR
-		rm -rf $RESULTDIR/*debuginfo*
 		mv $RESULTDIR/*.rpm $REPODIR/
 		cp $i $REPODIR/.cache/
 		rm -rf $RESULTDIR

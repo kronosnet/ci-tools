@@ -204,11 +204,19 @@ ${email_trailer}
 	    body = email_trailer
 	}
 
-	// Failures...
+    // Failures...
     } else if (voting_fail == 0) {
-	// Failed but no voting/nonvoting jobs
 	subject = "${email_title} ${state}"
-	body = email_trailer
+
+	// Total failure of a fn testing job, but we can still show all the info we have about stages completed
+	if (stages_fail > 0) {
+	    body = """${stages_fail}/${stages_run} Stage${stage_s} failed${stages_colon} ${info['stages_fail_nodes']}
+
+${email_trailer}
+"""
+	} else { // Normal job failure. There's nothing more to say here.
+	    body = email_trailer
+	}
     } else {
 	// Normal failure with voting/nonvoting jobs
 	subject = "${email_title} completed with state: ${state}"

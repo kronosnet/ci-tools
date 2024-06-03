@@ -77,7 +77,7 @@ def call(Map info)
 
     runWithTimeout(info['runtesttimeout'], { run_test(info) }, runstate, { post_run_test(info, runstate) }, { post_run_test(info, runstate) })
 
-    // handle errors et all
+    // handle errors et al
     if (runstate['RET'] != 'OK') {
 	recover_cluster(info)
 	catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {

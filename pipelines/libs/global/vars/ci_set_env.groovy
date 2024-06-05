@@ -16,6 +16,8 @@ def parse_ld_add(String ldvars)
     return varmap
 }
 
+// NOTE: This assumes that PROJECTS is in dependancy order
+// (eg libqb first ... )
 def get_build_info(Map ldmap, Map localinfo)
 {
     def exports = getShellVariables(ldmap)
@@ -25,6 +27,7 @@ def get_build_info(Map ldmap, Map localinfo)
 	""" + '''
 	EXTERNAL_CONFIG_PATH=""
 	EXTERNAL_LD_LIBRARY_PATH=""
+	fullpcp=""
 	for project in $PROJECTS; do
 	    found=""
 	    pkgcfg="${project}_PKGCFG"
@@ -41,7 +44,8 @@ def get_build_info(Map ldmap, Map localinfo)
 		    ldp="${!installpath}$spath/"
 		    pcp="${ldp}pkgconfig"
 		    if [ -d $pcp ]; then
-			pkgver=$(PKG_CONFIG_PATH=$pcp pkg-config --modversion "${!pkgcfg}")
+			fullpcp="$fullpcp:$pcp"
+			pkgver=$(PKG_CONFIG_PATH=$fullpcp pkg-config --modversion "${!pkgcfg}")
 			if [ "$?" = "0" ]; then
 			    echo "${!pkgcfg} version: $pkgver"
 			    found="yes"

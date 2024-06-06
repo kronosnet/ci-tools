@@ -6,18 +6,23 @@ set -e
 
 $CITHOME/ci-update-common
 
+# stable release update
 if [ -z "$1" ]; then
  freebsd-update --not-running-from-cron fetch
  freebsd-update --not-running-from-cron install || true
- pyver=39
- rustextradeps=""
-else
- pyver=39
- rustextradeps=""
 fi
 
+case "${NODE_NAME}" in
+ *devel*|*13*)
+  pyver=311
+  ;;
+ *14*)
+  pyver=39
+  ;;
+esac
+
 if [ -n "$RUSTBINDINGS" ] && [ "$RUSTBINDINGS" = yes ]; then
- rustdeps="rust rust-bindgen-cli $rustextradeps"
+ rustdeps="rust rust-bindgen-cli"
 fi
 
 pkg upgrade -y

@@ -1,0 +1,22 @@
+// A job to run while CI maintenance is happening.
+// It will lock-out any jobs that need this lock (which is all of them
+// unless they are running as part of a rebuild)
+
+pipeline {
+    agent { label 'built-in' }
+
+    stages {
+        stage('Locking') {
+            steps {
+                lock('MAINTENANCE LOCKOUT') {
+                    script {
+			// Sleep forever, in stages
+                        while (true) {
+                            sleep(86400)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

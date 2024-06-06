@@ -25,5 +25,6 @@ pkg install -y rsync git gcc automake autoconf autotools pkgconf gettext gettext
 pkg install -y net-snmp || true
 pkg clean -a -y
 pkg autoremove -y
+find /var/db/freebsd-update/files -name "*.gz" -exec rm -f {} \;
 getent group haclient >/dev/null || pw groupadd haclient
 getent passwd hacluster >/dev/null || pw useradd hacluster -g haclient -s /nonexistent -c "cluster user"

@@ -77,7 +77,6 @@ zypper install -y $bundler $glue  \
  net-snmp-devel                   \
  npm                              \
  pam-devel                        \
- python3-boto3                    \
  python3-devel                    \
  python3-google-api-python-client \
  python3-keystoneauth1            \

@@ -50,11 +50,11 @@ case $build in
   esac
   if [ -n "$RPMDEPS" ]; then
    echo "$MAKE $MAKERPMOPTS rpm"
-   $MAKE $MAKERPMOPTS rpm || removerpmdeps 1
+   $MAKE "$MAKERPMOPTS" rpm || removerpmdeps 1
    removerpmdeps 0
   else
    echo "$MAKE $MAKERPMOPTS rpm"
-   $MAKE $MAKERPMOPTS rpm
+   $MAKE "$MAKERPMOPTS" rpm
   fi
  ;;
  *)

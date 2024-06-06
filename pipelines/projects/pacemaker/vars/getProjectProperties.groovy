@@ -26,5 +26,7 @@ def call(Map localinfo, String agentName)
 	props['DISTROCONFOPTS'] += ' --enable-compat-2.0 --enable-legacy-links=yes'
     }
 
+    props['MAKERPMOPTS'] += 'WITH="--with linuxha --without doc"'
+
     return props
 }

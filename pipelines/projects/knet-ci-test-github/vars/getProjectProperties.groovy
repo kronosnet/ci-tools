@@ -7,6 +7,7 @@
 def call(Map localinfo, String agentName)
 {
     def props = [:]
+    props['MAKERPMOPTS'] = ''
 
     if (agentName.startsWith('debian')) {
 	props['DISTROCONFOPTS'] = '--with-debug'
@@ -18,6 +19,8 @@ def call(Map localinfo, String agentName)
 	agentName.startsWith('centos')) {
 	props['RPMDEPS'] = 'libknet1-devel'
     }
+
+    props['MAKERPMOPTS'] += 'WITH="--blabla pizza"'
 
     return props
 }

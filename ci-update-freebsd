@@ -10,10 +10,13 @@ $CITHOME/ci-update-common
 if [ -z "$1" ]; then
  freebsd-update --not-running-from-cron fetch
  freebsd-update --not-running-from-cron install || true
+else
+ # devel does not have NODE_NAME set
+ NODE_NAME=freebsd-devel-x86-64.ci.kronosnet.org
 fi
 
 case "${NODE_NAME}" in
- *devel*|*13*)
+ *13*|*devel*)
   pyver=311
   ;;
  *14*)

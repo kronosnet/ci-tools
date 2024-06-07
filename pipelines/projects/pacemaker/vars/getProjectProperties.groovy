@@ -26,7 +26,9 @@ def call(Map localinfo, String agentName)
 	props['DISTROCONFOPTS'] += ' --enable-compat-2.0 --enable-legacy-links=yes'
     }
 
-    props['MAKERPMOPTS'] += 'WITH="--with linuxha --without doc"'
+    if (agentName.startsWith('opensuse') && localinfo['target'] in ['main', '3.0']) {
+	props['WITH'] = '--with linuxha --without doc'
+    }
 
     return props
 }

@@ -3,14 +3,15 @@
 def call(Map info)
 {
     // If a global rebuild is in progress, then wait until it has finished.
-    // Unless (of course) were are part of that global rebuild
+    // Unless (of course) were are part of that global rebuild, or manually started
     def runreason = ''
     if (currentBuild.getBuildCauses().shortDescription.size() > 0) {
 	runreason = currentBuild.getBuildCauses().shortDescription[0]
     }
-    if (!runreason.startsWith('Started by upstream project "global/reinstall-all-manual')) {
+    if (!runreason.startsWith('Started by upstream project "global/reinstall-all-manual') &&
+	!runreason.startsWith('Started by user')) {
 	lock('MAINTENANCE LOCKOUT') {
-	    // We don't need to do anything here. just know that the we're not locked out
+	    // We don't need to do anything here. just know that we're not locked out
 	}
     }
 

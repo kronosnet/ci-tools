@@ -17,7 +17,7 @@ apt-get -y install ruby-rack-session || true
 apt-get -y install ruby-rackup || true
 
 case "${NODE_NAME}" in
- debian11*|debian12*|ubuntu-20-04*|ubuntu-22-04*)
+ debian-11*|debian-12*|ubuntu-20-04*|ubuntu-22-04*)
   systemddev=""
   ;;
  *)

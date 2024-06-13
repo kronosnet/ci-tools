@@ -87,20 +87,7 @@ process_publish() {
 	# generate repo files
 	cd $rpmdir/
 
-	cat > $rpmdir/opensuse-readme.repo << EOF
-OpenSUSE users, please browse the kronosnet/ folder for appropriate builds for your deployment.
-You can use zypper to enable those repositories.
-
-For example use the following command to add the repository:
-zypper add https://ci.kronosnet.org/builds/kronosnet/opensuse-tumbleweed-x86-64/main/latest/ kronosnet
-
-and to enable and autorefresh:
-zypper mr -e -f -G kronosnet
-
-please be aware the repositories are not signed.
-EOF
-
-	for i in $(ls | grep -v repo); do
+	for i in $(ls | grep -v repo | grep -v stacks); do
 		# project level
 		cd $i
 
@@ -132,16 +119,19 @@ EOF
 		cd .. >/dev/null 2>&1
 	done
 
-	cd $rpmdir/
+	# used for fn testing
+	cd $rpmdir/stacks
 
-	for i in main-repo main-kernel-repo next-stable-repo next-stable-kernel-repo; do
+	for i in $(ls); do
+		# stable / next-stable / main level
 		cd $i
 		for x in $(ls); do
+			# rhel release
 			echo "Creating $i-$x repo file"
-			cat > $rpmdir/$i-$x.repo << EOF
+			cat > $rpmdir/stacks-$i-$x.repo << EOF
 [$i-$x]
 name=$i-$x
-baseurl=https://ci.kronosnet.org/builds/$i/$x/
+baseurl=https://ci.kronosnet.org/builds/stacks/$i/$x/
 repo_gpgcheck=0
 enabled=1
 gpgcheck=0

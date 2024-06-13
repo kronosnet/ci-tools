@@ -2,19 +2,6 @@
 // This is called at the end of a provider-specific getBuildInfo.groovy
 def call(Map info)
 {
-    // If a global rebuild is in progress, then wait until it has finished.
-    // Unless (of course) were are part of that global rebuild, or manually started
-    def runreason = ''
-    if (currentBuild.getBuildCauses().shortDescription.size() > 0) {
-	runreason = currentBuild.getBuildCauses().shortDescription[0]
-    }
-    if (!runreason.startsWith('Started by upstream project "global/reinstall-all-manual') &&
-	!runreason.startsWith('Started by user')) {
-	lock('MAINTENANCE LOCKOUT') {
-	    // We don't need to do anything here. just know that we're not locked out
-	}
-    }
-
     // Clear things out ready for adding to by our groovy scripts
     info['nonvoting_fail'] = 0
     info['nonvoting_fail_nodes'] = ''
@@ -59,5 +46,19 @@ def call(Map info)
 	info['maininstall'] = 0
 	info['stableinstall'] = 0
 	info['publishrpm'] = 0
+    }
+
+    // If a global rebuild is in progress, then wait until it has finished.
+    // Unless (of course) were are part of that global rebuild, or manually started.
+    // Done at the end here so a job can be cancelled safely with info[] fully populated
+    def runreason = ''
+    if (currentBuild.getBuildCauses().shortDescription.size() > 0) {
+	runreason = currentBuild.getBuildCauses().shortDescription[0]
+    }
+    if (!runreason.startsWith('Started by upstream project "global/reinstall-all-manual') &&
+	!runreason.startsWith('Started by user')) {
+	lock('MAINTENANCE LOCKOUT') {
+	    // We don't need to do anything here. just know that we're not locked out
+	}
     }
 }

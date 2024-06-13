@@ -36,7 +36,8 @@ case $build in
   # this will trigger only with build-after-merge
   if [ "${install}" = 1 ] || [ "${covinstall}" = 1 ]; then
    mkdir -p /srv/covscan/${project}/origin/${target}/$extraver/
-   mv cov.json cov.txt /srv/covscan/${project}/origin/${target}/$extraver/
+   rm -f /srv/covscan/${project}/origin/${target}/$extraver/cov*
+   cp cov.json cov.txt /srv/covscan/${project}/origin/${target}/$extraver/
   else
    if [ ! -d /srv/covscan/${project}/origin/${target} ]; then
     echo "WARNING: target branch origin/${target} no available for compare. Skipping."

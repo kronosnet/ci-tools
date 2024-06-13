@@ -142,7 +142,7 @@ pipeline {
 				    git show --no-patch
 				fi
 			    done
-			    echo == apply workaround for dracut systemd-pcrphase missing module in rhel9 ==
+			    echo == apply workaround for dracut systemd-pcrphase missing module in rhel-9 ==
 			    echo == remove when https://issues.redhat.com/browse/RHEL-27944 is released  ==
 			    git revert --no-edit e5532e76939a8c5cef4c304415768afb9b22ab50
 			'''
@@ -197,9 +197,9 @@ pipeline {
 		    steps {
 			node('built-in') {
 			    timeout (time: 15, unit: 'MINUTES') {
-				sh "$HOME/ci-tools/ci-wrap ci-get-artifacts ${BUILDNODE} ${BUILDDIR}/rpms builds/kernel/rhel9-kbuild/origin/${BRANCH_NAME}/${BUILD_NUMBER}/ rpm"
+				sh "$HOME/ci-tools/ci-wrap ci-get-artifacts ${BUILDNODE} ${BUILDDIR}/rpms builds/kernel/rhel-9-kbuild/origin/${BRANCH_NAME}/${BUILD_NUMBER}/ rpm"
 				script {
-				    info['repo_urls'] = ["https://ci.kronosnet.org/" + "builds/kernel/rhel9-kbuild/origin/${BRANCH_NAME}/${BUILD_NUMBER}/"]
+				    info['repo_urls'] = ["https://ci.kronosnet.org/" + "builds/kernel/rhel-9-kbuild/origin/${BRANCH_NAME}/${BUILD_NUMBER}/"]
 				}
 			    }
 			}

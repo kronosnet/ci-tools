@@ -22,7 +22,7 @@ def call(Map localinfo, String agentName)
 	props['DISTROCONFOPTS'] += ' --with-concurrent-fencing-default=true'
     }
 
-    if (agentName.startsWith('rhel8') && localinfo['target'] == '2.1') {
+    if (agentName.startsWith('rhel-8') && localinfo['target'] == '2.1') {
 	props['DISTROCONFOPTS'] += ' --enable-compat-2.0 --enable-legacy-links=yes'
     }
 

@@ -20,12 +20,12 @@ case "${NODE_NAME}" in
  centos-*|anvil-ci-centos-*|anvil-ci-almalinux-*|anvil-ci-bm*)
   yum -y install epel-release
  ;;
- rhel8*|anvil-ci-rhel-8)
+ rhel-8*|anvil-ci-rhel-8)
   if ! rpm -qa | grep epel-release; then
    yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
   fi
  ;;
- rhel9*|anvil-ci-rhel-9)
+ rhel-9*|anvil-ci-rhel-9)
   if ! rpm -qa | grep epel-release; then
    yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
   fi
@@ -65,7 +65,7 @@ case "${NODE_NAME}" in
  ;;
 esac
 
-# annobin-annocheck is off sync on rhel85 power
+# annobin-annocheck is off sync on rhel-8 power
 case "${NODE_NAME}" in
  *power*)
  ;;
@@ -74,16 +74,16 @@ case "${NODE_NAME}" in
  ;;
 esac
 
-# rhel9 language pack
+# rhel-9 language pack
 case "${NODE_NAME}" in
- *rhel9*)
+ *rhel-9*)
   EXTRADEPS="glibc-all-langpacks $EXTRADEPS"
  ;;
 esac
 
-# rhel9 boto3
+# rhel-9 boto3
 case "${NODE_NAME}" in
- *rhel9*)
+ *rhel-9*)
  ;;
  *)
   EXTRADEPS="python3-boto3 $EXTRADEPS"

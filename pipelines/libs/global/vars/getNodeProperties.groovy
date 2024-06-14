@@ -61,6 +61,7 @@ def call(String node)
     node_env['rhel-9-vapor-rdu-3-x86-64'] = []
     node_env['rhel-9-vapor-rdu-4-x86-64'] = []
     node_env['rhel-9-vapor-rdu-5-x86-64'] = []
+    node_env['rhel-9-vapor-rdu-6-x86-64'] = []
     node_env['ubuntu-20-04-lts-x86-64'] = []
     node_env['ubuntu-22-04-lts-x86-64'] = []
     node_env['ubuntu-23-10-x86-64'] = []

@@ -44,7 +44,7 @@ print_usage() {
 	echo " -z                         use zstream (default: none)"
 	echo " -m                         use custom repo (default: none)"
 	echo " -x                         brew build (default: none)"
-	echo " -u upstream                upstream branch: next-stable, next-stable-kernel, main, main-kernel (default: none)"
+	echo " -u upstream                upstream branch: stable, next-stable, main (default: none)"
 	echo " -n nodes                   cluster nodes: 0, 32 (default: 4)"
 	echo " -i size                    iscsi storage size (default: 10)"
 	echo " -s size                    shared block storage size (default: 10)"

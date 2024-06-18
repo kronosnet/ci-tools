@@ -1,21 +1,6 @@
 export REMOVERPMS="libnozzle1 libknet1 libqb* corosynclib libcorosync* resource-agents libpacemaker-devel pacemaker-libs-devel pacemaker-schemas fence-agents fence-agents-common corosync-qdevice-devel dlm*"
 
 cleanbr() {
- if [ -n "$(which zypper 2>/dev/null)" ]; then
-  zypper remove -y $REMOVERPMS || true
-  zypper removerepo kronosnet-build || true
-  zypper removerepo libqb-build || true
-  zypper removerepo corosync-build || true
-  zypper removerepo pacemaker-build || true
-  zypper removerepo corosync-qdevice-build || true
-  zypper removerepo sbd-build || true
-  zypper removerepo fence-agents-build || true
-  zypper removerepo resource-agents-build || true
-  zypper removerepo booth-build || true
-  zypper removerepo dlm-build || true
-  zypper removerepo gfs2utils-build || true
-  zypper clean
- fi
  if [ -n "$(which yum 2>/dev/null)" ]; then
   yum remove -y $REMOVERPMS || true
   rm -rf /etc/yum.repos.d/kronosnet-build.repo || true
@@ -42,9 +27,6 @@ removerpmdeps() {
    osdeps="$osdeps libknet1-devel"
   ;;
  esac
- if [ -n "$(which zypper 2>/dev/null)" ]; then
-  zypper install -y $osdeps
- fi
  if [ -n "$(which yum 2>/dev/null)" ]; then
   yum install -y $osdeps
  fi
@@ -60,86 +42,6 @@ installrpmdeps() {
  fi
 
  cleanbr
- if [ -n "$(which zypper 2>/dev/null)" ]; then
-  if [ -n "$KRONOSNET_REPO_PATH" ]; then
-   zypper addrepo $KRONOSNET_REPO_PATH kronosnet-build || $ret
-   zypper modifyrepo -p 1 -e -f -G kronosnet-build || $ret
-   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $KRONOSNET_REPO_PATH; then
-    zypper removerepo kronosnet-build || true
-   fi
-  fi
-  if [ -n "$LIBQB_REPO_PATH" ]; then
-   zypper addrepo $LIBQB_REPO_PATH libqb-build || $ret
-   zypper modifyrepo -p 1 -e -f -G libqb-build || $ret
-   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $LIBQB_REPO_PATH; then
-    zypper removerepo libqb-build || true
-   fi
-  fi
-  if [ -n "$COROSYNC_REPO_PATH" ]; then
-   zypper addrepo $COROSYNC_REPO_PATH corosync-build || $ret
-   zypper modifyrepo -p 1 -e -f -G corosync-build || $ret
-   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $COROSYNC_REPO_PATH; then
-    zypper removerepo corosync-build || true
-   fi
-  fi
-  if [ -n "$PACEMAKER_REPO_PATH" ]; then
-   zypper addrepo $PACEMAKER_REPO_PATH pacemaker-build || $ret
-   zypper modifyrepo -p 1 -e -f -G pacemaker-build || $ret
-   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $PACEMAKER_REPO_PATH; then
-    zypper removerepo pacemaker-build || true
-   fi
-  fi
-  if [ -n "$COROSYNC_QDEVICE_REPO_PATH" ]; then
-   zypper addrepo $COROSYNC_QDEVICE_REPO_PATH corosync-qdevice-build || $ret
-   zypper modifyrepo -p 1 -e -f -G corosync-qdevice-build || $ret
-   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $COROSYNC_QDEVICE_REPO_PATH; then
-    zypper removerepo corosync-qdevice-build || true
-   fi
-  fi
-  if [ -n "$SBD_REPO_PATH" ]; then
-   zypper addrepo $SBD_REPO_PATH sbd-build || $ret
-   zypper modifyrepo -p 1 -e -f -G sbd-build || $ret
-   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $SBD_REPO_PATH; then
-    zypper removerepo sbd-build || true
-   fi
-  fi
-  if [ -n "$FENCE_AGENTS_REPO_PATH" ]; then
-   zypper addrepo $FENCE_AGENTS_REPO_PATH fence-agents-build || $ret
-   zypper modifyrepo -p 1 -e -f -G fence-agents-build || $ret
-   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $FENCE_AGENTS_REPO_PATH; then
-    zypper removerepo fence-agents-build || true
-   fi
-  fi
-  if [ -n "$RESOURCE_AGENTS_REPO_PATH" ]; then
-   zypper addrepo $RESOURCE_AGENTS_REPO_PATH resource-agents-build || $ret
-   zypper modifyrepo -p 1 -e -f -G resource-agents-build || $ret
-   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $RESOURCE_AGENTS_REPO_PATH; then
-    zypper removerepo resource-agents-build || true
-   fi
-  fi
-  if [ -n "$BOOTH_REPO_PATH" ]; then
-   zypper addrepo $BOOTH_REPO_PATH booth-build || $ret
-   zypper modifyrepo -p 1 -e -f -G booth-build || $ret
-   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $BOOTH_REPO_PATH; then
-    zypper removerepo booth-build || true
-   fi
-  fi
-  if [ -n "$DLM_REPO_PATH" ]; then
-   zypper addrepo $DLM_REPO_PATH dlm-build || $ret
-   zypper modifyrepo -p 1 -e -f -G dlm-build || $ret
-   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $DLM_REPO_PATH; then
-    zypper removerepo dlm-build || true
-   fi
-  fi
-  if [ -n "$GFS2UTILS_REPO_PATH" ]; then
-   zypper addrepo $GFS2UTILS_REPO_PATH gfs2utils-build || $ret
-   zypper modifyrepo -p 1 -e -f -G gfs2utils-build || $ret
-   if [ "x$bootstrap" = "x1" ] && ! wget -4 -q -O /dev/null $GFS2UTILS_REPO_PATH; then
-    zypper removerepo gfs2utils-build || true
-   fi
-  fi
-  zypper install -y $RPMDEPS || removerpmdeps 1
- fi
  if [ -n "$(which yum 2>/dev/null)" ]; then
   if [ -n "$KRONOSNET_REPO" ]; then
    wget -4 -O /etc/yum.repos.d/kronosnet-build.repo $KRONOSNET_REPO || $ret

@@ -14,13 +14,5 @@ def call(Map localinfo, String agentName)
 	props['RPMDEPS'] = 'corosynclib-devel pacemaker-libs-devel'
     }
 
-    if (agentName.startsWith('opensuse-tumbleweed')) {
-	props['RPMDEPS'] = 'corosynclib-devel libpacemaker3-devel'
-    }
-
-    if (agentName.startsWith('opensuse-15')) {
-	props['RPMDEPS'] = 'corosynclib-devel libpacemaker-devel'
-    }
-
     return props
 }

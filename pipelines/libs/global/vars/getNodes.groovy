@@ -35,8 +35,6 @@ def call()
     labels['freebsd-13-x86-64'] = ['freebsd-13','stable','x86-64','voting','freebsd','nonvoting-clang']
     labels['freebsd-14-x86-64'] = ['freebsd-14','stable','x86-64','voting','freebsd','nonvoting-clang']
     labels['freebsd-devel-x86-64'] = ['freebsd-devel','unstable','x86-64','nonvoting','freebsd','nonvoting-clang']
-    labels['opensuse-15-x86-64'] = ['opensuse-15','stable','x86-64','voting','rpm','zypper','nonvoting-clang','buildrpms', 'pcs-010']
-    labels['opensuse-tumbleweed-x86-64'] = ['opensuse-tumbleweed','unstable','x86-64','nonvoting','rpm','zypper','nonvoting-clang','buildrpms']
     labels['rhel-8-power9-ppc64le'] = ['rhel-8','stable','power9','ppc64le','voting','rpm','yum','nonvoting-clang','buildrpms', 'pcs-010']
     labels['rhel-8-s390x'] = ['rhel-8','stable','s390x','voting','rpm','yum','nonvoting-clang','buildrpms', 'pcs-010']
     labels['rhel-8-x86-64'] = ['rhel-8','stable','x86-64','voting','rpm','yum','nonvoting-clang','buildrpms', 'pcs-010']

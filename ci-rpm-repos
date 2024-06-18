@@ -91,7 +91,7 @@ process_publish() {
 		# project level
 		cd $i
 
-		for x in $(ls | grep -v opensuse | grep -v "^pr"); do
+		for x in $(ls | grep -v "^pr"); do
 			# builder level
 			cd $x
 

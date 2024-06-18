@@ -84,7 +84,7 @@ addnodetoalljobs() {
 			noclang)
 				clang=no
 				;;
-			yum|zypper|apt|freebsd)
+			yum|apt|freebsd)
 				packager=$i
 				;;
 			voting)

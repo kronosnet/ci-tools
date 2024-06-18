@@ -14,7 +14,6 @@ def call(Map localinfo, String agentName)
 
     if (agentName.startsWith('rhel') ||
 	agentName.startsWith('fedora') ||
-	agentName.startsWith('opensuse') ||
 	agentName.startsWith('centos')) {
 	//props['RPMDEPS'] = 'libknet1-devel'
     }

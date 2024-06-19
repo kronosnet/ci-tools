@@ -1,0 +1,105 @@
+// Jenkinsfile for the a knet CI (pagure) project
+
+// REMEMBER that due to the generic pipeline config in Jenkins
+// the pipeline job itself exists inside a ci-test-project folder
+// that is currently configured to load ProjectLib.
+// *** A simple pipeline cannot load libs ***
+// we need to revisit this whole concept a bit to keep it clean and
+// consistent, otherwise Jenkins views will be extremely different
+// to browse.
+@Library(['GlobalLib@fab-devel', 'PagureLib@fab-devel', 'ProjectLib@fab-devel']) _
+
+// Globals
+
+// need to keep it separated from ci-test as source code control is different
+// inside ci-tools. Some bits have been added to main to deal with this.
+def project = 'ci-test'
+def info = [:]
+
+// the pipeline configured in Jenkins has no knowledge of the repo since
+// it´s a generic pipeline and has no git scm, so we have to deal with it
+// manually
+def upstream_repo = 'https://pagure.io/knet-ci-test.git'
+
+// NOTE for above: because we have a discrepancy between project name in Jenkins
+//                 and project name in github/pagure, we need to specify both.
+//                 this shouldn´t be necessary for dlm/gfs2-utils.
+
+pipeline {
+    agent { label 'built-in' }
+
+    parameters {
+	string(name: 'bootstrap',   defaultValue: '0', description: 'Bootstrap the RPM repos')
+	string(name: 'fullrebuild', defaultValue: '0', description: 'This is a full rebuild - do not publish RPM and do NOT update build code on the nodes')
+    }
+
+    options {
+	skipDefaultCheckout(true)
+    }
+
+    stages {
+	// First check we are allowed to run, then set some params for that run
+	stage('Validate build env') {
+	    steps {
+		script {
+		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+		    getBuildInfo(project, upstream_repo, info)
+		}
+	    }
+	}
+	// This is the main stage that covers everything
+	stage('Main stage') {
+	    when {
+		// getAuthCheck will usually abort the job if permission is denied
+		// but this is an extra check!
+		expression { info['authcheck'] == true && info['tracking'] == true }
+	    }
+	    steps {
+		script {
+		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+
+		    // The 'short' test list
+		    voting = buildRunMap('voting', info, ['voting': true,
+							  'nodelabel': 'test-voting'])
+
+		    nonvoting = buildRunMap('nonvoting', info, ['voting': false,
+								'nodelabel': 'test-nonvoting',
+								'nodelist': ['freebsd-devel-x86-64']])
+
+		    nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
+									    'nodelabel': 'test-nonvoting',
+									    'extravars': ['compiler': 'clang',
+											  'install': 0]])
+
+		    covscan = buildRunMap('covscan', info, ['voting': true,
+							    'nodelabel': 'test-buildrpms'])
+
+		    buildrpms = buildRunMap('buildrpms', info, ['voting': true,
+								'nodelabel': 'test-buildrpms'])
+
+		    try {
+			parallel voting + nonvoting + nonvoting_clang + buildrpms
+		    } catch (err) {
+			println("Jenkinsfile caught "+err)
+			info['exception_text'] += "\nparallel error caught: {$err}\n"
+		    }
+		}
+	    }
+	}
+	stage('Post stage') {
+	    when {
+		// getAuthCheck will usually abort the job if permission is denied
+		// but this is an extra check!
+		expression { info['authcheck'] == true && info['tracking'] == true }
+	    }
+	    steps {
+		postStage(info)
+	    }
+	}
+    }
+    post {
+	always {
+	    projectFinishUp(info)
+	}
+    }
+}

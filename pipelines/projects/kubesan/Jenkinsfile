@@ -1,0 +1,58 @@
+@Library(['GlobalLib', 'ProjectLib']) _
+
+def test_list = ""
+def ret = 'SUCCESS'
+
+pipeline {
+    agent { label 'kubesan' }
+
+    stages {
+	stage('Prep build env') {
+	    steps {
+		script {
+		    cleanKube()
+		    test_list = sh (label: 'Gather test list', returnStdout: true,
+			script: 'ls -1 tests/t/*.sh').trim()
+		}
+	    }
+	}
+	stage('Build container') {
+	    steps {
+		script {
+		    sh (label: 'Run local build',
+			script: """
+			   su - kubesan /bin/bash -c "cd ${WORKSPACE}; make build"
+			""")
+		}
+	    }
+	}
+	stage('Run tests') {
+	    steps {
+		script {
+		    for (test in test_list.split()) {
+			stage("Run ${test}") {
+			   try {
+				sh """
+				    su - kubesan /bin/bash -c "cd ${WORKSPACE}; ./tests/run.sh ${test}"
+				"""
+			   } catch (err) {
+				ret = 'FAILED'
+				catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+				    shNoTrace("exit 1", "Marking this stage as a failure")
+				}
+			   }
+			}
+		    }
+		}
+	    }
+	}
+    }
+    post {
+	always {
+	    cleanKube()
+	    script {
+		currentBuild.result = ret
+	    }
+	}
+    }
+}

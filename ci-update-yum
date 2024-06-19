@@ -191,15 +191,20 @@ case "${NODE_NAME}" in
 		 azure-cli firewalld-filesystem jq \
 		 google-cloud-sdk python3-openstackclient \
 		 openshift-clients kubevirt-virtctl \
+		 google-cloud-cli-minikube podman podman-docker \
 		 libcurl-devel libvirt-devel openssl-devel gcc \
-		 tox crudini libxml2 \
+		 tox crudini libxml2 nmap-ncat \
 		 pyproject-rpm-macros python3-colorlog python3-toml \
-		 nmap-ncat \
 		 python3-vapor
  if ! which ibmcloud > /dev/null 2>&1; then
   curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
  else
   ibmcloud update -f
+ fi
+ getent group kubesan >/dev/null || groupadd -r kubesan
+ getent passwd kubesan >/dev/null || useradd -g kubesan -G libvirt -m kubesan
+ if ! grep -q enable-linger /home/kubesan/.bashrc; then
+  echo 'loginctl enable-linger $UID' >> /home/kubesan/.bashrc
  fi
  ;;
 esac

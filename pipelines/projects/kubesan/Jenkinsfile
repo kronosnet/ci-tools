@@ -1,47 +1,60 @@
 @Library(['GlobalLib', 'ProjectLib']) _
 
-def test_list = ""
+def test_list = ''
 def ret = 'SUCCESS'
+def testret = ''
 
 pipeline {
     agent { label 'kubesan' }
 
+    options {
+	gitLabConnection('gitlab-knet-ci-bot')
+    }
+
     stages {
 	stage('Prep build env') {
 	    steps {
+		updateGitlabCommitStatus(name: 'Prep build env', state: 'running')
 		script {
 		    cleanKube()
 		    test_list = sh (label: 'Gather test list', returnStdout: true,
-			script: 'ls -1 tests/t/*.sh').trim()
+			script: 'ls -1 tests/t/*.sh | sed -e "s#.*/##g" -e "s#.sh##g"').trim()
 		}
+		updateGitlabCommitStatus(name: 'Prep build env', state: 'success')
 	    }
 	}
 	stage('Build container') {
 	    steps {
+		updateGitlabCommitStatus(name: 'Build container', state: 'running')
 		script {
 		    sh (label: 'Run local build',
 			script: """
 			   su - kubesan /bin/bash -c "cd ${WORKSPACE}; make build"
 			""")
 		}
+		updateGitlabCommitStatus(name: 'Build container', state: 'success')
 	    }
 	}
 	stage('Run tests') {
 	    steps {
 		script {
 		    for (test in test_list.split()) {
+			testret = 'success'
+			updateGitlabCommitStatus(name: "Test: ${test}", state: 'running')
 			stage("Run ${test}") {
 			   try {
 				sh """
-				    su - kubesan /bin/bash -c "cd ${WORKSPACE}; ./tests/run.sh ${test}"
+				    su - kubesan /bin/bash -c "cd ${WORKSPACE}; ./tests/run.sh tests/t/${test}.sh"
 				"""
 			   } catch (err) {
 				ret = 'FAILED'
+				testret = 'failed'
 				catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
 				    shNoTrace("exit 1", "Marking this stage as a failure")
 				}
 			   }
 			}
+			updateGitlabCommitStatus(name: "Test: ${test}", state: "${testret}")
 		    }
 		}
 	    }

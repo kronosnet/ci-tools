@@ -18,7 +18,7 @@ pipeline {
 		script {
 		    cleanKube()
 		    test_list = sh (label: 'Gather test list', returnStdout: true,
-			script: 'ls -1 tests/t/*.sh | sed -e "s#.*/##g" -e "s#.sh##g"').trim()
+			script: 'ls -1 tests/t/*.sh | sed -e "s#.*/##g" -e "s#\\.sh\\$##g"').trim()
 		}
 		updateGitlabCommitStatus(name: 'Prep build env', state: 'success')
 	    }

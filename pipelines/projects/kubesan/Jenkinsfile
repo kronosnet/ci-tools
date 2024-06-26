@@ -9,6 +9,7 @@ pipeline {
 
     options {
 	gitLabConnection('gitlab-knet-ci-bot')
+	skipDefaultCheckout(true)
     }
 
     stages {
@@ -16,6 +17,8 @@ pipeline {
 	    steps {
 		updateGitlabCommitStatus(name: 'Prep build env', state: 'running')
 		script {
+		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+		    checkout scm
 		    cleanKube()
 		    test_list = sh (label: 'Gather test list', returnStdout: true,
 			script: 'ls -1 tests/t/*.sh | sed -e "s#.*/##g" -e "s#\\.sh\\$##g"').trim()
@@ -63,6 +66,7 @@ pipeline {
     post {
 	always {
 	    cleanKube()
+	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 	    script {
 		currentBuild.result = ret
 	    }

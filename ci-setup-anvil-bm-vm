@@ -237,6 +237,7 @@ fi
 cd $DEPLOYDIR/logs/
 tar zcp -f $BUILD_NUMBER.tar.gz $BUILD_NUMBER/
 scp $BUILD_NUMBER.tar.gz anvil-ci-proxy:/var/www/html/testing-logs/$BUILD_NUMBER.tar.gz
+ssh anvil-ci-proxy "find /var/www/html/testing-logs/ -maxdepth 1 -mtime +30 -exec rm -rf {} \;" 
 cd -
 rm -rf $DEPLOYDIR/logs
 

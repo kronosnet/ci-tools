@@ -35,9 +35,11 @@ ssh "$sourcenode".ci.kronosnet.org $preptar
 
 (
 	flock -e 200
-	scp "$sourcenode".ci.kronosnet.org:"$sourcedir"/ci-artifacts.tar  .
+	scp "$sourcenode".ci.kronosnet.org:"$sourcedir"/ci-artifacts.tar .
 	tar -xvpf ci-artifacts.tar
 	rm -f ci-artifacts.tar
 ) 200>$lock
+
+ssh "$sourcenode".ci.kronosnet.org rm -f "$sourcedir"/ci-artifacts.tar
 
 exit 0

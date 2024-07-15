@@ -209,6 +209,12 @@ case "${NODE_NAME}" in
  if ! grep -q enable-linger /home/kubesan/.bashrc; then
   echo 'loginctl enable-linger $UID' >> /home/kubesan/.bashrc
  fi
+ if [ ! -d /home/kubesan/.ssh ]; then
+   su - kubesan /bin/bash -c "mkdir -p /home/kubesan/.ssh && chmod 700 /home/kubesan/.ssh"
+ fi
+ if [ ! -f /home/kubesan/.ssh/id_rsa.pub ]; then
+   su - kubesan /bin/bash -c 'ssh-keygen -t rsa -b 4096 -f /home/kubesan/.ssh/id_rsa -C testing-key -N "" -q'
+ fi
  ;;
 esac
 

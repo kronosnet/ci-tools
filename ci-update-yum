@@ -205,6 +205,7 @@ case "${NODE_NAME}" in
  dnf -y install kcli
  getent group kubesan >/dev/null || groupadd -r kubesan
  getent passwd kubesan >/dev/null || useradd -g kubesan -G libvirt -m kubesan
+ setfacl -m u:kubesan:rwx /var/lib/libvirt/images
  if ! grep -q enable-linger /home/kubesan/.bashrc; then
   echo 'loginctl enable-linger $UID' >> /home/kubesan/.bashrc
  fi

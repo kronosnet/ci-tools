@@ -16,11 +16,8 @@ else
 fi
 
 case "${NODE_NAME}" in
- *13*|*devel*)
+ *13*|*14*|*devel*)
   pyver=311
-  ;;
- *14*)
-  pyver=39
   ;;
 esac
 

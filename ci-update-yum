@@ -201,6 +201,8 @@ case "${NODE_NAME}" in
  else
   ibmcloud update -f
  fi
+ dnf -y copr enable karmab/kcli
+ dnf -y install kcli
  getent group kubesan >/dev/null || groupadd -r kubesan
  getent passwd kubesan >/dev/null || useradd -g kubesan -G libvirt -m kubesan
  if ! grep -q enable-linger /home/kubesan/.bashrc; then

@@ -39,7 +39,7 @@ print_usage() {
 	echo ""
 	echo "$(basename $0) command [options]"
 	echo " -c command                 command: del, create, deploy, test, ssh, ip, reboot (required)"
-	echo " -p provider                cloud provider: az, gcp, libvirtd, ocpv, osp (required)"
+	echo " -p provider                cloud provider: az, gcp, libvirt, ocpv, osp (required)"
 	echo " -r rhelver                 rhel version: 7, 8, 9 (required)"
 	echo " -z                         use zstream (default: none)"
 	echo " -m                         use custom repo (default: none)"
@@ -184,7 +184,7 @@ if [ "$iscsisize" != "0" ]; then
 	deploybaseopts="$deploybaseopts --iscsi $iscsisize"
 fi
 if [ "$defaultuseiscsi" = "yes" ]; then
-	deploybaseopts="$deploybaseopts --useiscsi"
+	deploybaseopts="$deploybaseopts --use-iscsi"
 fi
 
 if [ "$blocksize" = "0" ] && [ -n "$defaultblocksize" ]; then
@@ -195,33 +195,39 @@ if [ "$blocksize" != "0" ]; then
 fi
 
 if [ "$upstream" != "none" ]; then
-	deploybaseopts="$deploybaseopts --useupstreamrepo $upstream"
+	deploybaseopts="$deploybaseopts --use-upstream-repo $upstream"
 fi
 if [ "$zstream" == "yes" ]; then
-	deploybaseopts="$deploybaseopts --usezstream"
+	deploybaseopts="$deploybaseopts --use-zstream"
 fi
 if [ "$customrepopath" != "" ]; then
-	deploybaseopts="$deploybaseopts --usecustomrepo $customrepopath"
+	deploybaseopts="$deploybaseopts --use-custom-repo $customrepopath"
 fi
 if [ "$brewbuild" != "" ]; then
 	deploybaseopts="$deploybaseopts --package $brewbuild"
 fi
 
 testbaseopts=""
-if [ "$jobid" != "" ]; then
-	testbaseopts="$testbaseopts -j $jobid"
-fi
 if [ "$post" != "" ]; then
 	testbaseopts="$testbaseopts --post-results"
 fi
 if [ "$testlogdir" != "" ]; then
 	testbaseopts="$testbaseopts --collect-debug-dir=$testlogdir"
 fi
+# TEMPORARY DISABLED
+#if [ "$jobid" != "" ]; then
+#	testbaseopts="$testbaseopts -j $jobid"
+#fi
 
+# vapor $vaporopts ....
+
+vaporopts=""
 # generic log options, debug off by default
-logopts="--verbose --nocolorlog"
+vaporopts="--nocolorlog --log-level "
 if [ "$debug" != "" ]; then
-	logopts="$logopts --debug"
+	vaporopts="$vaporopts debug"
+else
+	vaporopts="$vaporopts info"
 fi
 
 # generate cluster name
@@ -231,44 +237,44 @@ fi
 clusteropts="--cluster ${project}${provider}c${rhelver}${buildnum}"
 
 # put all options together
-options="--provider $provider $authopts $clusteropts $logopts"
+provideropts="$provider $authopts"
 
 cloud_delete() {
-	vapor delete $options
+	vapor $vaporopts delete $clusteropts $provideropts
 }
 
 cloud_create() {
 	# perform provider specific setup
 	${provider}_setup
-	vapor create $options $createbaseopts $createopts
+	vapor $vaporopts create $clusteropts $createbaseopts $createopts $provideropts
 }
 
 cloud_deploy() {
-	vapor deploy $options $deploybaseopts $deployopts
+	vapor $vaporopts deploy $clusteropts $deploybaseopts $deployopts $provideropts
 }
 
 cloud_test() {
 	testtype="$1"
 
-	callopts="-t"
+	callopts="--tests"
 	if [ "$testtype" = "tags" ]; then
-		callopts="-T"
+		callopts="--tags"
 	fi
 
-	vapor test $options $testbaseopts --nodes $nodes $testopts $callopts "$tests"
+	vapor $vaporopts test $clusteropts $testbaseopts --nodes $nodes $testopts $callopts "$tests" $provideropts
 }
 
 cloud_reboot() {
-	vapor reboot $options
+	vapor $vaporopts reboot $clusteropts $provideropts
 }
 
 cloud_ip_info() {
-	vapor get --provider $provider $authopts $clusteropts --ip-address
+	vapor get-ip-address $clusteropts $provideropts
 }
 
 cloud_ssh_info() {
-	vapor get --provider $provider $authopts $clusteropts --ssh
-	vapor get --provider $provider $authopts $clusteropts --scp
+	vapor get-ssh $clusteropts $provideropts
+	vapor get-scp $clusteropts $provideropts
 }
 
 ret=0

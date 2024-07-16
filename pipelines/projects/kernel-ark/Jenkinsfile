@@ -8,7 +8,7 @@ def projectid = 'kft'
 def info = [:]
 
 // kernel-ark overrides
-def provider = 'libvirtd'
+def provider = 'libvirt'
 def fromnodes = 3
 def tonodes = 3
 def rhelver = '9'

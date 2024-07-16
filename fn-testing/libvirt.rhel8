@@ -1,10 +1,10 @@
 if [ -a /dev/vapor/shared ]; then
-	usedevice="--blockdevice /dev/vapor/shared"
+	usedevice="--block-device /dev/vapor/shared"
 fi
 createopts="--image rhel-8.10.0.x86_64.qcow2 --flavor-workstation rhelha-vapor-workstation-extra-large --flavor rhelha-vapor-node-extra-large $usedevice"
 deployopts=""
 testopts=""
 
-libvirtd_setup() {
+libvirt_setup() {
 	return 0
 }

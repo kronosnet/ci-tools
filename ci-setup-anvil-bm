@@ -14,7 +14,6 @@ gpgcheck=0
 EOF
 
 yum clean all
-yum install -y java-11-openjdk-headless
 yum install -y qemu-img qemu-kvm libvirt virt-install lftp fence-virtd-libvirt fence-virtd-tcp postgresql ansible cloud-utils cloud-utils-growpart neo4j simengine-core
 
 systemctl stop neo4j

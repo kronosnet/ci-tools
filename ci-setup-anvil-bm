@@ -17,6 +17,11 @@ yum clean all
 yum install -y qemu-img qemu-kvm libvirt virt-install lftp fence-virtd-libvirt fence-virtd-tcp postgresql ansible cloud-utils cloud-utils-growpart neo4j simengine-core
 
 systemctl stop neo4j
+mkdir -p /etc/systemd/system/neo4j.service.d/
+echo "[Service]" > /etc/systemd/system/neo4j.service.d/override.conf
+neojre=$(update-alternatives --list |grep ^jre_1.8.0_openjdk | awk '{print $NF}')
+echo 'Environment="JAVA_HOME='${neojre}'"' >> /etc/systemd/system/neo4j.service.d/override.conf
+systemctl daemon-reload
 systemctl enable neo4j
 systemctl start neo4j
 systemctl enable simengine-core

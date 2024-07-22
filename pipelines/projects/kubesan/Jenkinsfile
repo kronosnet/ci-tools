@@ -30,10 +30,15 @@ pipeline {
 	    steps {
 		updateGitlabCommitStatus(name: 'Build container', state: 'running')
 		script {
-		    sh (label: 'Run local build',
-			script: """
-			   su - kubesan /bin/bash -c "cd ${WORKSPACE}; make build"
-			""")
+		    try {
+			sh (label: 'Run local build',
+			    script: """
+				su - kubesan /bin/bash -c "cd ${WORKSPACE}; make build"
+			    """)
+		    } catch (err) {
+			updateGitlabCommitStatus(name: 'Build container', state: 'failed')
+			ret = 'FAILED'
+		    }
 		}
 		updateGitlabCommitStatus(name: 'Build container', state: 'success')
 	    }

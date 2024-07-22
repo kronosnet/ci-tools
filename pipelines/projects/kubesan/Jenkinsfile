@@ -38,6 +38,10 @@ pipeline {
 		    } catch (err) {
 			updateGitlabCommitStatus(name: 'Build container', state: 'failed')
 			ret = 'FAILED'
+			catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+			    shNoTrace("exit 1", "Marking this stage as a failure")
+			}
+			error('Build failure')
 		    }
 		}
 		updateGitlabCommitStatus(name: 'Build container', state: 'success')

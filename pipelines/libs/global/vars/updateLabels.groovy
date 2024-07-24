@@ -8,7 +8,7 @@ def call(Map info)
      // Don't update built-in or other nodes with no labels in getNodes()
     if (newlabels_arr == null || newlabels_arr.size() == 0) {
 	info['email_extra_text'] += """
-NOTE: updateLabels ran on node ${env.NODENAME} but found no entry in getNodes()
+NOTE: updateLabels ran on node ${env.NODE_NAME} but found no entry in getNodes()
 """
 	return
     }

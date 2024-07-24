@@ -1,0 +1,69 @@
+// Update ci-tools (and other things) on all the nodes
+
+@Library(['GlobalLib', 'GithubLib', 'ProjectLib']) _
+
+def info = [:]
+def project = 'update-all-ci-tools'
+
+// Generate the run-list
+def buildFullRunMap(Map info)
+{
+    def collectBuildEnv = [:]
+    def nodeList = getNodes()
+
+    for (n in nodeList) {
+	def node = n.key
+	collectBuildEnv[node] = {
+	    updateCiNode(node, info)
+	}
+    }
+    // It also needs to run on the Jenkins node
+    collectBuildEnv['built-in'] = {
+	updateCiNode('built-in', info)
+    }
+
+    return collectBuildEnv
+}
+
+pipeline {
+    agent { label 'built-in' }
+
+    parameters {
+	string(name: 'reinstall',   defaultValue: '0', description: 'Clean out and do a fresh checkout of ci-tools')
+    }
+
+    stages {
+        stage('update ci-tools') {
+            steps {
+		script {
+		    info['project'] = project
+		    getBuildInfoCommon(info)
+		    info['state'] = 'success'
+		    info['branch'] = ''
+
+		    // Just update the jar file on built-in
+		    sh '''
+                         rm -rf $HOME/ci-tools/jenkins-cli.jar
+                         wget -O $HOME/ci-tools/jenkins-cli.jar https://ci.kronosnet.org/jnlpJars/jenkins-cli.jar >/dev/null 2>&1
+                       '''
+		    // Now do all of the other nodes
+		    def updates = buildFullRunMap(info)
+		    try {
+			parallel updates
+		    } catch (err) {
+			println("Jenkinsfile caught "+err)
+			info['exception_text'] += "\nparallel error caught: {$err}\n"
+			info['state'] = 'Error'
+		    }
+		}
+	    }
+        }
+    }
+
+    // Finish up and send emails
+    post {
+	always {
+	    projectFinishUp(info)
+	}
+    }
+}

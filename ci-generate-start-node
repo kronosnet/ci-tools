@@ -5,9 +5,16 @@ set -e
 START_NODE_DIR=$HOME/bin
 
 case $(uname -s) in
-  *Linux) SHELL="/bin/bash -e"
+  *Linux)
+    SHELL="/bin/bash -e"
+    JVMPATH="/usr/lib/jvm"
+    SSET=""
   ;;
-  *BSD) SHELL="/bin/tcsh -e"
+  *BSD)
+    SHELL="/bin/tcsh -e"
+    JVMPATH="/usr/local"
+    SSET="set "
+  ;;
 esac
 
 mkdir -p $START_NODE_DIR
@@ -15,5 +22,7 @@ cat $CITHOME/start_node.in | sed \
     -e "s^@HOME@^$HOME^g" \
     -e "s^@SHELL@^$SHELL^g" \
     -e "s^@START_NODE_DIR@^$START_NODE_DIR^g" \
+    -e "s^@JVMPATH@^$JVMPATH^g" \
+    -e "s^@SSET@^$SSET^g" \
     > $START_NODE_DIR/start_node
 chmod 755 $START_NODE_DIR/start_node

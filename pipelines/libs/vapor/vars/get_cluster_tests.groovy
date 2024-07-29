@@ -48,10 +48,10 @@ def call(Map info)
     ]
 
     advanced_tests = [
-	'pacemaker,recovery,RecoverySwitchFailure,variant:iterations,iterations:10',
+	'pacemaker,recovery,RecoverySwitchFailure',
 	'pacemaker,recovery,RecoveryNodeNetworkFailure',
-	'pacemaker,recovery,RecoveryRandomMultiNode,variant:iterations,iterations:10',
-	'pacemaker,recovery,RecoveryRandomMultiNodeNQ,variant:iterations,iterations:10',
+	'pacemaker,recovery,RecoveryRandomMultiNode',
+	'pacemaker,recovery,RecoveryRandomMultiNodeNQ',
 	'pacemaker,recovery,RecoveryNodeNetworkFailure,sbd-only,network_disruptor',
 	'pacemaker,recovery,RecoveryNodeNetworkFailure,sbd-with-one-device,network_disruptor',
     ]
@@ -74,16 +74,16 @@ def call(Map info)
 	'lvm,lvm_config_no-vdo,cluster-lvmlockd'
     ]
     basic_tests = [
-	'pacemaker,recovery,RecoveryActiveNode,variant:iterations,iterations:10',
-	'pacemaker,recovery,RecoveryRandomNode,variant:iterations,iterations:10',
+	'pacemaker,recovery,RecoveryActiveNode',
+	'pacemaker,recovery,RecoveryRandomNode',
 	'pacemaker,recovery,RecoveryRestartPacemaker-AllNodes',
-	'pacemaker,recovery,RecoveryResourceFailure,variant:iterations,iterations:10',
+	'pacemaker,recovery,RecoveryResourceFailure',
 	'pacemaker,recovery,RecoveryActiveNode,sbd-only,kill_reboot',
 	'pacemaker,resource,Apache,recovery',
-	'pacemaker,resource,Apache,variant:latency,latency:150ms',
-	'pacemaker,resource,Clone,variant:scaling,scale:5',
-	'pacemaker,resource,ConstraintsTest,variant:scaling,scale:5',
-	'pacemaker,resource,Group,variant:scaling,scale:5',
+	'pacemaker,resource,Apache,variant:latency,latency:300ms',
+	'pacemaker,resource,Clone',
+	'pacemaker,resource,ConstraintsTest',
+	'pacemaker,resource,Group',
 	'pacemaker,resource,Filesystem',
 	'pacemaker,resource,FilesystemGroup',
 	'pacemaker,usecase,ha-apache',

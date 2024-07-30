@@ -34,34 +34,35 @@ esac
 
 yum -y $EXTRAOPTS update $POSTOPTS
 
-# handle special packages that are not available everywhere
-for i in libcgroup-devel libservicelog-devel python3-google-api-client; do
- yum -y install $i || true
-done
-
-EXTRADEPS=""
+optional_pkg libcgroup-devel
+optional_pkg libservicelog-devel
+optional_pkg python3-google-api-client
 
 case "${NODE_NAME}" in
  centos*|rhel*|anvil-ci-centos*|anvil-ci-rhel*|anvil-ci-alma*)
-  EXTRADEPS="platform-python-devel $EXTRADEPS"
+  required_pkg platform-python-devel
  ;;
 esac
 
 case "${NODE_NAME}" in
  anvil-ci*)
-  EXTRADEPS="fence-agents-common resource-agents selinux-policy-devel $EXTRADEPS"
+  required_pkg fence-agents-common
+  required_pkg resource-agents
+  required_pkg selinux-policy-devel
  ;;
 esac
 
 # rust bindings
 if [ -n "$RUSTBINDINGS" ] && [ "$RUSTBINDINGS" = yes ]; then
-  EXTRADEPS="bindgen clippy rustfmt $EXTRADEPS"
+  required_pkg bindgen
+  required_pkg clippy
+  required_pkg rustfmt
 fi
 
 # shellcheck for resource-agents ci/build.sh
 case "${NODE_NAME}" in
  fedora*)
-  EXTRADEPS="ShellCheck $EXTRADEPS"
+  required_pkg ShellCheck
  ;;
 esac
 
@@ -70,14 +71,14 @@ case "${NODE_NAME}" in
  *power*)
  ;;
  *)
-  EXTRADEPS="annobin-annocheck $EXTRADEPS"
+  required_pkg annobin-annocheck
  ;;
 esac
 
 # rhel-9 language pack
 case "${NODE_NAME}" in
  *rhel-9*)
-  EXTRADEPS="glibc-all-langpacks $EXTRADEPS"
+  required_pkg glibc-all-langpacks
  ;;
 esac
 
@@ -86,136 +87,159 @@ case "${NODE_NAME}" in
  *rhel-9*)
  ;;
  *)
-  EXTRADEPS="python3-boto3 $EXTRADEPS"
+  required_pkg python3-boto3
  ;;
 esac
 
-yum -y install             \
- OpenIPMI-devel            \
- asciidoc                  \
- autoconf                  \
- automake                  \
- bison                     \
- byacc                     \
- bzip2-devel               \
- cargo                     \
- check-devel               \
- clang                     \
- curl                      \
- dbus-devel                \
- docbook-style-xsl         \
- doxygen                   \
- execstack                 \
- flex                      \
- fontconfig                \
- gcc                       \
- gettext-devel             \
- git                       \
- glib2-devel               \
- gnutls-devel              \
- groff                     \
- help2man                  \
- inkscape                  \
- jq                        \
- libaio-devel              \
- libblkid-devel            \
- libcmocka-devel           \
- libcurl-devel             \
- liberation-sans-fonts     \
- libffi-devel              \
- libgcrypt-devel           \
- libnet-devel              \
- libnl3-devel              \
- libqb-devel               \
- libtool                   \
- libtool-ltdl-devel        \
- libuuid-devel             \
- libvirt-devel             \
- libxml2-devel             \
- libxslt                   \
- libxslt-devel             \
- libzstd-devel             \
- lksctp-tools-devel        \
- lz4-devel                 \
- lzo-devel                 \
- make                      \
- net-snmp-devel            \
- ncurses-devel             \
- npm                       \
- nss-devel                 \
- nss-tools                 \
- openssl-devel             \
- openwsman-python3         \
- overpass-fonts            \
- pam-devel                 \
- perl                      \
- python3-cryptography      \
- python3-devel             \
- python3-httplib2          \
- python3-lxml              \
- python3-pexpect           \
- python3-pip               \
- python3-pycurl            \
- python3-pyroute2          \
- python3-requests          \
- python3-rpm-macros        \
- python3-setuptools        \
- python3-setuptools_scm    \
- python3-systemd           \
- python3-suds              \
- python3-wheel             \
- psmisc                    \
- rpm-build                 \
- rpmdevtools               \
- rpmlint                   \
- rsync                     \
- ruby                      \
- ruby-devel                \
- rubygems                  \
- rubygem-bundler           \
- rust                      \
- systemd-devel             \
- time                      \
- util-linux                \
- valgrind                  \
- which                     \
- xz-devel                  \
- zlib-devel                \
- $EXTRADEPS
+required_pkg OpenIPMI-devel
+required_pkg asciidoc
+required_pkg autoconf
+required_pkg automake
+required_pkg bison
+required_pkg byacc
+required_pkg bzip2-devel
+required_pkg cargo
+required_pkg check-devel
+required_pkg clang
+required_pkg curl
+required_pkg dbus-devel
+required_pkg docbook-style-xsl
+required_pkg doxygen
+required_pkg execstack
+required_pkg flex
+required_pkg fontconfig
+required_pkg gcc
+required_pkg gettext-devel
+required_pkg git
+required_pkg glib2-devel
+required_pkg gnutls-devel
+required_pkg groff
+required_pkg help2man
+required_pkg inkscape
+required_pkg jq
+required_pkg libaio-devel
+required_pkg libblkid-devel
+required_pkg libcmocka-devel
+required_pkg libcurl-devel
+required_pkg liberation-sans-fonts
+required_pkg libffi-devel
+required_pkg libgcrypt-devel
+required_pkg libnet-devel
+required_pkg libnl3-devel
+required_pkg libqb-devel
+required_pkg libtool
+required_pkg libtool-ltdl-devel
+required_pkg libuuid-devel
+required_pkg libvirt-devel
+required_pkg libxml2-devel
+required_pkg libxslt
+required_pkg libxslt-devel
+required_pkg libzstd-devel
+required_pkg lksctp-tools-devel
+required_pkg lz4-devel
+required_pkg lzo-devel
+required_pkg make
+required_pkg net-snmp-devel
+required_pkg ncurses-devel
+required_pkg npm
+required_pkg nss-devel
+required_pkg nss-tools
+required_pkg openssl-devel
+required_pkg openwsman-python3
+required_pkg overpass-fonts
+required_pkg pam-devel
+required_pkg perl
+required_pkg python3-cryptography
+required_pkg python3-devel
+required_pkg python3-httplib2
+required_pkg python3-lxml
+required_pkg python3-pexpect
+required_pkg python3-pip
+required_pkg python3-pycurl
+required_pkg python3-pyroute2
+required_pkg python3-requests
+required_pkg python3-rpm-macros
+required_pkg python3-setuptools
+required_pkg python3-setuptools_scm
+required_pkg python3-suds
+required_pkg python3-systemd
+required_pkg python3-wheel
+required_pkg psmisc
+required_pkg rpm-build
+required_pkg rpmdevtools
+required_pkg rpmlint
+required_pkg rsync
+required_pkg ruby
+required_pkg ruby-devel
+required_pkg rubygem-bundler
+required_pkg rubygems
+required_pkg rust
+required_pkg systemd-devel
+required_pkg time
+required_pkg util-linux
+required_pkg valgrind
+required_pkg which
+required_pkg xz-devel
+required_pkg zlib-devel
 
 case "${NODE_NAME}" in
  *vapor*)
-  yum -y update
-  yum -y install python3-devel python3-pip python3-wheel \
-		 brewkoji createrepo ansible \
-		 azure-cli firewalld-filesystem jq \
-		 google-cloud-sdk python3-openstackclient \
-		 openshift-clients kubevirt-virtctl \
-		 google-cloud-cli-minikube podman podman-docker \
-		 libcurl-devel libvirt-devel openssl-devel gcc \
-		 tox crudini libxml2 nmap-ncat \
-		 pyproject-rpm-macros python3-colorlog python3-toml \
-		 python3-vapor
- if ! which ibmcloud > /dev/null 2>&1; then
-  curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
- else
-  ibmcloud update -f
- fi
- dnf -y copr enable karmab/kcli
- dnf -y install kcli
- getent group kubesan >/dev/null || groupadd -r kubesan
- getent passwd kubesan >/dev/null || useradd -g kubesan -G libvirt -m kubesan
- setfacl -m u:kubesan:rwx /var/lib/libvirt/images
- if ! grep -q enable-linger /home/kubesan/.bashrc; then
-  echo 'loginctl enable-linger $UID' >> /home/kubesan/.bashrc
- fi
- if [ ! -d /home/kubesan/.ssh ]; then
-   su - kubesan /bin/bash -c "mkdir -p /home/kubesan/.ssh && chmod 700 /home/kubesan/.ssh"
- fi
- if [ ! -f /home/kubesan/.ssh/id_rsa.pub ]; then
-   su - kubesan /bin/bash -c 'ssh-keygen -t rsa -b 4096 -f /home/kubesan/.ssh/id_rsa -C testing-key -N "" -q'
- fi
- ;;
+  required_pkg ansible
+  required_pkg azure-cli
+  required_pkg brewkoji
+  required_pkg createrepo
+  required_pkg crudini
+  required_pkg firewalld-filesystem
+  required_pkg gcc
+  required_pkg google-cloud-cli-minikube
+  required_pkg google-cloud-sdk
+  required_pkg jq
+  required_pkg kubevirt-virtctl
+  required_pkg libcurl-devel
+  required_pkg libvirt-devel
+  required_pkg libxml2
+  required_pkg nmap-ncat
+  required_pkg openshift-clients
+  required_pkg openssl-devel
+  required_pkg podman
+  required_pkg podman-docker
+  required_pkg pyproject-rpm-macros
+  required_pkg python3-colorlog
+  required_pkg python3-devel
+  required_pkg python3-openstackclient
+  required_pkg python3-pip
+  required_pkg python3-toml
+  required_pkg python3-vapor
+  required_pkg python3-wheel
+  required_pkg tox
+  ;;
+esac
+
+yum -y install $REQUIRED_PKGS
+for PKG in $OPTIONAL_PKGS; do yum -y install $PKG || true; done
+
+case "${NODE_NAME}" in
+ *vapor*)
+  if ! which ibmcloud > /dev/null 2>&1; then
+   curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+  else
+   ibmcloud update -f
+  fi
+  dnf -y copr enable karmab/kcli
+  dnf -y install kcli
+  getent group kubesan >/dev/null || groupadd -r kubesan
+  getent passwd kubesan >/dev/null || useradd -g kubesan -G libvirt -m kubesan
+  setfacl -m u:kubesan:rwx /var/lib/libvirt/images
+  if ! grep -q enable-linger /home/kubesan/.bashrc; then
+   echo 'loginctl enable-linger $UID' >> /home/kubesan/.bashrc
+  fi
+  if [ ! -d /home/kubesan/.ssh ]; then
+    su - kubesan /bin/bash -c "mkdir -p /home/kubesan/.ssh && chmod 700 /home/kubesan/.ssh"
+  fi
+  if [ ! -f /home/kubesan/.ssh/id_rsa.pub ]; then
+    su - kubesan /bin/bash -c 'ssh-keygen -t rsa -b 4096 -f /home/kubesan/.ssh/id_rsa -C testing-key -N "" -q'
+  fi
+  ;;
 esac
 
 getent group haclient >/dev/null || groupadd -r haclient -g 189

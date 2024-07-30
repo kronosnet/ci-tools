@@ -10,19 +10,78 @@ if [ -z "$1" ]; then
  freebsd-update --not-running-from-cron fetch
  freebsd-update --not-running-from-cron install || true
  pyver=39
- rustextradeps=""
 else
  pyver=39
- rustextradeps=""
-fi
-
-if [ -n "$RUSTBINDINGS" ] && [ "$RUSTBINDINGS" = yes ]; then
- rustdeps="rust rust-bindgen-cli $rustextradeps"
 fi
 
 pkg upgrade -y
-pkg install -y rsync git gcc automake autoconf autotools pkgconf gettext gettext-tools nss libgcrypt liblz4 lzo2 lzma bzip2 libxml2 libqb doxygen groff dbus gmake curl jq check py${pyver}-pexpect py${pyver}-pycurl py${pyver}-requests py${pyver}-boto3 py${pyver}-google-api-python-client libxslt glib docbook-xsl libltdl e2fsprogs-libuuid libxslt ncurses bison byacc flex help2man gnutls asciidoc getopt p5-Locale-gettext openipmi zstd py${pyver}-keystoneauth1 py${pyver}-python-keystoneclient py${pyver}-python-novaclient py${pyver}-suds cmocka gsnmp flock $rustdeps
-pkg install -y net-snmp || true
+
+# Required
+pkg install -y                       \
+ asciidoc                            \
+ autoconf                            \
+ automake                            \
+ autotools                           \
+ bison                               \
+ byacc                               \
+ bzip2                               \
+ check                               \
+ cmocka                              \
+ curl                                \
+ dbus                                \
+ docbook-xsl                         \
+ doxygen                             \
+ e2fsprogs-libuuid                   \
+ flex                                \
+ flock                               \
+ gcc                                 \
+ getopt                              \
+ gettext                             \
+ gettext-tools                       \
+ git                                 \
+ glib                                \
+ gmake                               \
+ gnutls                              \
+ groff                               \
+ gsnmp                               \
+ help2man                            \
+ jq                                  \
+ libgcrypt                           \
+ libltdl                             \
+ liblz4                              \
+ libqb                               \
+ libxml2                             \
+ libxslt                             \
+ lzma                                \
+ lzo2                                \
+ pkgconf                             \
+ ncurses                             \
+ nss                                 \
+ openipmi                            \
+ p5-Locale-gettext                   \
+ py${pyver}-boto3                    \
+ py${pyver}-google-api-python-client \
+ py${pyver}-keystoneauth1            \
+ py${pyver}-pexpect                  \
+ py${pyver}-pycurl                   \
+ py${pyver}-python-keystoneclient    \
+ py${pyver}-python-novaclient        \
+ py${pyver}-requests                 \
+ py${pyver}-suds                     \
+ rsync                               \
+ zstd
+
+# Optional
+pkg install -y  \
+ net-snmp       \
+ || true
+
+if [ -n "$RUSTBINDINGS" ] && [ "$RUSTBINDINGS" = yes ]; then
+ pkg install -y   \
+  rust   \
+  rust-bindgen-cli
+fi
+
 pkg clean -a -y
 pkg autoremove -y
 getent group haclient >/dev/null || pw groupadd haclient

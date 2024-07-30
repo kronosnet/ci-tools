@@ -155,6 +155,7 @@ yum -y install             \
  overpass-fonts            \
  pam-devel                 \
  perl                      \
+ psmisc                    \
  python3-cryptography      \
  python3-devel             \
  python3-httplib2          \
@@ -170,7 +171,6 @@ yum -y install             \
  python3-systemd           \
  python3-suds              \
  python3-wheel             \
- psmisc                    \
  rpm-build                 \
  rpmdevtools               \
  rpmlint                   \
@@ -192,15 +192,29 @@ yum -y install             \
 case "${NODE_NAME}" in
  *vapor*)
   yum -y update
-  yum -y install python3-devel python3-pip python3-wheel \
-		 brewkoji createrepo ansible \
-		 azure-cli firewalld-filesystem jq \
-		 google-cloud-sdk python3-openstackclient \
-		 openshift-clients kubevirt-virtctl \
-		 libcurl-devel libvirt-devel openssl-devel gcc \
-		 tox crudini libxml2 \
-		 nmap-ncat \
-		 python3-vapor
+  yum -y install           \
+   ansible                 \
+   azure-cli               \
+   brewkoji                \
+   createrepo              \
+   crudini                 \
+   firewalld-filesystem    \
+   gcc                     \
+   google-cloud-sdk        \
+   jq                      \
+   kubevirt-virtctl        \
+   libcurl-devel           \
+   libvirt-devel           \
+   libxml2                 \
+   nmap-ncat               \
+   openshift-clients       \
+   openssl-devel           \
+   python3-devel           \
+   python3-openstackclient \
+   python3-pip             \
+   python3-vapor           \
+   python3-wheel           \
+   tox
  if ! which ibmcloud > /dev/null 2>&1; then
   curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
  else

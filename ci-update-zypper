@@ -107,5 +107,6 @@ zypper install -y $bundler $glue  \
  valgrind                         \
  xz-devel                         \
  zlib-devel
+
 getent group haclient >/dev/null || groupadd -r haclient -g 189
 getent passwd hacluster >/dev/null || useradd -r -g haclient -u 189 -s /sbin/nologin -c "cluster user" hacluster

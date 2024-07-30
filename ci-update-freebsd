@@ -66,6 +66,7 @@ required_pkg py${pyver}-boto3
 required_pkg py${pyver}-google-api-python-client
 required_pkg py${pyver}-keystoneauth1
 required_pkg py${pyver}-pexpect
+required_pkg py${pyver}-psutil
 required_pkg py${pyver}-pycurl
 required_pkg py${pyver}-python-keystoneclient
 required_pkg py${pyver}-python-novaclient

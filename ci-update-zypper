@@ -87,6 +87,7 @@ zypper install -y $bundler $glue  \
  python3-openwsman                \
  python3-pexpect                  \
  python3-pip                      \
+ python3-psutil                   \
  python3-pycurl                   \
  python3-requests                 \
  python3-setuptools               \

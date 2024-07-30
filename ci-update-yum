@@ -162,6 +162,7 @@ yum -y install             \
  python3-lxml              \
  python3-pexpect           \
  python3-pip               \
+ python3-psutil            \
  python3-pycurl            \
  python3-pyroute2          \
  python3-requests          \

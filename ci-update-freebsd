@@ -63,6 +63,7 @@ pkg install -y                       \
  py${pyver}-google-api-python-client \
  py${pyver}-keystoneauth1            \
  py${pyver}-pexpect                  \
+ py${pyver}-psutil                   \
  py${pyver}-pycurl                   \
  py${pyver}-python-keystoneclient    \
  py${pyver}-python-novaclient        \

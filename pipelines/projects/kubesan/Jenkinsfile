@@ -59,6 +59,7 @@ pipeline {
 				    su - kubesan /bin/bash -c "cd ${WORKSPACE}; ./tests/run.sh tests/t/${test}.sh"
 				"""
 			   } catch (err) {
+				cleanKube()
 				ret = 'FAILED'
 				testret = 'failed'
 				catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {

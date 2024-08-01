@@ -2,17 +2,6 @@
 
 set -e
 
-export REQUIRED_PKGS=""
-export OPTIONAL_PKGS=""
-
-required_pkg {
- REQUIRED_PKGS="$REQUIRED_PKGS $1"
-}
-
-optional_pkg {
- OPTIONAL_PKGS="$OPTIONAL_PKGS $1"
-}
-
 rm -rf $HOME/rpmbuild
 rm -rf /usr/src/packages/BUILDROOT/*
 # the test job can only clean up to a certain point

@@ -1,0 +1,12 @@
+export REQUIRED_PKGS=""
+export OPTIONAL_PKGS=""
+
+required_pkg() {
+ REQUIRED_PKGS="$REQUIRED_PKGS $1"
+}
+export -f required_pkg
+
+optional_pkg() {
+ OPTIONAL_PKGS="$OPTIONAL_PKGS $1"
+}
+export -f optional_pkg

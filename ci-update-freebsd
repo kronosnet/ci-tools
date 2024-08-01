@@ -4,6 +4,7 @@
 
 set -e
 
+source $CITHOME/ci-update-libs
 $CITHOME/ci-update-common
 
 # stable release update

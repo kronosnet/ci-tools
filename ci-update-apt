@@ -11,30 +11,154 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update --allow-releaseinfo-change || apt-get update
 apt-get -y dist-upgrade
 apt-get -y autoremove
-apt-get -y install valgrind || true
-rubydeps="ruby-dev ruby ruby-bundler ruby-backports ruby-childprocess ruby-daemons ruby-ethon ruby-ffi ruby-eventmachine ruby-json ruby-open4 ruby-sinatra ruby-ruby2-keywords ruby-mustermann ruby-rack ruby-rack-protection ruby-rack-test ruby-sinatra ruby-test-unit puma"
-apt-get -y install ruby-rack-session || true
-apt-get -y install ruby-rackup || true
+
+required_pkg asciidoc
+required_pkg autoconf
+required_pkg autopoint
+required_pkg autotools-dev
+required_pkg bison
+required_pkg build-essential
+required_pkg byacc
+required_pkg check
+required_pkg chrpath
+required_pkg clang
+required_pkg cluster-glue-dev
+required_pkg curl
+required_pkg docbook-xsl
+required_pkg doxygen
+required_pkg flex
+required_pkg gcc
+required_pkg gettext
+required_pkg git
+required_pkg groff
+required_pkg help2man
+required_pkg jq
+required_pkg libaio-dev
+required_pkg libblkid-dev
+required_pkg libbz2-dev
+required_pkg libcgroup-dev
+required_pkg libcmocka-dev
+required_pkg libcurl4-openssl-dev
+required_pkg libdbus-1-dev
+required_pkg libgcrypt-dev
+required_pkg libglib2.0-dev
+required_pkg libgnutls28-dev
+required_pkg libltdl-dev
+required_pkg liblz4-dev
+required_pkg liblzma-dev
+required_pkg liblzo2-dev
+required_pkg libncurses-dev
+required_pkg libnl-3-dev
+required_pkg libnl-route-3-dev
+required_pkg libnspr4-dev
+required_pkg libnss3-dev
+required_pkg libnss3-tools
+required_pkg libopenipmi-dev
+required_pkg libpam0g-dev
+required_pkg libqb-dev
+required_pkg libsctp-dev
+required_pkg libsnmp-dev
+required_pkg libssl-dev
+required_pkg libsystemd-dev
+required_pkg libtool
+required_pkg libtool-bin
+required_pkg libvirt-dev
+required_pkg libxml2-dev
+required_pkg libxml2-utils
+required_pkg libxslt1-dev
+required_pkg libzstd-dev
+required_pkg make
+required_pkg perl
+required_pkg pkg-config
+required_pkg psmisc
+required_pkg puma
+required_pkg python3-boto3
+required_pkg python3-dev
+required_pkg python3-googleapi
+required_pkg python3-lxml
+required_pkg python3-pexpect
+required_pkg python3-pip
+required_pkg python3-psutil
+required_pkg python3-pyagentx
+required_pkg python3-pycurl
+required_pkg python3-pyparsing
+required_pkg python3-requests
+required_pkg python3-setuptools
+required_pkg python3-setuptools-scm
+required_pkg python3-suds
+required_pkg python3-systemd
+required_pkg python3-tornado
+required_pkg python3-venv
+required_pkg rsync
+required_pkg ruby
+required_pkg ruby-backports
+required_pkg ruby-bundler
+required_pkg ruby-childprocess
+required_pkg ruby-daemons
+required_pkg ruby-dev
+required_pkg ruby-ethon
+required_pkg ruby-eventmachine
+required_pkg ruby-ffi
+required_pkg ruby-json
+required_pkg ruby-mustermann
+required_pkg ruby-open4
+required_pkg ruby-rack
+required_pkg ruby-rack-protection
+required_pkg ruby-rack-test
+required_pkg ruby-ruby2-keywords
+required_pkg ruby-sinatra
+required_pkg ruby-test-unit
+required_pkg shellcheck
+required_pkg time
+required_pkg uuid-dev
+required_pkg uuid-runtime
+required_pkg xsltproc
+required_pkg zlib1g-dev
+
+optional_pkg inkscape
+optional_pkg llvm
+optional_pkg python3-dacite
+optional_pkg python3-distro
+optional_pkg ruby-rack-session
+optional_pkg ruby-rackup
+optional_pkg valgrind
 
 case "${NODE_NAME}" in
  debian-11*|debian-12*|ubuntu-20-04*|ubuntu-22-04*)
-  systemddev=""
   ;;
  *)
-  systemddev="systemd-dev"
+  required_pkg systemd-dev
   ;;
 esac
 
-apt-get -y install rsync build-essential autoconf libtool-bin make git gcc clang autoconf autotools-dev autopoint gettext libtool libnss3-dev libnspr4-dev libssl-dev libgcrypt-dev pkg-config zlib1g-dev liblz4-dev liblzo2-dev liblzma-dev libbz2-dev libsctp-dev libqb-dev libxml2-dev doxygen groff libdbus-1-dev libsnmp-dev libsystemd-dev libcgroup-dev curl jq check python3-pexpect python3-boto3 python3-pycurl python3-suds python3-requests python3-googleapi time libxml2-utils xsltproc libglib2.0-dev docbook-xsl chrpath perl python3-dev libltdl-dev libncurses-dev libpam0g-dev libxml2-dev libxslt1-dev uuid-dev libgnutls28-dev asciidoc bison byacc flex help2man cluster-glue-dev python3-systemd libopenipmi-dev libnl-3-dev libnl-route-3-dev python3-requests libzstd-dev libaio-dev libvirt-dev python3-venv python3-setuptools python3-setuptools-scm python3-lxml python3-pyparsing python3-pip python3-tornado python3-pyagentx psmisc libcurl4-openssl-dev libcmocka-dev shellcheck libblkid-dev libnss3-tools uuid-runtime $rubydeps $rustdeps $systemddev
-apt-get -y install python3-dacite || true
-apt-get -y install python3-distro || true
-apt-get -y install inkscape || true
-apt-get -y install llvm || true
+apt-get -y install $REQUIRED_PKGS
+for PKG in $OPTIONAL_PKGS; do apt-get -y install $PKG || true; done
+
+# Some alternative architecture packages cannot be installed at the same time
+# as the x86_64 equivalent, so install them separately
 if [ -n "$EXTRA_ARCH" ]; then
  dpkg --add-architecture $EXTRA_ARCH
  apt-get update
- apt-get -y install crossbuild-essential-$EXTRA_ARCH libnspr4-dev:$EXTRA_ARCH libnss3-dev:$EXTRA_ARCH libssl-dev:$EXTRA_ARCH libgcrypt-dev:$EXTRA_ARCH zlib1g-dev:$EXTRA_ARCH liblz4-dev:$EXTRA_ARCH liblzo2-dev:$EXTRA_ARCH liblzma-dev:$EXTRA_ARCH libbz2-dev:$EXTRA_ARCH libsctp-dev:$EXTRA_ARCH libnl-3-dev:$EXTRA_ARCH libnl-route-3-dev:$EXTRA_ARCH libzstd-dev:$EXTRA_ARCH pkg-config:$EXTRA_ARCH pkgconf:$EXTRA_ARCH
+ REQUIRED_PKGS="" # Clear existing list
+ required_pkg crossbuild-essential-$EXTRA_ARCH
+ required_pkg libbz2-dev:$EXTRA_ARCH
+ required_pkg libgcrypt-dev:$EXTRA_ARCH
+ required_pkg liblz4-dev:$EXTRA_ARCH
+ required_pkg liblzma-dev:$EXTRA_ARCH
+ required_pkg liblzo2-dev:$EXTRA_ARCH
+ required_pkg libnl-3-dev:$EXTRA_ARCH
+ required_pkg libnl-route-3-dev:$EXTRA_ARCH
+ required_pkg libnspr4-dev:$EXTRA_ARCH
+ required_pkg libnss3-dev:$EXTRA_ARCH
+ required_pkg libsctp-dev:$EXTRA_ARCH
+ required_pkg libssl-dev:$EXTRA_ARCH
+ required_pkg libzstd-dev:$EXTRA_ARCH
+ required_pkg pkg-config:$EXTRA_ARCH
+ required_pkg pkgconf:$EXTRA_ARCH
+ required_pkg zlib1g-dev:$EXTRA_ARCH
+ apt-get -y install $REQUIRED_PKGS
 fi
+
 apt-get -y clean
 getent group haclient >/dev/null || addgroup --system haclient
 getent passwd hacluster >/dev/null || adduser --system --ingroup haclient --gecos "cluster user" --no-create-home hacluster

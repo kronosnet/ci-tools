@@ -21,13 +21,70 @@ case "${NODE_NAME}" in
   ;;
 esac
 
+required_pkg asciidoc
+required_pkg autoconf
+required_pkg automake
+required_pkg autotools
+required_pkg bison
+required_pkg byacc
+required_pkg bzip2
+required_pkg check
+required_pkg cmocka
+required_pkg curl
+required_pkg dbus
+required_pkg docbook-xsl
+required_pkg doxygen
+required_pkg e2fsprogs-libuuid
+required_pkg flex
+required_pkg flock
+required_pkg gettext
+required_pkg gettext-tools
+required_pkg git
+required_pkg gcc
+required_pkg getopt
+required_pkg glib
+required_pkg gmake
+required_pkg gnutls
+required_pkg groff
+required_pkg gsnmp
+required_pkg help2man
+required_pkg jq
+required_pkg libgcrypt
+required_pkg libltdl
+required_pkg liblz4
+required_pkg libqb
+required_pkg libxml2
+required_pkg libxslt
+required_pkg lzma
+required_pkg lzo2
+required_pkg ncurses
+required_pkg nss
+required_pkg openipmi
+required_pkg p5-Locale-gettext
+required_pkg pkgconf
+required_pkg py${pyver}-boto3
+required_pkg py${pyver}-google-api-python-client
+required_pkg py${pyver}-keystoneauth1
+required_pkg py${pyver}-pexpect
+required_pkg py${pyver}-psutil
+required_pkg py${pyver}-pycurl
+required_pkg py${pyver}-python-keystoneclient
+required_pkg py${pyver}-python-novaclient
+required_pkg py${pyver}-requests
+required_pkg py${pyver}-suds
+required_pkg rsync
+required_pkg zstd
+
 if [ -n "$RUSTBINDINGS" ] && [ "$RUSTBINDINGS" = yes ]; then
- rustdeps="rust rust-bindgen-cli"
+ required_pkg rust
+ required_pkg rust-bindgen-cli
 fi
 
+optional_pkg net-snmp
+
 pkg upgrade -y
-pkg install -y rsync git gcc automake autoconf autotools pkgconf gettext gettext-tools nss libgcrypt liblz4 lzo2 lzma bzip2 libxml2 libqb doxygen groff dbus gmake curl jq check py${pyver}-pexpect py${pyver}-pycurl py${pyver}-requests py${pyver}-boto3 py${pyver}-google-api-python-client libxslt glib docbook-xsl libltdl e2fsprogs-libuuid libxslt ncurses bison byacc flex help2man gnutls asciidoc getopt p5-Locale-gettext openipmi zstd py${pyver}-keystoneauth1 py${pyver}-python-keystoneclient py${pyver}-python-novaclient py${pyver}-suds cmocka gsnmp flock $rustdeps
-pkg install -y net-snmp || true
+pkg install -y $REQUIRED_PKGS
+for PKG in $OPTIONAL_PKGS; do pkg install -y $PKG || true; done
 pkg clean -a -y
 pkg autoremove -y
 find /var/db/freebsd-update/files -name "*.gz" -exec rm -f {} \;

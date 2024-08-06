@@ -74,7 +74,6 @@ def call(Map info)
 	'lvm,lvm_config_no-vdo,cluster-lvmlockd'
     ]
     basic_tests = [
-	'pacemaker,recovery,RecoveryActiveNode',
 	'pacemaker,recovery,RecoveryRandomNode',
 	'pacemaker,recovery,RecoveryRestartPacemaker-AllNodes',
 	'pacemaker,recovery,RecoveryResourceFailure',

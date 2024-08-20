@@ -129,6 +129,8 @@ pipeline {
 			    echo == clone tree to build dir ==
 			    cd $BUILDDIR
 			    rsync -a $CACHEDIR/kernel-ark .
+			    echo == clean redhat/ again ==
+			    git clean -dfx redhat/
 			'''
 		    }
 		}

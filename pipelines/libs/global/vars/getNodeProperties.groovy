@@ -27,7 +27,6 @@ def call(String node)
     node_env['centos-9-power9-ppc64le'] = []
     node_env['centos-9-s390x'] = []
     node_env['centos-9-x86-64'] = []
-    node_env['debian-11-x86-64'] = []
     node_env['debian-12-ci-test-x86-64'] = ['CCTEST=justtesting']
     node_env['debian-12-x86-64'] = []
     node_env['debian-experimental-x86-64'] = []

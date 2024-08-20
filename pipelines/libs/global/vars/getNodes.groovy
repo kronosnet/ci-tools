@@ -18,7 +18,6 @@ def call()
     labels['centos-9-power9-ppc64le'] = ['centos-9','stable','power9-ppc64le','voting','rpm','yum','nonvoting-clang','buildrpms']
     labels['centos-9-s390x'] = ['centos-9','stable','s390x','voting','rpm','yum','nonvoting-clang','buildrpms']
     labels['centos-9-x86-64'] = ['centos-9','stable','x86-64','voting','rpm','yum','nonvoting-clang','buildrpms']
-    labels['debian-11-x86-64'] = ['debian-11','x86-64','voting','apt','stable','nonvoting-clang']
     labels['debian-12-ci-test-x86-64'] = ['debian-12','x86-64','apt','stable','ci-test','test-nonvoting']
     labels['debian-12-x86-64'] = ['debian-12','x86-64','voting','apt','stable','nonvoting-clang']
     labels['debian-experimental-x86-64'] = ['debian','experimental','x86-64','nonvoting','apt','nonvoting-clang']

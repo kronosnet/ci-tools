@@ -225,11 +225,6 @@ pipeline {
 			create_cluster(info)
 		    }
 		}
-		stage('Check test cluster availability') {
-		    steps {
-			access_cluster(info)
-		    }
-		}
 		stage('Deploy test cluster') {
 		    steps {
 			deploy_cluster(info)

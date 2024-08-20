@@ -22,7 +22,6 @@ def hard_recover(Map info, Map runstate)
     }
     timeout(time: 20, unit: 'MINUTES') {
 	run_reboot(info)
-	access_cluster(info)
 	run_cleanup(info)
 	runstate['RET'] = 'OK'
     }

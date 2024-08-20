@@ -8,9 +8,6 @@ def call(Map info)
     stage("Create ${info['provider']} rhel${info['rhelver']} test cluster") {
 	create_cluster(info)
     }
-    stage("Check ${info['provider']} rhel${info['rhelver']} test cluster availability") {
-	access_cluster(info)
-    }
     stage("Deploy ${info['provider']} rhel${info['rhelver']} zstream: ${info['zstream']} upstream: ${info['upstream']} test cluster") {
 	deploy_cluster(info)
     }

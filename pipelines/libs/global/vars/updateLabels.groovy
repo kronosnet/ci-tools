@@ -26,7 +26,7 @@ NOTE: updateLabels ran on node ${env.NODE_NAME} but found no entry in getNodes()
 	newlabels_str += " down"
     }
     println("updateLabels: Old labels: ${curlabels}")
-    println("updateLabels: New labels: ${newlabels_str}")
+    println("updateLabels: New labels: [${newlabels_str}]")
 
     // Update Jenkins
     node_handle.setLabelString(newlabels_str)

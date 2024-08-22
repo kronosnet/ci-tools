@@ -15,17 +15,17 @@ def call(String agentName, Map info)
 	if (params.reinstall == '1') {
 	    sh '''
                  rm -f /bin/citbash
-                 rm -rf ci-tools
+                 rm -rf $HOME/ci-tools
                '''
 	}
 
 	// Update it
 	sh '''
-             if [ -d ci-tools ]; then
-               cd ci-tools
+             if [ -d $HOME/ci-tools ]; then
+               cd $HOME/ci-tools
                git pull
-               cd -
              else
+                cd $HOME
                 git clone https://github.com/kronosnet/ci-tools.git
              fi
 

@@ -26,7 +26,7 @@ def call(String agentName, Map info)
                  rm -rf $HOME/ci-tools
                '''
 	}
-	
+
 	// Update them
 	sh '''
              if [ -d $HOME/ci-tools ]; then
@@ -38,8 +38,13 @@ def call(String agentName, Map info)
              fi
            '''
 
-	// built-in runs as Jenkins user so can't write to /bin (see also above)
-	if (agentName != 'built-in') {
+	// Jenkins init script needs to live in Jenkins $HOME
+	if (agentName == 'built-in') {
+            sh '''
+                 cp $HOME/ci-tools/init.groovy $HOME
+               '''
+	} else {
+	    // built-in runs as Jenkins user so can't write to /bin (see also above)
 	    sh '''
                  if [ ! -f /bin/citbash ]; then
                    ln -sf `which bash` /bin/citbash

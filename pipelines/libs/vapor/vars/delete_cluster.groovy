@@ -5,9 +5,13 @@ def call(Map info)
 	return
     }
     timeout(time: 60, unit: 'MINUTES') {
-	sh """
-	    echo "Deleting test cluster"
-	    $HOME/ci-tools/ci-wrap fn-testing/validate-cloud -c delete ${info['vapordebug']} -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -r ${info['rhelver']}
-	"""
+
+	def vapor_args = ['command': 'delete',
+			  'provider': info['provider'],
+			  'project': info['projectid'],
+			  'buildnum': env.BUILD_NUMBER,
+			  'rhelver': info['rhelver'],
+			  'debug': env.vapordebug]
+	vapor_wrapper(vapor_args)
     }
 }

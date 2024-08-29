@@ -5,21 +5,23 @@ def call(Map info)
 	return
     }
     timeout(time: 120, unit: 'MINUTES') {
-	sh """
-	    iscsiopts=""
-	    if [ -n "${info['iscsi']}" ]; then
-		iscsiopts="-i ${info['iscsi']}"
-	    fi
-	    customrepoopts=""
-	    if [ -n "${info['customrepo']}" ]; then
-		customrepoopts="-m ${info['customrepo']}"
-	    fi
-	    brewbuildopts=""
-	    if [ -n "${info['brewbuild']}" ]; then
-		brewbuildopts="-x ${info['brewbuild']}"
-	    fi
-	    echo "Deploy test cluster"
-	    $HOME/ci-tools/ci-wrap fn-testing/validate-cloud -c deploy ${info['vapordebug']} -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -r ${info['rhelver']} -z ${info['zstream']} -u ${info['upstream']} \$customrepoopts \$iscsiopts \$brewbuildopts
-	"""
+	echo "Deploy test cluster"
+	def vapor_args = ['command': 'deploy',
+			  'provider': info['provider'],
+			  'project': info['projectid'],
+			  'buildnum': env.BUILD_NUMBER,
+			  'rhelver': info['rhelver'],
+			  'debug': env.vapordebug]
+	if ("${info['iscsi']}" != '') {
+	    vapor_args += ['iscsisize': info['iscsi']]
+	}
+	if ("${info['customrepo']}" != '') {
+	    vapor_args += ['customrepopath': info['customrepo']]
+	}
+	if ("${info['brewbuild']}" != '') {
+	    vapor_args += ['brewbuildopts': info['brewbuild']]
+	}
+
+	vapor_wrapper(vapor_args)
     }
 }

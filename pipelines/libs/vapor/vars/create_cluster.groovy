@@ -2,23 +2,28 @@ def call(Map info)
 {
     println("Creating test cluster")
     timeout(time: 60, unit: 'MINUTES') {
-	sh """
-	    echo "Creating test cluster"
-	    if [ "${info['dryrun']}" = "1" ]; then
-		if [ "${info['rhelver']}" = "666" ]; then
-		    exit 1
-		fi
-		exit 0
-	    fi
-	    iscsiopts=""
-	    if [ -n "${info['iscsi']}" ]; then
-		iscsiopts="-i ${info['iscsi']}"
-	    fi
-	    blockopts=""
-	    if [ -n "${info['block']}" ]; then
-		blockopts="-s ${info['block']}"
-	    fi
-	    $HOME/ci-tools/ci-wrap fn-testing/validate-cloud -c create ${info['vapordebug']} -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -r ${info['rhelver']} -n ${info['tonodes']} \$iscsiopts \$blockopts
-	"""
+	println("Creating test cluster")
+	if (info['dryrun'] == '1') {
+	    if (info['rhelver'] == '666') {
+		return 1
+	    } else {
+		return 0
+	    }
+	}
+
+	def vapor_args = ['command': 'create',
+			  'provider': info['provider'],
+			  'project': info['projectid'],
+			  'buildnum': env.BUILD_NUMBER,
+			  'rhelver': info['rhelver'],
+			  'nodes': info['tonodes'],
+			  'debug': env.vapordebug]
+	if ("${info['iscsi']}" != '') {
+	    vapor_args += ['iscsisize': info['iscsi']]
+	}
+	if ("${info['block']}" != '') {
+	    vapor_args += ['blocksize': info['block']]
+	}
+	vapor_wrapper(vapor_args)
     }
 }

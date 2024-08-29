@@ -1,17 +1,29 @@
 def run_cleanup(Map info)
 {
     println('Attempt to run cleanup')
-    sh """
-	$HOME/ci-tools/ci-wrap fn-testing/validate-cloud -c test ${info['vapordebug']} -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -r ${info['rhelver']} -n ${info['nodes']} -e -t cleanup >/dev/null 2>&1
-    """
+    def vapor_args = ['command': 'test',
+		      'provider': info['provider'],
+		      'project': info['projectid'],
+		      'buildnum': env.BUILD_NUMBER,
+		      'rhelver': info['rhelver'],
+		      'nodes': info['tonodes'],
+		      'debug': env.vapordebug,
+		      'tests': 'cleanup',
+		      'post': '']
+    vapor_wrapper(vapor_args)
 }
 
 def run_reboot(Map info)
 {
     println('Attempt to reboot test env')
-    sh """
-	$HOME/ci-tools/ci-wrap fn-testing/validate-cloud -c reboot ${info['vapordebug']} -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -r ${info['rhelver']} -n ${info['nodes']}
-    """
+    def vapor_args = ['command': 'reboot',
+		      'provider': info['provider'],
+		      'project': info['projectid'],
+		      'buildnum': env.BUILD_NUMBER,
+		      'rhelver': info['rhelver'],
+		      'nodes': info['tonodes'],
+		      'debug': env.vapordebug]
+    vapor_wrapper(vapor_args)
 }
 
 def hard_recover(Map info, Map runstate)

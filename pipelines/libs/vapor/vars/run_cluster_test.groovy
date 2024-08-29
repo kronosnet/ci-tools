@@ -3,24 +3,29 @@ def run_test(Map info)
     sh "rm -f vapor.log"
     tee ("vapor.log") {
 	if (info['dryrun'] == '0') {
-	    sh """
-		echo "Running test"
-		$HOME/ci-tools/ci-wrap fn-testing/validate-cloud -c test ${info['vapordebug']} -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -j "jenkins:${BUILD_URL}" -r ${info['rhelver']} -n ${info['nodes']} -e ${info['testopt']} ${info['runtest']} -a "${WORKSPACE}/${info['logsrc']}"
-	    """
+	    echo "Running test"
+	    def vapor_args = ['command': 'test',
+			      'provider': info['provider'],
+			      'project': info['projectid'],
+			      'buildnum': env.BUILD_NUMBER,
+			      'rhelver': info['rhelver'],
+//			      'jobid': "jenkins:${BUILD_URL}", // Not used right now. needs revisiting
+			      'nodes': info['nodes'],
+			      'testlogdir': "${WORKSPACE}/${info['logsrc']}",
+			      'tests': info['runtest'],
+			      'debug': env.vapordebug]
+	    vapor_wrapper(vapor_args)
 	} else {
-	    // keep this for debugging
-	    sh """
-		echo "FAKE RUNNING TEST"
-		echo $HOME/ci-tools/ci-wrap fn-testing/validate-cloud -c test ${info['vapordebug']} -p ${info['provider']} -P ${info['projectid']} -b ${BUILD_NUMBER} -j "jenkins:${BUILD_URL}" -r ${info['rhelver']} -n ${info['nodes']} -e ${info['testopt']} ${info['runtest']} -a "${WORKSPACE}/${info['logsrc']}"
-		echo "SLEEP 5"
-		sleep 5
-		if [ "${info['runtest']}" = "fake_failure" ]; then
-		    exit 1
-		fi
-		if [ "${info['runtest']}" = "fake_timeout" ]; then
-		    sleep 600
-		fi
-	    """
+	    echo "SLEEP 5"
+	    sleep(5)
+	    if (info['runtest'] == "fake_failure") {
+		catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+		    shNoTrace("exit 1", "Marking this stage as a failure")
+		}
+	    }
+	    if (info['runtest'] == "fake_timeout") {
+		sleep(600)
+	    }
 	}
     }
 }

@@ -1,7 +1,0 @@
-createopts="--image rhel-9.4.0.x86_64"
-deployopts=""
-testopts=""
-
-osp_setup() {
-	return 0
-}

@@ -9,6 +9,24 @@ def info = [:]
 pipeline {
     agent { label "${provider}" }
 
+    parameters {
+	string(name: 'provider', defaultValue: 'osp', description: 'Supported providers are az, gcp, libvirt, ocpv, osp, ibmvpc')
+	string(name: 'fromnodes', defaultValue: '1', description: 'run tests starting from this node number')
+	string(name: 'tonodes', defaultValue: '4', description: 'run tests up to this node number')
+	string(name: 'rhelver', defaultValue: '9', description: '7 or 8 or 9 (depending on cloud provider)')
+	string(name: 'zstream', defaultValue: 'no', description: 'yes / no')
+	string(name: 'brewbuild', defaultValue: '', description: 'updated brew build to use in tests <n-v-r | build_id | package>')
+	string(name: 'upstream', defaultValue: 'next-stable', description: 'use none / next-stable / next-stable-kernel / main or main-kernel repository')
+	string(name: 'tests', defaultValue: 'all', description: 'all / smoke')
+	string(name: 'testvariant', defaultValue: 'default', description: 'default / kernel')
+	string(name: 'testlist', defaultValue: 'auto', description: 'override auto generated test list. Set to empty to skip running tests')
+	string(name: 'taglist', defaultValue: 'auto', description: 'override auto generated tag list. Set to empty to skip running tags')
+	string(name: 'testtimeout', defaultValue: '180', description: 'timeout for running any test (in minutes)')
+	string(name: 'tagtimeout', defaultValue: '600', description: 'timeout for running any tag (in minutes)')
+	string(name: 'dryrun', defaultValue: '0', description: 'set to 1 to see what the pipeline would do, without actually doing anything')
+	string(name: 'vapordebug', defaultValue: 'no', description: 'WARNING!!! set to yes can expose sensitive data like auth tokens and such. Use only if absolutely necessary and remove the build ASAP.')
+    }
+
     options {
 	skipDefaultCheckout(true)
     }

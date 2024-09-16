@@ -28,6 +28,7 @@ pipeline {
 	string(name: 'testtimeout', defaultValue: '180', description: 'timeout for running any test (in minutes)')
 	string(name: 'tagtimeout', defaultValue: '360', description: 'timeout for running any tag (in minutes)')
 	string(name: 'dryrun', defaultValue: '0', description: 'set to 1 to see what the pipeline would do, without actually doing anything')
+	string(name: 'echorun', defaultValue: 'no', description: 'ECHO all vapor commands rather than running them (debug option).')
     }
 
     options {

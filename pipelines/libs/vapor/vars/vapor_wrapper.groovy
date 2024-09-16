@@ -34,6 +34,7 @@ def set_defaults(Map p)
     set_default(p, 'zstream', 'no')
     set_default(p, 'upstream', 'none')
     set_default(p, 'tests', 'setup')
+    set_default(p, 'testtype', 'tests')
     set_default(p, 'iscsisize', '0')
     set_default(p, 'blocksize', '0')
     set_default(p, 'brewbuild', '')
@@ -45,6 +46,7 @@ def set_defaults(Map p)
     set_default(p, 'customrepopath', '')
     set_default(p, 'testlogdir', '')
     set_default(p, 'project', '')
+    set_default(p, 'echorun', '')
     p['setup_fn'] = {}
 
     // hardcoded sizing for now
@@ -56,7 +58,7 @@ def cloud_delete(Map p)
     return sh(returnStatus: true,
        script:
        """
-         vapor ${p['vaporopts']} delete ${p['clusteropts']} ${p['provideropts']}
+         ${p['echorun']} vapor ${p['vaporopts']} delete ${p['clusteropts']} ${p['provideropts']}
        """
     )
 }
@@ -68,7 +70,7 @@ def cloud_create(Map p)
     return sh(returnStatus: true,
        script:
        """
-         vapor ${p['vaporopts']} create ${p['clusteropts']} ${p['createbaseopts']} ${p['createopts']} ${p['provideropts']}
+         ${p['echorun']} vapor ${p['vaporopts']} create ${p['clusteropts']} ${p['createbaseopts']} ${p['createopts']} ${p['provideropts']}
        """
     )
 }
@@ -77,22 +79,16 @@ def cloud_deploy(Map p)
     return sh(returnStatus: true,
        script:
        """
-         vapor ${p['vaporopts']} deploy ${p['clusteropts']} ${p['deploybaseopts']} ${p['deployopts']} ${p['provideropts']}
+         ${p['echorun']} vapor ${p['vaporopts']} deploy ${p['clusteropts']} ${p['deploybaseopts']} ${p['deployopts']} ${p['provideropts']}
        """
     )
 }
-def cloud_test(String testtype, Map p)
+def cloud_test(Map p)
 {
-    def callopts = ''
-    if (testtype == 'tags') {
-	callopts = '--tags'
-    } else {
-	callopts = '--tests'
-    }
     return sh(returnStatus: true,
        script:
        """
-         vapor ${p['vaporopts']} test ${p['clusteropts']} ${p['testbaseopts']} --nodes ${p['nodes']} ${p['testopts']} ${callopts} \"${p['tests']}\" ${p['provideropts']}
+         ${p['echorun']} vapor ${p['vaporopts']} test ${p['clusteropts']} ${p['testbaseopts']} --nodes ${p['nodes']} ${p['testopts']} --${p['testtype']} \"${p['tests']}\" ${p['provideropts']}
        """
     )
 }
@@ -101,7 +97,7 @@ def cloud_reboot(Map p)
     return sh(returnStatus: true,
        script:
        """
-         vapor ${p['vaporopts']} reboot ${p['clusteropts']} ${p['provideropts']}
+         ${p['echorun']} vapor ${p['vaporopts']} reboot ${p['clusteropts']} ${p['provideropts']}
        """
     )
 }
@@ -121,6 +117,11 @@ def call(Map p)
 	return 1
     }
     p += p["rhel${p['rhelver']}"]
+
+    if (params.containsKey('echorun') &&
+	params['echorun'] == 'yes') {
+	p['echorun'] = 'echo'
+    }
 
     p['createbaseopts'] = "--nodes ${p['nodes']}"
     p['deploybaseopts'] = ''
@@ -194,12 +195,7 @@ def call(Map p)
 	    ret = cloud_deploy(p)
 	    break
 	case 'test':
-	    if (p['teststags'] != '') {
-		p['tests'] = p['teststags']
-		ret = cloud_test('tags', p)
-	    } else {
-		ret = cloud_test('test', p)
-	    }
+	    ret = cloud_test(p)
 	    break
 	case 'reboot':
 	    ret = cloud_reboot(p)

@@ -18,7 +18,7 @@ def run_test(Map info)
 //			      'jobid': "jenkins:${BUILD_URL}", // Not used right now. needs revisiting
 			      'nodes': info['nodes'],
 			      'testlogdir': "${WORKSPACE}/${info['logsrc']}",
-			      info['testopt']: info['runtest'],
+			      "${info['testopt']}": info['runtest'],
 			      'debug': env.vapordebug]
 	    vapor_wrapper(vapor_args)
 	} else {

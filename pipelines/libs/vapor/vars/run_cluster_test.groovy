@@ -1,5 +1,11 @@
 def run_test(Map info)
 {
+    // set testopt for vapor/vedder call
+    info['testopt'] = 'tests'
+    if (info['testtype'] == 'tags') {
+	info['testopt'] = 'teststags'
+    }
+
     sh "rm -f vapor.log"
     tee ("vapor.log") {
 	if (info['dryrun'] == '0') {
@@ -12,7 +18,7 @@ def run_test(Map info)
 //			      'jobid': "jenkins:${BUILD_URL}", // Not used right now. needs revisiting
 			      'nodes': info['nodes'],
 			      'testlogdir': "${WORKSPACE}/${info['logsrc']}",
-			      'tests': info['runtest'],
+			      info['testopt']: info['runtest'],
 			      'debug': env.vapordebug]
 	    vapor_wrapper(vapor_args)
 	} else {
@@ -63,12 +69,6 @@ def call(Map info)
     // keep this for debugging
     if (info['dryrun'] == '1') {
 	info['runtesttimeout'] = 2
-    }
-
-    // set testopt for vapor/vedder call
-    info['testopt'] = '-t'
-    if (info['testtype'] == 'tags') {
-	info['testopt'] = '-T'
     }
 
     // define log source

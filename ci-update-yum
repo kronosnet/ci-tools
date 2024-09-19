@@ -18,6 +18,9 @@ esac
 yum clean all
 
 case "${NODE_NAME}" in
+ centos-10-*)
+  yum -y install epel-release || true
+ ;;
  centos-*|anvil-ci-centos-*|anvil-ci-almalinux-*|anvil-ci-bm*)
   yum -y install epel-release
  ;;
@@ -34,6 +37,15 @@ case "${NODE_NAME}" in
 esac
 
 yum -y $EXTRAOPTS update $POSTOPTS
+
+case "${NODE_NAME}" in
+ centos-10-*)
+  epel_pkg=optional_pkg
+ ;;
+ *)
+  epel_pkg=required_pkg
+ ;;
+esac
 
 optional_pkg libcgroup-devel
 optional_pkg libservicelog-devel
@@ -88,7 +100,7 @@ case "${NODE_NAME}" in
  *rhel-9*)
  ;;
  *)
-  required_pkg python3-boto3
+  $epel_pkg python3-boto3
  ;;
 esac
 
@@ -116,7 +128,7 @@ required_pkg glib2-devel
 required_pkg gnutls-devel
 required_pkg groff
 required_pkg help2man
-required_pkg inkscape
+$epel_pkg    inkscape
 required_pkg jq
 required_pkg libaio-devel
 required_pkg libblkid-devel
@@ -147,29 +159,29 @@ required_pkg nss-devel
 required_pkg nss-tools
 required_pkg openssl-devel
 required_pkg openwsman-python3
-required_pkg overpass-fonts
+$epel_pkg    overpass-fonts
 required_pkg pam-devel
 required_pkg perl
 required_pkg python3-cryptography
 required_pkg python3-devel
-required_pkg python3-httplib2
+$epel_pkg    python3-httplib2
 required_pkg python3-lxml
 required_pkg python3-pexpect
 required_pkg python3-pip
 required_pkg python3-psutil
-required_pkg python3-pycurl
-required_pkg python3-pyroute2
+$epel_pkg    python3-pycurl
+$epel_pkg    python3-pyroute2
 required_pkg python3-requests
 required_pkg python3-rpm-macros
 required_pkg python3-setuptools
 required_pkg python3-setuptools_scm
-required_pkg python3-suds
+$epel_pkg    python3-suds
 required_pkg python3-systemd
 required_pkg python3-wheel
 required_pkg psmisc
 required_pkg rpm-build
 required_pkg rpmdevtools
-required_pkg rpmlint
+$epel_pkg    rpmlint
 required_pkg rsync
 required_pkg ruby
 required_pkg ruby-devel

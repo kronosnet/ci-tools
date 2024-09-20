@@ -33,6 +33,12 @@ case "${NODE_NAME}" in
  ;;
 esac
 
+case "${NODE_NAME}" in
+ centos-10-*)
+  EXTRAOPTS="--nobest"
+ ;;
+esac
+
 yum -y $EXTRAOPTS update $POSTOPTS
 
 optional_pkg libcgroup-devel

@@ -192,6 +192,7 @@ case "${NODE_NAME}" in
   required_pkg createrepo
   required_pkg crudini
   required_pkg firewalld-filesystem
+  required_pkg fio
   required_pkg gcc
   required_pkg google-cloud-cli-minikube
   required_pkg google-cloud-sdk

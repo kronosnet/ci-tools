@@ -205,11 +205,8 @@ def call(Map p)
 	    ret = 1
     }
     if (ret != 0) {
-	catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-	    shNoTrace("exit 1", "Marking this stage as a failure")
-	}
-	// The outer layers expect an exception
-	throw (new Exception("Error returned from ${p['command']}: ${ret}"))
+	// The outer layers expect a shell type error
+	shNoTrace("exit 1", "Marking this stage as a failure")
     }
     return ret
 }

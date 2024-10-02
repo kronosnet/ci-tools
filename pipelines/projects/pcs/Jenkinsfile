@@ -93,7 +93,7 @@ pipeline {
 
 		    buildrpms = buildRunMap('buildrpms', info, ['voting': true,
 								'nodelabel': 'buildrpms',
-								'excludes': '(rhel-8).*',
+								'excludes': '(rhel-8|rhel-10|centos-10).*',
 								'extravars': ['depbuildname': 'pacemaker',
 									      'depbuildversion': '2.1']])
 

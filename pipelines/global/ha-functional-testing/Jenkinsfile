@@ -10,7 +10,7 @@ pipeline {
     agent { label "${provider}" }
 
     parameters {
-	string(name: 'provider', defaultValue: 'osp', description: 'Supported providers are az, gcp, libvirt, ocpv, osp, ibmvpc')
+	string(name: 'provider', defaultValue: 'osp', description: 'Supported providers are azure, gcp, libvirt, ocpv, osp, ibmvpc')
 	string(name: 'fromnodes', defaultValue: '1', description: 'run tests starting from this node number')
 	string(name: 'tonodes', defaultValue: '4', description: 'run tests up to this node number')
 	string(name: 'rhelver', defaultValue: '9', description: '7 or 8 or 9 (depending on cloud provider)')

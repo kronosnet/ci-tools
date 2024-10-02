@@ -11,6 +11,8 @@ def call(Map info)
 			  'project': info['projectid'],
 			  'buildnum': env.BUILD_NUMBER,
 			  'rhelver': info['rhelver'],
+			  'zstream': info['zstream'],
+			  'upstream': info['upstream'],
 			  'debug': env.vapordebug]
 	if ("${info['iscsi']}" != '') {
 	    vapor_args += ['iscsisize': info['iscsi']]

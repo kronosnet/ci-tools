@@ -54,8 +54,8 @@ def call()
 				  'testopts': '',
 				  'setup_fn': {}]]
 
-    providers['azure'] = ['maxjobs': 4, 'testlevel': 'all', 'rhelvers': ['7', '8', '9'],
-			  'has_watchdog': false, 'has_storage': true, 'weekly': false,
+    providers['azure'] = ['maxjobs': 4, 'testlevel': 'smoke', 'rhelvers': ['7', '8', '9'],
+			  'has_watchdog': false, 'has_storage': true, 'weekly': true,
 			  'defaultiscsi': '',
 			  'defaultuseiscsi': 'no',
 			  'defaultblocksize': '1024',

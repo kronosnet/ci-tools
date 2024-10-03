@@ -55,7 +55,7 @@ def call()
 				  'setup_fn': {}]]
 
     providers['azure'] = ['maxjobs': 4, 'testlevel': 'all', 'rhelvers': ['7', '8', '9'],
-			  'has_watchdog': true, 'has_storage': true, 'weekly': false,
+			  'has_watchdog': false, 'has_storage': true, 'weekly': false,
 			  'defaultiscsi': '',
 			  'defaultuseiscsi': 'no',
 			  'defaultblocksize': '1024',

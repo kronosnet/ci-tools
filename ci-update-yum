@@ -156,6 +156,7 @@ required_pkg overpass-fonts
 required_pkg pam-devel
 required_pkg perl
 required_pkg python3-cryptography
+required_pkg python3-dateutil
 required_pkg python3-devel
 required_pkg python3-httplib2
 required_pkg python3-lxml
@@ -163,6 +164,7 @@ required_pkg python3-pexpect
 required_pkg python3-pip
 required_pkg python3-psutil
 required_pkg python3-pycurl
+required_pkg python3-pyparsing
 required_pkg python3-pyroute2
 required_pkg python3-requests
 required_pkg python3-rpm-macros

@@ -74,6 +74,8 @@ required_pkg pkg-config
 required_pkg psmisc
 required_pkg puma
 required_pkg python3-boto3
+required_pkg python3-dateutil
+required_pkg python3-cryptography
 required_pkg python3-dev
 required_pkg python3-googleapi
 required_pkg python3-lxml
@@ -90,6 +92,7 @@ required_pkg python3-suds
 required_pkg python3-systemd
 required_pkg python3-tornado
 required_pkg python3-venv
+required_pkg python3-wheel
 required_pkg rsync
 required_pkg ruby
 required_pkg ruby-backports

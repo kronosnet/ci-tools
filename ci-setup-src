@@ -25,13 +25,9 @@ if [ -f ./configure ]; then
      localbuild=""
      usesitepackages=--system-site-packages
      ;;
-    rhel-8*)
-     localbuild=--enable-local-build
-     usesitepackages=--system-site-packages
-     ;;
     *)
      localbuild=--enable-local-build
-     usesitepackages=""
+     usesitepackages=--system-site-packages
      ;;
    esac
    rm -rf .venv

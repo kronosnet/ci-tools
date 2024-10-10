@@ -25,13 +25,9 @@ if [ -f ./configure ]; then
      localbuild=""
      usesitepackages=--system-site-packages
      ;;
-    rhel-8*)
-     localbuild=--enable-local-build
-     usesitepackages=--system-site-packages
-     ;;
     *)
      localbuild=--enable-local-build
-     usesitepackages=""
+     usesitepackages=--system-site-packages
      ;;
    esac
    rm -rf .venv
@@ -39,7 +35,8 @@ if [ -f ./configure ]; then
    . .venv/bin/activate
    export PATH="$(pwd)/.venv"/bin/:$PATH
    python3 -m pip install setuptools-scm setuptools-rust wheel
-   python3 -m pip install concurrencytest cryptography lxml pycurl six pyparsing
+   python3 -m pip install concurrencytest lxml pycurl six pyparsing
+   python3 -m pip install cryptography || :
    echo "./configure --enable-destructive-tests --enable-parallel-tests $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
    ./configure --enable-destructive-tests --enable-parallel-tests $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
    ;;

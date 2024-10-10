@@ -74,6 +74,7 @@ required_pkg pkg-config
 required_pkg psmisc
 required_pkg puma
 required_pkg python3-boto3
+required_pkg python3-cryptography
 required_pkg python3-dev
 required_pkg python3-googleapi
 required_pkg python3-lxml

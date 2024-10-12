@@ -20,7 +20,7 @@ case "${NODE_NAME}" in
  centos-*|anvil-ci-centos-*|anvil-ci-almalinux-*|anvil-ci-bm*)
   yum -y install epel-release
  ;;
- rhel-8*|anvil-ci-rhel-8)
+ rhel-8*)
   if ! rpm -qa | grep epel-release; then
    yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
   fi

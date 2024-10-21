@@ -73,6 +73,21 @@ def call()
 				    'testopts': '',
 				    'setup_fn': {}]]
 
+    providers['aws'] = ['maxjobs': 4, 'testlevel': 'smoke', 'rhelvers': ['8', '9'],
+			'has_watchdog': false, 'has_storage': true, 'weekly': true,
+			'defaultiscsi': '',
+			'defaultuseiscsi': 'no',
+			'defaultblocksize': '300',
+			'authopts': '--region us-east-1',
+			'rhel8': ['createopts': '--image $(vapor get-images aws --region us-east-1 | grep "RHEL-8.10.0_HVM-" | grep x86_64 | sed -e \'s#",##g\' -e \'s#.*"##g\' | sort -u | tail -n 1)',
+				  'deployopts':  '',
+				  'testopts': '',
+				  'setup_fn': {}],
+			'rhel9': ['createopts': '--image $(vapor get-images aws --region us-east-1 | grep "RHEL-9.4.0_HVM-" | grep x86_64 | sed -e \'s#",##g\' -e \'s#.*"##g\' | sort -u | tail -n 1)',
+				  'deployopts':  '',
+				  'testopts': '',
+				  'setup_fn': {}]]
+
     providers['gcp'] = ['maxjobs': 4, 'testlevel': 'all', 'rhelvers': ['7', '8', '9'],
 			'has_watchdog': true, 'has_storage': true, 'weekly': false,
 			'defaultiscsi': '',

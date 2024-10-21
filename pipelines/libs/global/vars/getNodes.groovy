@@ -44,7 +44,7 @@ def call()
     labels['rhel-9-coverity-x86-64'] = ['rhel-9','stable','x86-64','voting','rhel-9-coverity','yum','covscan','test-covscan']
     labels['rhel-9-power9-ppc64le'] = ['rhel-9','stable','power9-ppc64le','voting','rpm','yum','nonvoting-clang','buildrpms']
     labels['rhel-9-s390x'] = ['rhel-9','stable','s390x','voting','rpm','yum','nonvoting-clang','buildrpms']
-    labels['rhel-9-vapor-rdu-1-x86-64'] = ['rhel-9','stable','x86-64','yum','osp','azure','gcp','ibmvpc']
+    labels['rhel-9-vapor-rdu-1-x86-64'] = ['rhel-9','stable','x86-64','yum','osp','azure','aws','gcp','ibmvpc']
     labels['rhel-9-vapor-rdu-2-x86-64'] = ['rhel-9','stable','x86-64','yum','kbuild','kubesan']
     labels['rhel-9-vapor-rdu-3-x86-64'] = ['rhel-9','stable','x86-64','yum','libvirt','kubesan','kbuild']
     labels['rhel-9-vapor-rdu-4-x86-64'] = ['rhel-9','stable','x86-64','yum','libvirt','kubesan','kbuild']

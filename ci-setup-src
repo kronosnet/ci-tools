@@ -20,26 +20,24 @@ if [ -f ./configure ]; then
    echo "Random sleep: $sleeptimer"
    sleep $sleeptimer
 
+   rm -rf .venv
+   python3 -m venv --system-site-packages .venv
+   . .venv/bin/activate
+   export PATH="$(pwd)/.venv"/bin/:$PATH
+
    case "${NODE_NAME}" in
     debian*|ubuntu*)
      localbuild=""
-     usesitepackages=--system-site-packages
      ;;
     rhel-8*)
+     python3 -m pip install concurrencytest
      localbuild=--enable-local-build
-     usesitepackages=--system-site-packages
      ;;
     *)
      localbuild=--enable-local-build
-     usesitepackages=""
      ;;
    esac
-   rm -rf .venv
-   python3 -m venv $usesitepackages .venv
-   . .venv/bin/activate
-   export PATH="$(pwd)/.venv"/bin/:$PATH
-   python3 -m pip install setuptools-scm setuptools-rust wheel
-   python3 -m pip install concurrencytest cryptography lxml pycurl six pyparsing
+
    echo "./configure --enable-destructive-tests --enable-parallel-tests $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
    ./configure --enable-destructive-tests --enable-parallel-tests $localbuild $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
    ;;

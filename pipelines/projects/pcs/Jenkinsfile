@@ -122,12 +122,12 @@ pipeline {
 
 		    voting_pmain = buildRunMap('pmain-voting', info, ['voting': true,
 								      'nodelabel': 'voting',
-								      'excludes': '(freebsd|rhel-8|rhel-9|centos-9|ubuntu-20|ubuntu-22-04).*',
+								      'excludes': '(freebsd|debian-12|rhel-8|centos-9|ubuntu-20|ubuntu-22-04).*',
 								      'extravars': ['depbuildname': 'pacemaker',
 										    'depbuildversion': 'main']])
 		    voting_pstable = buildRunMap('pstable-voting', info, ['voting': true,
 									  'nodelabel': 'voting',
-									  'excludes': '(freebsd|rhel-8|rhel-9|centos-9|ubuntu-20|ubuntu-22-04).*',
+									  'excludes': '(freebsd|debian-12|rhel-8|centos-9|ubuntu-20|ubuntu-22-04).*',
 									  'extravars': ['depbuildname': 'pacemaker',
 											'depbuildversion': '3.0']])
 
@@ -155,7 +155,7 @@ pipeline {
 
 		    buildrpms_pmain = buildRunMap('pmain-buildrpms', info, ['voting': true,
 									    'nodelabel': 'buildrpms',
-									    'excludes': '(rhel-8|rhel-9|centos-9).*',
+									    'excludes': '(rhel-8|centos-9).*',
 									    'extravars': ['depbuildname': 'pacemaker',
 											  'depbuildversion': 'main']])
 

@@ -20,8 +20,19 @@ if [ -f ./configure ]; then
    echo "Random sleep: $sleeptimer"
    sleep $sleeptimer
 
+   pcspython=python3
+   pcspipinstall=no
+   case "${NODE_NAME}" in
+    rhel-9*)
+     if [ "$target" != "pcs-0.11" ]; then
+       pcspython=python3.12
+       pcspipinstall=yes
+     fi
+     ;;
+   esac
+
    rm -rf .venv
-   python3 -m venv --system-site-packages .venv
+   $pcspython -m venv --system-site-packages .venv
    . .venv/bin/activate
    export PATH="$(pwd)/.venv"/bin/:$PATH
 
@@ -32,6 +43,13 @@ if [ -f ./configure ]; then
     rhel-8*)
      python3 -m pip install concurrencytest
      localbuild=--enable-local-build
+     ;;
+    rhel-9*)
+     localbuild=--enable-local-build
+     if [ "$pcspipinstall" = "yes" ]; then
+       python3 -m pip install pyparsing setuptools-scm six
+       localbuild="$localbuild --with-python-version=3.12 --enable-ci-rpm-workarounds"
+     fi
      ;;
     *)
      localbuild=--enable-local-build

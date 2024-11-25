@@ -33,7 +33,7 @@ pipeline {
 		    try {
 			sh (label: 'Run local build',
 			    script: """
-				su - kubesan /bin/bash -c "cd ${WORKSPACE}; make build"
+				su - kubesan /bin/bash -c "cd ${WORKSPACE}; ./containerized-build.sh"
 			    """)
 		    } catch (err) {
 			updateGitlabCommitStatus(name: 'Build container', state: 'failed')

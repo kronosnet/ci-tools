@@ -34,7 +34,7 @@ def call()
 				      'deployopts':  '',
 				      'testopts': '',
 				      'setup_fn': {}],
-			    'rhel9': ['createopts': "--image rhel-9.4.0.x86_64.qcow2 --flavor-workstation rhelha-vapor-workstation-extra-large --flavor rhelha-vapor-node-extra-large  --block-device /dev/vapor/shared",
+			    'rhel9': ['createopts': "--image rhel-9.5.0.x86_64.qcow2 --flavor-workstation rhelha-vapor-workstation-extra-large --flavor rhelha-vapor-node-extra-large  --block-device /dev/vapor/shared",
 				      'deployopts':  '',
 				      'testopts': '',
 				      'setup_fn': {}]]
@@ -49,7 +49,7 @@ def call()
 				  'deployopts':  '',
 				  'testopts': '',
 				  'setup_fn': {}],
-			'rhel9': ['createopts': '--image rhel-9.4.0.x86_64',
+			'rhel9': ['createopts': '--image rhel-9.5.0.x86_64',
 				  'deployopts':  '',
 				  'testopts': '',
 				  'setup_fn': {}]]
@@ -83,7 +83,7 @@ def call()
 				  'deployopts':  '',
 				  'testopts': '',
 				  'setup_fn': {}],
-			'rhel9': ['createopts': '--image $(vapor get-images aws --region us-east-1 | grep "RHEL-9.4.0_HVM-" | grep x86_64 | sed -e \'s#",##g\' -e \'s#.*"##g\' | sort -u | tail -n 1)',
+			'rhel9': ['createopts': '--image $(vapor get-images aws --region us-east-1 | grep "RHEL-9.5.0_HVM_GA" | grep x86_64 | sed -e \'s#",##g\' -e \'s#.*"##g\' | sort -u | tail -n 1)',
 				  'deployopts':  '',
 				  'testopts': '',
 				  'setup_fn': {}]]

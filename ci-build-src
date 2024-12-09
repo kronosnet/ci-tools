@@ -43,6 +43,18 @@ case $build in
  ;;
  rpm)
   case "${project}" in
+   pcs)
+    case "${NODE_NAME}" in
+     rhel-9*)
+      if [ "$target" != "pcs-0.11" ]; then
+       if [ -f .venv/bin/activate ]; then
+        . .venv/bin/activate
+        export PATH="$(pwd)/.venv"/bin/:$PATH
+       fi
+      fi
+     ;;
+    esac
+   ;;
    pacemaker)
     # make sure CI version is alway higher than any distro
     export SPECVERSION=$BUILD_NUMBER

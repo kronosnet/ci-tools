@@ -8,12 +8,6 @@ case "${project}" in
  dlm)
   export PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
  ;;
- pcs)
-  if [ -f .venv/bin/activate ]; then
-   . .venv/bin/activate
-   export PATH="$(pwd)/.venv"/bin/:$PATH
-  fi
- ;;
 esac
 
 case $build in
@@ -64,7 +58,19 @@ case $build in
   fi
  ;;
  *)
-  echo "$MAKE $PARALLELMAKE $MAKEOPTS"
-  $MAKE $PARALLELMAKE $MAKEOPTS
+  case "${project}" in
+   pcs)
+    if [ -f .venv/bin/activate ]; then
+     . .venv/bin/activate
+     export PATH="$(pwd)/.venv"/bin/:$PATH
+    fi
+    echo "$MAKE $PARALLELMAKE $MAKEOPTS"
+    $MAKE $PARALLELMAKE $MAKEOPTS
+   ;;
+   *)
+    echo "$MAKE $PARALLELMAKE $MAKEOPTS"
+    $MAKE $PARALLELMAKE $MAKEOPTS
+   ;;
+  esac
  ;;
 esac

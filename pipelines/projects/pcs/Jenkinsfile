@@ -81,7 +81,7 @@ pipeline {
 
 		    nonvoting = buildRunMap('nonvoting', info, ['voting': false,
 								'nodelabel': 'nonvoting',
-								'excludes': 'freebsd.*',
+								'excludes': '(freebsd|rhel-8|rhel-10|centos-10|ubuntu-20).*',
 								'extravars': ['depbuildname': 'pacemaker',
 									      'depbuildversion': '2.1']])
 
@@ -159,11 +159,17 @@ pipeline {
 									    'extravars': ['depbuildname': 'pacemaker',
 											  'depbuildversion': 'main']])
 
+		    buildrpms_pstable = buildRunMap('pstable-buildrpms', info, ['voting': true,
+									    'nodelabel': 'buildrpms',
+									    'excludes': '(rhel-8|centos-9).*',
+									    'extravars': ['depbuildname': 'pacemaker',
+											  'depbuildversion': '3.0']])
+
 		    // Run them (errors are caught in info[:])
 		    try {
 			parallel voting_pmain + voting_pstable + 
 			    nonvoting_pmain + nonvoting_pstable +
-			    buildrpms_pmain +
+			    buildrpms_pmain + buildrpms_pstable +
 			    covscan_pmain + covscan_pstable
 		    } catch (err) {
 			println("Jenkinsfile caught "+err)

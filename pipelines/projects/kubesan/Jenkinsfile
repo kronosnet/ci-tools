@@ -1,5 +1,8 @@
 @Library(['GlobalLib', 'ProjectLib']) _
 
+def info = [:]
+def project = 'kubesan'
+
 def test_list = ''
 def ret = 'SUCCESS'
 def testret = ''
@@ -17,6 +20,15 @@ pipeline {
 	    steps {
 		updateGitlabCommitStatus(name: 'Prep build env', state: 'running')
 		script {
+		    getBuildInfoCommon(info)
+		    sh 'env|sort'
+		    node('built-in') {
+			lock('gitlab-jenkins-gw') {
+			    timeout (time: 60, unit: 'MINUTES') {
+				sh "$HOME/ci-tools/ci-wrap ci-gitlab-jenkins-gw started ${ret}"
+			    }
+			}
+		    }
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 		    checkout scm
 		    cleanKube()
@@ -95,6 +107,13 @@ pipeline {
     }
     post {
 	always {
+	    node('built-in') {
+		lock('gitlab-jenkins-gw') {
+		    timeout (time: 60, unit: 'MINUTES') {
+			sh "$HOME/ci-tools/ci-wrap ci-gitlab-jenkins-gw completed ${ret}"
+		    }
+		}
+	    }
 	    cleanKube()
 	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 	    script {

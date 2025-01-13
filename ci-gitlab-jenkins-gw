@@ -1,0 +1,68 @@
+#!/bin/bash
+
+# ENTRY POINT (done)
+
+set -e
+
+cistage="$1"
+if [ -z "$cistage" ]; then
+	echo "no ci stage specificed"
+	exit 1
+fi
+
+ciret="$2"
+if [ -z "$ciret" ]; then
+	echo "no ci status specificed"
+	exit 1
+fi
+
+if [ -z "$GITLAB_OBJECT_KIND" ]; then
+	echo "pipeline not triggered by gitlab operation"
+	exit 1
+fi
+
+commit=""
+
+# gitlab CI_PIPELINE_SOURCE == jenkins GITLAB_OBJECT_KIND
+case $GITLAB_OBJECT_KIND in
+	merge_request)
+		commit="$GITLAB_OA_LAST_COMMIT_ID"
+	;;
+	push)
+		commit="$GITLAB_CHECKOUT_SHA"
+	;;
+	*)
+		echo "Unknown GITLAB_OBJECT_KIND: $GITLAB_OBJECT_KIND"
+		exit 1
+	;;
+esac
+
+if [ -z "$commit" ]; then
+	echo "Gitlab commit not detected!"
+	exit 1
+fi
+
+gwdir=/var/www/ci.kronosnet.org/.kubesan
+
+clean_dirs() {
+	echo "Purging 0 byte files"
+	find $gwdir/ -type f -size 0 -print -delete
+
+	echo "Purging 60+ days old commits"
+	find $gwdir/ -type f -mtime +60 -print -delete
+}
+
+(
+	flock -e 200
+	clean_dirs
+
+	echo "Updating gitlab jenkins build info for $commit"
+
+	echo "jenkins_stage=$cistage" > $gwdir/$commit
+	echo "jenkins_ret=$ciret" >> $gwdir/$commit
+	echo "jenkins_build_url=${BUILD_URL}pipeline-console" >> $gwdir/$commit
+
+	rsync -av --delete-after $gwdir/ jweb:$gwdir/.
+
+	exit 0
+) 200>/tmp/ci-gitlab-jenkins-gw.lock

@@ -54,7 +54,7 @@ pipeline {
 		    try {
 			sh (label: 'Create test env cache',
 			    script: """
-				su - kubesan /bin/bash -c "cd ${WORKSPACE}; ./tests/run.sh create-cache"
+				su - kubesan /bin/bash -c "cd ${WORKSPACE}; ./tests/run.sh --external-registry 10.6.23.119:5000 create-cache"
 			    """)
 		    } catch (err) {
 			updateGitlabCommitStatus(name: 'Create test env cache', state: 'failed')

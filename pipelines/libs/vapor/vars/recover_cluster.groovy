@@ -5,7 +5,7 @@ def run_cleanup(Map info)
 		      'provider': info['provider'],
 		      'project': info['projectid'],
 		      'buildnum': env.BUILD_NUMBER,
-		      'rhelver': info['rhelver'],
+		      'osver': info['osver'],
 		      'nodes': info['tonodes'],
 		      'debug': env.vapordebug,
 		      'tests': 'cleanup',
@@ -20,7 +20,7 @@ def run_reboot(Map info)
 		      'provider': info['provider'],
 		      'project': info['projectid'],
 		      'buildnum': env.BUILD_NUMBER,
-		      'rhelver': info['rhelver'],
+		      'osver': info['osver'],
 		      'nodes': info['tonodes'],
 		      'debug': env.vapordebug]
     vapor_wrapper(vapor_args)

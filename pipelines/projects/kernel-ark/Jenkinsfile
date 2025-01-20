@@ -11,7 +11,7 @@ def info = [:]
 def provider = 'libvirt'
 def fromnodes = 3
 def tonodes = 3
-def rhelver = '9'
+def osver = 'rhel9'
 def zstream = 'yes'
 def upstream = 'next-stable'
 def iscsi = '0'
@@ -51,7 +51,7 @@ pipeline {
 		    info['provider'] = provider
 		    info['fromnodes'] = fromnodes
 		    info['tonodes'] = tonodes
-		    info['rhelver'] = rhelver
+		    info['osver'] = osver
 		    info['zstream'] = zstream
 		    info['upstream'] = upstream
 		    info['customrepo'] = "${env.WORKSPACE}/rpms"

@@ -14,13 +14,20 @@ def gcp_setup(String ver)
        """
 }
 
-// Return a map of cloud providers and their possibilities/limitaions
+def libvirt10_setup()
+{
+    sh """
+         rm -f /var/lib/libvirt/images/centos-10-stream.qcow2 && wget -qO /var/lib/libvirt/images/centos-10-stream.qcow2 https://cloud.centos.org/centos/10-stream/x86_64/images/CentOS-Stream-GenericCloud-10-latest.x86_64.qcow2 && virsh pool-refresh default
+       """
+}
+
+// Return a map of cloud providers and their possibilities/limitations
 def call()
 {
     // Cloud providers and their limits & params.
     def providers = [:]
 
-    providers['libvirt'] = ['maxjobs': 4, 'testlevel': 'all', 'rhelvers': ['7', '8', '9'],
+    providers['libvirt'] = ['maxjobs': 4, 'testlevel': 'all', 'vers': ['rhel7', 'rhel8', 'rhel9', 'centos10'],
 			    'has_watchdog': true, 'has_storage': true, 'weekly': true,
 			    'defaultiscsi': '10',
 			    'defaultuseiscsi': 'no',
@@ -37,9 +44,14 @@ def call()
 			    'rhel9': ['createopts': "--image rhel-9.5.0.x86_64.qcow2 --flavor-workstation rhelha-vapor-workstation-extra-large --flavor rhelha-vapor-node-extra-large  --block-device /dev/vapor/shared",
 				      'deployopts':  '',
 				      'testopts': '',
-				      'setup_fn': {}]]
+				      'setup_fn': {}],
+			    'centos10': ['createopts': "--image centos-10-stream.qcow2 --flavor-workstation rhelha-vapor-workstation-extra-large --flavor rhelha-vapor-node-extra-large  --block-device /dev/vapor/shared",
+					 'deployopts':  '',
+					 'testopts': '',
+//					 'testfilters': ['-pcs,cli,Setup', '+otherstuff'],
+					 'setup_fn': {libvirt10_setup()} ]]
 
-    providers['osp'] = ['maxjobs': 4, 'testlevel': 'all', 'rhelvers': ['8', '9'],
+    providers['osp'] = ['maxjobs': 4, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9'],
 			'has_watchdog': true, 'has_storage': true, 'weekly': true,
 			'defaultiscsi': '200',
 			'defaultuseiscsi': 'yes',
@@ -54,7 +66,7 @@ def call()
 				  'testopts': '',
 				  'setup_fn': {}]]
 
-    providers['azure'] = ['maxjobs': 4, 'testlevel': 'smoke', 'rhelvers': ['7', '8', '9'],
+    providers['azure'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel7', 'rhel8', 'rhel9'],
 			  'has_watchdog': false, 'has_storage': true, 'weekly': true,
 			  'defaultiscsi': '',
 			  'defaultuseiscsi': 'no',
@@ -73,7 +85,7 @@ def call()
 				    'testopts': '',
 				    'setup_fn': {}]]
 
-    providers['aws'] = ['maxjobs': 4, 'testlevel': 'smoke', 'rhelvers': ['8', '9'],
+    providers['aws'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
 			'has_watchdog': false, 'has_storage': true, 'weekly': true,
 			'defaultiscsi': '',
 			'defaultuseiscsi': 'no',
@@ -88,7 +100,7 @@ def call()
 				  'testopts': '',
 				  'setup_fn': {}]]
 
-    providers['gcp'] = ['maxjobs': 4, 'testlevel': 'all', 'rhelvers': ['7', '8', '9'],
+    providers['gcp'] = ['maxjobs': 4, 'testlevel': 'all', 'vers': ['rhel7', 'rhel8', 'rhel9'],
 			'has_watchdog': true, 'has_storage': true, 'weekly': false,
 			'defaultiscsi': '',
 			'defaultuseiscsi': 'yes',
@@ -107,7 +119,7 @@ def call()
 				  'testopts': '',
 				  'setup_fn': {gcp_setup('9')}]]
 
-    providers['ibmvpc'] = ['maxjobs': 0, 'testlevel': 'all', 'rhelvers': ['8','9'],
+    providers['ibmvpc'] = ['maxjobs': 0, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9'],
 			   'has_watchdog': false, 'weekly': false,
 			   'defaultiscsi': '350',
 			   'defaultuseiscsi': 'yes',
@@ -122,7 +134,7 @@ def call()
 				     'testopts': '',
 				     'setup_fn': {}]]
 
-    providers['ocpv'] = ['maxjobs': 3, 'testlevel': 'all', 'rhelvers': ['8', '9'],
+    providers['ocpv'] = ['maxjobs': 3, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9'],
 			 'has_watchdog': true, 'has_storage': false, 'weekly': false,
 			 'defaultiscsi': '10',
 			 'defaultuseiscsi': 'yes',
@@ -137,7 +149,6 @@ def call()
 				   'testopts': '',
 				   'setup_fn': {}]]
 
-    //    providers['aws'] = ['maxjobs': 1, 'testlevel': 'smoke', 'rhelvers': ['8', '9'], 'has_watchdog': true, 'weekly': false]
 
     return providers
 }

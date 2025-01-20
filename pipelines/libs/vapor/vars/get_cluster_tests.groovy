@@ -125,7 +125,7 @@ def call(Map info)
     def ret = []
 
     // These need to be 'proper' Java strings, not groovy Gstring things
-    def String array_ptr0 = "${info['testvariant']},${info['tests']},${info['testtype']},${info['nodes']},rhel${info['rhelver']}"
+    def String array_ptr0 = "${info['testvariant']},${info['tests']},${info['testtype']},${info['nodes']},${info['osver']}"
     def String array_ptr1 = "${info['testvariant']},${info['tests']},${info['testtype']},${info['nodes']}"
     def String array_ptr2 = "${info['testvariant']},${info['tests']},${info['testtype']},generic"
 
@@ -163,6 +163,20 @@ def call(Map info)
 	    }
 	}
 
+	// Do any more generic filters for this provider/ostype
+	if (provider["${info['osver']}"] != null) {
+	    osinfo = provider["${info['osver']}"]
+	    if (osinfo.containsKey('testfilters')) {
+		for (f in osinfo['testfilters']) {
+		    if (f.startsWith('-')) {
+			deletelist += f.substring(1)
+		    }
+		    if (f.startsWith('+')) {
+			ret += f.substring(1)
+		    }
+		}
+	    }
+	}
 	ret = ret.minus(deletelist)
     }
 

@@ -8,7 +8,7 @@ def run_test(Map info)
 			      'provider': info['provider'],
 			      'project': info['projectid'],
 			      'buildnum': env.BUILD_NUMBER,
-			      'rhelver': info['rhelver'],
+			      'osver': info['osver'],
 //			      'jobid': "jenkins:${BUILD_URL}", // Not used right now. needs revisiting
 			      'nodes': info['nodes'],
 			      'testlogdir': "${WORKSPACE}/${info['logsrc']}",
@@ -17,6 +17,7 @@ def run_test(Map info)
 			      'debug': env.vapordebug]
 	    vapor_wrapper(vapor_args)
 	} else {
+	    echo "INFO: ${info}"
 	    echo "SLEEP 5"
 	    sleep(5)
 	    if (info['runtest'] == "fake_failure") {
@@ -67,7 +68,7 @@ def call(Map info)
     }
 
     // define log source
-    def logsrc = "rhel${info['rhelver']}-zstream_${info['zstream']}-upstream_${info['upstream']}-nodes_${info['nodes']}-${info['runtest']}"
+    def logsrc = "${info['osver']}-zstream_${info['zstream']}-upstream_${info['upstream']}-nodes_${info['nodes']}-${info['runtest']}"
     // sanitize path by removing , and _ from info['runtest']
     logsrc = logsrc.replace(',','_').replace(':','_')
     info['logsrc'] = "${logsrc}"

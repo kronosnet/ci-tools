@@ -10,7 +10,7 @@ def call(Map info)
 			  'provider': info['provider'],
 			  'project': info['projectid'],
 			  'buildnum': env.BUILD_NUMBER,
-			  'rhelver': info['rhelver'],
+			  'osver': info['osver'],
 			  'zstream': info['zstream'],
 			  'upstream': info['upstream'],
 			  'debug': env.vapordebug]

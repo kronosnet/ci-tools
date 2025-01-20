@@ -10,8 +10,8 @@ def validate(Map p)
 	println(p)
 	return false
     }
-    if (!p.containsKey('rhelver')) {
-	println('vapor_wrapper called with no rhelver')
+    if (!p.containsKey('osver')) {
+	println('vapor_wrapper called with no osver')
 	println(p)
 	return false
     }
@@ -112,11 +112,11 @@ def call(Map p)
     def providers = getProviderProperties()
     p += providers[p['provider']]
 
-    if (!p.containsKey('rhelver')) {
-	println("ERROR: ${p['rhelver']} not supported by ${p['provider']}")
+    if (!p.containsKey('osver')) {
+	println("ERROR: ${p['osver']} not supported by ${p['provider']}")
 	return 1
     }
-    p += p["rhel${p['rhelver']}"]
+    p += p["${p['osver']}"]
 
     if (params.containsKey('echorun') &&
 	params['echorun'] == 'yes') {
@@ -177,7 +177,7 @@ def call(Map p)
     if (p['buildnum'] != '') {
 	p['buildnum'] = "j${p['buildnum']}"
     }
-    p['clusteropts'] = "--cluster ${p['project']}${p['provider']}c${p['rhelver']}${p['buildnum']}"
+    p['clusteropts'] = "--cluster ${p['project']}${p['provider']}${p['osver']}${p['buildnum']}"
 
     // Put all options together
     p['provideropts'] = "${p['provider']} ${p['authopts']}"

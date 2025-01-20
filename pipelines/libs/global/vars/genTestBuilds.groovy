@@ -3,13 +3,14 @@
 def buildJobList(String job_type)
 {
     // OS/upstream versions as pairs
-    def versions = [['8', 'stable'], ['9', 'stable'], ['9', 'next-stable'], ['9','main']]
+    def versions = [['rhel8', 'stable'], ['rhel9', 'stable'], ['rhel9', 'next-stable'], ['rhel9', 'main'],
+		    ['centos10', 'main'], ['centos10', 'next-stable']]
     def zstream = ['no','yes']
 
     def joblist = []
     for (v in versions) {
 	for (b in zstream) {
-	    joblist += ['rhelver': v[0], 'zstream': b, 'upstream': v[1], 'testlevel': job_type]
+	    joblist += ['osver': v[0], 'zstream': b, 'upstream': v[1], 'testlevel': job_type]
 	}
     }
     return joblist
@@ -25,7 +26,7 @@ def sort_jobs(ArrayList alljobs)
 // Build a string containing the name of the current pipeline stage
 def mkstagename(Map job)
 {
-    return "rhel${job['rhelver']} zstream:${job['zstream']} ${job['upstream']}"
+    return "${job['osver']} zstream:${job['zstream']} ${job['upstream']}"
 }
 
 // MAIN entry point for this call.
@@ -67,7 +68,7 @@ def genSmokeJobs(String dryrun, Map info)
 	    // jobs for unsupported RHEL versions
 	    def provider_smokejobs = []
 	    for (sj in smokejobs) {
-		if (pinfo['rhelvers'].contains(sj['rhelver'])) {
+		if (pinfo['vers'].contains(sj['osver'])) {
 		    provider_smokejobs += sj
 		}
 	    }
@@ -150,7 +151,7 @@ def genAllJobs(String dryrun, Map info, Map prov_failflags)
 	    if (pinfo['weekly'] == true &&
 		pinfo['testlevel'] == 'all' &&
 		prov_failflags[provider][stagename] == false &&
-		pinfo['rhelvers'].contains(job['rhelver'])) {
+		pinfo['vers'].contains(job['osver'])) {
 
 		if (least_busy == null ||
 		    pinfo['numjobs'] < providers[least_busy]['numjobs']) {
@@ -276,7 +277,7 @@ def run_job(String provider, Map job, String dryrun, Map info)
 	def thisjob = doBuildJob('global/ha-functional-testing',
 				 [[$class: 'LabelParameterValue', name: 'provider', label: provider],
 				  string(name: 'dryrun', value : "${dryrun}"),
-				  string(name: 'rhelver', value: "${job['rhelver']}"),
+				  string(name: 'osver', value: "${job['osver']}"), // NOTE change of job params
 				  string(name: 'zstream', value: "${job['zstream']}"),
 				  string(name: 'upstream', value: "${job['upstream']}"),
 				  string(name: 'testlist', value: "${testlist}"),
@@ -292,7 +293,7 @@ def run_job(String provider, Map job, String dryrun, Map info)
 	}
 	joburl = thisjob.absoluteUrl
     } catch (err) {
-	println("Caught sub-job failure ${err} in ${job['rhelver']} ${job['zstream']} ${job['upstream']}")
+	println("Caught sub-job failure ${err} in ${job['osver']} ${job['zstream']} ${job['upstream']}")
     }
     return new Tuple2(status, joburl)
 }

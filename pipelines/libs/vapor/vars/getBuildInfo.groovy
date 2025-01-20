@@ -20,7 +20,7 @@ def call(String project, String projectid, Map info)
     } else {
 	info['tonodes'] = 4
     }
-    info['rhelver'] = env.rhelver
+    info['osver'] = env.osver
     info['zstream'] = env.zstream
     if (env.brewbuild) {
 	info['brewbuild'] = env.brewbuild

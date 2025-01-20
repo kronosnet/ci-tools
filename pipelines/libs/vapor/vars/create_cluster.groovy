@@ -4,7 +4,7 @@ def call(Map info)
     timeout(time: 60, unit: 'MINUTES') {
 	println("Creating test cluster")
 	if (info['dryrun'] == '1') {
-	    if (info['rhelver'] == '666') {
+	    if (info['osver'] == 'rhel666') {
 		return 1
 	    } else {
 		return 0
@@ -15,7 +15,7 @@ def call(Map info)
 			  'provider': info['provider'],
 			  'project': info['projectid'],
 			  'buildnum': env.BUILD_NUMBER,
-			  'rhelver': info['rhelver'],
+			  'osver': info['osver'],
 			  'nodes': info['tonodes'],
 			  'debug': env.vapordebug]
 	if ("${info['iscsi']}" != '') {

@@ -13,6 +13,20 @@ def testvariant = 'pcs'
 pipeline {
     agent { label "${provider}" }
 
+    parameters {
+	string(name: 'fromnodes', defaultValue: '1', description: 'run tests starting from this node number')
+	string(name: 'tonodes', defaultValue: '4', description: 'run tests up to this node number')
+	string(name: 'osver', defaultValue: 'rhel9', description: 'rhel8, rhel9, centos10 etc (depending on cloud provider)')
+	string(name: 'zstream', defaultValue: 'no', description: 'yes / no')
+	string(name: 'brewbuild', defaultValue: '', description: 'updated brew build to use in tests <n-v-r | build_id | package>')
+	string(name: 'upstream', defaultValue: 'next-stable', description: 'use none / next-stable / next-stable-kernel / main or main-kernel repository')
+	string(name: 'tests', defaultValue: 'all', description: 'all / smoke')
+	string(name: 'testlist', defaultValue: 'auto', description: 'override auto generated test list. Set to empty to skip running tests')
+	string(name: 'taglist', defaultValue: 'auto', description: 'override auto generated tag list. Set to empty to skip running tags')
+	string(name: 'dryrun', defaultValue: '0', description: 'set to 1 to see what the pipeline would do, without actually doing anything')
+
+    }
+
     options {
 	skipDefaultCheckout(true)
     }

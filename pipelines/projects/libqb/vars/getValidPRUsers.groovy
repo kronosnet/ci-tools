@@ -1,4 +1,4 @@
 // 
 def call() {
-    return ['kgaillot']
+    return ['']
 }

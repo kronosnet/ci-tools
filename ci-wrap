@@ -63,16 +63,15 @@ else
 		echo "Using $WORKSPACE"
 		(
 			flock -e 200
-			if [ ! -d $WORKSPACE/ci-tools ]; then
-				echo "Copy HOME/ci-tools to WORKSPACE"
-				cp -rp $HOME/ci-tools $WORKSPACE/
-				echo "Updating WORKSPACE copy of ci-tools"
-				cd $WORKSPACE/ci-tools
-				git pull
-				echo "Switching WORKSPACE/ci-tools to $CITBRANCH"
-				git checkout $CITBRANCH
-				cd - > /dev/null
-			fi
+			rm -rf $WORKSPACE/ci-tools
+			echo "Copy HOME/ci-tools to WORKSPACE"
+			cp -rp $HOME/ci-tools $WORKSPACE/
+			echo "Updating WORKSPACE copy of ci-tools"
+			cd $WORKSPACE/ci-tools
+			git pull
+			echo "Switching WORKSPACE/ci-tools to $CITBRANCH"
+			git checkout $CITBRANCH
+			cd - > /dev/null
 		) 200>$WORKSPACE/ci-wrap.lock
 		CITHOME="$WORKSPACE/ci-tools"
 	fi

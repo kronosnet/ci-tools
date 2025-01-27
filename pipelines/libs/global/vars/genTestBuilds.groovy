@@ -9,8 +9,13 @@ def buildJobList(String job_type)
 
     def joblist = []
     for (v in versions) {
-	for (b in zstream) {
-	    joblist += ['osver': v[0], 'zstream': b, 'upstream': v[1], 'testlevel': job_type]
+	// Only RHEL has Zstreams
+	if (v[0].substring(0, 4) == 'rhel') {
+	    for (b in zstream) {
+		joblist += ['osver': v[0], 'zstream': b, 'upstream': v[1], 'testlevel': job_type]
+	    }
+	} else {
+	    joblist += ['osver': v[0], 'zstream': 'no', 'upstream': v[1], 'testlevel': job_type]
 	}
     }
     return joblist

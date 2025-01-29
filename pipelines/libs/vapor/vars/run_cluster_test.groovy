@@ -13,6 +13,7 @@ def run_test(Map info)
 			      'nodes': info['nodes'],
 			      'testlogdir': "${WORKSPACE}/${info['logsrc']}",
 			      'testtype': info['testtype'],
+			      'testtimeout': info['runtesttimeout'],
 			      'tests': info['runtest'],
 			      'debug': env.vapordebug]
 	    vapor_wrapper(vapor_args)
@@ -76,7 +77,8 @@ def call(Map info)
     // define runstate for return status/errors
     def runstate = [:]
 
-    runWithTimeout(info['runtesttimeout'], { run_test(info) }, runstate, { post_run_test(info, runstate) }, { post_run_test(info, runstate) })
+    // Add 20 minutes to allow vapor to collect logs etc (info['runtesttimeout'] is already an integer, luckily)
+    runWithTimeout(info['runtesttimeout'] + 20, { run_test(info) }, runstate, { post_run_test(info, runstate) }, { post_run_test(info, runstate) })
 
     // handle errors et al
     if (runstate['RET'] != 'OK') {

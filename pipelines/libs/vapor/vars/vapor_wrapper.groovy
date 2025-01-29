@@ -163,7 +163,10 @@ def call(Map p)
 	p['testbaseopts'] = "${p['testbaseopts']} --post-results"
     }
     if (p['testlogdir'] != '') {
-	p['testbaseopts'] = "${p['testbaseopts']} --collect-debug-dir=${p['testlogdir']}"
+	p['testbaseopts'] = "${p['testbaseopts']} --collect-debug-dir ${p['testlogdir']}"
+    }
+    if (p.containsKey('testtimeout')) { // it's an Integer - if present
+	p['testbaseopts'] = "${p['testbaseopts']} --timeout ${p['testtimeout']}"
     }
 
     p['vaporopts'] = '--nocolorlog --log-level '

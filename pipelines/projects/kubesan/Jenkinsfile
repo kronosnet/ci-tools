@@ -21,7 +21,9 @@ pipeline {
 		updateGitlabCommitStatus(name: 'Prep build env', state: 'running')
 		script {
 		    getBuildInfoCommon(info)
-		    sh 'env|sort'
+		    sh """
+			env -0 | sed -z 's/\\/\\\\/g; s/\n/\\n/g' | tr '\0' '\n' | sort
+		    """
 		    node('built-in') {
 			lock('gitlab-jenkins-gw') {
 			    timeout (time: 60, unit: 'MINUTES') {

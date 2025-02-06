@@ -15,7 +15,7 @@ def osver = 'rhel9'
 def zstream = 'yes'
 def upstream = 'next-stable'
 def iscsi = '0'
-def block = '110'
+def block = '200'
 def testvariant = 'kernel'
 def tests = 'all'
 

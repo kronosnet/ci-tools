@@ -77,8 +77,8 @@ def call(Map info)
     // define runstate for return status/errors
     def runstate = [:]
 
-    // Add 20 minutes to allow vapor to collect logs etc (info['runtesttimeout'] is already an integer, luckily)
-    runWithTimeout(info['runtesttimeout'] + 20, { run_test(info) }, runstate, { post_run_test(info, runstate) }, { post_run_test(info, runstate) })
+    // Add 180 minutes to allow vapor to collect logs etc (info['runtesttimeout'] is already an integer, luckily)
+    runWithTimeout(info['runtesttimeout'] + 180, { run_test(info) }, runstate, { post_run_test(info, runstate) }, { post_run_test(info, runstate) })
 
     // handle errors et al
     if (runstate['RET'] != 'OK') {

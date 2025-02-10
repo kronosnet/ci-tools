@@ -112,11 +112,18 @@ def call(Map p)
     def providers = getProviderProperties()
     p += providers[p['provider']]
 
+    // Get the OS-specific options
     if (!p.containsKey('osver')) {
 	println("ERROR: ${p['osver']} not supported by ${p['provider']}")
 	return 1
     }
     p += p["${p['osver']}"]
+
+    // Check for OS/node specific options
+    def oname = "${p['osver']}-${env.NODE_NAME}"
+    if (p[oname] != null) { // Not sure why containsKey() doesn't work here!
+	p += p[oname]
+    }
 
     if (params.containsKey('echorun') &&
 	params['echorun'] == 'yes') {

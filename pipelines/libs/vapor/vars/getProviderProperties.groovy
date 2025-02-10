@@ -48,9 +48,7 @@ def call()
 			    'centos10': ['createopts': "--image centos-10-stream.qcow2 --flavor-workstation rhelha-vapor-workstation-medium --flavor rhelha-vapor-node-medium",
 					 'deployopts':  '',
 					 'testopts': '',
-//					 'testfilters': ['-pcs,cli,Setup', '+otherstuff'],
 					 'setup_fn': {libvirt10_setup()} ]]
-
     providers['osp'] = ['maxjobs': 4, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9'],
 			'has_watchdog': true, 'has_storage': true, 'weekly': true,
 			'defaultiscsi': '200',

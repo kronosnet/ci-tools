@@ -5,7 +5,7 @@ import com.sun.jna.Platform;
 
 class jnaflock {
     interface CLibrary extends Library {
-	CLibrary INSTANCE = (CLibrary)	Native.load("c", CLibrary.class);
+	CLibrary INSTANCE = (CLibrary)	Native.load("libc", CLibrary.class);
 	
 	void printf(String format, Object... args);
 	int open(String file, int mode);

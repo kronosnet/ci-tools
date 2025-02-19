@@ -5,9 +5,9 @@ import com.sun.jna.Platform;
 
 class jnaflock {
     interface CLibrary extends Library {
-	CLibrary INSTANCE = (CLibrary)	Native.load("libc", CLibrary.class);
+	NativeLibrary.addSearchPath("/usr/lib64")
+	CLibrary INSTANCE = (CLibrary)Native.load("c", CLibrary.class);
 	
-	void printf(String format, Object... args);
 	int open(String file, int mode);
 	int creat(String file, int mode);
 	int flock(int fd, int mode);
@@ -25,7 +25,7 @@ def call(String lockname, String mode, Closure thingtorun)
 	    lockmode = 1; // LOCK_SH
 	}
 	if (mode == 'WRITE') {
-	    lockmode = 2; // LOCK_EX
+	    lockmode = 2; // LOCK_EX[O
 	}
 	if (lockmode == 0) {
 	    println("jnaflock: Unknown lock mode ${mode}")

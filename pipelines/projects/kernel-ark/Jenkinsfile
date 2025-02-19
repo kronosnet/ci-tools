@@ -170,7 +170,7 @@ pipeline {
 			    cd $BUILDDIR/kernel-ark
 			    echo == build rpms ==
 			    srcrpm=$(ls -1 redhat/rpm/SRPMS/kernel-*.src.rpm)
-			    RPMBUILDOPTS="--without debug --without doc --without realtime --without automotive"
+			    RPMBUILDOPTS="--without debug --without doc --without realtime --without automotive --without ynl"
 
 			    CIRPMDIR=$(pwd)/ci-test-rpms
 			    rm -rf $CIRPMDIR

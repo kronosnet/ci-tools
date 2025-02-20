@@ -133,7 +133,7 @@ def call()
 				     'testopts': '',
 				     'setup_fn': {}]]
 
-    providers['ocpv'] = ['maxjobs': 4, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9'],
+    providers['ocpv'] = ['maxjobs': 4, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9', 'centos10'],
 			 'has_watchdog': true, 'has_storage': true, 'weekly': true,
 			 'defaultiscsi': '10',
 			 'defaultuseiscsi': 'no',
@@ -146,7 +146,11 @@ def call()
 			 'rhel9': ['createopts': '--flavor-workstation gn1.xlarge --flavor gn1.xlarge --image rhel-9.5.0',
 				   'deployopts':  '',
 				   'testopts': '',
-				   'setup_fn': {}]]
+				   'setup_fn': {}],
+			 'centos10': ['createopts': '--flavor-workstation gn1.xlarge --flavor gn1.xlarge --image centos-10-stream',
+				      'deployopts':  '',
+				      'testopts': '',
+				      'setup_fn': {}]]
 
 
     return providers

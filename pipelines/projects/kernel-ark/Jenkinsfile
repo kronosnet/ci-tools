@@ -8,7 +8,7 @@ def projectid = 'kft'
 def info = [:]
 
 // kernel-ark overrides
-def provider = 'libvirt'
+def provider = 'ocpv'
 def fromnodes = 3
 def tonodes = 3
 def osver = 'rhel9'
@@ -75,6 +75,9 @@ pipeline {
 	    }
 	}
 	stage('kernel build') {
+	    options {
+		lock('kernel-build')
+	    }
 	    stages {
 		// This is the main stage that covers everything
 		stage('Populating kernel-ark cache') {

@@ -5,7 +5,6 @@ import com.sun.jna.Platform;
 
 class jnaflock {
     interface CLibrary extends Library {
-	NativeLibrary.addSearchPath("/usr/lib64")
 	CLibrary INSTANCE = (CLibrary)Native.load("c", CLibrary.class);
 	
 	int open(String file, int mode);

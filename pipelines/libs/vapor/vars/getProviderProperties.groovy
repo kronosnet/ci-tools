@@ -49,6 +49,7 @@ def call()
 					 'deployopts':  '',
 					 'testopts': '',
 					 'setup_fn': {libvirt10_setup()} ]]
+
     providers['osp'] = ['maxjobs': 4, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9'],
 			'has_watchdog': true, 'has_storage': true, 'weekly': true,
 			'defaultiscsi': '200',
@@ -132,17 +133,17 @@ def call()
 				     'testopts': '',
 				     'setup_fn': {}]]
 
-    providers['ocpv'] = ['maxjobs': 3, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9'],
-			 'has_watchdog': true, 'has_storage': false, 'weekly': false,
+    providers['ocpv'] = ['maxjobs': 4, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9'],
+			 'has_watchdog': true, 'has_storage': true, 'weekly': true,
 			 'defaultiscsi': '10',
-			 'defaultuseiscsi': 'yes',
-			 'defaultblocksize': '10',
-			 'authopts': '--region tlv',
-			 'rhel8': ['createopts': '--image 8.9.0',
+			 'defaultuseiscsi': 'no',
+			 'defaultblocksize': '200',
+			 'authopts': '',
+			 'rhel8': ['createopts': '--flavor-workstation gn1.xlarge --flavor gn1.xlarge --image rhel-8.10.0',
 				   'deployopts':  '',
 				   'testopts': '',
 				   'setup_fn': {}],
-			 'rhel9': ['createopts': '--image 9.3.0',
+			 'rhel9': ['createopts': '--flavor-workstation gn1.xlarge --flavor gn1.xlarge --image rhel-9.5.0',
 				   'deployopts':  '',
 				   'testopts': '',
 				   'setup_fn': {}]]

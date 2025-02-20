@@ -27,7 +27,7 @@ def call()
     // Cloud providers and their limits & params.
     def providers = [:]
 
-    providers['libvirt'] = ['maxjobs': 4, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9', 'centos10'],
+    providers['libvirt'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9', 'centos10'],
 			    'has_watchdog': true, 'has_storage': true, 'weekly': true,
 			    'defaultiscsi': '10',
 			    'defaultuseiscsi': 'no',

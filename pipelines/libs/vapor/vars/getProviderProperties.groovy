@@ -27,16 +27,12 @@ def call()
     // Cloud providers and their limits & params.
     def providers = [:]
 
-    providers['libvirt'] = ['maxjobs': 4, 'testlevel': 'all', 'vers': ['rhel7', 'rhel8', 'rhel9', 'centos10'],
+    providers['libvirt'] = ['maxjobs': 4, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9', 'centos10'],
 			    'has_watchdog': true, 'has_storage': true, 'weekly': true,
 			    'defaultiscsi': '10',
 			    'defaultuseiscsi': 'no',
 			    'defaultblocksize': '200',
 			    'authopts': '--libvirtd-ip localhost',
-			    'rhel7': ['createopts': "--image rhel-7.9.0.x86_64.qcow2 --flavor-workstation rhelha-vapor-workstation-medium --flavor rhelha-vapor-node-medium",
-				      'deployopts':  '',
-				      'testopts': '',
-				      'setup_fn': {}],
 			    'rhel8': ['createopts': "--image rhel-8.10.0.x86_64.qcow2 --flavor-workstation rhelha-vapor-workstation-medium --flavor rhelha-vapor-node-medium",
 				      'deployopts':  '',
 				      'testopts': '',
@@ -65,16 +61,12 @@ def call()
 				  'testopts': '',
 				  'setup_fn': {}]]
 
-    providers['azure'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel7', 'rhel8', 'rhel9'],
+    providers['azure'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
 			  'has_watchdog': false, 'has_storage': true, 'weekly': true,
 			  'defaultiscsi': '',
 			  'defaultuseiscsi': 'no',
 			  'defaultblocksize': '1024',
 			  'authopts': '--region eastus',
-			  'rhel7': ['createopts': '--image $(az vm image list --all --publisher RedHat  --output table | grep "RedHat:RHEL:7_" | awk \'{print $NF}\' | sort -V | tail -n 1)',
-				    'deployopts':  '',
-				    'testopts': '',
-				    'setup_fn': {}],
 			  'rhel8': ['createopts': '--image $(az vm image list --all --publisher RedHat  --output table | grep "RedHat:RHEL:8_" | awk \'{print $NF}\' | sort -V | tail -n 1)',
 				    'deployopts':  '',
 				    'testopts': '',
@@ -99,16 +91,12 @@ def call()
 				  'testopts': '',
 				  'setup_fn': {}]]
 
-    providers['gcp'] = ['maxjobs': 4, 'testlevel': 'all', 'vers': ['rhel7', 'rhel8', 'rhel9'],
+    providers['gcp'] = ['maxjobs': 4, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9'],
 			'has_watchdog': true, 'has_storage': true, 'weekly': false,
 			'defaultiscsi': '',
 			'defaultuseiscsi': 'yes',
 			'defaultblocksize': '',
 			'authopts': '--region us-east1',
-			'rhel7': ['createopts': '--flavor-workstation rhelha-vapor-workstation7 --flavor rhelha-vapor-node7 --image rhel-7',
-				  'deployopts':  '',
-				  'testopts': '',
-				  'setup_fn': {gcp_setup('7')}],
 			'rhel8': ['createopts': '--flavor-workstation rhelha-vapor-workstation8 --flavor rhelha-vapor-node8 --image rhel-8',
 				  'deployopts':  '',
 				  'testopts': '',

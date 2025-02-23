@@ -2,7 +2,29 @@
 
 def info = [:]
 def project = 'kubesan-cache'
-def execnodes = getLabelledNodes('kubesan')
+
+def updatekclicache(String agentName, Map info)
+{
+    println("Running update-kcli-cache on ${agentName}")
+    node("${agentName}") {
+	sh "echo THIS IS SPARTA: ${agentName}"
+    }
+}
+
+def buildkcliRunMap(Map info)
+{
+    def collectBuildEnv = [:]
+    def nodeList = getNodes('kubesan')
+
+    for (n in nodeList) {
+	def node = n.key
+	collectBuildEnv[node] = {
+	    updatekclicache(node, info)
+	}
+    }
+
+    return collectBuildEnv
+}
 
 pipeline {
     agent { label 'kubesan-cache' }
@@ -26,13 +48,27 @@ pipeline {
 			sh "echo $HOME/ci-tools/ci-wrap ci-kubesan-cache"
 		    }
 		}
-		println("execnodes: "+execnodes)
+	    }
+	}
+	stage('Update kubesan kcli cache') {
+	    steps {
+		script {
+		    def updates = buildkcliRunMap(info)
+		    try {
+			parallel updates
+		    } catch (err) {
+			println("Jenkinsfile caught "+err)
+			info['exception_text'] += "\nparallel error caught: {$err}\n"
+			info['state'] = 'Error'
+		    }
+		}
 	    }
 	}
     }
     post {
 	always {
 	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+	    projectFinishUp(info)
 	}
     }
 }

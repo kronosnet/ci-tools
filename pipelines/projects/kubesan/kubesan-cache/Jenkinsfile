@@ -22,10 +22,7 @@ pipeline {
 	    steps {
 		script {
 		    withCredentials([usernamePassword(credentialsId: 'kubesan-docker', passwordVariable: 'docker_password', usernameVariable: 'docker_user')]) {
-			sh (label: 'Create kubesane registry cache',
-			    script: """
-				ci-wrap ci-kubesan-cache
-			    """)
+			sh "$HOME/ci-tools/ci-wrap ci-kubesan-cache"
 		    }
 		}
 	    }

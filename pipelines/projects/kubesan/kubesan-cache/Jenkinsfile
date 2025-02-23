@@ -2,6 +2,7 @@
 
 def info = [:]
 def project = 'kubesan-cache'
+def execnodes = getLabelledNodes('kubesan')
 
 pipeline {
     agent { label 'kubesan-cache' }
@@ -22,9 +23,10 @@ pipeline {
 	    steps {
 		script {
 		    withCredentials([usernamePassword(credentialsId: 'kubesan-docker', passwordVariable: 'docker_password', usernameVariable: 'docker_user')]) {
-			sh "$HOME/ci-tools/ci-wrap ci-kubesan-cache"
+			sh "echo $HOME/ci-tools/ci-wrap ci-kubesan-cache"
 		    }
 		}
+		println("execnodes: "+execnodes)
 	    }
 	}
     }

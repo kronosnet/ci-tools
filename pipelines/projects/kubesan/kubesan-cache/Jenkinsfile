@@ -1,0 +1,72 @@
+@Library(['GlobalLib', 'ProjectLib']) _
+
+def info = [:]
+def project = 'kubesan-cache'
+
+def updatekclicache(String agentName, Map info)
+{
+    println("Running update-kcli-cache on ${agentName}")
+    node("${agentName}") {
+	sh "echo THIS IS SPARTA: ${agentName}"
+    }
+}
+
+def buildkcliRunMap(Map info)
+{
+    def collectBuildEnv = [:]
+    def nodeList = getLabelledNodes('kubesan')
+
+    for (n in nodeList) {
+	collectBuildEnv[n] = {
+	    updatekclicache(n, info)
+	}
+    }
+
+    return collectBuildEnv
+}
+
+pipeline {
+    agent { label 'kubesan-cache' }
+
+    options {
+	skipDefaultCheckout(true)
+    }
+
+    stages {
+	stage('Clean build env') {
+	    steps {
+		script {
+		    getBuildInfoCommon(info)
+		}
+	    }
+	}
+	stage('Build kubesan registry cache') {
+	    steps {
+		script {
+		    withCredentials([usernamePassword(credentialsId: 'kubesan-docker', passwordVariable: 'docker_password', usernameVariable: 'docker_user')]) {
+			sh "$HOME/ci-tools/ci-wrap ci-kubesan-cache"
+		    }
+		}
+	    }
+	}
+	stage('Update kubesan kcli cache') {
+	    steps {
+		script {
+		    def updates = buildkcliRunMap(info)
+		    try {
+			parallel updates
+		    } catch (err) {
+			println("Jenkinsfile caught "+err)
+			info['exception_text'] += "\nparallel error caught: {$err}\n"
+			info['state'] = 'Error'
+		    }
+		}
+	    }
+	}
+    }
+    post {
+	always {
+	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+	}
+    }
+}

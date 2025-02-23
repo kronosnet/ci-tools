@@ -1,0 +1,13 @@
+name: ksan-registry
+docker_user: ${docker_user}
+docker_password: ${docker_password}
+vmrules:
+- ksan-registry:
+   nets:
+   - name: baremetal
+     ip: 10.6.23.119
+     mask: 255.255.255.0
+     gateway: 10.6.23.254
+     dns:
+     - 10.11.5.160
+     - 10.2.70.215

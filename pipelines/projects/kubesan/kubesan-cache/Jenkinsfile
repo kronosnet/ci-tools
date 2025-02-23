@@ -3,14 +3,6 @@
 def info = [:]
 def project = 'kubesan-cache'
 
-def updatekclicache(String agentName, Map info)
-{
-    println("Running update-kcli-cache on ${agentName}")
-    node("${agentName}") {
-	sh "echo THIS IS SPARTA: ${agentName}"
-    }
-}
-
 def buildkcliRunMap(Map info)
 {
     def collectBuildEnv = [:]

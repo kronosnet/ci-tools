@@ -6,14 +6,13 @@ def project = 'kubesan-cache'
 def buildkcliRunMap(Map info)
 {
     def collectBuildEnv = [:]
-    def nodeList = getNodes()
+    def nodeList = getLabelledNodes('kubesan')
 
     println("DEBUG: "+nodeList)
 
     for (n in nodeList) {
-	def node = n.key
-	collectBuildEnv[node] = {
-	    updatekclicache(node, info)
+	collectBuildEnv[n] = {
+	    updatekclicache(n, info)
 	}
     }
 

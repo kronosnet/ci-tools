@@ -11,7 +11,8 @@ def info = [:]
 
 def withinlock()
 {
-    println("Called with locking test");
+    sh "date; sleep 60; date"
+    println("Called with locking test on ${env.NODE_NAME}");
 }
 
 // Pipeline code starts here
@@ -49,7 +50,7 @@ pipeline {
 
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 
-		    RWLock('test.lock', 'WRITE', { withinlock() } )
+		    RWLock(info, 'testlock', 'WRITE', { withinlock() } )
 
 		    // The 'short' test list
 		    voting = buildRunMap('voting', info, ['voting': true,
@@ -109,6 +110,7 @@ pipeline {
     // Finish up and send emails
     post {
 	always {
+	    RWLock(info, '','UNLOCK', {})
 	    projectFinishUp(info)
 	}
     }

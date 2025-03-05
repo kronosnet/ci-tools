@@ -102,6 +102,7 @@ pipeline {
 		expression { info['authcheck'] == true && info['is_draft'] == false }
 	    }
 	    steps {
+		RWLock(info, 'testlock', 'READ', { withinlock() } )
 		postStage(info)
 	    }
 	}

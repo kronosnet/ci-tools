@@ -8,10 +8,7 @@ def call(Map localinfo, String agentName)
 {
     def props = [:]
 
-    if (agentName.contains('x86-64')) {
-	props['DISTROCONFOPTS'] = "--with-testvol=/dev/shm/testvol-${localinfo['pull_id']}-${env.BUILD_NUMBER}"
-    }
-
+    props['DISTROCONFOPTS'] = "--with-testvol=/dev/shm/testvol-${localinfo['pull_id']}-${env.BUILD_NUMBER}"
     props['TOPTS'] = '--always-clean-testvol'
 
     return props

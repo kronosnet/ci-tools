@@ -6,6 +6,7 @@ def call(Map info)
     }
     timeout(time: 120, unit: 'MINUTES') {
 	echo "Deploy test cluster"
+
 	def vapor_args = ['command': 'deploy',
 			  'provider': info['provider'],
 			  'project': info['projectid'],
@@ -22,6 +23,13 @@ def call(Map info)
 	}
 	if ("${info['brewbuild']}" != '') {
 	    vapor_args += ['brewbuildopts': info['brewbuild']]
+	}
+
+	// Allow us to run sts from RHEL10 on rhel9 for pcmk3.x and pcs
+	if (info['osver'] == 'rhel9' &&
+	    (info['upstream'] == 'main' ||
+	     info['upstream'] == 'next-stable')) {
+	    vapor_args['extraopts'] = '--sts-version 10'
 	}
 
 	vapor_wrapper(vapor_args)

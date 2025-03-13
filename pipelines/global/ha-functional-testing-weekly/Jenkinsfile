@@ -10,6 +10,7 @@ pipeline {
     agent { label 'built-in' }
 
     parameters {
+	string(name: 'tests', defaultValue: 'all', description: '"all"/"smoke"')
 	string(name: 'dryrun', defaultValue: '0', description: 'set to 1 to see what the pipeline would do, without actually doing anything')
 	string(name: 'failure_rate', defaultValue: '0', description: 'Failure likelihood (0-100) to inject for testing')
     }
@@ -32,13 +33,15 @@ pipeline {
 			    info['exception_text'] += "\nparallel error caught in smoke tests: {$err}\n"
 			}
 		    }
-		    def (Map allruns, Map _notused) = genTestBuilds('all', params.dryrun, info, faillist)
-		    stage('All tests') {
-			try {
-			    parallel allruns
-			} catch (err) {
-			    println("Jenkinsfile caught "+err)
-			    info['exception_text'] += "\nparallel error caught in all tests: {$err}\n"
+		    if (params.tests == 'all') {
+			def (Map allruns, Map _notused) = genTestBuilds('all', params.dryrun, info, faillist)
+			stage('All tests') {
+			    try {
+				parallel allruns
+			    } catch (err) {
+				println("Jenkinsfile caught "+err)
+				info['exception_text'] += "\nparallel error caught in all tests: {$err}\n"
+			    }
 			}
 		    }
 		}

@@ -1,19 +1,6 @@
 import java.nio.file.Files
 import java.nio.file.Paths
 
-// Setup routines called by setup_fn() entries
-def gcp_setup(String ver)
-{
-    sh """
-	gcloud --quiet compute instance-templates delete rhelha-vapor-workstation${ver} rhelha-vapor-node${ver} || true
-	gcloud --quiet compute images delete rhel-${ver} || true
-	gcloud --quiet compute images create rhel-${ver} --source-image-family rhel-${ver} --source-image-project rhel-cloud
-	gcloud --quiet compute instance-templates create rhelha-vapor-node${ver} --boot-disk-size=40GB --machine-type=e2-custom-4-8192 --image-family=rhel-${ver} --image-project=rhel-cloud
-	gcloud --quiet compute instance-templates create rhelha-vapor-workstation${ver} --boot-disk-size=100GB --machine-type=e2-custom-4-8192 --image-family=rhel-${ver} --image-project=rhel-cloud
-
-       """
-}
-
 def libvirt10_setup()
 {
     sh """
@@ -91,20 +78,20 @@ def call()
 				  'testopts': '',
 				  'setup_fn': {}]]
 
-    providers['gcp'] = ['maxjobs': 4, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9'],
-			'has_watchdog': true, 'has_storage': true, 'weekly': false,
-			'defaultiscsi': '',
+    providers['gcp'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
+			'has_watchdog': false, 'has_storage': true, 'weekly': true,
+			'defaultiscsi': '200',
 			'defaultuseiscsi': 'yes',
 			'defaultblocksize': '',
 			'authopts': '--region us-east1',
-			'rhel8': ['createopts': '--flavor-workstation rhelha-vapor-workstation8 --flavor rhelha-vapor-node8 --image rhel-8',
+			'rhel8': ['createopts': '--image $(gcloud compute images list --filter=rhel-8-v | grep "^rhel-8-v" | awk \'{print $1}\' | sort -V | tail -n 1)',
 				  'deployopts':  '',
 				  'testopts': '',
-				  'setup_fn': {gcp_setup('8')}],
-			'rhel9': ['createopts': '--flavor-workstation rhelha-vapor-workstation9 --flavor rhelha-vapor-node9 --image rhel-9',
+				  'setup_fn': {}],
+			'rhel9': ['createopts': '--image $(gcloud compute images list --filter=rhel-9-v | grep "^rhel-9-v" | awk \'{print $1}\' | sort -V | tail -n 1)',
 				  'deployopts':  '',
 				  'testopts': '',
-				  'setup_fn': {gcp_setup('9')}]]
+				  'setup_fn': {}]]
 
     providers['ibmvpc'] = ['maxjobs': 0, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9'],
 			   'has_watchdog': false, 'weekly': false,

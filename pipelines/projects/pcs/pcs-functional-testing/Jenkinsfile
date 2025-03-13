@@ -24,7 +24,7 @@ pipeline {
 	string(name: 'testlist', defaultValue: 'auto', description: 'override auto generated test list. Set to empty to skip running tests')
 	string(name: 'taglist', defaultValue: 'auto', description: 'override auto generated tag list. Set to empty to skip running tags')
 	string(name: 'dryrun', defaultValue: '0', description: 'set to 1 to see what the pipeline would do, without actually doing anything')
-
+	string(name: 'echorun', defaultValue: 'no', description: 'ECHO all vapor commands rather than running them (debug option).')
     }
 
     options {

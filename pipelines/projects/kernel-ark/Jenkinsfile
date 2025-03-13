@@ -63,7 +63,6 @@ pipeline {
 		    info['taglist'] = "${params.taglist}"
 		    info['testtimeout'] = "${params.testtimeout}" as int
 		    info['tagtimeout'] = "${params.tagtimeout}" as int
-		    info['dryrun'] = "${params.dryrun}"
 
 		    println("info map: ${info}")
 
@@ -75,6 +74,9 @@ pipeline {
 	    }
 	}
 	stage('kernel build') {
+	    when {
+		expression { info['dryrun'] == '0' && "${params.echorun}" == 'no' }
+	    }
 	    options {
 		lock('kernel-build')
 	    }

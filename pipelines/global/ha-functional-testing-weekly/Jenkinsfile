@@ -24,26 +24,25 @@ pipeline {
 	stage('Collect & run tests') {
 	    steps {
 		script {
-		    echo 'Smoke test dummy'
-		    // def (Map smokeruns, Map faillist) = genTestBuilds('smoke', params.dryrun, info, [:])
-		    // stage('Smoke tests') {
-		    // 	try {
-		    // 	    parallel smokeruns
-		    // 	} catch (err) {
-		    // 	    println("Jenkinsfile caught "+err)
-		    // 	    info['exception_text'] += "\nparallel error caught in smoke tests: {$err}\n"
-		    // 	}
+		    def (Map smokeruns, Map faillist) = genTestBuilds('smoke', params.dryrun, info, [:])
+		    stage('Smoke tests') {
+			try {
+			    parallel smokeruns
+			} catch (err) {
+			    println("Jenkinsfile caught "+err)
+			    info['exception_text'] += "\nparallel error caught in smoke tests: {$err}\n"
+			}
+		    }
 		    if (params.tests == 'all') {
-			echo 'All tests dummy'
-			// def (Map allruns, Map _notused) = genTestBuilds('all', params.dryrun, info, faillist)
-			// stage('All tests') {
-			//     try {
-			// 	parallel allruns
-			//     } catch (err) {
-			// 	println("Jenkinsfile caught "+err)
-			// 	info['exception_text'] += "\nparallel error caught in all tests: {$err}\n"
-			//     }
-			// }
+			def (Map allruns, Map _notused) = genTestBuilds('all', params.dryrun, info, faillist)
+			stage('All tests') {
+			    try {
+				parallel allruns
+			    } catch (err) {
+				println("Jenkinsfile caught "+err)
+				info['exception_text'] += "\nparallel error caught in all tests: {$err}\n"
+			    }
+			}
 		    }
 		}
 	    }

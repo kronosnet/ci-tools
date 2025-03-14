@@ -3,7 +3,7 @@ def call(Map info)
     println(info)
 
     // Some common test groups we use
-    pcs_basic_tests = [
+    def pcs_basic_tests = [
 	'pcs,cli,Auth',
 	'pcs,cli,ClusterCibConcurrentDiff',
 	'pcs,cli,ClusterCibPush',  // cib-push command, crucial for system role
@@ -30,7 +30,7 @@ def call(Map info)
 	'pcs,cli,Tags'
     ]
 
-    pcs_advanced_tests = [
+    def pcs_advanced_tests = [
 	'pcs,cli,BackupRestore', // cluster config backup + restore
 	'pcs,cli,ClusterAuthkey',  // change corosync authkey
 	'pcs,cli,ClusterConfigUpdate', // update corosync.conf
@@ -47,7 +47,7 @@ def call(Map info)
 	'pcs,cli,Timeouts',  // pcs to pcs connection timeout
     ]
 
-    advanced_tests = [
+    def advanced_tests = [
 	'pacemaker,recovery,RecoverySwitchFailure',
 	'pacemaker,recovery,RecoveryNodeNetworkFailure',
 	'pacemaker,recovery,RecoveryRandomMultiNode',
@@ -56,24 +56,24 @@ def call(Map info)
 	'pacemaker,recovery,RecoveryNodeNetworkFailure,sbd-with-one-device,network_disruptor',
     ]
 
-    sanity_tests = [
+    def sanity_tests = [
 	'cleanup',
 	'setup'
     ]
 
-    smoke_tests = [
+    def smoke_tests = [
 	'pacemaker,resource,IPv4,recovery',
 	'pacemaker,recovery,RecoveryActiveNode',
 	'setup,setup_sbd,sbd-only'
     ]
 
-    basic_tests_rhel8 = [
+    def basic_tests_rhel8 = [
 	'lvm,lvm_config,cluster-lvmlockd'
     ]
-    basic_tests_rhel9 = [
+    def basic_tests_rhel9 = [
 	'lvm,lvm_config_no-vdo,cluster-lvmlockd'
     ]
-    basic_tests = [
+    def basic_tests = [
 	'pacemaker,recovery,RecoveryRandomNode',
 	'pacemaker,recovery,RecoveryRestartPacemaker-AllNodes',
 	'pacemaker,recovery,RecoveryResourceFailure',

@@ -245,6 +245,8 @@ echo "Complete anvil logs available here for download: http://anvil-ci-repo.ci.a
 
 if [ -n "$KEY" ]; then
  for i in $ALLNODES; do
+  ssh $i rhc disconnect || true
+  ssh $i insights-client --unregister || true
   ssh $i subscription-manager unregister || true
  done
 fi

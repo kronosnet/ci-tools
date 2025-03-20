@@ -18,6 +18,8 @@ destroy_vm() {
  vm="$1"
  if virsh dominfo $vm >/dev/null 2>&1; then
   if ping -c 1 $vm >/dev/null 2>&1; then
+   ssh $vm rhc disconnect || true
+   ssh $vm insights-client --unregister || true
    ssh $vm subscription-manager unregister || true
    sleep 2
   fi

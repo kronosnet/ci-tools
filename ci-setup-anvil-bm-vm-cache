@@ -133,6 +133,8 @@ ssh $CACHENODES "rm -f /etc/yum.repos.d/alteeve* /etc/yum.repos.d/anvil*"
 # extra cleaning after cloud-init
 ssh $CACHENODES cloud-init clean
 ssh $CACHENODES "rm -f /etc/sysconfig/network-scripts/ifcfg-eth*"
+ssh $CACHENODES rhc disconnect || true
+ssh $CACHENODES insights-client --unregister || true
 ssh $CACHENODES subscription-manager unregister || true
 
 state=running

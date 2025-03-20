@@ -53,7 +53,7 @@ pipeline {
 		    } catch (err) {
 			println("Jenkinsfile caught "+err)
 			info['exception_text'] += "\nparallel error caught: {$err}\n"
-			info['state'] = 'Error'
+			info['state'] = 'error'
 		    }
 		}
 	    }

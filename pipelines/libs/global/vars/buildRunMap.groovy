@@ -47,6 +47,14 @@ def optimiseOut(Map info, Map extras, String stageName)
 def buildTheRunMap(List nodeList, String label, Map info, Boolean voting, Map extravars, String exclude_regexp) {
     def collectBuildEnv = [:]
 
+    def project_opts = getProjectProperties([:], 'builddefs')
+    def enable_debug = false
+    if (project_opts.containsKey('DEBUGJOBS') &&
+	project_opts['DEBUGJOBS'].contains(label) &&
+	info['bootstrap'] != 1) {
+	enable_debug = true
+    }
+
     // These are nodes that are deliberately switched off and should be ignored
     def downnodes = getLabelledNodes('down')
     println('"Down" nodes: '+downnodes)
@@ -61,7 +69,16 @@ def buildTheRunMap(List nodeList, String label, Map info, Boolean voting, Map ex
 		// This works because runStage is also in the global library
                 runStage(info, agentName, label, voting, extravars)
             }
-        }
+	    // Do we also want to run a debug build for this target?
+	    if (enable_debug) {
+		def debug_extras = extravars + ['debug': project_opts['DEBUGOPTS']]
+		debug_extras['CHECKS'] = 'check'
+		debug_extras['install'] = '0'
+		collectBuildEnv[label + '_debug_' + agentName] = {
+		    runStage(info, agentName, "${label}_debug", voting, debug_extras)
+		}
+            }
+	}
     }
     printf("run map for ${label}: "+collectBuildEnv)
     return collectBuildEnv

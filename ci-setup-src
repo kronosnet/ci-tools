@@ -2,6 +2,10 @@
 
 set -e
 
+if [ -n "$debug" ] && [ "$debug" = "yes" ]; then
+    extraopts="${extraopts} $DEBUGOPTS"
+fi
+
 if [ -f ./autogen.sh ]; then
  echo "./autogen.sh"
  ./autogen.sh
@@ -12,7 +16,7 @@ if [ -f ./configure ]; then
  case "${project}" in
   pacemaker)
    echo "./configure $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
-   ./configure $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
+   ./configure $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH $extraopts
    ;;
   pcs)
 

@@ -10,7 +10,7 @@ def call(Map localinfo, String agentName)
     props['MAKERPMOPTS'] = ''
 
     if (agentName.startsWith('debian')) {
-	props['DISTROCONFOPTS'] = '--with-debug'
+	props['DISTROCONFOPTS'] = '--enable-debug'
     }
 
     if (agentName.startsWith('rhel') ||
@@ -19,7 +19,10 @@ def call(Map localinfo, String agentName)
 	props['RPMDEPS'] = 'libknet1-devel'
     }
 
-    props['MAKERPMOPTS'] += 'WITH="--blabla pizza"'
+    // Which job types to run debug options in
+    props['DEBUGJOBS'] = ['voting', 'nonvoting', 'nonvoting-clang']
+    // ./configure option for debug
+    props['DEBUGOPTS'] = '--enable-debug'
 
     return props
 }

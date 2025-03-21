@@ -9,7 +9,7 @@ def call(Map localinfo, String agentName)
     def props = [:]
 
     if (agentName.startsWith('debian')) {
-	props['DISTROCONFOPTS'] = '--with-debug'
+	props['DISTROCONFOPTS'] = '--enable-debug'
     }
 
     if (agentName.startsWith('rhel') ||

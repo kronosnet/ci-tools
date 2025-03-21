@@ -2,13 +2,13 @@
 def call(String url)
 {
     // Turn the URL into project/repo
-    s = url.split("/")
-    repo = s[3].substring(0,s[3].length()-4)
+    def s = url.split("/")
+    def repo = s[3].substring(0,s[3].length()-4)
 
     // https://src.fedoraproject.org/api/0/#projects-tab -> Contributors of a project
-    collabsurl = "https://pagure.io/api/0/${repo}/contributors"
+    def collabsurl = "https://pagure.io/api/0/${repo}/contributors"
 
-    collabsjson = sh (
+    def collabsjson = sh (
 	script: 'curl -s ' + "${collabsurl}",
 	returnStdout: true)
 
@@ -16,7 +16,7 @@ def call(String url)
 	println("Failed to get collaborators from Pagure")
     }
 
-    parsed = readJSON text: collabsjson
+    def parsed = readJSON text: collabsjson
 
     collabs = [];
 
@@ -29,7 +29,7 @@ def call(String url)
     // hence it can be trusted to do a PR without the need to check the target branch.
 
     // add project users first
-    users_roles = parsed.users.keySet()
+    def users_roles = parsed.users.keySet()
     users_roles.eachWithIndex { user_role, idx ->
 	if (user_role != "ticket") {
 	    users = parsed.users.get(user_role)
@@ -42,7 +42,7 @@ def call(String url)
     }
 
     // process and add project groups
-    groups_roles = parsed.groups.keySet()
+    def groups_roles = parsed.groups.keySet()
     groups_roles.eachWithIndex { group_role, idx ->
 	if (group_role != "ticket") {
 	    groups = parsed.groups.get(group_role)

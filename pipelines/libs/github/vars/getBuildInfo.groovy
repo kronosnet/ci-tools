@@ -15,15 +15,15 @@ def call(String project, Map info)
     getBuildInfoCommon(info)
 
     // Github specific
-    isPullRequest = env.CHANGE_ID ? true : false
-    is_draft = false
+    def isPullRequest = env.CHANGE_ID ? true : false
+    def is_draft = false
 
     // Create the main dictionary
     info['isPullRequest'] =isPullRequest
     info['project'] = project
 
     // Validate the user. This should Abort if disallowed.
-    cred_uuid = getCredUUID()
+    def cred_uuid = getCredUUID()
     withCredentials([gitUsernamePassword(credentialsId: cred_uuid, gitToolName: 'Default')]) {
 	info['authcheck'] = getAuthCheck(['isPullRequest': isPullRequest])
     }

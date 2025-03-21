@@ -7,11 +7,11 @@
 //
 def call(Map params)
 {
-    isPullRequest = params["isPullRequest"]
-    branch = params["branch"]
+    def isPullRequest = params["isPullRequest"]
+    def branch = params["branch"]
 
     // Calls into the project-specific library
-    branchnames = getPRBranchRPM()
+    def branchnames = getPRBranchRPM()
     println("Publish PR RPMs Branchnames: ${branchnames}")
 
     if (isPullRequest == true) {

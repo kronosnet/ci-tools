@@ -30,7 +30,7 @@ def call(String project, String upstream_repo, Map info)
     //         for a PR is the PR number (1, 2...)
 
     // pagure specific
-    isPullRequest = env.BRANCH_TO != 'None' ? true : false
+    def isPullRequest = env.BRANCH_TO != 'None' ? true : false
 
     info['isPullRequest'] = isPullRequest
     info['project'] = project
@@ -42,7 +42,7 @@ def call(String project, String upstream_repo, Map info)
     // the current key allows _only_ to post comments on PRs with very strict ACL.
     // the post to comments does NOT require for knet-ci-bot to be part of any groups
     // in any projects.
-    cred_uuid = getCredUUID()
+    def cred_uuid = getCredUUID()
     withCredentials([string(credentialsId: cred_uuid, variable: 'paguresecret')]) {
 	info['authcheck'] = getAuthCheck(['upstream_repo': upstream_repo, 'isPullRequest': isPullRequest])
     }

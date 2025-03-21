@@ -53,19 +53,19 @@ pipeline {
 		    RWLock(info, 'testlock', 'WRITE', { withinlock() } )
 
 		    // The 'short' test list
-		    voting = buildRunMap('voting', info, ['voting': true,
+		    def voting = buildRunMap('voting', info, ['voting': true,
 							  'nodelabel': 'test-voting',
 							  'extravars': ['justforfun': 'BOO',
 									'depbuildname': 'kronosnet',
 									'depbuildversion': 'main',
 									'install': 0]])
 
-		    nonvoting = buildRunMap('nonvoting', info, ['voting': false,
+		    def nonvoting = buildRunMap('nonvoting', info, ['voting': false,
 								'nodelabel': 'test-nonvoting',
 								'extravars': ['depbuildname': 'kronosnet',
 									      'depbuildversion': 'stable1-proposed']])
 
-		    nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
+		    def nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
 									    'nodelabel': 'test-nonvoting',
 									    'extravars': ['compiler': 'clang',
 											  'depbuildname': 'kronosnet',
@@ -73,15 +73,15 @@ pipeline {
 											  'install': 0,
 											  'title': 'CLANG test']])
 
-		    covscan_kmain = buildRunMap('kmain-covscan', info, ['voting': true,
+		    def covscan_kmain = buildRunMap('kmain-covscan', info, ['voting': true,
 									'nodelabel': 'covscan',
 									'extravars': ['depbuildname': 'kronosnet',
 										      'depbuildversion': 'main']])
-		    covscan_kstable = buildRunMap('kstable-covscan', info, ['voting': true,
+		    def covscan_kstable = buildRunMap('kstable-covscan', info, ['voting': true,
 									    'nodelabel': 'covscan',
 									    'extravars': ['depbuildname': 'kronosnet',
 											  'depbuildversion': 'stable1-proposed']])
-		    buildrpms = buildRunMap('buildrpms', info, ['voting': false,
+		    def buildrpms = buildRunMap('buildrpms', info, ['voting': false,
 								'nodelabel': 'test-buildrpms'])
 
 

@@ -2,7 +2,7 @@
 // Relies on project-specific function getInstallBranches()
 def call(String branch)
 {
-    install_branches = getInstallBranches()
+    def install_branches = getInstallBranches()
     if (install_branches.contains(branch)) {
 	println("installing branch ${branch}")
 	return 1

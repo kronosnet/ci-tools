@@ -1,17 +1,17 @@
 // Check if a PR has been submitted by an authorized user
 def call(Map params) {
     // requirered param
-    isPullRequest = params['isPullRequest']
+    def isPullRequest = params['isPullRequest']
 
     sh 'env|sort'
 
     println("isPullRequest: ${isPullRequest}")
 
-    bc = currentBuild.getBuildCauses()
+    def bc = currentBuild.getBuildCauses()
     println("Build Cause: ${bc}")
 
     // Triggered by admin on the website
-    userEvent = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')
+    def userEvent = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')
     if (!userEvent.size().equals(0)) {
 	println("Build Triggered from Jenkins web UI")
 	return true
@@ -41,7 +41,7 @@ def call(Map params) {
 
     // Caused by a PR. Check it's from a valid user
     // Get github collaborators list
-    valid_admins = getCollaborators(env.CHANGE_URL)
+    def valid_admins = getCollaborators(env.CHANGE_URL)
     // Any extras defined for the project
     valid_admins += getValidPRUsers()
     // Global admins

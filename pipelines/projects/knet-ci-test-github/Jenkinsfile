@@ -59,7 +59,6 @@ pipeline {
 									'depbuildname': 'kronosnet',
 									'depbuildversion': 'main',
 									'install': 0]])
-
 		    nonvoting = buildRunMap('nonvoting', info, ['voting': false,
 								'nodelabel': 'test-nonvoting',
 								'extravars': ['depbuildname': 'kronosnet',

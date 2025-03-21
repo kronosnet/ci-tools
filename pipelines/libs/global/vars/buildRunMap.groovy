@@ -51,7 +51,7 @@ def buildTheRunMap(List nodeList, String label, Map info, Boolean voting, Map ex
     def downnodes = getLabelledNodes('down')
     println('"Down" nodes: '+downnodes)
 
-    for (i=0; i<nodeList.size(); i++) {
+    for (def i=0; i<nodeList.size(); i++) {
         def agentName = nodeList[i]
 
         // Skip any null entries and exclusions

@@ -78,6 +78,9 @@ if [ -f ./configure ]; then
      installpath=${installpath}/
      ;;
    esac
+   if [ -n "$debug" ] && [ "$debug" = "yes" ]; then
+       extraopts="${extraopts} --enable-debug"
+   fi
    echo "./configure --prefix=$installpath --exec-prefix=$installpath $extraopts $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH"
    ./configure --prefix=$installpath --exec-prefix=$installpath $extraopts $DISTROCONFOPTS PKG_CONFIG_PATH=$EXTERNAL_CONFIG_PATH
    ;;

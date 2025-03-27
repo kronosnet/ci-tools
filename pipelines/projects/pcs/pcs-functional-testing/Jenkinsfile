@@ -7,7 +7,7 @@ def projectid = 'pcs'
 def info = [:]
 
 // pcs overrides
-def provider = 'libvirt'
+def provider = 'ocpv'
 def testvariant = 'pcs'
 
 pipeline {

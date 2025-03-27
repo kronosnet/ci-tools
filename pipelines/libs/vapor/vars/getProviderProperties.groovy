@@ -93,17 +93,17 @@ def call()
 				  'testopts': '',
 				  'setup_fn': {}]]
 
-    providers['ibmvpc'] = ['maxjobs': 0, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9'],
-			   'has_watchdog': false, 'weekly': false,
-			   'defaultiscsi': '350',
-			   'defaultuseiscsi': 'yes',
-			   'defaultblocksize': '',
-			   'authopts': '--region us-east',
-			   'rhel8': ['createopts': '--image vapor-rhel8-9-x86-64',
+    providers['aliyun'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
+			   'has_watchdog': false, 'weekly': true,
+			   'defaultiscsi': '200',
+			   'defaultuseiscsi': 'no',
+			   'defaultblocksize': '512',
+			   'authopts': '--region us-east-1',
+			   'rhel8': ['createopts': '--image vapor-rhel-8.10.0-ga.x86_64',
 				     'deployopts':  '',
 				     'testopts': '',
 				     'setup_fn': {}],
-			   'rhel9': ['createopts': '--image vapor-rhel9-3-x86-64',
+			   'rhel9': ['createopts': '--image vapor-rhel-9.5.0-ga.x86_64',
 				     'deployopts':  '',
 				     'testopts': '',
 				     'setup_fn': {}]]
@@ -126,7 +126,6 @@ def call()
 				      'deployopts':  '',
 				      'testopts': '',
 				      'setup_fn': {}]]
-
 
     return providers
 }

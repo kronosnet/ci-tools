@@ -211,11 +211,11 @@ pipeline {
 		stage('Publish rpms') {
 		    steps {
 			node('built-in') {
-			    lock('ci-rpm-repos') { // This script needs to be serialised
+			    RWLock(info, 'ci-rpm-repos', 'WRITE', {
 				timeout (time: 60, unit: 'MINUTES') {
-				   sh "$HOME/ci-tools/ci-wrap ci-rpm-repos kernel origin/${BRANCH_NAME}"
+				    sh "$HOME/ci-tools/ci-wrap ci-rpm-repos kernel origin/${BRANCH_NAME}"
 				}
-			    }
+			    })
 			}
 		    }
 		}

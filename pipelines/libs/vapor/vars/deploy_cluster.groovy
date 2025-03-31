@@ -32,7 +32,8 @@ def call(Map info)
 	     info['upstream'] == 'next-stable')) {
 	    vapor_args['extraopts'] = '--sts-version 10'
 	}
-
-	vapor_wrapper(vapor_args)
+	RWLock(info, 'ci-rpm-repos', 'READ', {
+	    vapor_wrapper(vapor_args)
+	})
     }
 }

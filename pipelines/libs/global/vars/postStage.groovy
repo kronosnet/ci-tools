@@ -31,7 +31,7 @@ def call(Map info)
 	    (info['publishrpm'] == 1)) {
 	    stage("Publish RPMs") {
 		node('built-in') {
-		    lock('ci-rpm-repos') { // This script needs to be serialised
+		    RWLock(info, 'ci-rpm-repos', 'WRITE', {
 			def repopath = "origin/${info['target']}"
 			if (info['isPullRequest']) {
 			    repopath = "pr/${info['pull_id']}"
@@ -43,7 +43,7 @@ def call(Map info)
 				}
 			    }
 			}
-		    }
+		    })
 		}
 	    }
 	}

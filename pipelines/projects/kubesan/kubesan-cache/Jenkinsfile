@@ -17,8 +17,9 @@ def buildkcliRunMap(Map info)
     def nodeList = getLabelledNodes('kubesan')
 
     for (n in nodeList) {
+	def agentName = n
 	collectBuildEnv[n] = {
-	    updatekclicache(n, info)
+	    updatekclicache(agentName, info)
 	}
     }
 

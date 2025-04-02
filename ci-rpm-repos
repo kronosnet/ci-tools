@@ -151,23 +151,20 @@ EOF
 	done
 }
 
-(
-	flock -e 200
-	clean_dirs
-	echo "Updating all rpm repos for project: $project branch: $branch extraver: $3"
+clean_dirs
+echo "Updating all rpm repos for project: $project branch: $branch extraver: $3"
 
-	cd $rpmdir/$project/
+cd $rpmdir/$project/
 
-	case $branch in
-		pr*)
-			process_pr
-			;;
-		*)
-			process_publish
-			;;
-	esac
+case $branch in
+    pr*)
+	process_pr
+	;;
+    *)
+	process_publish
+	;;
+esac
 
-	rsync -av --delete-after $rpmdir/ jweb:$rpmdir/.
+rsync -av --delete-after $rpmdir/ jweb:$rpmdir/.
 
-	exit 0
-) 200>/tmp/ci-rpm-repos.lock
+exit 0

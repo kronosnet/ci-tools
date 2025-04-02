@@ -45,7 +45,7 @@ pipeline {
 	    steps {
 		script {
 		    withCredentials([usernamePassword(credentialsId: 'kubesan-docker', passwordVariable: 'docker_password', usernameVariable: 'docker_user')]) {
-			RWLock(info, 'kubesan-cache', 'WRITE', {
+			RWLock(info, 'kubesan-cache', 'WRITE', 'kubesan', {
 			    sh "$HOME/ci-tools/ci-wrap ci-kubesan-cache"
 			})
 		    }
@@ -69,7 +69,7 @@ pipeline {
     }
     post {
 	always {
-	    RWLock(info, '','UNLOCK', {})
+	    RWLock(info, 'UNLOCK')
 	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 	}
     }

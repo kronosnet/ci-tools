@@ -73,6 +73,7 @@ def call(Map info, String lockname, String mode, Closure thingtorun)
 	    throw(new Exception("RWLock: Failed to 'creat' file for lock ${lockdir}/${lockname}"))
 	    return -1
 	}
+	println("RWLock: FD for lock ${lockname} is ${lockfd}")
 
 	def wait_time = 0
 	def waiting = true

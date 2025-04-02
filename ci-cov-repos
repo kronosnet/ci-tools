@@ -56,16 +56,12 @@ process_cov_repos() {
 	done
 }
 
-(
-	flock -e 200
+clean_dirs
 
-	clean_dirs
+process_cov_repos
 
-	process_cov_repos
+clean_prs
 
-	clean_prs
+rsync -av --delete-after $covdir/ jweb:$covdir/.
 
-	rsync -av --delete-after $covdir/ jweb:$covdir/.
-
-	exit 0
-) 200>/tmp/ci-cov-repos.lock
+exit 0

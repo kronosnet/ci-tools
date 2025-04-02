@@ -50,7 +50,7 @@ pipeline {
 
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 
-		    RWLock(info, 'testlock', 'WRITE', { withinlock() } )
+		    RWLock(info, 'testlock', 'WRITE', 'jenkinsfile', { withinlock() } )
 
 		    // The 'short' test list
 		    def voting = buildRunMap('voting', info, ['voting': true,
@@ -110,7 +110,6 @@ pipeline {
     // Finish up and send emails
     post {
 	always {
-	    RWLock(info, '','UNLOCK', {})
 	    projectFinishUp(info)
 	}
     }

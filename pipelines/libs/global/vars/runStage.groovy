@@ -189,6 +189,7 @@ def doRunStage(String agentName, Map info, Map localinfo)
 	}
 
 	println('STAGESTATE: '+stagestate)
+	def lockstagename = "${localinfo['stageName']}-${agentName}"
 
 	// Keep a list of EXTRAVERs, it's more efficient (and less racy)
 	// to de-duplicate these at the end, in postStage()
@@ -211,9 +212,11 @@ def doRunStage(String agentName, Map info, Map localinfo)
 			info['covtgtdir'] = "origin/${info['target']}"
 		    }
 		    def covdir = "coverity/${info['project']}/${agentName}/${info['covtgtdir']}/${localinfo['extraver']}/${env.BUILD_NUMBER}"
-		    cmdWithTimeout(collect_timeout,
-				   "$HOME/ci-tools/ci-wrap ci-get-artifacts ${agentName} ${workspace} ${covdir} cov",
-				   stagestate, {}, { postFnError(stagestate) })
+		    RWLock(info, 'ci-cov-repos', 'READ', lockstagename, {
+			cmdWithTimeout(collect_timeout,
+				       "$HOME/ci-tools/ci-wrap ci-get-artifacts ${agentName} ${workspace} ${covdir} cov",
+				       stagestate, {}, { postFnError(stagestate) })
+		    })
 		    info['cov_results_urls'] += covdir
 
 		    // Make a note of any new errors
@@ -234,19 +237,20 @@ def doRunStage(String agentName, Map info, Map localinfo)
 	if (localinfo['stageName'].endsWith('buildrpms') && localinfo['publishrpm'] == 1 && localinfo['fullrebuild'] == 0) {
 	    stage("Get RPM artifacts for ${stageTitle} on ${agentName}") {
 		node('built-in') {
-		    if (localinfo['isPullRequest']) {
-			// TODO: fix pr path and adjust for 'extraver'
-			cmdWithTimeout(collect_timeout,
-				       "$HOME/ci-tools/ci-wrap ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/pr/${info['pull_id']}/${agentName} rpm",
-				       stagestate, {}, { postFnError(stagestate) })
-			info['repo_urls'] += "https://ci.kronosnet.org/" + "builds/${info['project']}/pr/${info['pull_id']}/${agentName}"
-		    } else {
-			cmdWithTimeout(collect_timeout,
-				       "$HOME/ci-tools/ci-wrap ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/${agentName}/origin/${info['target']}/${localinfo['extraver']}/${env.BUILD_NUMBER}/ rpm",
-				       stagestate, {}, { postFnError(stagestate) })
-			info['repo_urls'] += "https://ci.kronosnet.org/" + "builds/${info['project']}/${agentName}/origin/${info['target']}/${localinfo['extraver']}/${env.BUILD_NUMBER}/"
-
-		    }
+		    RWLock(info, 'ci-rpm-repos', 'READ', lockstagename, {
+			if (localinfo['isPullRequest']) {
+			    // TODO: fix pr path and adjust for 'extraver'
+			    cmdWithTimeout(collect_timeout,
+					   "$HOME/ci-tools/ci-wrap ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/pr/${info['pull_id']}/${agentName} rpm",
+					   stagestate, {}, { postFnError(stagestate) })
+			    info['repo_urls'] += "https://ci.kronosnet.org/" + "builds/${info['project']}/pr/${info['pull_id']}/${agentName}"
+			} else {
+			    cmdWithTimeout(collect_timeout,
+					   "$HOME/ci-tools/ci-wrap ci-get-artifacts ${agentName} ${workspace} builds/${info['project']}/${agentName}/origin/${info['target']}/${localinfo['extraver']}/${env.BUILD_NUMBER}/ rpm",
+					   stagestate, {}, { postFnError(stagestate) })
+			    info['repo_urls'] += "https://ci.kronosnet.org/" + "builds/${info['project']}/${agentName}/origin/${info['target']}/${localinfo['extraver']}/${env.BUILD_NUMBER}/"
+			}
+		    })
 		}
 	    }
 	}

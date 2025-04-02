@@ -13,7 +13,7 @@ def call(Map info)
 	    // Archive the accumulated covscan results
 	    stage("Publish Coverity results") {
 		node('built-in') {
-		    lock('ci-cov-repos') { // This script needs to be serialised
+		    RWLock(info, 'ci-cov-repos', 'WRITE', 'postStage', {
 			for (ver in info['EXTRAVER_LIST'].stream().distinct().collect()) { // Remove duplicates
 			    if (ver != null) {
 				timeout (time: publish_timeout, unit: 'MINUTES') {
@@ -21,7 +21,7 @@ def call(Map info)
 				}
 			    }
 			}
-		    }
+		    })
 		}
 	    }
 	}
@@ -31,7 +31,7 @@ def call(Map info)
 	    (info['publishrpm'] == 1)) {
 	    stage("Publish RPMs") {
 		node('built-in') {
-		    lock('ci-rpm-repos') { // This script needs to be serialised
+		    RWLock(info, 'ci-rpm-repos', 'WRITE', 'postStage', {
 			def repopath = "origin/${info['target']}"
 			if (info['isPullRequest']) {
 			    repopath = "pr/${info['pull_id']}"
@@ -43,7 +43,7 @@ def call(Map info)
 				}
 			    }
 			}
-		    }
+		    })
 		}
 	    }
 	}

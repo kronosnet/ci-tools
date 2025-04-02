@@ -17,13 +17,11 @@ cd "$destdir"
 case $transferset in
 	rpm)
 		preptar="$(echo cd $sourcedir \&\& rm -f ci-artifacts.tar \&\& find .  -name \"*.rpm\" \| tar -cvf ci-artifacts.tar -T -)"
-		lock="/tmp/ci-rpm-repos.lock"
 		# this should help to keep PR dirs clean
 		find "$destdir" -name "*.rpm" -exec rm -f {} \;
 	;;
 	cov)
 		preptar="$(echo cd $sourcedir/cov.html \&\& rm -f ../ci-artifacts.tar \&\& tar -cvf ../ci-artifacts.tar .)"
-		lock="/tmp/ci-cov-repos.lock"
 	;;
 	*)
 		echo "Unknown transfer set"
@@ -33,12 +31,9 @@ esac
 
 ssh "$sourcenode".ci.kronosnet.org $preptar
 
-(
-	flock -e 200
-	scp "$sourcenode".ci.kronosnet.org:"$sourcedir"/ci-artifacts.tar .
-	tar -xvpf ci-artifacts.tar
-	rm -f ci-artifacts.tar
-) 200>$lock
+scp "$sourcenode".ci.kronosnet.org:"$sourcedir"/ci-artifacts.tar .
+tar -xvpf ci-artifacts.tar
+rm -f ci-artifacts.tar
 
 ssh "$sourcenode".ci.kronosnet.org rm -f "$sourcedir"/ci-artifacts.tar
 

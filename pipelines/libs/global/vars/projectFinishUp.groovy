@@ -10,6 +10,9 @@ def call(Map info)
 	} catch (err) {}
     }
 
+    // Unlock any flocks
+    RWLock(info, 'UNLOCK')
+
     // Clean up any straggling sub-jobs
     if (info['subjobs'].size() > 0) {
 	Jenkins.instance.getAllItems(Job).each {

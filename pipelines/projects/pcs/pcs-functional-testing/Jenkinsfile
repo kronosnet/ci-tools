@@ -25,6 +25,7 @@ pipeline {
 	string(name: 'taglist', defaultValue: 'auto', description: 'override auto generated tag list. Set to empty to skip running tags')
 	string(name: 'dryrun', defaultValue: '0', description: 'set to 1 to see what the pipeline would do, without actually doing anything')
 	string(name: 'echorun', defaultValue: 'no', description: 'ECHO all vapor commands rather than running them (debug option).')
+	string(name: 'vapordebug', defaultValue: 'no', description: 'WARNING!!! set to yes can expose sensitive data like auth tokens and such. Use only if absolutely necessary and remove the build ASAP.')
     }
 
     options {

@@ -3,7 +3,7 @@
 // 16-Jun-2023    me again              Move a lot of stuff into getBuildInfo() for tidiness
 // 13-Jul-2023    guess who?            Make it fully pipelined
 
-@Library(['GlobalLib', 'GithubLib', 'ProjectLib']) _
+@Library(['GlobalLib@cc-devel', 'GithubLib@cc-devel', 'ProjectLib@cc-devel']) _
 
 // Who we are
 def project = 'libqb'

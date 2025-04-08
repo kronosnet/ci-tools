@@ -6,7 +6,7 @@ def call(String url)
     def s = url.split("/")
     def owner = s[3]
     def repo = s[4]
-    def url = "https://api.github.com/repos/${owner}/${repo}/collaborators"
+    url = "https://api.github.com/repos/${owner}/${repo}/collaborators"
 
     def collabs = sh (
 	script: 'curl -s -u $GIT_USERNAME:$GIT_PASSWORD ' + "${url}",

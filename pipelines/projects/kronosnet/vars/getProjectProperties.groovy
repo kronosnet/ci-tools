@@ -18,5 +18,10 @@ def call(Map localinfo, String agentName)
 	}
     }
 
+    // Which job types to run debug options in
+    props['DEBUGJOBS'] = ['voting', 'nonvoting', 'nonvoting-clang']
+    // ./configure option for debug
+    props['DEBUGOPTS'] = '--enable-debug'
+
     return props
 }

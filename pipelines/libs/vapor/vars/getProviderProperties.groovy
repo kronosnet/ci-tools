@@ -99,11 +99,11 @@ def call()
 			   'defaultuseiscsi': 'no',
 			   'defaultblocksize': '512',
 			   'authopts': '--region us-east-1',
-			   'rhel8': ['createopts': '--image vapor-rhel-8.10.0-ga.x86_64',
+			   'rhel8': ['createopts': '--image rhel-8.10.0.x86_64',
 				     'deployopts':  '',
 				     'testopts': '',
 				     'setup_fn': {}],
-			   'rhel9': ['createopts': '--image vapor-rhel-9.5.0-ga.x86_64',
+			   'rhel9': ['createopts': '--image rhel-9.5.0.x86_64',
 				     'deployopts':  '',
 				     'testopts': '',
 				     'setup_fn': {}]]

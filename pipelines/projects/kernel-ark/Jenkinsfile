@@ -156,7 +156,7 @@ pipeline {
 			sh '''
 			    cd $BUILDDIR/kernel-ark
 			    echo == install BuildRequires ==
-			    yum -y install system-sb-certs libpfm-devel libunwind-devel python3-wheel java-devel
+			    yum -y install system-sb-certs libpfm-devel libunwind-devel python3-wheel java-devel bindgen clippy rustfmt rust-src
 			'''
 		    }
 		}

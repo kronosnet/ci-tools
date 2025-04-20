@@ -34,7 +34,15 @@ pipeline {
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 		    checkout scm
 		    test_list = sh (label: 'Gather test list', returnStdout: true,
-			script: 'ls -1 tests/t/*.sh | sed -e "s#.*/##g" -e "s#\\.sh\\$##g"').trim()
+			script: """
+			    grep ksan-supported-modes tests/t/*.sh | { while read line; do
+				testname=\$(echo \$line | sed -e 's#.*t/##g' -e 's#.sh:.*##g')
+				testmodes=\$(echo \$line | sed -e 's#.*supported-modes ##g')
+				for mode in \$testmodes; do
+				    echo "\$testname:\$mode"
+				done
+			    done; }
+			""").trim()
 		}
 		updateGitlabCommitStatus(name: 'Prep build env', state: 'success')
 	    }
@@ -63,13 +71,18 @@ pipeline {
 	stage('Run tests') {
 	    steps {
 		script {
-		    for (test in test_list.split()) {
+		    for (testrun in test_list.split()) {
+			def test = testrun.split(':', 2)
+			def testmode = test[1]
+			if (test[1] == 'Any') {
+			    testmode = 'Thin'
+			}
 			testret = 'success'
-			updateGitlabCommitStatus(name: "Test: ${test}", state: 'running')
-			stage("Run ${test}") {
+			updateGitlabCommitStatus(name: "Test: ${test[0]} Mode: ${test[1]}", state: 'running')
+			stage("Test: ${test[0]} Mode: ${test[1]}") {
 			   try {
 				sh """
-				    su - kubesan /bin/bash -c "cd ${WORKSPACE}; ./tests/run.sh --use-cache tests/t/${test}.sh"
+				    su - kubesan /bin/bash -c "cd ${WORKSPACE}; ./tests/run.sh --use-cache --mode ${testmode} tests/t/${test[0]}.sh"
 				"""
 			   } catch (err) {
 				ret = 'FAILED'
@@ -79,7 +92,7 @@ pipeline {
 				}
 			   }
 			}
-			updateGitlabCommitStatus(name: "Test: ${test}", state: "${testret}")
+			updateGitlabCommitStatus(name: "Test: ${test[0]} Mode: ${test[1]}", state: "${testret}")
 		    }
 		}
 	    }

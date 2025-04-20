@@ -33,7 +33,6 @@ pipeline {
 		    }
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 		    checkout scm
-		    cleanKube()
 		    test_list = sh (label: 'Gather test list', returnStdout: true,
 			script: 'ls -1 tests/t/*.sh | sed -e "s#.*/##g" -e "s#\\.sh\\$##g"').trim()
 		}
@@ -59,29 +58,6 @@ pipeline {
 		    }
 		}
 		updateGitlabCommitStatus(name: 'Build container', state: 'success')
-	    }
-	}
-	stage('Create test env cache') {
-	    steps {
-		updateGitlabCommitStatus(name: 'Create test env cache', state: 'running')
-		script {
-		    try {
-			RWLock(info, 'kubesan-cache','READ', 'kubesan', {
-			    sh (label: 'Create test env cache',
-				script: """
-				    su - kubesan /bin/bash -c "cd ${WORKSPACE}; ./tests/run.sh --external-registry 10.6.23.119:5000 create-cache"
-				""")
-			})
-		    } catch (err) {
-			updateGitlabCommitStatus(name: 'Create test env cache', state: 'failed')
-			ret = 'FAILED'
-			catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-			    shNoTrace("exit 1", "Marking this stage as a failure")
-			}
-			error('Build failure')
-		    }
-		}
-		updateGitlabCommitStatus(name: 'Create test env cache', state: 'success')
 	    }
 	}
 	stage('Run tests') {
@@ -119,7 +95,6 @@ pipeline {
 		}
 	    }
 	    RWLock(info, 'UNLOCK')
-	    cleanKube()
 	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 	    script {
 		currentBuild.result = ret

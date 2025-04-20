@@ -7,7 +7,16 @@ def updatekclicache(String agentName, Map info)
 {
     println("Running update-kcli-cache on ${agentName}")
     node("${agentName}") {
-	sh "echo THIS IS SPARTA: ${agentName}"
+	cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+	cleanKube()
+	checkout changelog: false, poll: false, scm: [
+	    $class: 'GitSCM',
+	    branches: [[name: "origin/main"]],
+	    userRemoteConfigs: [[name: 'origin', url: 'https://gitlab.com/kubesan/kubesan.git']]]
+	    sh (label: 'Update test env cache',
+		script: """
+		    su - kubesan /bin/bash -c "cd ${WORKSPACE}; ./tests/run.sh --external-registry 10.6.23.119:5000 create-cache"
+		""")
     }
 }
 
@@ -30,6 +39,7 @@ pipeline {
     agent { label 'kubesan-cache' }
 
     options {
+	gitLabConnection('gitlab-knet-ci-bot')
 	skipDefaultCheckout(true)
     }
 
@@ -54,16 +64,18 @@ pipeline {
 	}
 	stage('Update kubesan kcli cache') {
 	    steps {
-		script {
-		    def updates = buildkcliRunMap(info)
-		    try {
-			parallel updates
-		    } catch (err) {
-			println("Jenkinsfile caught "+err)
-			info['exception_text'] += "\nparallel error caught: {$err}\n"
-			info['state'] = 'Error'
+		RWLock(info, 'kubesan-cache','READ', 'kubesan', {
+		    script {
+			def updates = buildkcliRunMap(info)
+			try {
+			    parallel updates
+			} catch (err) {
+			    println("Jenkinsfile caught "+err)
+			    info['exception_text'] += "\nparallel error caught: {$err}\n"
+			    info['state'] = 'Error'
+			}
 		    }
-		}
+		})
 	    }
 	}
     }

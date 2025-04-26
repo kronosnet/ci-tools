@@ -123,7 +123,7 @@ fi
 
 # add c9s dvd iso for caching
 ssh $CACHENODES mkdir -p /mnt/shared/files
-scp "$DEPLOYDIR/images/CentOS-Stream-9-latest-x86_64-dvd1.iso" $CACHENODES:/mnt/shared/files/CentOS-Stream-9-latest-x86_64-dvd1.iso
+scp "$DEPLOYDIR/images/AlmaLinux-9.5-x86_64-dvd.iso" $CACHENODES:/mnt/shared/files/AlmaLinux-9.5-x86_64-dvd.iso
 
 # cleanup image
 # centos-9-stream cloud init workaround

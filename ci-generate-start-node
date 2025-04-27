@@ -4,8 +4,7 @@ set -e
 
 START_NODE_DIR=$HOME/bin
 
-#case $(uname -s) in
-case BlaBSD in
+case $(uname -s) in
   *Linux)
     SHELL="/bin/bash -e"
     JVMPATH="/usr/lib/jvm"

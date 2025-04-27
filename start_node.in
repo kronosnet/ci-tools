@@ -1,9 +1,11 @@
 #!@SHELL@
 
 rm -rf @HOME@/.jenkins
-if [ -d @HOME@/.cache/vapor/ ]; then
+@BASHDIRCHECK@if [ -d @HOME@/.cache/vapor/ ]; then
+@TCSHDIRCHECK@if ( -d @HOME@/.cache/vapor/ ) then
 	find @HOME@/.cache/vapor/ -mtime +30 -exec rm -rf {} \;
-fi
+@BASHDIRCHECK@fi
+@TCSHDIRCHECK@endif
 wget -O @START_NODE_DIR@/agent.jar https://ci.kronosnet.org/jnlpJars/agent.jar
 @SSET@cijava=`find @JVMPATH@ -mindepth 1 -maxdepth 1 -type d -name "*openjdk*" | sort -V | tail -n 1`/bin/java
 echo "$cijava detected"

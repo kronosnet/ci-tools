@@ -4,16 +4,21 @@ set -e
 
 START_NODE_DIR=$HOME/bin
 
-case $(uname -s) in
+#case $(uname -s) in
+case BlaBSD in
   *Linux)
     SHELL="/bin/bash -e"
     JVMPATH="/usr/lib/jvm"
     SSET=""
+    BASHDIRCHECK="@BASHDIRCHECK@"
+    TCSHDIRCHECK="@TCSHDIRCHECK@.*"
   ;;
   *BSD)
     SHELL="/bin/tcsh -e"
     JVMPATH="/usr/local"
     SSET="set "
+    BASHDIRCHECK="@BASHDIRCHECK@.*"
+    TCSHDIRCHECK="@TCSHDIRCHECK@"
   ;;
 esac
 
@@ -24,5 +29,7 @@ cat $CITHOME/start_node.in | sed \
     -e "s^@START_NODE_DIR@^$START_NODE_DIR^g" \
     -e "s^@JVMPATH@^$JVMPATH^g" \
     -e "s^@SSET@^$SSET^g" \
+    -e "s^$BASHDIRCHECK^^g" \
+    -e "s^$TCSHDIRCHECK^^g" \
     > $START_NODE_DIR/start_node
 chmod 755 $START_NODE_DIR/start_node

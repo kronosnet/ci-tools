@@ -25,6 +25,8 @@ def call(Map info)
 	'pcs,cli,rhbz1387106',  // handle utf8 chars in output of subprocesses
 	'pcs,cli,rhbz1390609',  // deleting of pacemaker remote causes fencing
 	'pcs,cli,rhbz1574898',  // pcs resource debug-* commands
+	'pcs,cli,status,status_query',
+	'pcs,cli,status,status_wait',
 	'pcs,cli,Stonith',
 	'pcs,cli,StonithLevel',
 	'pcs,cli,Tags'
@@ -35,6 +37,13 @@ def call(Map info)
 	'pcs,cli,ClusterAuthkey',  // change corosync authkey
 	'pcs,cli,ClusterConfigUpdate', // update corosync.conf
 	'pcs,cli,DefaultsSet',  // rsc and op defaults
+	'pcs,cli,export_config,constraint_export',
+	'pcs,cli,export_config,operation_defaults_export',
+	'pcs,cli,export_config,property_export',
+	'pcs,cli,export_config,resource_defaults_export',
+	'pcs,cli,export_config,resource_export',
+	'pcs,cli,export_config,stonith_export',
+	'pcs,cli,export_config,tags_export',
 	'pcs,cli,QuorumDevice',
 	'pcs,cli,RemoteGuestNodes',
 	'pcs,cli,rhbz1328870',  // pcs command fails right after pcsd starts

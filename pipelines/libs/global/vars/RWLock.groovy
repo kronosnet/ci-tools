@@ -26,6 +26,7 @@ def do_unlock_one(Map info, String lockname_info)
 	return -1
     }
     println("RWLock: on ${info[lockname_info]['name']} in stage ${info[lockname_info]['stage']}, fd ${info[lockname_info]['fd']} released")
+    log_lock('UNLOCKED', info[lockname_info]['mode'], info[lockname_info]['name'], info[lockname_info]['stage'])
     info.remove(lockname_info)
 }
 
@@ -43,6 +44,20 @@ def do_unlock_all(Map info)
     return 0
 }
 
+// Assumes we are on node 'built-in' as we write to a log file
+def log_lock(String message, String mode, String lockname, String stagename)
+{
+    def outfile = new FileWriter("${JENKINS_HOME}/logs/locking.log", true)
+
+    def now = new Date()
+    def datetext = now.format('YYYY-MM-dd HH:mm')
+    def short_job = env.BUILD_URL - env.JENKINS_URL
+
+    outfile.write("${datetext} ${lockname} ${message} for ${mode} ${short_job} Stage ${stagename}\n")
+
+    outfile.flush()
+    outfile.close()
+}
 
 // Global unlock polymorph. mode MUST be 'UNLOCK'
 def call(Map info, String mode)
@@ -121,14 +136,18 @@ def call(Map info, String lockname, String mode, String stagename, Closure thing
 	info[lockname_info]['fd'] = lockfd
 	info[lockname_info]['name'] = lockname
 	info[lockname_info]['stage'] = stagename
+	info[lockname_info]['mode'] = mode
 	println("RWLock: ${lockname} in stage ${stagename} locked for ${mode}")
+	log_lock('LOCKED', mode, lockname, stagename)
     }
 
     // Run a thing inside the lock
     thingtorun()
 
     // Tidy up
-    do_unlock_one(info, lockname_info)
+    node('built-in') {
+	do_unlock_one(info, lockname_info)
+    }
 
     return 0
 }

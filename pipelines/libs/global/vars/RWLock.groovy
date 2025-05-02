@@ -27,20 +27,26 @@ def do_unlock_one(Map info, String lockname_info)
     }
     println("RWLock: on ${info[lockname_info]['name']} in stage ${info[lockname_info]['stage']}, fd ${info[lockname_info]['fd']} released")
     log_lock('UNLOCKED', info[lockname_info]['mode'], info[lockname_info]['name'], info[lockname_info]['stage'])
-    info.remove(lockname_info)
 }
 
 // Unlock all held locks
 def do_unlock_all(Map info)
 {
     node('built-in') {
+	def to_remove = []
 	for (def i in info) {
 	    if (i.key.startsWith('lockfd_')) {
 		println("RWLock: unlock_all Unlocking ${i.key}")
 		do_unlock_one(info, i.key)
+		to_remove += i.key
 	    }
 	}
+	// Remove the keys we deleted, now we are outside the loop
+	for (def k in to_remove) {
+	    info.remove(k)
+	}
     }
+
     return 0
 }
 
@@ -147,6 +153,7 @@ def call(Map info, String lockname, String mode, String stagename, Closure thing
     // Tidy up
     node('built-in') {
 	do_unlock_one(info, lockname_info)
+	info.remove(lockname_info)
     }
 
     return 0

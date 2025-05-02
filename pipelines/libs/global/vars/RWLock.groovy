@@ -41,13 +41,12 @@ def do_unlock_all(Map info)
 		to_remove += i.key
 	    }
 	}
+	// Remove the keys we deleted, now we are outside the loop
+	for (def k in to_remove) {
+	    info.remove(k)
+	}
     }
 
-    // Remove the keys we deleted, now we are outside the loop
-    for (def k in to_remove) {
-	info.remove(k)
-    }
-    
     return 0
 }
 

@@ -153,7 +153,7 @@ def call(Map info, String lockname, String mode, String stagename, Closure thing
     // Tidy up
     node('built-in') {
 	do_unlock_one(info, lockname_info)
-//	info.remove(lockname_info)
+	info.remove(lockname_info)
     }
 
     return 0

@@ -1,8 +1,9 @@
 [ -z "$BUILD" ] && BUILD="$1"
 [ -z "$REPOSRC" ] && REPOSRC="$2"
 [ -z "$ANVILSRC" ] && ANVILSRC="$3"
+[ -z "$DEPLOYDR" ] && DEPLOYDR="$4"
 
-[ -z "$TESTS" ] && TESTS="$4"
+[ -z "$TESTS" ] && TESTS="$5"
 [ -z "$TESTS" ] && TESTS="all"
 
 BREAKPOINT="$6"

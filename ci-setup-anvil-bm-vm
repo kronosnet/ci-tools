@@ -185,9 +185,9 @@ $HOME/ci-tools/ci-setup-anvil-simengine
 echo "Generating anvil striker auto config"
 
 cp "$TEMPLATESDIR/anvil_striker_auto.cfg" "$DEPLOYDIR/configs/anvil_striker_auto.cfg"
-if [ "$DEPLOYDR" = "yes" ]; then
+# remove after anvil 3.2 is released
+if [ "$ANVILSRC" != "none" ]; then
  cat "$TEMPLATESDIR/anvil_striker_auto_dr.cfg" >> "$DEPLOYDIR/configs/anvil_striker_auto.cfg"
- runtestopts="-r"
 else
  unset DRNODES
 fi

@@ -45,7 +45,7 @@ if [ -f ./configure ]; then
      localbuild=""
      ;;
     rhel-8*)
-     python3 -m pip install concurrencytest
+     python3 -m pip install setuptools setuptools-scm concurrencytest
      localbuild="--enable-local-build --enable-ci-rpm-workarounds"
      ;;
     rhel-9*)

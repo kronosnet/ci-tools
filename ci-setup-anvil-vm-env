@@ -1,16 +1,16 @@
-[ -z "$BUILD" ] && BUILD="$1"
-[ -z "$REPOSRC" ] && REPOSRC="$2"
-[ -z "$ANVILSRC" ] && ANVILSRC="$3"
+[ -z "$BUILD" ] && export BUILD="$1"
+[ -z "$REPOSRC" ] && export REPOSRC="$2"
+[ -z "$ANVILSRC" ] && export ANVILSRC="$3"
 
-[ -z "$TESTS" ] && TESTS="$4"
-[ -z "$TESTS" ] && TESTS="all"
+[ -z "$TESTS" ] && export TESTS="$4"
+[ -z "$TESTS" ] && export TESTS="all"
 
-BREAKPOINT="$6"
+BREAKPOINT="$5"
 
-[ -z "$BREAKPOINT" ] && BREAKPOINT=none
+[ -z "$BREAKPOINT" ] && export BREAKPOINT=none
 
 # fake it when building outside of CI
-[ -z "$BUILD_NUMBER" ] && BUILD_NUMBER=0
+[ -z "$BUILD_NUMBER" ] && export BUILD_NUMBER=0
 
 # common strategy to cleanup all VMs
 destroy_vm() {

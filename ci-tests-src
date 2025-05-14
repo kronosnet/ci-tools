@@ -91,6 +91,9 @@ case "${project}" in
    debian*|ubuntu*)
     localbuild=""
     ;;
+   rhel-8*)
+    localbuild="--enable-local-build --enable-ci-rpm-workarounds"
+    ;;
    *)
     localbuild=--enable-local-build
     ;;

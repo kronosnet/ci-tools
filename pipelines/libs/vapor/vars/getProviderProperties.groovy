@@ -127,5 +127,20 @@ def call()
 				      'testopts': '',
 				      'setup_fn': {}]]
 
+    providers['ibmvpc'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
+			   'has_watchdog': false, 'has_storage': true, 'weekly': true,
+			   'defaultiscsi': '200',
+			   'defaultuseiscsi': 'yes',
+			   'defaultblocksize': '10',
+			   'authopts': '--region us-east',
+			   'rhel8': ['createopts': '--image ibm-redhat-8-10-minimal-amd64-5',
+				     'deployopts':  '',
+				     'testopts': '',
+				     'setup_fn': {}],
+			   'rhel9': ['createopts': '--image ibm-redhat-9-4-minimal-amd64-7',
+				     'deployopts':  '',
+				     'testopts': '',
+				     'setup_fn': {}]]
+
     return providers
 }

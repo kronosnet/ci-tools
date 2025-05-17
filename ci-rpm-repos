@@ -166,5 +166,6 @@ case $branch in
 esac
 
 rsync -av --delete-after $rpmdir/ jweb:$rpmdir/.
+rsync -av --delete-after $rpmdir/ rhel-9-vapor-rdu-1-x86-64:/var/www/html/builds/.
 
 exit 0

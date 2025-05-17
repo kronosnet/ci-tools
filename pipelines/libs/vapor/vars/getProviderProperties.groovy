@@ -94,7 +94,7 @@ def call()
 				  'setup_fn': {}]]
 
     providers['aliyun'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
-			   'has_watchdog': false, 'weekly': true,
+			   'has_watchdog': false, 'has_storage': true, 'weekly': true,
 			   'defaultiscsi': '200',
 			   'defaultuseiscsi': 'no',
 			   'defaultblocksize': '512',
@@ -128,7 +128,7 @@ def call()
 				      'setup_fn': {}]]
 
     providers['ibmvpc'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
-			   'has_watchdog': false, 'has_storage': true, 'weekly': true,
+			   'has_watchdog': false, 'has_storage': false, 'weekly': true,
 			   'defaultiscsi': '200',
 			   'defaultuseiscsi': 'yes',
 			   'defaultblocksize': '10',

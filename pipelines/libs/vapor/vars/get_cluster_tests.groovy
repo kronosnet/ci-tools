@@ -172,6 +172,15 @@ def call(Map info)
 	    }
 	}
 
+	// Remove ip tests for those providers that don't have enough networking
+	if (provider['has_network'] == false) {
+	    for (t in ret) {
+		if (t.contains('IPv4')) {
+		    deletelist += t
+		}
+	    }
+	}
+
 	// Do any more generic filters for this provider/ostype
 	if (provider["${info['osver']}"] != null) {
 	    osinfo = provider["${info['osver']}"]

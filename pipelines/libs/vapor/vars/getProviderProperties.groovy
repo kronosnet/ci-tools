@@ -15,7 +15,7 @@ def call()
     def providers = [:]
 
     providers['libvirt'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9', 'centos10'],
-			    'has_watchdog': true, 'has_storage': true, 'weekly': true,
+			    'has_watchdog': true, 'has_storage': true, 'has_network': true, 'weekly': true,
 			    'api_rate_limit': false,
 			    'defaultiscsi': '10',
 			    'defaultuseiscsi': 'no',
@@ -35,7 +35,7 @@ def call()
 					 'setup_fn': {libvirt10_setup()} ]]
 
     providers['osp'] = ['maxjobs': 4, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9'],
-			'has_watchdog': true, 'has_storage': true, 'weekly': true,
+			'has_watchdog': true, 'has_storage': true, 'has_network': true, 'weekly': true,
 			'api_rate_limit': true,
 			'defaultiscsi': '200',
 			'defaultuseiscsi': 'yes',
@@ -51,7 +51,7 @@ def call()
 				  'setup_fn': {}]]
 
     providers['azure'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
-			  'has_watchdog': false, 'has_storage': true, 'weekly': true,
+			  'has_watchdog': false, 'has_storage': true, 'has_network': true, 'weekly': true,
 			  'api_rate_limit': true,
 			  'defaultiscsi': '',
 			  'defaultuseiscsi': 'no',
@@ -67,7 +67,7 @@ def call()
 				    'setup_fn': {}]]
 
     providers['aws'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
-			'has_watchdog': false, 'has_storage': true, 'weekly': true,
+			'has_watchdog': false, 'has_storage': true, 'has_network': true, 'weekly': true,
 			'api_rate_limit': true,
 			'defaultiscsi': '',
 			'defaultuseiscsi': 'no',
@@ -83,7 +83,7 @@ def call()
 				  'setup_fn': {}]]
 
     providers['gcp'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
-			'has_watchdog': false, 'has_storage': true, 'weekly': true,
+			'has_watchdog': false, 'has_storage': true, 'has_network': true, 'weekly': true,
 			'api_rate_limit': true,
 			'defaultiscsi': '200',
 			'defaultuseiscsi': 'yes',
@@ -99,7 +99,7 @@ def call()
 				  'setup_fn': {}]]
 
     providers['aliyun'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
-			   'has_watchdog': false, 'has_storage': true, 'weekly': true,
+			   'has_watchdog': false, 'has_storage': true, 'has_network': true, 'weekly': true,
 			   'api_rate_limit': true,
 			   'defaultiscsi': '200',
 			   'defaultuseiscsi': 'no',
@@ -115,7 +115,7 @@ def call()
 				     'setup_fn': {}]]
 
     providers['ocpv'] = ['maxjobs': 4, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9', 'centos10'],
-			 'has_watchdog': true, 'has_storage': true, 'weekly': true,
+			 'has_watchdog': true, 'has_storage': true, 'has_network': true, 'weekly': true,
 			 'api_rate_limit': false,
 			 'defaultiscsi': '10',
 			 'defaultuseiscsi': 'no',
@@ -135,7 +135,7 @@ def call()
 				      'setup_fn': {}]]
 
     providers['ibmvpc'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
-			   'has_watchdog': false, 'has_storage': false, 'weekly': true,
+			   'has_watchdog': false, 'has_storage': false, 'has_network': false, 'weekly': true,
 			   'api_rate_limit': true,
 			   'defaultiscsi': '200',
 			   'defaultuseiscsi': 'yes',

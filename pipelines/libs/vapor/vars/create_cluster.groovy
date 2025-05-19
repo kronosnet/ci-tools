@@ -24,6 +24,6 @@ def call(Map info)
 	if ("${info['block']}" != '') {
 	    vapor_args += ['blocksize': info['block']]
 	}
-	vapor_wrapper(vapor_args)
+	vapor_wrapper(vapor_args, info)
     }
 }

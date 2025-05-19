@@ -63,17 +63,24 @@ def cloud_delete(Map p)
        """
     )
 }
-def cloud_create(Map p)
+def cloud_create(Map p, Map info)
 {
     // Run provider-specific setup
     p['setup_fn']()
-
-    return sh(returnStatus: true,
-       script:
+    def res = 0
+    def create_script =
        """
          ${p['echorun']} vapor ${p['vaporopts']} create ${p['clusteropts']} ${p['createbaseopts']} ${p['createopts']} ${p['extraopts']} ${p['provideropts']}
        """
-    )
+
+    if (p['api_rate_limit'] == true) {
+	RWLock(info, "${p['provider']}_api_create", 'WRITE', 'create_stage', {
+	    res = sh(returnStatus: true, script: create_script)
+	})
+    } else {
+	res =  sh(returnStatus: true, script: create_script)
+    }
+    return res
 }
 def cloud_deploy(Map p)
 {
@@ -103,7 +110,7 @@ def cloud_reboot(Map p)
     )
 }
 
-def call(Map p)
+def call(Map p, Map info)
 {
     if (!validate(p)) {
 	return 1
@@ -200,7 +207,7 @@ def call(Map p)
 	    ret = cloud_delete(p)
 	    break
 	case 'create':
-	    ret = cloud_create(p)
+	    ret = cloud_create(p, info)
 	    break
 	case 'deploy':
 	    ret = cloud_deploy(p)

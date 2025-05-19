@@ -10,7 +10,7 @@ def run_cleanup(Map info)
 		      'debug': env.vapordebug,
 		      'tests': 'cleanup',
 		      'post': '']
-    vapor_wrapper(vapor_args)
+    vapor_wrapper(vapor_args, info)
 }
 
 def run_reboot(Map info)
@@ -23,7 +23,7 @@ def run_reboot(Map info)
 		      'osver': info['osver'],
 		      'nodes': info['tonodes'],
 		      'debug': env.vapordebug]
-    vapor_wrapper(vapor_args)
+    vapor_wrapper(vapor_args, info)
 }
 
 def hard_recover(Map info, Map runstate)

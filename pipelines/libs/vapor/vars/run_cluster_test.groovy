@@ -16,7 +16,7 @@ def run_test(Map info)
 			      'testtimeout': info['runtesttimeout'],
 			      'tests': info['runtest'],
 			      'debug': env.vapordebug]
-	    vapor_wrapper(vapor_args)
+	    vapor_wrapper(vapor_args, info)
 	} else {
 	    echo "INFO: ${info}"
 	    echo "SLEEP 5"

@@ -12,6 +12,6 @@ def call(Map info)
 			  'buildnum': env.BUILD_NUMBER,
 			  'osver': info['osver'],
 			  'debug': env.vapordebug]
-	vapor_wrapper(vapor_args)
+	vapor_wrapper(vapor_args, info)
     }
 }

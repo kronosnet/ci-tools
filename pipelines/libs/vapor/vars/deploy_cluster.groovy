@@ -33,7 +33,7 @@ def call(Map info)
 	    vapor_args['extraopts'] = '--sts-version 10'
 	}
 	RWLock(info, 'ci-rpm-repos', 'READ', 'vapor_deploy', {
-	    vapor_wrapper(vapor_args)
+	    vapor_wrapper(vapor_args, info)
 	})
     }
 }

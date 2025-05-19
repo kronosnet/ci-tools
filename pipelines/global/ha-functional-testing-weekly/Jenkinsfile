@@ -13,6 +13,7 @@ pipeline {
 	string(name: 'tests', defaultValue: 'all', description: '"all"/"smoke"')
 	string(name: 'dryrun', defaultValue: '0', description: 'set to 1 to see what the pipeline would do, without actually doing anything')
 	string(name: 'failure_rate', defaultValue: '0', description: 'Failure likelihood (0-100) to inject for testing')
+	string(name: 'provider', defaultValue: 'all', description: 'List of providers ro run test on (or "all")')
     }
 
     stages {
@@ -24,7 +25,7 @@ pipeline {
 	stage('Collect & run tests') {
 	    steps {
 		script {
-		    def (Map smokeruns, Map faillist) = genTestBuilds('smoke', params.dryrun, info, [:])
+		    def (Map smokeruns, Map faillist) = genTestBuilds('smoke', params.provider, params.dryrun, info, [:])
 		    stage('Smoke tests') {
 			try {
 			    parallel smokeruns
@@ -34,7 +35,7 @@ pipeline {
 			}
 		    }
 		    if (params.tests == 'all') {
-			def (Map allruns, Map _notused) = genTestBuilds('all', params.dryrun, info, faillist)
+			def (Map allruns, Map _notused) = genTestBuilds('all', params.provider, params.dryrun, info, faillist)
 			stage('All tests') {
 			    try {
 				parallel allruns

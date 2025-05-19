@@ -8,10 +8,10 @@ def buildJobList(String job_type)
     def zstream = ['no','yes']
 
     def joblist = []
-    for (v in versions) {
+    for (def v in versions) {
 	// Only RHEL has Zstreams
 	if (v[0].substring(0, 4) == 'rhel') {
-	    for (b in zstream) {
+	    for (def b in zstream) {
 		joblist += ['osver': v[0], 'zstream': b, 'upstream': v[1], 'testlevel': job_type]
 	    }
 	} else {
@@ -37,19 +37,36 @@ def mkstagename(Map job)
 // MAIN entry point for this call.
 // I've set it up like this really just to keep all the code in one file
 // as it's all related, and uses a few common dependancies
-def call(String jobtype, String dryrun, Map info, Map provider_failflags)
+def call(String jobtype, String provider, String dryrun, Map info, Map provider_failflags)
 {
     if (jobtype == 'smoke') {
-	return genSmokeJobs(dryrun, info)
+	return genSmokeJobs(dryrun, provider, info)
     } else {
-	return genAllJobs(dryrun, info, provider_failflags)
+	return genAllJobs(dryrun, provider, info, provider_failflags)
     }
 }
 
-def genSmokeJobs(String dryrun, Map info)
+
+// Edit the providers list according to the 'provlist' param
+def limitProviders(String provlist, Map providers)
+{
+    if (provlist == 'all') {
+	return providers
+    }
+
+    def new_providers = [:]
+    for (def i in providers) {
+	if (provlist.contains(i.key)) {
+	    new_providers[i.key] = i.value
+	}
+    }
+    return new_providers
+}
+
+def genSmokeJobs(String dryrun, String provider_param, Map info)
 {
     // Cloud providers and their limits
-    def providers = getProviderProperties()
+    def providers = limitProviders(provider_param, getProviderProperties())
 
     // List of jobs
     def smokejobs = buildJobList('smoke')
@@ -57,7 +74,7 @@ def genSmokeJobs(String dryrun, Map info)
     // Build the jobs list for each provider
     def smoke_matrix = [:]
     def prov_failflags = [:]
-    for (p in providers) {
+    for (def p in providers) {
 	def provider_jobs = [:]
 	def prov = p.key
 	def pinfo = p.value
@@ -72,7 +89,7 @@ def genSmokeJobs(String dryrun, Map info)
 	    // from this list as they get run. At this stage we also remove
 	    // jobs for unsupported RHEL versions
 	    def provider_smokejobs = []
-	    for (sj in smokejobs) {
+	    for (def sj in smokejobs) {
 		if (pinfo['vers'].contains(sj['osver'])) {
 		    provider_smokejobs += sj
 		}
@@ -87,14 +104,14 @@ def genSmokeJobs(String dryrun, Map info)
 
 	    // Clear out the 'FAIL' status for all smoke jobs
 	    def failflags = [:]
-	    for (s in provider_smokejobs) {
+	    for (def s in provider_smokejobs) {
 		failflags[mkstagename(s)] = false
 	    }
 
 	    provider_jobs['failflags'] = failflags
 	    prov_failflags[prov] = failflags
 	    // Set up the runners. create 'maxjobs' runners per provder
-	    for (i = 1; i <= maxjobs; i++) {
+	    for (def i = 1; i <= maxjobs; i++) {
 		smoke_matrix["${prov} ${i}"] = { runTestList(provider_jobs, info, provider_smokejobs, prov_failflags, dryrun) }
 	    }
 	}
@@ -112,18 +129,18 @@ def genSmokeJobs(String dryrun, Map info)
 
 // Now we know what failed in the 'smoke' tests, schedule
 // the 'all' tests as efficiently as possible
-def genAllJobs(String dryrun, Map info, Map prov_failflags)
+def genAllJobs(String dryrun, String provider_param, Map info, Map prov_failflags)
 {
     def all_matrix = [:]
 
     // Work out how many providers each job can run on.
     // schedule them (1...<n>) on to the least busy suitable provider
     def alljobs = buildJobList('all')
-    def providers = getProviderProperties()
+    def providers = limitProviders(provider_param, getProviderProperties())
 
-    for (job in alljobs) {
+    for (def job in alljobs) {
 	job['eligible_providers'] = 0
-	for (p in providers) {
+	for (def p in providers) {
 	    if (p.value['weekly'] && p.value['testlevel'] == 'all') {
 		def provider = p.key
 		def failflags = prov_failflags[provider]
@@ -136,7 +153,7 @@ def genAllJobs(String dryrun, Map info, Map prov_failflags)
     }
 
     // Clear out/initialise some things
-    for (p in providers) {
+    for (def p in providers) {
 	p.value['numjobs'] = 0
 	p.value['alljobs'] = []
     }
@@ -145,12 +162,12 @@ def genAllJobs(String dryrun, Map info, Map prov_failflags)
     // This means that all the jobs that can only run on 1 provider
     // get allocated first.
     def sorted_jobs = sort_jobs(alljobs)
-    for (job in sorted_jobs) {
+    for (def job in sorted_jobs) {
 	def stagename = mkstagename(job)
 	def least_busy = null
 
 	// Find the least busy provider that can run this job
-	for (p in providers) {
+	for (def p in providers) {
 	    def provider = p.key
 	    def pinfo = p.value
 	    if (pinfo['weekly'] == true &&
@@ -173,7 +190,7 @@ def genAllJobs(String dryrun, Map info, Map prov_failflags)
     }
 
     // Set up run map for the job runners
-    for (p in providers) {
+    for (def p in providers) {
 	if (p.value['alljobs'].size() > 0) {
 	    def provider_jobs = [:]
 	    def prov = p.key
@@ -188,7 +205,7 @@ def genAllJobs(String dryrun, Map info, Map prov_failflags)
 	    if (maxjobs == 0) {
 		maxjobs = pinfo['alljobs'].size()
 	    }
-	    for (i = 1; i <= maxjobs; i++) {
+	    for (def i = 1; i <= maxjobs; i++) {
 		all_matrix["${prov} ${i}"] = { runTestList(provider_jobs, info, pinfo['alljobs'], [:], dryrun) }
 	    }
 	}

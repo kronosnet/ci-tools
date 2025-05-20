@@ -30,6 +30,11 @@ case "${NODE_NAME}" in
    yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
   fi
  ;;
+ rhel-10*|anvil-ci-rhel-10)
+  if ! rpm -qa | grep epel-release; then
+   yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
+  fi
+ ;;
 esac
 
 case "${NODE_NAME}" in
@@ -94,14 +99,14 @@ esac
 
 # rhel-9 language pack
 case "${NODE_NAME}" in
- *rhel-9*)
+ *rhel-9*|*rhel-10*)
   required_pkg glibc-all-langpacks
  ;;
 esac
 
 # rhel-9 boto3
 case "${NODE_NAME}" in
- *rhel-9*)
+ *rhel-9*|*rhel-10*)
  ;;
  *)
   required_pkg python3-boto3
@@ -110,10 +115,13 @@ esac
 
 # pycurl
 case "${NODE_NAME}" in
- *centos-10*)
+ *centos-10*|*rhel-10*)
  ;;
  *)
   required_pkg python3-pycurl
+  required_pkg inkscape
+  required_pkg overpass-fonts
+  required_pkg python3-suds
  ;;
 esac
 
@@ -141,7 +149,6 @@ required_pkg glib2-devel
 required_pkg gnutls-devel
 required_pkg groff
 required_pkg help2man
-required_pkg inkscape
 required_pkg jq
 required_pkg libaio-devel
 required_pkg libblkid-devel
@@ -172,7 +179,6 @@ required_pkg nss-devel
 required_pkg nss-tools
 required_pkg openssl-devel
 required_pkg openwsman-python3
-required_pkg overpass-fonts
 required_pkg pam-devel
 required_pkg perl
 required_pkg python3-cryptography
@@ -189,7 +195,6 @@ required_pkg python3-requests
 required_pkg python3-rpm-macros
 required_pkg python3-setuptools
 required_pkg python3-setuptools_scm
-required_pkg python3-suds
 required_pkg python3-systemd
 required_pkg python3-wheel
 required_pkg psmisc

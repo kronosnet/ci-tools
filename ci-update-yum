@@ -119,9 +119,6 @@ case "${NODE_NAME}" in
  ;;
  *)
   required_pkg python3-pycurl
-  required_pkg inkscape
-  required_pkg overpass-fonts
-  required_pkg python3-suds
  ;;
 esac
 
@@ -149,6 +146,7 @@ required_pkg glib2-devel
 required_pkg gnutls-devel
 required_pkg groff
 required_pkg help2man
+required_pkg inkscape
 required_pkg jq
 required_pkg libaio-devel
 required_pkg libblkid-devel
@@ -179,6 +177,7 @@ required_pkg nss-devel
 required_pkg nss-tools
 required_pkg openssl-devel
 required_pkg openwsman-python3
+required_pkg overpass-fonts
 required_pkg pam-devel
 required_pkg perl
 required_pkg python3-cryptography
@@ -195,6 +194,7 @@ required_pkg python3-requests
 required_pkg python3-rpm-macros
 required_pkg python3-setuptools
 required_pkg python3-setuptools_scm
+required_pkg python3-suds
 required_pkg python3-systemd
 required_pkg python3-wheel
 required_pkg psmisc

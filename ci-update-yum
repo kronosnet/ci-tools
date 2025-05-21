@@ -38,7 +38,7 @@ case "${NODE_NAME}" in
 esac
 
 case "${NODE_NAME}" in
- centos-10-*)
+ centos-10-*|rhel-10*)
   EXTRAOPTS="--nobest"
  ;;
  rhel-9*)

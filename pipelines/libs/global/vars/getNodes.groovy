@@ -52,6 +52,7 @@ def call()
     labels['rhel-9-vapor-rdu-5-x86-64'] = ['rhel-9','stable','x86-64','yum','libvirt','kubesan']
     labels['rhel-9-vapor-rdu-6-x86-64'] = ['rhel-9','stable','x86-64','yum','libvirt','kubesan']
     labels['rhel-9-x86-64'] = ['rhel-9','stable','x86-64','voting','rpm','yum','nonvoting-clang','buildrpms']
+    labels['rhel-10-s390x'] = ['rhel-10','stable','s390x','voting','rpm','yum','nonvoting-clang','buildrpms']
     labels['rhel-10-x86-64'] = ['rhel-10','stable','x86-64','voting','rpm','yum','nonvoting-clang','buildrpms']
     labels['ubuntu-20-04-lts-x86-64'] = ['ubuntu20.04','stable','x86-64','voting','apt','nonvoting-clang']
     labels['ubuntu-22-04-lts-x86-64'] = ['ubuntu22.04','stable','x86-64','voting','apt','nonvoting-clang']

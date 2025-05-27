@@ -109,7 +109,7 @@ def call()
 				     'deployopts':  '',
 				     'testopts': '',
 				     'setup_fn': {}],
-			   'rhel9': ['createopts': '--image rhel-9.5.0.x86_64',
+			   'rhel9': ['createopts': '--image rhel-9.6.0.x86_64',
 				     'deployopts':  '',
 				     'testopts': '',
 				     'setup_fn': {}]]

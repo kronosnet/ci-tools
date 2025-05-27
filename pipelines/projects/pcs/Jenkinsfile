@@ -87,7 +87,7 @@ pipeline {
 
 		    covscan = buildRunMap('covscan', info, ['voting': true,
 							    'nodelabel': 'covscan',
-							    'excludes': 'rhel-8.*',
+							    'excludes': 'rhel-8.*|rhel-10.*',
 							    'extravars': ['depbuildname': 'pacemaker',
 									  'depbuildversion': '2.1']])
 

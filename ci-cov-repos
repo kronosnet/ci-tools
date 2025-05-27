@@ -50,9 +50,13 @@ process_cov_repos() {
 	# we are in project dir
 	for node in $(ls); do
 		echo "Node $node / $branch / $extraver"
-		cd ${node}/${branch}/${extraver}
-		process_builds
-		cd $covdir/$project/
+		if [ -d ${node}/${branch}/${extraver} ]; then
+			cd ${node}/${branch}/${extraver}
+			process_builds
+			cd $covdir/$project/
+		else
+			echo "Skipping $node / $branch / $extraver. coverity results not found"
+		fi
 	done
 }
 

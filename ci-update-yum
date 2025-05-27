@@ -113,15 +113,6 @@ case "${NODE_NAME}" in
  ;;
 esac
 
-# pycurl
-case "${NODE_NAME}" in
- *centos-10*|*rhel-10*)
- ;;
- *)
-  required_pkg python3-pycurl
- ;;
-esac
-
 required_pkg OpenIPMI-devel
 required_pkg asciidoc
 required_pkg autoconf
@@ -181,6 +172,7 @@ required_pkg overpass-fonts
 required_pkg pam-devel
 required_pkg perl
 required_pkg python3-cryptography
+required_pkg python3-pycurl
 required_pkg python3-dateutil
 required_pkg python3-devel
 required_pkg python3-httplib2

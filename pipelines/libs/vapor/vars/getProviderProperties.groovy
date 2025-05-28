@@ -14,7 +14,7 @@ def call()
     // Cloud providers and their limits & params.
     def providers = [:]
 
-    providers['libvirt'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9', 'centos10'],
+    providers['libvirt'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9', 'rhel10', 'centos10'],
 			    'has_watchdog': true, 'has_storage': true, 'has_network': true, 'weekly': true,
 			    'api_rate_limit': false,
 			    'defaultiscsi': '10',
@@ -29,6 +29,10 @@ def call()
 				      'deployopts':  '',
 				      'testopts': '',
 				      'setup_fn': {}],
+			    'rhel10': ['createopts': "--image rhel-10.0.0.x86_64.qcow2 --flavor-workstation rhelha-vapor-workstation-medium --flavor rhelha-vapor-node-medium",
+				       'deployopts':  '',
+				       'testopts': '',
+				       'setup_fn': {}],
 			    'centos10': ['createopts': "--image centos-10-stream.qcow2 --flavor-workstation rhelha-vapor-workstation-medium --flavor rhelha-vapor-node-medium",
 					 'deployopts':  '',
 					 'testopts': '',
@@ -50,7 +54,7 @@ def call()
 				  'testopts': '',
 				  'setup_fn': {}]]
 
-    providers['azure'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
+    providers['azure'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9', 'rhel10'],
 			  'has_watchdog': false, 'has_storage': true, 'has_network': true, 'weekly': true,
 			  'api_rate_limit': true,
 			  'defaultiscsi': '',
@@ -64,9 +68,13 @@ def call()
 			  'rhel9': ['createopts': '--image $(az vm image list --all --publisher RedHat  --output table | grep "RedHat:RHEL:9_" | awk \'{print $NF}\' | sort -V | tail -n 1)',
 				    'deployopts':  '',
 				    'testopts': '',
-				    'setup_fn': {}]]
+				    'setup_fn': {}],
+			  'rhel10': ['createopts': '--image $(az vm image list --all --publisher RedHat  --output table | grep "RedHat:RHEL:10_" | awk \'{print $NF}\' | sort -V | tail -n 1)',
+				     'deployopts':  '',
+				     'testopts': '',
+				     'setup_fn': {}]]
 
-    providers['aws'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
+    providers['aws'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9', 'rhel10'],
 			'has_watchdog': false, 'has_storage': true, 'has_network': true, 'weekly': true,
 			'api_rate_limit': true,
 			'defaultiscsi': '',
@@ -80,7 +88,11 @@ def call()
 			'rhel9': ['createopts': '--image $(vapor get-images aws --region us-east-1 | grep "RHEL-9.6.0_HVM_GA" | grep x86_64 | sed -e \'s#",##g\' -e \'s#.*"##g\' | sort -u | tail -n 1)',
 				  'deployopts':  '',
 				  'testopts': '',
-				  'setup_fn': {}]]
+				  'setup_fn': {}],
+			'rhel10': ['createopts': '--image $(vapor get-images aws --region us-east-1 | grep "RHEL-10.0.0_HVM_GA" | grep x86_64 | sed -e \'s#",##g\' -e \'s#.*"##g\' | sort -u | tail -n 1)',
+				   'deployopts':  '',
+				   'testopts': '',
+				   'setup_fn': {}]]
 
     providers['gcp'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
 			'has_watchdog': false, 'has_storage': true, 'has_network': true, 'weekly': true,
@@ -98,7 +110,7 @@ def call()
 				  'testopts': '',
 				  'setup_fn': {}]]
 
-    providers['aliyun'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
+    providers['aliyun'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9', 'rhel10'],
 			   'has_watchdog': false, 'has_storage': true, 'has_network': true, 'weekly': true,
 			   'api_rate_limit': true,
 			   'defaultiscsi': '200',
@@ -112,9 +124,13 @@ def call()
 			   'rhel9': ['createopts': '--image rhel-9.6.0.x86_64',
 				     'deployopts':  '',
 				     'testopts': '',
-				     'setup_fn': {}]]
+				     'setup_fn': {}],
+			   'rhel10': ['createopts': '--image rhel-10.0.x86_64',
+				      'deployopts':  '',
+				      'testopts': '',
+				      'setup_fn': {}]]
 
-    providers['ocpv'] = ['maxjobs': 4, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9', 'centos10'],
+    providers['ocpv'] = ['maxjobs': 4, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9', 'rhel10', 'centos10'],
 			 'has_watchdog': true, 'has_storage': true, 'has_network': true, 'weekly': true,
 			 'api_rate_limit': false,
 			 'defaultiscsi': '10',
@@ -129,6 +145,10 @@ def call()
 				   'deployopts':  '',
 				   'testopts': '',
 				   'setup_fn': {}],
+			 'rhel10': ['createopts': '--flavor-workstation n1.2xlarge --flavor n1.2xlarge --image rhel-10.0.0',
+				    'deployopts':  '',
+				    'testopts': '',
+				    'setup_fn': {}],
 			 'centos10': ['createopts': '--flavor-workstation n1.2xlarge --flavor n1.2xlarge --image centos-10-stream',
 				      'deployopts':  '',
 				      'testopts': '',

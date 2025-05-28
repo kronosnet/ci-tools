@@ -16,7 +16,7 @@ pipeline {
     parameters {
 	string(name: 'fromnodes', defaultValue: '1', description: 'run tests starting from this node number')
 	string(name: 'tonodes', defaultValue: '4', description: 'run tests up to this node number')
-	string(name: 'osver', defaultValue: 'rhel9', description: 'rhel8, rhel9, centos10 etc (depending on cloud provider)')
+	string(name: 'osver', defaultValue: 'rhel10', description: 'rhel8, rhel9, rhel10, centos10 etc (depending on cloud provider)')
 	string(name: 'zstream', defaultValue: 'no', description: 'yes / no')
 	string(name: 'brewbuild', defaultValue: '', description: 'updated brew build to use in tests <n-v-r | build_id | package>')
 	string(name: 'upstream', defaultValue: 'next-stable', description: 'use none / next-stable / next-stable-kernel / main or main-kernel repository')

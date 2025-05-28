@@ -82,6 +82,9 @@ def call(Map info)
     def basic_tests_rhel9 = [
 	'lvm,lvm_config_no-vdo,cluster-lvmlockd'
     ]
+    def basic_tests_rhel10 = [
+	'lvm,lvm_config_no-vdo,cluster-lvmlockd'
+    ]
     def basic_tests = [
 	'pacemaker,recovery,RecoveryRandomNode',
 	'pacemaker,recovery,RecoveryRestartPacemaker-AllNodes',
@@ -122,13 +125,16 @@ def call(Map info)
     tests['default,all,tests,1'] = tests['default,smoke,tests,1']
     tests['default,all,tests,2,rhel8'] = tests['pcs,smoke,tests,generic'] + smoke_tests + pcs_basic_tests + basic_tests + basic_tests_rhel8
     tests['default,all,tests,2,rhel9'] = tests['pcs,smoke,tests,generic'] + smoke_tests + pcs_basic_tests + basic_tests + basic_tests_rhel9
-    tests['default,all,tests,2'] = tests['pcs,smoke,tests,generic'] + smoke_tests + pcs_basic_tests + basic_tests + basic_tests_rhel9
+    tests['default,all,tests,2,rhel10'] = tests['pcs,smoke,tests,generic'] + smoke_tests + pcs_basic_tests + basic_tests + basic_tests_rhel10
+    tests['default,all,tests,2'] = tests['pcs,smoke,tests,generic'] + smoke_tests + pcs_basic_tests + basic_tests + basic_tests_rhel10
     tests['default,all,tests,3'] = tests['default,all,tests,2'] + pcs_advanced_tests + advanced_tests + 'pcs,cli,ResourceMove'
     tests['default,all,tests,3,rhel8'] = tests['default,all,tests,2,rhel8'] + pcs_advanced_tests + advanced_tests + 'pcs,cli,ResourceMove'
     tests['default,all,tests,3,rhel9'] = tests['default,all,tests,2,rhel9'] + pcs_advanced_tests + advanced_tests + 'pcs,cli,ResourceMove'
+    tests['default,all,tests,3,rhel10'] = tests['default,all,tests,2,rhel10'] + pcs_advanced_tests + advanced_tests + 'pcs,cli,ResourceMove'
     tests['default,all,tests,4'] = tests['default,all,tests,2'] + pcs_advanced_tests + advanced_tests + 'pacemaker,usecase,apachewebfarm,haproxy'
     tests['default,all,tests,4,rhel8'] = tests['default,all,tests,2,rhel8'] + pcs_advanced_tests + advanced_tests + 'pacemaker,usecase,apachewebfarm,haproxy'
     tests['default,all,tests,4,rhel9'] = tests['default,all,tests,2,rhel9'] + pcs_advanced_tests + advanced_tests + 'pacemaker,usecase,apachewebfarm,haproxy'
+    tests['default,all,tests,4,rhel10'] = tests['default,all,tests,2,rhel10'] + pcs_advanced_tests + advanced_tests + 'pacemaker,usecase,apachewebfarm,haproxy'
 
     // Get the right tests set
     def ret = []

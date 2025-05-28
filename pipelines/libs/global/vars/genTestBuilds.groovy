@@ -3,10 +3,10 @@
 def buildJobList(String job_type)
 {
     // OS/upstream versions as pairs
-    def versions = [['rhel8', 'stable'],
-		    ['rhel9', 'stable'], ['rhel9', 'next-stable'], ['rhel9', 'main'],
-		    ['rhel10', 'next-stable'], ['rhel10', 'main'],
-		    ['centos10', 'next-stable'], ['centos10', 'main']]
+    def versions = [['rhel8', 'none'], ['rhel8', 'stable'],
+		    ['rhel9', 'none'], ['rhel9', 'stable'], ['rhel9', 'next-stable'], ['rhel9', 'main'],
+		    ['rhel10', 'none'], ['rhel10', 'next-stable'], ['rhel10', 'main'],
+		    ['centos10', 'none'], ['centos10', 'next-stable'], ['centos10', 'main']]
     def zstream = ['no','yes']
 
     def joblist = []

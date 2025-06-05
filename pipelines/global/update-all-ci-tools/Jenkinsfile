@@ -40,6 +40,9 @@ pipeline {
 		    getBuildInfoCommon(info)
 		    info['state'] = 'success'
 		    info['branch'] = ''
+		    info['stages_run'] = 0
+		    info['stages_fail'] = 0
+		    info['stages_fail_nodes'] = ''
 
 		    // Just update the jar file on built-in
 		    sh '''
@@ -50,6 +53,7 @@ pipeline {
 		    def updates = buildFullRunMap(info)
 		    try {
 			parallel updates
+			info['state'] = 'completed'
 		    } catch (err) {
 			println("Jenkinsfile caught "+err)
 			info['exception_text'] += "\nparallel error caught: {$err}\n"

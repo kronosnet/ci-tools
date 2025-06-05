@@ -1,6 +1,6 @@
 // Update ci-tools (and other things) on all the nodes
 
-@Library(['GlobalLib', 'GithubLib', 'ProjectLib']) _
+@Library(['GlobalLib@cc-devel', 'GithubLib@cc-devel', 'ProjectLib@cc-devel']) _
 
 def info = [:]
 def project = 'update-all-ci-tools'
@@ -11,7 +11,7 @@ def buildFullRunMap(Map info)
     def collectBuildEnv = [:]
     def nodeList = getNodes()
 
-    for (n in nodeList) {
+    for (def n in nodeList) {
 	def node = n.key
 	collectBuildEnv[node] = {
 	    updateCiNode(node, info)

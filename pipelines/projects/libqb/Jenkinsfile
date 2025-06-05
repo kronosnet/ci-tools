@@ -43,18 +43,18 @@ pipeline {
 		script {
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 
-		    voting = buildRunMap('voting', info, ['voting': true,
+		    def voting = buildRunMap('voting', info, ['voting': true,
 							  'nodelabel': 'voting',
 							  'nodelist': ['debian-unstable-cross-x86-64']])
-		    nonvoting = buildRunMap('nonvoting', info, ['voting': false,
+		    def nonvoting = buildRunMap('nonvoting', info, ['voting': false,
 								'nodelabel': 'nonvoting'])
-		    nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
+		    def nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
 									    'nodelabel': 'nonvoting-clang',
 									    'extravars': ['compiler': 'clang',
 											  'install': 0]])
-		    covscan = buildRunMap('covscan', info, ['voting': true,
+		    def covscan = buildRunMap('covscan', info, ['voting': true,
 							    'nodelabel': 'covscan'])
-		    buildrpms = buildRunMap('buildrpms', info, ['voting': true,
+		    def buildrpms = buildRunMap('buildrpms', info, ['voting': true,
 		                                                'nodelabel': 'buildrpms'])
 
 		    // Run them (errors are caught in info[:])

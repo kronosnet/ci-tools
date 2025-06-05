@@ -189,7 +189,7 @@ def call(Map info)
 
 	// Do any more generic filters for this provider/ostype
 	if (provider["${info['osver']}"] != null) {
-	    osinfo = provider["${info['osver']}"]
+	    def osinfo = provider["${info['osver']}"]
 	    if (osinfo.containsKey('testfilters')) {
 		for (f in osinfo['testfilters']) {
 		    if (f.startsWith('-')) {

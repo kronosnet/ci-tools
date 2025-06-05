@@ -40,56 +40,56 @@ pipeline {
 		script {
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 
-		    voting_kmain = buildRunMap('kmain-voting', info, ['voting': true,
+		    def voting_kmain = buildRunMap('kmain-voting', info, ['voting': true,
 								      'nodelabel': 'voting',
 								      'extravars': ['depbuildname': 'kronosnet',
 										    'depbuildversion': 'main',
 										    'install': info['maininstall']]])
-		    voting_kstable = buildRunMap('kstable-voting', info, ['voting': true,
+		    def voting_kstable = buildRunMap('kstable-voting', info, ['voting': true,
 									  'nodelabel': 'voting',
 									  'extravars': ['depbuildname': 'kronosnet',
 											'depbuildversion': 'stable1-proposed',
 											'install': info['stableinstall']]])
 
-		    nonvoting_kmain = buildRunMap('kmain-nonvoting', info, ['voting': false,
+		    def nonvoting_kmain = buildRunMap('kmain-nonvoting', info, ['voting': false,
 									    'nodelabel': 'nonvoting',
 									    'extravars': ['depbuildname': 'kronosnet',
 											  'depbuildversion': 'main',
 											  'install': info['maininstall']]])
-		    nonvoting_kstable = buildRunMap('kstable-nonvoting', info, ['voting': false,
+		    def nonvoting_kstable = buildRunMap('kstable-nonvoting', info, ['voting': false,
 										'nodelabel': 'nonvoting',
 										'extravars': ['depbuildname': 'kronosnet',
 											      'depbuildversion': 'stable1-proposed',
 											      'install': info['stableinstall']]])
 
-		    nonvoting_clang_kmain = buildRunMap('kmain-nonvoting-clang', info, ['voting': false,
+		    def nonvoting_clang_kmain = buildRunMap('kmain-nonvoting-clang', info, ['voting': false,
 											'nodelabel': 'nonvoting-clang',
 											'extravars': ['compiler': 'clang',
 												      'depbuildname': 'kronosnet',
 												      'depbuildversion': 'main',
 												      'install': 0]])
-		    nonvoting_clang_kstable = buildRunMap('kstable-nonvoting-clang', info, ['voting': false,
+		    def nonvoting_clang_kstable = buildRunMap('kstable-nonvoting-clang', info, ['voting': false,
 											    'nodelabel': 'nonvoting-clang',
 											    'extravars': ['compiler': 'clang',
 													  'depbuildname': 'kronosnet',
 													  'depbuildversion': 'stable1-proposed',
 													  'install': 0]])
 
-		    covscan_kmain = buildRunMap('kmain-covscan', info, ['voting': true,
+		    def covscan_kmain = buildRunMap('kmain-covscan', info, ['voting': true,
 									'nodelabel': 'covscan',
 									'extravars': ['depbuildname': 'kronosnet',
 										      'depbuildversion': 'main']])
-		    covscan_kstable = buildRunMap('kstable-covscan', info, ['voting': true,
+		    def covscan_kstable = buildRunMap('kstable-covscan', info, ['voting': true,
 									    'nodelabel': 'covscan',
 									    'extravars': ['depbuildname': 'kronosnet',
 											  'depbuildversion': 'stable1-proposed']])
 
-		    buildrpms_kmain = buildRunMap('kmain-buildrpms', info, ['voting': true,
+		    def buildrpms_kmain = buildRunMap('kmain-buildrpms', info, ['voting': true,
 									    'nodelabel': 'buildrpms',
 									    'extravars': ['depbuildname': 'kronosnet',
 											  'depbuildversion': 'main',
 											  'publishrpm': info['maininstall']]])
-		    buildrpms_kstable = buildRunMap('kstable-buildrpms', info, ['voting': true,
+		    def buildrpms_kstable = buildRunMap('kstable-buildrpms', info, ['voting': true,
 										'nodelabel': 'buildrpms',
 										'extravars': ['depbuildname': 'kronosnet',
 											      'depbuildversion': 'stable1-proposed',

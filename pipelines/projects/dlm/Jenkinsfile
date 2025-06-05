@@ -40,24 +40,24 @@ pipeline {
 		script {
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 
-		    voting = buildRunMap('voting', info, ['voting': true,
+		    def voting = buildRunMap('voting', info, ['voting': true,
 							  'nodelabel': 'voting',
 							  'excludes': 'freebsd.*'])
 
-		    nonvoting = buildRunMap('nonvoting', info, ['voting': false,
+		    def nonvoting = buildRunMap('nonvoting', info, ['voting': false,
 								'nodelabel': 'nonvoting',
 								'excludes': 'freebsd.*'])
 
-		    nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
+		    def nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
 									    'nodelabel': 'nonvoting-clang',
 									    'excludes': '(freebsd|ubuntu-20-04-lts).*',
 									    'extravars': ['compiler': 'clang',
 											  'install': 0]])
 
-		    covscan = buildRunMap('covscan', info, ['voting': true,
+		    def covscan = buildRunMap('covscan', info, ['voting': true,
 							    'nodelabel': 'covscan'])
 
-		    buildrpms = buildRunMap('buildrpms', info, ['voting': true,
+		    def buildrpms = buildRunMap('buildrpms', info, ['voting': true,
 								'nodelabel': 'buildrpms'])
 
 		    try {

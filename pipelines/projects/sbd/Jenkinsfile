@@ -40,53 +40,53 @@ pipeline {
 		script {
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 
-		    voting_pmain = buildRunMap('pmain-voting', info, ['voting': true,
+		    def voting_pmain = buildRunMap('pmain-voting', info, ['voting': true,
 								      'nodelabel': 'voting',
 								      'excludes': 'freebsd.*',
 								      'extravars': ['depbuildname': 'pacemaker',
 										    'depbuildversion': 'main']])
-		    voting_pstable = buildRunMap('pstable-voting', info, ['voting': true,
+		    def voting_pstable = buildRunMap('pstable-voting', info, ['voting': true,
 									  'nodelabel': 'voting',
 									  'excludes': 'freebsd.*',
 									  'extravars': ['depbuildname': 'pacemaker',
 											'depbuildversion': '3.0']])
-		    voting_poldstable = buildRunMap('poldstable-voting', info, ['voting': true,
+		    def voting_poldstable = buildRunMap('poldstable-voting', info, ['voting': true,
 										'nodelabel': 'voting',
 										'excludes': 'freebsd.*',
 										'extravars': ['depbuildname': 'pacemaker',
 											      'depbuildversion': '2.1']])
 
-		    nonvoting_pmain = buildRunMap('pmain-nonvoting', info, ['voting': false,
+		    def nonvoting_pmain = buildRunMap('pmain-nonvoting', info, ['voting': false,
 									    'nodelabel': 'nonvoting',
 									    'excludes': 'freebsd.*',
 									    'extravars': ['depbuildname': 'pacemaker',
 											  'depbuildversion': 'main']])
-		    nonvoting_pstable = buildRunMap('pstable-nonvoting', info, ['voting': false,
+		    def nonvoting_pstable = buildRunMap('pstable-nonvoting', info, ['voting': false,
 										'nodelabel': 'nonvoting',
 										'excludes': 'freebsd.*',
 										'extravars': ['depbuildname': 'pacemaker',
 											      'depbuildversion': '3.0']])
-		    nonvoting_poldstable = buildRunMap('poldstable-nonvoting', info, ['voting': false,
+		    def nonvoting_poldstable = buildRunMap('poldstable-nonvoting', info, ['voting': false,
 										      'nodelabel': 'nonvoting',
 										      'excludes': 'freebsd.*',
 										      'extravars': ['depbuildname': 'pacemaker',
 												    'depbuildversion': '2.1']])
 
-		    nonvoting_clang_pmain = buildRunMap('pmain-nonvoting-clang', info, ['voting': false,
+		    def nonvoting_clang_pmain = buildRunMap('pmain-nonvoting-clang', info, ['voting': false,
 											'nodelabel': 'nonvoting-clang',
 											'excludes': 'freebsd.*',
 											'extravars': ['compiler': 'clang',
 												      'depbuildname': 'pacemaker',
 												      'depbuildversion': 'main',
 												      'install': 0]])
-		    nonvoting_clang_pstable = buildRunMap('pstable-nonvoting-clang', info, ['voting': false,
+		    def nonvoting_clang_pstable = buildRunMap('pstable-nonvoting-clang', info, ['voting': false,
 											    'nodelabel': 'nonvoting-clang',
 											    'excludes': 'freebsd.*',
 											    'extravars': ['compiler': 'clang',
 													  'depbuildname': 'pacemaker',
 													  'depbuildversion': '3.0',
 													  'install': 0]])
-		    nonvoting_clang_poldstable = buildRunMap('poldstable-nonvoting-clang', info, ['voting': false,
+		    def nonvoting_clang_poldstable = buildRunMap('poldstable-nonvoting-clang', info, ['voting': false,
 												   'nodelabel': 'nonvoting-clang',
 												   'excludes': 'freebsd.*',
 												   'extravars': ['compiler': 'clang',
@@ -94,28 +94,28 @@ pipeline {
 														 'depbuildversion': '2.1',
 														 'install': 0]])
 
-		    covscan_pmain = buildRunMap('pmain-covscan', info, ['voting': true,
+		    def covscan_pmain = buildRunMap('pmain-covscan', info, ['voting': true,
 									'nodelabel': 'covscan',
 									'extravars': ['depbuildname': 'pacemaker',
 										      'depbuildversion': 'main']])
-		    covscan_pstable = buildRunMap('pstable-covscan', info, ['voting': true,
+		    def covscan_pstable = buildRunMap('pstable-covscan', info, ['voting': true,
 									    'nodelabel': 'covscan',
 									    'extravars': ['depbuildname': 'pacemaker',
 											  'depbuildversion': '3.0']])
-		    covscan_poldstable = buildRunMap('poldstable-covscan', info, ['voting': true,
+		    def covscan_poldstable = buildRunMap('poldstable-covscan', info, ['voting': true,
 										  'nodelabel': 'covscan',
 										  'extravars': ['depbuildname': 'pacemaker',
 												'depbuildversion': '2.1']])
 
-		    buildrpms_pmain = buildRunMap('pmain-buildrpms', info, ['voting': true,
+		    def buildrpms_pmain = buildRunMap('pmain-buildrpms', info, ['voting': true,
 									    'nodelabel': 'buildrpms',
 									    'extravars': ['depbuildname': 'pacemaker',
 											  'depbuildversion': 'main']])
-		    buildrpms_pstable = buildRunMap('pstable-buildrpms', info, ['voting': true,
+		    def buildrpms_pstable = buildRunMap('pstable-buildrpms', info, ['voting': true,
 										'nodelabel': 'buildrpms',
 										'extravars': ['depbuildname': 'pacemaker',
 											      'depbuildversion': '3.0']])
-		    buildrpms_poldstable = buildRunMap('poldstable-buildrpms', info, ['voting': true,
+		    def buildrpms_poldstable = buildRunMap('poldstable-buildrpms', info, ['voting': true,
 										      'nodelabel': 'buildrpms',
 										      'extravars': ['depbuildname': 'pacemaker',
 												    'depbuildversion': '2.1']])

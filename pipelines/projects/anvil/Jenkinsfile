@@ -57,10 +57,10 @@ pipeline {
 		script {
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 
-		    voting = buildRunMap('voting', info, ['voting': true,
+		    def voting = buildRunMap('voting', info, ['voting': true,
 							  'nodelabel': 'anvilvoting'])
 
-		    buildrpms = buildRunMap('buildrpms', info, ['voting': true,
+		    def buildrpms = buildRunMap('buildrpms', info, ['voting': true,
 		                                                'nodelabel': 'anvilbuildrpms'])
 
 		    // Run them (errors are caught in info[:])

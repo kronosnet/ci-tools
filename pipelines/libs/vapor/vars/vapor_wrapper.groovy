@@ -54,16 +54,20 @@ def set_defaults(Map p)
     set_default(p, 'links', '1')
 }
 
-def cloud_delete(Map p)
+def cloud_delete(Map p, Integer timeout_minutes)
 {
-    return sh(returnStatus: true,
-       script:
-       """
+    def ret = 0
+    timeout(time: timeout_minutes, unit: 'MINUTES') {
+	ret = sh(returnStatus: true,
+		 script:
+		 """
          ${p['echorun']} vapor ${p['vaporopts']} delete ${p['clusteropts']} ${p['extraopts']} ${p['provideropts']}
        """
-    )
+	)
+    }
+    return ret
 }
-def cloud_create(Map p, Map info)
+def cloud_create(Map p, Map info, Integer timeout_minutes)
 {
     // Run provider-specific setup
     p['setup_fn']()
@@ -73,44 +77,57 @@ def cloud_create(Map p, Map info)
          ${p['echorun']} vapor ${p['vaporopts']} create ${p['clusteropts']} ${p['createbaseopts']} ${p['createopts']} ${p['extraopts']} ${p['provideropts']}
        """
 
-    if (p['api_rate_limit'] == true) {
-	RWLock(info, "${p['provider']}_api_create", 'WRITE', 'create_stage', {
-	    res = sh(returnStatus: true, script: create_script)
-	})
-    } else {
-	res =  sh(returnStatus: true, script: create_script)
-    }
+    RWLock(info, "${p['provider']}_api_create", 'WRITE', 'create_stage', {
+	timeout(time: timeout_minutes, unit: 'MINUTES') {
+	    if (p['api_rate_limit'] == true) {
+		res = sh(returnStatus: true, script: create_script)
+	    } else {
+		res =  sh(returnStatus: true, script: create_script)
+	    }
+	}
+    })
     return res
 }
-def cloud_deploy(Map p)
+def cloud_deploy(Map p, Map info, Integer timeout_minutes)
 {
-    return sh(returnStatus: true,
-       script:
-       """
+    def ret = 0
+    RWLock(info, 'ci-rpm-repos', 'READ', 'vapor_deploy', {
+	timeout(time: timeout_minutes, unit: 'MINUTES') {
+	    ret = sh(returnStatus: true,
+		     script:
+		     """
          ${p['echorun']} vapor ${p['vaporopts']} deploy ${p['clusteropts']} ${p['deploybaseopts']} ${p['deployopts']} ${p['extraopts']} ${p['provideropts']}
        """
-    )
+	    )
+	}
+    })
+    return ret
 }
-def cloud_test(Map p)
+def cloud_test(Map p) // Timeouts dealt with externally, no locks involved
 {
-    return sh(returnStatus: true,
-       script:
-       """
+    def ret = 0
+    ret = sh(returnStatus: true,
+	     script:
+	     """
          ${p['echorun']} vapor ${p['vaporopts']} test ${p['clusteropts']} ${p['testbaseopts']} --nodes ${p['nodes']} ${p['testopts']} --${p['testtype']} \"${p['tests']}\" ${p['extraopts']} ${p['provideropts']}
        """
     )
+    return ret
 }
-def cloud_reboot(Map p)
+def cloud_reboot(Map p, Integer timeout_minutes)
 {
-    return sh(returnStatus: true,
-       script:
-       """
+    def ret = 0
+    timeout(time: timeout_minutes, unit: 'MINUTES') {
+	ret = sh(returnStatus: true,
+		 script:
+		 """
          ${p['echorun']} vapor ${p['vaporopts']} reboot ${p['clusteropts']} ${p['extraopts']} ${p['provideropts']}
        """
-    )
+	)
+    }
 }
 
-def call(Map p, Map info)
+def call(Map p, Map info, Integer timeout_minutes)
 {
     if (!validate(p)) {
 	return 1
@@ -204,19 +221,19 @@ def call(Map p, Map info)
     switch (p['command']) {
 	case 'del':
 	case 'delete':
-	    ret = cloud_delete(p)
+	    ret = cloud_delete(p, timeout_minutes)
 	    break
 	case 'create':
-	    ret = cloud_create(p, info)
+	    ret = cloud_create(p, info, timeout_minutes)
 	    break
 	case 'deploy':
-	    ret = cloud_deploy(p)
+	    ret = cloud_deploy(p, info, timeout_minutes)
 	    break
 	case 'test':
 	    ret = cloud_test(p)
 	    break
 	case 'reboot':
-	    ret = cloud_reboot(p)
+	    ret = cloud_reboot(p, timeout_minutes)
 	    break
 	default:
 	    println("Unknown command ${p['command']}")

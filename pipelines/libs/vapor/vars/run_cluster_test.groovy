@@ -16,7 +16,7 @@ def run_test(Map info)
 			      'testtimeout': info['runtesttimeout'],
 			      'tests': info['runtest'],
 			      'debug': env.vapordebug]
-	    vapor_wrapper(vapor_args, info)
+	    vapor_wrapper(vapor_args, info, 0) // We set our own timeout routime here and there are no locks involved
 	} else {
 	    echo "INFO: ${info}"
 	    echo "SLEEP 5"

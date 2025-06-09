@@ -10,7 +10,7 @@ def run_cleanup(Map info)
 		      'debug': env.vapordebug,
 		      'tests': 'cleanup',
 		      'post': '']
-    vapor_wrapper(vapor_args, info)
+    vapor_wrapper(vapor_args, info, 20)
 }
 
 def run_reboot(Map info)
@@ -23,7 +23,7 @@ def run_reboot(Map info)
 		      'osver': info['osver'],
 		      'nodes': info['tonodes'],
 		      'debug': env.vapordebug]
-    vapor_wrapper(vapor_args, info)
+    vapor_wrapper(vapor_args, info, 20)
 }
 
 def hard_recover(Map info, Map runstate)
@@ -32,11 +32,9 @@ def hard_recover(Map info, Map runstate)
 	currentBuild.result = 'ABORTED'
 	throw (runstate['EXP'])
     }
-    timeout(time: 20, unit: 'MINUTES') {
-	run_reboot(info)
-	run_cleanup(info)
-	runstate['RET'] = 'OK'
-    }
+    run_reboot(info)
+    run_cleanup(info)
+    runstate['RET'] = 'OK'
 }
 
 def call(Map info)
@@ -48,7 +46,7 @@ def call(Map info)
 
     def runstate = [:]
 
-    runWithTimeout(30, { run_cleanup(info) }, runstate, { }, { hard_recover(info, runstate) })
+    runWithTimeout(45, { run_cleanup(info) }, runstate, { }, { hard_recover(info, runstate) })
 
     if (runstate['RET'] != 'OK') {
 	throw (runstate['EXP'])

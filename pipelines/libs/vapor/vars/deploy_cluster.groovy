@@ -5,7 +5,7 @@ def call(Map info)
 	return
     }
 
-    echo "Deploy test cluster"
+    println("Deploy test cluster")
 
     def vapor_args = ['command': 'deploy',
 		      'provider': info['provider'],

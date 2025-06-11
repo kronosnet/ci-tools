@@ -3,7 +3,7 @@ def run_test(Map info)
     sh "rm -f vapor.log"
     tee ("vapor.log") {
 	if (info['dryrun'] == '0') {
-	    echo "Running test"
+	    println('Running test')
 	    def vapor_args = ['command': 'test',
 			      'provider': info['provider'],
 			      'project': info['projectid'],
@@ -18,8 +18,8 @@ def run_test(Map info)
 			      'debug': env.vapordebug]
 	    vapor_wrapper(vapor_args, info, 0) // We set our own timeout routime here and there are no locks involved
 	} else {
-	    echo "INFO: ${info}"
-	    echo "SLEEP 5"
+	    println("INFO: ${info}")
+	    println('SLEEP 5')
 	    sleep(5)
 	    if (info['runtest'] == "fake_failure") {
 		catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {

@@ -1,0 +1,28 @@
+rm -rf $HOME/rpmbuild
+mkdir -p $HOME/rpmbuild/SPECS
+cat <<EOF > $HOME/rpmbuild/SPECS/upstream-ci-dummy.spec
+#----------- spec file starts ---------------
+Name:                   upstream-ci-dummy
+Version:                1.0
+Release:                1
+Vendor:                 dummy
+Group:                  dummy
+Summary:                Provides %{name}
+License:                %{vendor}
+# in Provides: you add whatever you want to fool the system
+Buildroot:              %{_tmppath}/%{name}-%{version}-root
+Provides:               python3-google-api-client
+%description
+%{summary}
+%files
+EOF
+
+rpmbuild -bs $HOME/rpmbuild/SPECS/upstream-ci-dummy.spec
+mv $HOME/rpmbuild/SRPMS/*.rpm $SRPMSDIR/
+rm -rf $HOME/rpmbuild
+
+# find . -name "*upstream-ci*"
+# ./extras/rhel-9-x86-64/upstream-ci-dummy-1.0-1.src.rpm
+# ./extras/rhel-9-x86-64/upstream-ci-dummy-1.0-1.x86_64.rpm
+# ./extras-upstream-ci-dummy-1.0-1.src.rpm-rhel-9-x86-64.repo
+# ./extras-upstream-ci-dummy-1.0-1.x86_64.rpm-rhel-9-x86-64.repo

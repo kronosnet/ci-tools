@@ -14,14 +14,22 @@ case $build in
  coverity)
   case "${project}" in
    pcs)
-    echo "cov-build --dir=./cov --no-command --fs-capture-search pcs --fs-capture-search pcs_test $MAKECOVOPTS"
-    cov-build --dir=./cov --no-command --fs-capture-search pcs --fs-capture-search pcs_test $MAKECOVOPTS
+    for i in pcs pcs_test; do
+      echo "cd $i && coverity capture --dir ../cov && cd .."
+      cd $i
+      coverity capture --dir ../cov
+      cd ..
+    done
    ;;
    fence-agents)
     echo "cov-build --dir=./cov $MAKE $MAKECOVOPTS"
     cov-build --dir=./cov $MAKE $MAKECOVOPTS
-    echo "cov-build --dir=./cov --no-command --fs-capture-search agents $MAKECOVOPTS"
-    cov-build --dir=./cov --no-command --fs-capture-search agents $MAKECOVOPTS
+    for i in agents; do
+      echo "cd $i && coverity capture --dir ../cov && cd .."
+      cd $i
+      coverity capture --dir ../cov
+      cd ..
+    done
    ;;
    *)
     echo "cov-build --dir=./cov $MAKE $PARALLELMAKE $MAKECOVOPTS"

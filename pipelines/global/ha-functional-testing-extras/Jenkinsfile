@@ -1,0 +1,86 @@
+// Jenkinsfile for updating ha-fn-testing dummy RPMs
+
+@Library(['GlobalLib@cc-devel', 'GithubLib@cc-devel', 'ProjectLib@cc-devel']) _
+
+// Who we are
+def project = 'ha-functional-testing-extras'
+def info = [:]
+
+// Pipeline code starts here
+pipeline {
+    // Start on the main Jenkins node. Build jobs are distributed inside 'parallel' below
+    agent { label 'built-in' }
+
+    // Things that external jobs might want to influence
+    parameters {
+	string(name: 'bootstrap',   defaultValue: '0', description: 'Bootstrap the RPM repos')
+	string(name: 'fullrebuild', defaultValue: '0', description: 'This is a full rebuild - do not publish RPM and do NOT update build code on the nodes')
+    }
+
+    stages {
+	// First check we are allowed to run, then set some params for that run
+	stage('Setup build env') {
+	    steps {
+		script {
+		    getBuildInfo(project, info)
+		}
+	    }
+	}
+
+        // This is the main stage - building and testing
+	stage('Main stage') {
+	    when {
+		// getAuthCheck (in getBuildInfo) will usually abort the job if permission is denied,
+		// but this is an extra check.
+		expression { info['authcheck'] == true && info['is_draft'] == false }
+	    }
+
+	    // All of the stages that actually do stuff
+	    steps {
+		script {
+		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+
+		    // Hard-coded list of nodes because it's just this one job...
+		    def allruns = buildRunMap('buildrpms', info, ['voting': true,
+								  'nodelist': [
+			    'rhel-8-x86-64',
+			    'rhel-8-power9-ppc64le',
+			    'rhel-8-s390x',
+			    'rhel-9-x86-64',
+			    'rhel-9-power9-ppc64le',
+			    'rhel-9-s390x',
+			    'rhel-10-x86-64',
+			    'rhel-10-power9-ppc64le',
+			    'rhel-10-s390x',
+			    'centos-10-x86-64',
+			    'centos-10-power9-ppc64le',
+			    'centos-10-s390x']])
+		    // Run them (errors are caught in info[:])
+		    try {
+			parallel allruns
+		    } catch (err) {
+			println("Jenkinsfile caught "+err)
+			info['exception_text'] += "\nparallel error caught: {$err}\n"
+		    }
+		}
+	    }
+	}
+
+        // Build the RPM/Coverity repos etc. If the job failed, this is what tells Jenkins
+	stage('Post Stage') {
+	    when {
+		expression { info['authcheck'] == true && info['is_draft'] == false }
+	    }
+	    steps {
+		postStage(info)
+	    }
+	}
+    }
+
+    // Finish up and send emails
+    post {
+	always {
+	    projectFinishUp(info)
+	}
+    }
+}

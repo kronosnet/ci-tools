@@ -36,8 +36,8 @@ case $build in
     cov-build --dir=./cov $MAKE $PARALLELMAKE $MAKECOVOPTS
    ;;
   esac
-  echo "cov-analyze --dir=./cov --wait-for-license $covoptions"
-  cov-analyze --dir=./cov --wait-for-license $covoptions
+  echo "cov-analyze --dir=./cov --wait-for-license $covopts"
+  cov-analyze --dir=./cov --wait-for-license $covopts
   echo "cov-format-errors --dir=./cov --json-output-v7 cov.json"
   cov-format-errors --dir=./cov --json-output-v7 cov.json
   echo "cov-format-errors --dir=./cov --emacs-style > cov.txt"

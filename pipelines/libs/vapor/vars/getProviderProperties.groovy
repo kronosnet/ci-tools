@@ -165,7 +165,7 @@ def call()
 				     'deployopts':  '',
 				     'testopts': '',
 				     'setup_fn': {}],
-			   'rhel9': ['createopts': '--image ibm-redhat-9-4-minimal-amd64-7',
+			   'rhel9': ['createopts': '--image ibm-redhat-9-6-minimal-amd64-1',
 				     'deployopts':  '',
 				     'testopts': '',
 				     'setup_fn': {}]]

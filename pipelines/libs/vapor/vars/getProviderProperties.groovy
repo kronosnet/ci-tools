@@ -155,7 +155,7 @@ def call()
 				      'setup_fn': {}]]
 
     providers['ibmvpc'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
-			   'has_watchdog': false, 'has_storage': false, 'has_network': false, 'weekly': true,
+			   'has_watchdog': false, 'has_storage': false, 'has_network': false, 'weekly': false,
 			   'api_rate_limit': true,
 			   'defaultiscsi': '200',
 			   'defaultuseiscsi': 'yes',

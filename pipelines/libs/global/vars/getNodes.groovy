@@ -25,7 +25,6 @@ def call()
     labels['debian-testing-x86-64'] = ['debian','testing','x86-64','voting','apt','nonvoting-clang']
     labels['debian-unstable-cross-x86-64'] = ['debian','unstable','cross','x86-64','apt']
     labels['debian-unstable-x86-64'] = ['debian','unstable','x86-64','nonvoting','apt','nonvoting-clang']
-    labels['fedora-40-x86-64'] = ['fedora-40','stable','x86-64','voting','rpm','yum','nonvoting-clang','buildrpms']
     labels['fedora-41-x86-64'] = ['fedora-41','stable','x86-64','voting','rpm','yum','nonvoting-clang','buildrpms']
     labels['fedora-42-power9-ppc64le'] = ['fedora-42','stable','power9-ppc64le','voting','rpm','yum','nonvoting-clang','buildrpms']
     labels['fedora-42-s390x'] = ['fedora-42','stable','x390x','voting','rpm','yum','nonvoting-clang','buildrpms']
@@ -59,7 +58,6 @@ def call()
     labels['ubuntu-20-04-lts-x86-64'] = ['ubuntu20.04','stable','x86-64','voting','apt','nonvoting-clang']
     labels['ubuntu-22-04-lts-x86-64'] = ['ubuntu22.04','stable','x86-64','voting','apt','nonvoting-clang']
     labels['ubuntu-24-04-lts-x86-64'] = ['ubuntu24.04','stable','x86-64','voting','apt','nonvoting-clang']
-    labels['ubuntu-24-10-x86-64'] = ['ubuntu24.10','stable','x86-64','voting','apt','nonvoting-clang']
     labels['ubuntu-25-04-x86-64'] = ['ubuntu25.04','stable','x86-64','voting','apt','nonvoting-clang']
     labels['ubuntu-devel-x86-64'] = ['ubuntu-devel','unstable','x86-64','nonvoting','apt','nonvoting-clang']
 

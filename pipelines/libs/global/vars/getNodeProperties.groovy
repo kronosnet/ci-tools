@@ -34,7 +34,6 @@ def call(String node)
     node_env['debian-testing-x86-64'] = []
     node_env['debian-unstable-cross-x86-64'] = ['EXTRA_ARCH=armhf']
     node_env['debian-unstable-x86-64'] = []
-    node_env['fedora-40-x86-64'] = ['RUSTBINDINGS=yes']
     node_env['fedora-41-x86-64'] = ['RUSTBINDINGS=yes']
     node_env['fedora-42-power9-ppc64le'] = ['RUSTBINDINGS=yes']
     node_env['fedora-42-s390x'] = ['RUSTBINDINGS=yes']
@@ -68,7 +67,6 @@ def call(String node)
     node_env['ubuntu-20-04-lts-x86-64'] = []
     node_env['ubuntu-22-04-lts-x86-64'] = []
     node_env['ubuntu-24-04-lts-x86-64'] = []
-    node_env['ubuntu-24-10-x86-64'] = []
     node_env['ubuntu-25-04-x86-64'] = []
     node_env['ubuntu-devel-x86-64'] = []
 

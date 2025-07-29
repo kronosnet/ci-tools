@@ -35,7 +35,7 @@ required_pkg curl
 required_pkg dbus
 required_pkg docbook-xsl
 required_pkg doxygen
-required_pkg e2fsprogs-libuuid
+required_pkg libuuid
 required_pkg flex
 required_pkg flock
 required_pkg gettext

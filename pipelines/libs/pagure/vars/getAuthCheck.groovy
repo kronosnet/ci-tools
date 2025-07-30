@@ -4,19 +4,19 @@ def call(Map params) {
     // upstream_repo is needed to determine the PR user
     // and for postPRcomment to generate the URL
     // to post comments
-    upstream_repo = params['upstream_repo']
-    isPullRequest = params['isPullRequest']
+    def upstream_repo = params['upstream_repo']
+    def isPullRequest = params['isPullRequest']
 
     sh 'env|sort'
 
     println("upstream_repo: ${upstream_repo}")
     println("isPullRequest: ${isPullRequest}")
 
-    bc = currentBuild.getBuildCauses()
+    def bc = currentBuild.getBuildCauses()
     println("Build Cause: ${bc}")
 
     // Triggered by admin on the website
-    userEvent = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')
+    def userEvent = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause')
     if (!userEvent.size().equals(0)) {
 	println("Build Triggered from Jenkins web UI")
 	return true
@@ -43,7 +43,7 @@ def call(Map params) {
     // pipeline. Even an admin asking to "Rerun CI" from the web UI
     // will need to OK/ABORT a build of a PR done by an external contributor.
 
-    prrepo = env.REPO
+    def prrepo = env.REPO
     println("PR repo: ${prrepo}")
 
     // if the PR is done from a user with read/write access to the repo
@@ -54,14 +54,14 @@ def call(Map params) {
     }
 
     // user that has issued a PR from an external fork
-    s = prrepo.split("/")
+    def s = prrepo.split("/")
     pruser = s[4]
 
     println("PR user: ${pruser}")
 
     // Caused by a PR. Check it's from a valid user
     // Get pagure collaborators list
-    valid_admins = getCollaborators(upstream_repo)
+    def valid_admins = getCollaborators(upstream_repo)
     // Any extras defined for the project
     valid_admins += getValidPRUsers()
     // Global admins
@@ -84,7 +84,7 @@ def call(Map params) {
 
     // Ask for approval
     echo "Approval needed from Jenkins administrator"
-    result = input(message: "Please verify this is safe to run", ok: "OK",
+    def result = input(message: "Please verify this is safe to run", ok: "OK",
 		   submitterParameter: 'submitter')
     println(result)
 

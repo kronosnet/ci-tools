@@ -1,7 +1,7 @@
 // Relies on project-specific function getTrackingBranches()
 def call(String branch)
 {
-    tracking_branches = getTrackingBranches()
+    def tracking_branches = getTrackingBranches()
     if (tracking_branches.contains(branch)) {
 	println("Tracking branch ${branch}")
 	return true

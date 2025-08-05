@@ -155,6 +155,8 @@ def call(Map p, Map info, Integer timeout_minutes)
 	p['echorun'] = 'echo'
     }
 
+    p['clustername'] = "${p['project']}${p['provider']}${p['osver']}${p['buildnum']}"
+
     p['createbaseopts'] = "--nodes ${p['nodes']}"
     p['deploybaseopts'] = ''
     if (p['iscsisize'] == '0' && p['defaultiscsi'] != '') {
@@ -201,7 +203,7 @@ def call(Map p, Map info, Integer timeout_minutes)
 	p['testbaseopts'] = "${p['testbaseopts']} --timeout ${p['testtimeout']}"
     }
 
-    p['vaporopts'] = '--nocolorlog --log-level '
+    p['vaporopts'] = "--nocolorlog --debug-log-file $HOME/.cache/vapor/vapor_${p['clustername']}.log --log-level "
     if (p['debug'] == 'yes') {
 	p['vaporopts'] = "${p['vaporopts']} debug"
     } else {
@@ -212,7 +214,7 @@ def call(Map p, Map info, Integer timeout_minutes)
     if (p['buildnum'] != '') {
 	p['buildnum'] = "j${p['buildnum']}"
     }
-    p['clusteropts'] = "--cluster ${p['project']}${p['provider']}${p['osver']}${p['buildnum']}"
+    p['clusteropts'] = "--cluster ${p['clustername']}"
 
     // Put all options together
     p['provideropts'] = "${p['provider']} ${p['authopts']}"

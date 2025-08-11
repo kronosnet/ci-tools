@@ -161,11 +161,11 @@ def call()
 			   'defaultuseiscsi': 'yes',
 			   'defaultblocksize': '10',
 			   'authopts': '--region us-east',
-			   'rhel8': ['createopts': '--image ibm-redhat-8-10-minimal-amd64-5',
+			   'rhel8': ['createopts': '--image ibm-redhat-8-10-minimal-amd64-6',
 				     'deployopts':  '',
 				     'testopts': '',
 				     'setup_fn': {}],
-			   'rhel9': ['createopts': '--image ibm-redhat-9-6-minimal-amd64-1',
+			   'rhel9': ['createopts': '--image ibm-redhat-9-6-minimal-amd64-2',
 				     'deployopts':  '',
 				     'testopts': '',
 				     'setup_fn': {}]]

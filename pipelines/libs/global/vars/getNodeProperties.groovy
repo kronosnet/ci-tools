@@ -30,6 +30,7 @@ def call(String node)
     node_env['centos-10-x86-64'] = []
     node_env['debian-12-ci-test-x86-64'] = ['CCTEST=justtesting']
     node_env['debian-12-x86-64'] = []
+    node_env['debian-13-x86-64'] = []
     node_env['debian-experimental-x86-64'] = []
     node_env['debian-testing-x86-64'] = []
     node_env['debian-unstable-cross-x86-64'] = ['EXTRA_ARCH=armhf']

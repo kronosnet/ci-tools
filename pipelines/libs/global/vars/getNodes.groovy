@@ -21,6 +21,7 @@ def call()
     labels['centos-10-x86-64'] = ['centos-10','unstable','x86-64','nonvoting','rpm','yum','nonvoting-clang','buildrpms']
     labels['debian-12-ci-test-x86-64'] = ['debian-12','x86-64','apt','stable','ci-test','test-nonvoting']
     labels['debian-12-x86-64'] = ['debian-12','x86-64','voting','apt','stable','nonvoting-clang']
+    labels['debian-13-x86-64'] = ['debian-13','x86-64','voting','apt','stable','nonvoting-clang']
     labels['debian-experimental-x86-64'] = ['debian','experimental','x86-64','nonvoting','apt','nonvoting-clang']
     labels['debian-testing-x86-64'] = ['debian','testing','x86-64','voting','apt','nonvoting-clang']
     labels['debian-unstable-cross-x86-64'] = ['debian','unstable','cross','x86-64','apt']

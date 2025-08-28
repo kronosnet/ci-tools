@@ -180,6 +180,11 @@ def doRunStage(String agentName, Map info, Map localinfo)
 		    // Rename the log so we know it all went badly
 		    sh "mv TMP_${stagestate['logfile']} FAILED_${stagestate['logfile']}"
 		    archiveArtifacts artifacts: "FAILED_${stagestate['logfile']}", fingerprint: false
+		    // Save it for the email
+		    if (!info.containsKey('failedlogs')) {
+			info['failedlogs'] = []
+		    }
+		    info['failedlogs'] += "FAILED_${stagestate['logfile']}"
 		} else {
 		    // Rename the log so we know it all went fine
 		    sh "mv TMP_${stagestate['logfile']} SUCCESS_${stagestate['logfile']}"

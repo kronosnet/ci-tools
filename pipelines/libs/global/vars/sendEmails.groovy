@@ -145,7 +145,7 @@ def call(Map info)
 	split_logs = "\nSplit logs: ${env.BUILD_URL}artifact/"
     }
 
-    // Not every finds the consoleText useful
+    // Not everyone finds the consoleText useful
     def console_log = "${env.BUILD_URL}consoleText"
     if (info.containsKey('emailOptions') && info['emailOptions'].contains('showConsole')) {
 	console_log = "${env.BUILD_URL}pipeline-console"
@@ -167,10 +167,19 @@ def call(Map info)
 	    repo_urls += "${r}\n"
 	}
     }
+    // Show failed logs but only if there are a few, so it's not overwhelming
+    def failedlogs = ''
+    if (info.containsKey('failedlogs') && info['failedlogs'].size() < 10) {
+	failedlogs = '\nFailed logs:\n'
+	for (def fl in info['failedlogs']) {
+	    failedlogs += "${env.BUILD_URL}artifact/${fl}\n"
+	}
+    }
     def email_trailer = """${runreason}
 Total runtime: ${jobDuration}
 ${split_logs}
 Full log:   ${console_log}
+${failedlogs}
 ${repo_urls}${cov_urls}
 ${info['email_extra_text']}
 ${info['exception_text']}

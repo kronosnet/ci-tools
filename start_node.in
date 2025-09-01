@@ -6,7 +6,7 @@ rm -rf @HOME@/.jenkins
 	find @HOME@/.cache/vapor/ -mtime +30 -exec rm -rf {} \;
 @BASHDIRCHECK@fi
 @TCSHDIRCHECK@endif
-wget -O @START_NODE_DIR@/agent.jar https://ci.kronosnet.org/jnlpJars/agent.jar
+wget -O @START_NODE_DIR@/agent.jar https://ci.kronosnet.org/jnlpJars/agent.jar || curl https://ci.kronosnet.org/jnlpJars/agent.jar -o @START_NODE_DIR@/agent.jar
 @SSET@cijava=`find @JVMPATH@ -mindepth 1 -maxdepth 1 -type d -name "*openjdk*" | sort -V | tail -n 1`/bin/java
 echo "$cijava detected"
 exec $cijava -jar @START_NODE_DIR@/agent.jar

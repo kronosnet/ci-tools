@@ -41,18 +41,22 @@ def call(String project, Map info)
 	info['covinstall'] = 0
 	info['publishrpm'] = buildPRRPMs(['isPullRequest': isPullRequest, 'branch': info['target']])
 
+	// Draft PRs can be forced to run with a Githhub comment
+	def runreason = ''
+	if (currentBuild.getBuildCauses().shortDescription.size() > 0) {
+	    runreason = currentBuild.getBuildCauses().shortDescription[0]
+	}
+
 	// Check for PRs marked 'draft' - this is Github-specific
 	is_draft = pullRequest.isDraft()
-	if ((is_draft) && (env.ISDRAFTOVERRIDE == null)) {
+	if ((is_draft) && (env.ISDRAFTOVERRIDE == null) &&
+	    !runreason.contains("retest this please")) {
 	    // Default for most HA jobs - abort
 	    currentBuild.result = 'ABORTED'
 	    error('PR is marked as draft - pipeline will not run')
+	} else {
+	    is_draft = false
 	}
-        // For special jobs (manual override)
-	// if (info['is_draft']) {
-	//     set_some_variables_for_build_or_something
-	//     is_draft = false
-	// }
     } else {
 	info['target'] = env.BRANCH_NAME
 	info['pull_id'] = 1

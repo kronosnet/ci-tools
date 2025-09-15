@@ -1,0 +1,178 @@
+#!/usr/bin/env python3
+#
+# Mac OS (and Solaris) friendly flock wrapper
+# from https://snippets.bentasker.co.uk/posts/python3/flock-cli.html
+#
+# Author: B Tasker
+#
+'''
+Usage:
+
+    ./flock.py [-on] lockfile [-c] command
+    ./flock.py [-un] lockfile
+
+Note: does not support the following
+
+    -s
+    -w [timeout]
+
+By default, if an unsupported argument is passed
+the script will exit with an error (to prevent unexpected
+behaviour).
+
+However, to simply ignore these arguments, export an
+environment variable:
+
+    FLOCK_IGNORE_UNSUPPORTED=1
+'''
+import fcntl
+import os
+import sys
+
+class FLock:
+    ''' Calls the OS's flock interface
+    '''
+
+    def __init__(self):
+        self.lock_f = False
+        self.downstream_command = False
+        self.args = False
+        self.lockfile = "lock"
+        self.ignore_unsupported = os.getenv("FLOCK_IGNORE_UNSUPPORTED", False)
+        self.unsupported = [
+            "-s",
+            "--shared",
+            "-w",
+            "--wait",
+            "--timeout"
+            ]
+
+    def acquire_lock(self):
+        ''' Acquire the lock
+        '''
+        if not self.lock_f:
+            self.open_lock_file()
+
+        op = fcntl.LOCK_EX
+
+        if "-n" in self.args or "--nb" in self.args:
+            op |= fcntl.LOCK_NB
+
+        r = fcntl.flock(self.lock_f, op)
+
+    def check_command(self):
+        ''' Iterate through the commandline and throw an error
+        if unsupported args are provided (and not suppressed)
+        '''
+
+        if self.ignore_unsupported:
+            return
+
+        for arg in self.args:
+            if arg in self.unsupported:
+                print(f"Err: arg {arg} not supported")
+                sys.exit(1)
+
+    def exec(self, cmd = False):
+        ''' Acquire a lock, execute the command
+        then release the lock
+
+        If cmd is not provided, the calculated command
+        in self.downstream_command will be used
+
+        '''
+        self.check_command()
+
+        if not cmd:
+            cmd = ' '.join(self.downstream_command)
+
+        if "-u" in self.args:
+            # User called the unlock command
+            self.open_lock_file()
+            self.release()
+            return
+
+        self.acquire_lock()
+
+        if "-o" in self.args or "--close" in self.args:
+            self.lock_f.close()
+
+        os.system(cmd)
+        self.release()
+
+    def open_lock_file(self):
+        ''' Open a handle on the lockfile
+        '''
+        self.lock_f = open(self.lockfile, "w")
+
+    def process_command_line(self, cmdline):
+        ''' Iterate through command line arguments in order to
+        identify what args (and value) have been provided to "flock"
+        and what's to be passed into the command we execute
+        '''
+
+        # Process command line flags
+        flock_flags = ["-s", "-x", "-e", "--exclusive", "-o", "-n", "-c", "--nb", "--close"]
+        flock_flag_w_arg = ["-w"]
+
+        accept_next = False
+        flock_end = False
+        last_arg = False
+        lockfile = False
+
+        built_command = []
+        flock_args = {}
+
+        for i in cmdline:
+            if i == cmdline[0]:
+                continue
+
+            if i in flock_flags:
+                flock_args[i] = False
+                continue
+
+            if i in flock_flag_w_arg:
+                flock_args[i] = False
+                accept_next = True
+                last_arg = i
+                continue
+
+            if accept_next:
+                flock_args[last_arg] = i
+                accept_next = False
+                continue
+
+            if not lockfile:
+                # We've reached the lockfile definition
+                lockfile = i
+                continue
+
+            if len(built_command) == 0 and i.startswith("-"):
+                # User forgot to provide the lockfile name and
+                # just provided the command.
+                #
+                # Lets not overwrite their command...
+                built_command.append(lockfile)
+                lockfile = "lock"
+
+            # We're now onto the command and its arguments
+            built_command.append(i)
+
+        self.args = flock_args
+        self.downstream_command = built_command
+        if lockfile:
+            self.lockfile = lockfile
+
+    def release(self):
+        ''' Release the lock
+
+        '''
+        if not self.lock_f:
+            self.open_lock_file()
+
+        fcntl.flock(self.lock_f, fcntl.LOCK_UN)
+
+if __name__ == "__main__":
+    flock = FLock()
+    flock.process_command_line(sys.argv)
+    flock.exec()

@@ -1,0 +1,28 @@
+#!/bin/citbash
+
+# ENTRY POINT (old / done)
+
+set -e
+
+source $CITHOME/ci-update-libs
+$CITHOME/ci-update-common
+
+required_pkg autoconf
+required_pkg automake
+required_pkg check
+required_pkg developer/clang-20
+required_pkg doxygen
+required_pkg gcc-14
+required_pkg gnu-binutils
+required_pkg gnu-coreutils
+required_pkg gnu-make
+required_pkg header-tun
+required_pkg libtool
+required_pkg system/mozilla-nss
+required_pkg tun
+
+pkg update || true
+pkg install $REQUIRED_PKGS || true
+for PKG in $OPTIONAL_PKGS; do pkg install $PKG || true; done
+getent group haclient >/dev/null || groupadd haclient
+getent passwd hacluster >/dev/null || useradd -g haclient -s /bin/false -c "cluster user" hacluster

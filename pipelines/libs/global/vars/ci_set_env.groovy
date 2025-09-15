@@ -127,7 +127,7 @@ def call(Map localinfo, String agentName)
     def path = sh(script: "#!/bin/sh -e\necho \$PATH", returnStdout: true, label: 'Collect node PATH').trim()
     cienv['PATH'] = "/opt/coverity/bin:${path}"
     if (agentName.startsWith('openindiana')) {
-	cienv['PATH'] = "/opt/gnu/bin:${path}:~/ci-tools"
+	cienv['PATH'] = "/usr/gnu/bin:${path}"
     }
 
     def numcpu = sh(script: "#!/bin/sh -e\nnproc", returnStdout: true, label: 'Collect node nproc').trim()

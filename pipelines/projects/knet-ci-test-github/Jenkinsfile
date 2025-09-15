@@ -9,12 +9,6 @@
 def project = 'ci-test'
 def info = [:]
 
-def withinlock()
-{
-    sh "date; sleep 60; date"
-    println("Called with locking test on ${env.NODE_NAME}");
-}
-
 // Pipeline code starts here
 pipeline {
     // Start on the main Jenkins node. Build jobs are distributed inside 'parallel' below
@@ -49,8 +43,6 @@ pipeline {
 		script {
 
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
-
-		    RWLock(info, 'testlock', 'WRITE', 'jenkinsfile', { withinlock() } )
 
 		    // The 'short' test list
 		    def voting = buildRunMap('voting', info, ['voting': true,

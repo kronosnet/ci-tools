@@ -19,6 +19,13 @@ case $(uname -s) in
     BASHDIRCHECK="@BASHDIRCHECK@.*"
     TCSHDIRCHECK="@TCSHDIRCHECK@"
   ;;
+  *SunOS)
+    SHELL="/usr/bin/bash -e"
+    JVMPATH="/usr/jdk/instances"
+    SSET=""
+    BASHDIRCHECK="@BASHDIRCHECK@"
+    TCSHDIRCHECK="@TCSHDIRCHECK@.*"
+  ;;
 esac
 
 mkdir -p $START_NODE_DIR

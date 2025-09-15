@@ -45,6 +45,7 @@ def call(String node)
     node_env['freebsd-13-x86-64'] = ['RUSTBINDINGS=yes', 'MAKE=gmake', 'PYTHON=/usr/local/bin/python3.11']
     node_env['freebsd-14-x86-64'] = ['RUSTBINDINGS=yes', 'MAKE=gmake', 'PYTHON=/usr/local/bin/python3.11']
     node_env['freebsd-devel-x86-64'] = ['RUSTBINDINGS=yes', 'MAKE=gmake', 'PYTHON=/usr/local/bin/python3.11']
+    node_env['openindiana-x86-64'] = []
     node_env['rhel-8-power9-ppc64le'] = []
     node_env['rhel-8-s390x'] = []
     node_env['rhel-8-x86-64'] = []

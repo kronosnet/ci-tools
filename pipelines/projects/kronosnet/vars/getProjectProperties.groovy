@@ -17,6 +17,10 @@ def call(Map localinfo, String agentName)
 	    props['DISTROCONFOPTS'] = ' --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf'
 	}
     }
+    if (agentName.startsWith("openindiana")) {
+	props['DISTROCONFOPTS'] = ' --disable-crypto-nss'
+	props['DISTCHECK_CONFIGURE_FLAGS'] = ' --disable-crypto-nss'
+    }
 
     // Which job types to run debug options in
     props['DEBUGJOBS'] = ['voting', 'nonvoting', 'nonvoting-clang']

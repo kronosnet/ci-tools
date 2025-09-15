@@ -1,6 +1,30 @@
 
 import jenkins.model.*
 
+
+// Given a full list of nodes, remove all of those NOT in the list for this project
+def nodeRestrictions(ArrayList nodeList, String project)
+{
+    // List of nodes that have project restrictions
+    // If a node is in this list then it should only be used for
+    // the listed projects
+    def restrict = [:]
+    restrict['openindiana-x86-64'] = ['libqb', 'corosync', 'kronosnet', 'ci-test']
+
+    def removelist = []
+    for (def n in nodeList) {
+	if (restrict.containsKey(n)) {
+	    if (!restrict[n].contains(project)) {
+		removelist += n
+	    }
+	}
+    }
+    println("nodeRestrictions: removelist=" + removelist)
+    return removelist
+}
+
+
+
 // If bootstrap == 1 then there are things we don't need to do
 def optimiseOut(Map info, Map extras, String stageName)
 {
@@ -62,10 +86,12 @@ def buildTheRunMap(List nodeList, String label, Map info, Boolean voting, Map ex
     for (def i=0; i<nodeList.size(); i++) {
         def agentName = nodeList[i]
 
+	def restrictions = nodeRestrictions(nodeList, info['project'])
+
         // Skip any null entries and exclusions
         if (agentName != null && !agentName.matches(exclude_regexp) &&
-	    !downnodes.contains(agentName)) {
-            collectBuildEnv[label + '_' + agentName] = {
+	    !downnodes.contains(agentName) && !restrictions.contains(agentName)) {
+	    collectBuildEnv[label + '_' + agentName] = {
 		// This works because runStage is also in the global library
                 runStage(info, agentName, label, voting, extravars)
             }

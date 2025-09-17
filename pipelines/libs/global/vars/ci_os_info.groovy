@@ -5,7 +5,11 @@ def call(Map localinfo)
 	echo ===== PACKAGE LIST =====
 	# BSD
 	if which pkg > /dev/null 2>&1; then
-	    pkg info
+            if [ "$(uname -s)" = "SunOS" ]; then
+            pkg info|awk -e 'BEGIN {FS=":"} /Name:/ {name=$2} /Version:/ {version=$2} /Summary:/ {summary=$2} /FMRI:/ {printf "%-40s %-10s %s\\n", name, version, summary}'
+            else
+	       pkg info
+            fi
 	fi
 	# DEB
 	if which dpkg > /dev/null 2>&1; then

@@ -2,7 +2,7 @@
 
 rm -rf @HOME@/.jenkins
 @BASHDIRCHECK@if [ -d /usr/gnu/bin ]; then
-	export PATH="/usr/gnu/bin:$PATH"
+@BASHDIRCHECK@	export PATH="/usr/gnu/bin:$PATH"
 @BASHDIRCHECK@fi
 @BASHDIRCHECK@if [ -d @HOME@/.cache/vapor/ ]; then
 @TCSHDIRCHECK@if ( -d @HOME@/.cache/vapor/ ) then

@@ -11,7 +11,6 @@ def call()
     labels['anvil-ci-bm-phy05'] = ['almalinux-9','stable','x86-64','rpm','yum','anvil-bm']
     labels['anvil-ci-bm-phy06'] = ['almalinux-9','stable','x86-64','rpm','yum','anvil-bm']
     labels['anvil-ci-bm-phy07'] = ['almalinux-9','stable','x86-64','rpm','yum','anvil-bm']
-    labels['anvil-ci-bm-phy99'] = ['almalinux-9','stable','x86-64','rpm','yum']
     labels['anvil-ci-rhel-9'] = ['rhel-9','stable','x86-64','rpm','yum','anvil','anvilvoting','anvilbuildrpms']
     labels['centos-9-power9-ppc64le'] = ['centos-9','stable','power9-ppc64le','voting','rpm','yum','nonvoting-clang','buildrpms']
     labels['centos-9-s390x'] = ['centos-9','stable','s390x','voting','rpm','yum','nonvoting-clang','buildrpms']

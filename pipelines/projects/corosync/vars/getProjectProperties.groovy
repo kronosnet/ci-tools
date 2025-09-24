@@ -18,6 +18,9 @@ def call(Map localinfo, String agentName)
     if (agentName.startsWith('freebsd')) {
 	props['DISTROCONFOPTS'] += ' --disable-systemd'
     }
+    if (agentName.startsWith('openindiana')) {
+	props['DISTROCONFOPTS'] += ' --disable-systemd --disable-dbus'
+    }
 
     return props
 }

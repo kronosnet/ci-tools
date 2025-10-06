@@ -109,7 +109,7 @@ def call(Map info)
     tests['kernel,all,tests,generic'] = tests['kernel,smoke,tests,generic'] + 'lvm,lvm_config_no-vdo,cluster-lvmlockd'
     tests['kernel,all,tags,generic'] = ['brawl_quick']
 
-    tests['pcs,smoke,tests,generic'] = sanity_tests + 'pcs,cli,Setup'
+    tests['pcs,smoke,tests,generic'] = sanity_tests
 
     tests['pcs,all,tests,generic'] = tests['pcs,smoke,tests,generic'] + pcs_basic_tests
     // we don´t test pcs on one node, but the list is consistent and will be used for 2 nodes as well

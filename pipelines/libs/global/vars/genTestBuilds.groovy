@@ -258,10 +258,18 @@ def runTestList(Map provider_jobs, Map info, ArrayList joblist, Map failflags, S
 	    info['stages_run']++
 	    stage("${provider} ${stagename} ${runningjob['testlevel']}") {
 
-		def (state, url) = run_job(provider, runningjob, dryrun, info)
+		def (state, url, detail) = run_job(provider, runningjob, dryrun, info)
 		if (state != 'SUCCESS') {
 		    info['stages_fail']++
 		    info['stages_fail_nodes'] += "\n- ${provider} ${stagename} ${runningjob['testlevel']}: ${url}"
+
+		    // Format the failure detail
+		    if (detail != null && detail.length() > 0) {
+			for (d in detail.split('\n')) {
+			    info['stages_fail_nodes'] += "\n  ${d}"
+			}
+		    }
+		    info['stages_fail_nodes'] += '\n'
 
 		    // Mark stage as failed in Jenkins
 		    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
@@ -294,6 +302,7 @@ def run_job(String provider, Map job, String dryrun, Map info)
     // Run it.
     def status = 'FAIL'
     def joburl = 'Aborted'
+    def detail = ''
     try {
 	def name = mkstagename(job)
 	echo "Running job for ${name} on ${provider}, testlist = ${testlist}"
@@ -315,9 +324,10 @@ def run_job(String provider, Map job, String dryrun, Map info)
 	    thisjob.buildVariables['STAGES_FAIL'] == '0') {
 	    status = 'SUCCESS'
 	}
+	detail = thisjob.buildVariables['FAIL_INFO']
 	joburl = thisjob.absoluteUrl
     } catch (err) {
 	println("Caught sub-job failure ${err} in ${job['osver']} ${job['zstream']} ${job['upstream']}")
     }
-    return new Tuple2(status, joburl)
+    return new Tuple(status, joburl, detail)
 }

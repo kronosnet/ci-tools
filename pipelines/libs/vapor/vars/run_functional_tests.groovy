@@ -38,4 +38,6 @@ def call(Map info)
     }
     // This tells parent jobs what happened - as a string because it's in env
     env.STAGES_FAIL = "${info['stages_fail']}"
+    // This is the detail
+    env.FAIL_INFO = "${info['stages_fail_nodes']}"
 }

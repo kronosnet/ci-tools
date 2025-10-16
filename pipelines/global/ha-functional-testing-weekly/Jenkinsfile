@@ -1,6 +1,6 @@
 // Jenkinsfile for ha-functional-testing-weekly CI project
 
-@Library(['GlobalLib', 'VaporLib', 'ProjectLib']) _
+@Library(['GlobalLib@cc-devel', 'VaporLib@cc-devel', 'ProjectLib@cc-devel']) _
 
 // Globals
 def project = 'ha-functional-testing-weekly'

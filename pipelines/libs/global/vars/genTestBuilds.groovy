@@ -316,6 +316,7 @@ def run_job(String provider, Map job, String dryrun, Map info)
 				  string(name: 'zstream', value: "${job['zstream']}"),
 				  string(name: 'upstream', value: "${job['upstream']}"),
 				  string(name: 'testlist', value: "${testlist}"),
+				  string(name: 'tonodes', value: "2"),
 				  string(name: 'tests', value: "${job['testlevel']}")],
 				 info)
 

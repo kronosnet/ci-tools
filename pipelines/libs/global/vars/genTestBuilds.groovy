@@ -33,7 +33,7 @@ def sort_jobs(ArrayList alljobs)
 // Build a string containing the name of the current pipeline stage
 def mkstagename(Map job)
 {
-    return "${job['osver']} zstream:${job['zstream']} ${job['upstream']}"
+    return "${job['osver']} zstream:${job['zstream']} upstream:${job['upstream']}"
 }
 
 // MAIN entry point for this call.
@@ -261,12 +261,14 @@ def runTestList(Map provider_jobs, Map info, ArrayList joblist, Map failflags, S
 		def (state, url, detail) = run_job(provider, runningjob, dryrun, info)
 		if (state != 'SUCCESS') {
 		    info['stages_fail']++
-		    info['stages_fail_nodes'] += "\n- ${provider} ${stagename} ${runningjob['testlevel']}: ${url}"
+		    info['stages_fail_nodes'] += "\n- ${provider} ${stagename} tests:${runningjob['testlevel']}: ${url}"
 
 		    // Format the failure detail
 		    if (detail != null && detail.length() > 0) {
 			for (d in detail.split('\n')) {
-			    info['stages_fail_nodes'] += "\n  ${d}"
+			    if (d.length() > 0) {
+				info['stages_fail_nodes'] += "\n  ${d}"
+			    }
 			}
 		    }
 		    info['stages_fail_nodes'] += '\n'

@@ -6,6 +6,7 @@ def call(Map info)
     } catch (err) {
 	println("delete_cluster in post failed, you might want to check the workspace")
 	info['email_extra_text'] = 'delete_cluster() in post function failed, you might want to check the workspace'
+	info['runtest'] = 'Final delete_cluster'
     }
 
     cleanWs(disableDeferredWipeout: true, deleteDirs: true)

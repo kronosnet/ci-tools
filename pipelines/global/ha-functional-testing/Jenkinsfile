@@ -53,6 +53,14 @@ pipeline {
     }
 
     post {
+	failure {
+	    // In the event of a bad fail, try to tell the parent job how far we got
+	    script {
+		if (env.FAIL_INFO == null || env.FAIL_INFO == '') {
+		    env.FAIL_INFO = "failed in ${info['runtest']}"
+		}
+	    }
+	}
 	always {
 	    post_functional_tests(info)
 	}

@@ -46,7 +46,7 @@ def call(Map params) {
     valid_admins += getValidPRUsers()
     // Global admins
     valid_admins += getGlobalAdminUsers()
-    println("valid admins: ${valid_admins}")
+    println("valid admins: ${valid_admins.unique()}")
 
     if (valid_admins.contains(env.CHANGE_AUTHOR)) {
 	println("Build Triggered by PR authorized user")
@@ -57,22 +57,31 @@ def call(Map params) {
     // PR from an unknown user - get approval to run this
     // If this is aborted by admin, then it can be re-run
     // using jenkins comments as before.
+    // Timeouts are day-of-week specific, weekend jobs will get 72 hrs,
+    // weekdays just 24hours, otherwise the queue gets too big.
     //
+    // Groovy days start on Sunday (1) and end on Saturday(7)
+    //
+    def day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
+    def long timeoutInMinutes = 1440 // 24 hours
+    if (day in [1,6,7]) { // Friday is honorarily the 'weekend'
+	timeoutInMinutes = 4320 // 72 hours
+    }
 
     // Put a message in github/pagure that links to this job run
-    postPRcomment("Can one of the admins check and authorise this run please: ${env.BUILD_URL}input")
+    postPRcomment("Can one of the project admins check and authorise this run please: ${env.BUILD_URL}input")
 
     // Ask for approval
-    echo "Approval needed from Jenkins administrator"
-    long timeoutInMinutes = 10080 // a week
-    long startTime = System.currentTimeMillis()
+    echo "Approval needed from project administrator, waiting for ${timeoutInMinutes / 60} hours before aborting"
+
+    def long startTime = System.currentTimeMillis()
     try {
 	timeout(time: timeoutInMinutes, unit: 'MINUTES') {
 	    result = input(message: "Please verify this is safe to run", ok: "OK",
 			   submitterParameter: 'submitter')
 	}
     } catch (err) {
-	long timePassed = System.currentTimeMillis() - startTime
+	def long timePassed = System.currentTimeMillis() - startTime
 	if (timePassed >= timeoutInMinutes * 60000) {
             echo 'Wait for admin response timed out'
 

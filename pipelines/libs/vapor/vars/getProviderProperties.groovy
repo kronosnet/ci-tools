@@ -94,7 +94,7 @@ def call()
 				   'testopts': '',
 				   'setup_fn': {}]]
 
-    providers['gcp'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
+    providers['gcp'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9', 'rhel10'],
 			'has_watchdog': false, 'has_storage': true, 'has_network': true, 'weekly': true,
 			'api_rate_limit': true,
 			'defaultiscsi': '200',
@@ -106,6 +106,10 @@ def call()
 				  'testopts': '',
 				  'setup_fn': {}],
 			'rhel9': ['createopts': '--image $(gcloud compute images list --filter=rhel-9-v | grep "^rhel-9-v" | awk \'{print $1}\' | sort -V | tail -n 1)',
+				  'deployopts':  '',
+				  'testopts': '',
+				  'setup_fn': {}],
+			'rhel10': ['createopts': '--image $(gcloud compute images list --filter=rhel-10-v | grep "^rhel-10-v" | awk \'{print $1}\' | sort -V | tail -n 1)',
 				  'deployopts':  '',
 				  'testopts': '',
 				  'setup_fn': {}]]

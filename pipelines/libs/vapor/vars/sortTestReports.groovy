@@ -20,7 +20,7 @@ def call(String results)
 
     // Sort it (This is the bit that requires nonCPS)
     def sorted = splitup.sort()
-    def sresult = ''
+    def sresult = '\n'
     for (def i in sorted) {
 	sresult += i.key + '\n'
 	sresult += i.value + '\n'

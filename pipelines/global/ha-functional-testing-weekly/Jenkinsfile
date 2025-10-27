@@ -45,6 +45,8 @@ pipeline {
 			    }
 			}
 		    }
+		    // Sort the failure reports
+		    info['stages_fail_nodes'] = sortTestReports(info['stages_fail_nodes'])
 		}
 	    }
 	}

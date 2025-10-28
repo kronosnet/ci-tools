@@ -23,6 +23,11 @@ fi
 
 rpmdir=/var/www/ci.kronosnet.org/builds
 
+retainbuilds=5
+if [ "$project" = "kernel" ]; then
+	retainbuilds=1
+fi
+
 clean_dirs() {
 	echo "Purging 0 byte files"
 	find $rpmdir/ -type f -size 0 -print -delete
@@ -71,11 +76,11 @@ process_publish() {
 		rm -f latest
 		ln -sf $lastbuild latest
 
-		# remove old builds (keep last 5)
+		# remove old builds
 		builds="$(ls -1 | grep -v latest | sort -n)"
 		numbuilds="$(echo "$builds" | wc -l)"
-		if [ "$numbuilds" -gt 5 ]; then
-			purgenum=$((numbuilds - 5))
+		if [ "$numbuilds" -gt "$retainbuilds" ]; then
+			purgenum=$((numbuilds - retainbuilds))
 			candidates="$(echo "$builds" | head -n $purgenum)"
 			for x in $candidates; do
 				echo "Removing old build: $x"

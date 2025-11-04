@@ -52,7 +52,7 @@ if [ -f ./configure ]; then
     rhel-9*)
      localbuild=--enable-local-build
      if [ "$pcspipinstall" = "yes" ]; then
-       python3 -m pip install flit-core pyparsing setuptools-scm six
+       python3 -m pip install 'flit-core >= 3.11' pyparsing setuptools-scm six
        localbuild="$localbuild --with-python-version=3.12 --enable-ci-rpm-workarounds"
      fi
      ;;

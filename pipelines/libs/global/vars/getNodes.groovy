@@ -29,6 +29,7 @@ def call()
     labels['fedora-42-power9-ppc64le'] = ['fedora-42','stable','power9-ppc64le','voting','rpm','yum','nonvoting-clang','buildrpms']
     labels['fedora-42-s390x'] = ['fedora-42','stable','x390x','voting','rpm','yum','nonvoting-clang','buildrpms']
     labels['fedora-42-x86-64'] = ['fedora-42','stable','x86-64','voting','rpm','yum','nonvoting-clang','buildrpms']
+    labels['fedora-43-x86-64'] = ['fedora-43','stable','x86-64','voting','rpm','yum','nonvoting-clang','buildrpms']
     labels['fedora-rawhide-power9-ppc64le'] = ['fedora-rawhide','unstable','power9-ppc64le','nonvoting','rpm','yum','nonvoting-clang','buildrpms']
     labels['fedora-rawhide-s390x'] = ['fedora-rawhide','unstable','s390x','nonvoting','rpm','yum','nonvoting-clang','buildrpms']
     labels['fedora-rawhide-x86-64'] = ['fedora-rawhide','unstable','x86-64','nonvoting','rpm','yum','nonvoting-clang','buildrpms']

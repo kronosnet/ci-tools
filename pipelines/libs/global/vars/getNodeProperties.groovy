@@ -38,6 +38,7 @@ def call(String node)
     node_env['fedora-42-power9-ppc64le'] = ['RUSTBINDINGS=yes']
     node_env['fedora-42-s390x'] = ['RUSTBINDINGS=yes']
     node_env['fedora-42-x86-64'] = ['RUSTBINDINGS=yes']
+    node_env['fedora-43-x86-64'] = ['RUSTBINDINGS=yes']
     node_env['fedora-rawhide-power9-ppc64le'] = ['RUSTBINDINGS=yes']
     node_env['fedora-rawhide-s390x'] = ['RUSTBINDINGS=yes']
     node_env['fedora-rawhide-x86-64'] = ['RUSTBINDINGS=yes']

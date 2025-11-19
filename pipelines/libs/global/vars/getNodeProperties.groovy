@@ -69,6 +69,7 @@ def call(String node)
     node_env['ubuntu-22-04-lts-x86-64'] = []
     node_env['ubuntu-24-04-lts-x86-64'] = []
     node_env['ubuntu-25-04-x86-64'] = []
+    node_env['ubuntu-25-10-x86-64'] = []
     node_env['ubuntu-devel-x86-64'] = []
 
     if (node_env.containsKey(node)) {

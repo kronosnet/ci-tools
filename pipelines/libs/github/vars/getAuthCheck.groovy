@@ -75,6 +75,7 @@ def call(Map params) {
     echo "Approval needed from project administrator, waiting for ${timeoutInMinutes / 60} hours before aborting"
 
     def long startTime = System.currentTimeMillis()
+    def result = ''
     try {
 	timeout(time: timeoutInMinutes, unit: 'MINUTES') {
 	    result = input(message: "Please verify this is safe to run", ok: "OK",
@@ -85,14 +86,14 @@ def call(Map params) {
 	if (timePassed >= timeoutInMinutes * 60000) {
             echo 'Wait for admin response timed out'
 
-	    email_addrs = getEmails()
+	    def email_addrs = getEmails()
 	    if (email_addrs != '') {
 		email_addrs += ','
 	    }
 	    email_addrs += 'commits@lists.kronosnet.org'
 	    mail to: email_addrs,
-		subject: "${env.BUILD_TAG} from user ${env.CHANGE_AUTHOR} - timeout-out waiting for admin response"
-	    body: "see ${env.BUILD_URL}"
+		subject: "${env.BUILD_TAG} from user ${env.CHANGE_AUTHOR} - timeout-out waiting for admin response",
+		body: "see ${env.BUILD_URL}"
 	}
         throw err
     }

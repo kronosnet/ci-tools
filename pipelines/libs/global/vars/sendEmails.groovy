@@ -66,6 +66,10 @@ def call(Map info)
 	println('build has been ignored, not sending emails')
 	return
     }
+    if (info.containsKey('emailOptions') && info['emailOptions'].contains('nosend')) {
+	return
+    }
+
     // Did we REALLY (like properly) fail??
     if (currentBuild.result == 'FAILURE') {
 	state = 'failure'

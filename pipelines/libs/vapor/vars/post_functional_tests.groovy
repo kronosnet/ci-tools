@@ -12,8 +12,21 @@ def call(Map info)
     cleanWs(disableDeferredWipeout: true, deleteDirs: true)
     node('built-in') {
 	script {
+
 	    // Show main build URL rather than full text
 	    info['emailOptions'] = ['showTop']
+
+	    // If we were started by the weekly job then emails are not needed
+	    def runreason = ''
+	    if (currentBuild.getBuildCauses().shortDescription.size() > 0) {
+		runreason = "Run reason: ${currentBuild.getBuildCauses().shortDescription[0]}"
+	    }
+
+	    if (runreason.contains('ha-functional-testing-weekly')) {
+		info['emailOptions'] = ['nosend']
+		println('job was called from ha-functional-testing-weekly, not sending email')
+	    }
+
 	    projectFinishUp(info)
 	}
     }

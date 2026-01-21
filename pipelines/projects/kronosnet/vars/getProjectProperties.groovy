@@ -14,12 +14,12 @@ def call(Map localinfo, String agentName)
     if (agentName.startsWith("debian-unstable-cross")) {
 	if (localinfo['ARCH'] == 'ARM') {
 	    props['compiler'] = 'arm-linux-gnueabihf-gcc'
-	    props['DISTROCONFOPTS'] = ' --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf'
+	    props['DISTROCONFOPTS'] = ' --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf --disable-wireshark-dissector'
 	}
     }
     if (agentName.startsWith("openindiana")) {
-	props['DISTROCONFOPTS'] = ' --disable-crypto-nss'
-	props['DISTCHECK_CONFIGURE_FLAGS'] = ' --disable-crypto-nss'
+	props['DISTROCONFOPTS'] = ' --disable-crypto-nss --disable-wireshark-dissector'
+	props['DISTCHECK_CONFIGURE_FLAGS'] = ' --disable-crypto-nss --disable-wireshark-dissector'
     }
 
     // Which job types to run debug options in

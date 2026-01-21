@@ -204,6 +204,7 @@ required_pkg time
 required_pkg util-linux
 required_pkg valgrind
 required_pkg which
+required_pkg wireshark-devel
 required_pkg xz-devel
 required_pkg zlib-devel
 

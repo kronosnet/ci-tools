@@ -116,6 +116,7 @@ required_pkg shellcheck
 required_pkg time
 required_pkg uuid-dev
 required_pkg uuid-runtime
+required_pkg wireshark-dev
 required_pkg xsltproc
 required_pkg zlib1g-dev
 

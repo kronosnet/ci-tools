@@ -20,6 +20,7 @@ required_pkg header-tun
 required_pkg libtool
 required_pkg system/mozilla-nss
 required_pkg tun
+required_pkg wireshark
 
 pkg update || true
 pkg install $REQUIRED_PKGS || true

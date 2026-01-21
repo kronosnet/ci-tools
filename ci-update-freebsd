@@ -74,6 +74,7 @@ required_pkg py${pyver}-python-novaclient
 required_pkg py${pyver}-requests
 required_pkg py${pyver}-suds
 required_pkg rsync
+required_pkg wireshark-nox11
 required_pkg zstd
 
 if [ -n "$RUSTBINDINGS" ] && [ "$RUSTBINDINGS" = yes ]; then

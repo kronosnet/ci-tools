@@ -12,7 +12,6 @@ def call(Map localinfo, String agentName)
     props['RPMDEPS'] = 'libqb-devel doxygen2man'
     props['DISTROCONFOPTS'] = ''
     props['DISTCHECK_CONFIGURE_FLAGS'] = ''
-    props['MAKERPMOPTS'] = ''
 
     if (agentName.startsWith("debian-unstable-cross")) {
 	if (localinfo['ARCH'] == 'ARM') {
@@ -33,9 +32,7 @@ def call(Map localinfo, String agentName)
     if (ws_ver_check == '1') {
 	props['DISTROCONFOPTS'] += ' --disable-wireshark-dissector'
 	props['DISTCHECK_CONFIGURE_FLAGS'] += ' --disable-wireshark-dissector'
-	props['MAKERPMOPTS'] += ' --disable-wireshark-dissector'
     }
-
 
     // Which job types to run debug options in
     props['DEBUGJOBS'] = ['voting', 'nonvoting', 'nonvoting-clang']

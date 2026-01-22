@@ -29,12 +29,10 @@ def call(Map info)
 			if [ -n "$REPO" -a -n "$BRANCH" ]; then
 			    git config user.email "jenkins@kronosnet.org"
 			    git config user.name "Sir Jenkins"
-			    git remote rm proposed 2>/dev/null || true
-			    git remote add proposed "$REPO"
-			    git fetch proposed
-			    git checkout "origin/$BRANCH_TO"
-			    git checkout -b "PR$cause"
-			    git merge --log=999 --no-ff -m "Merge PR$cause" "proposed/$BRANCH"
+			    git checkout $BRANCH_TO
+			    git branch -D PR$cause || true
+			    git fetch origin pull/$cause/head:PR$cause
+			    git checkout PR$cause
 			    git show --no-patch
 			fi
 		    fi

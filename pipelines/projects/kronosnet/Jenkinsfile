@@ -1,6 +1,6 @@
 // Jenkinsfile for the kronosnet project
 
-@Library(['GlobalLib', 'GithubLib', 'ProjectLib']) _
+@Library(['GlobalLib@cc-devel', 'GithubLib@cc-devel', 'ProjectLib@cc-devel']) _
 
 // Who we are
 def project = 'kronosnet'

@@ -53,11 +53,18 @@ pipeline {
     }
 
     post {
+	// In the event of bad fails, try to tell the parent job how far we got
 	failure {
-	    // In the event of a bad fail, try to tell the parent job how far we got
 	    script {
 		if (env.FAIL_INFO == null || env.FAIL_INFO == '') {
 		    env.FAIL_INFO = "failed in ${info['runtest']}"
+		}
+	    }
+	}
+	aborted {
+	    script {
+		if (env.FAIL_INFO == null || env.FAIL_INFO == '') {
+		    env.FAIL_INFO = "aborted in ${info['runtest']}"
 		}
 	    }
 	}

@@ -73,7 +73,7 @@ def call(Map info)
     def smoke_tests = [
 	'pacemaker,resource,IPv4,recovery',
 	'pacemaker,recovery,RecoveryActiveNode',
-	'setup,setup_sbd,sbd-only'
+	'pacemaker,recovery,RecoveryActiveNode,sbd-only,kill_reboot',
     ]
 
     def basic_tests_rhel8 = [
@@ -89,7 +89,6 @@ def call(Map info)
 	'pacemaker,recovery,RecoveryRandomNode',
 	'pacemaker,recovery,RecoveryRestartPacemaker-AllNodes',
 	'pacemaker,recovery,RecoveryResourceFailure',
-	'pacemaker,recovery,RecoveryActiveNode,sbd-only,kill_reboot',
 	'pacemaker,resource,Apache,recovery',
 	'pacemaker,resource,Apache,variant:latency,latency:300ms',
 	'pacemaker,resource,Clone',

@@ -1,6 +1,7 @@
 name: ksan-registry
 docker_user: ${docker_user}
 docker_password: ${docker_password}
+ipv6: false
 vmrules:
 - ksan-registry:
    nets:

@@ -10,6 +10,11 @@ def call(Map info)
 	} catch (err) {}
     }
 
+    // Do this as its own 'Stage' so we can monitor timings
+    stage("Copying logs") {
+	stagingCleanAndCopy(info)
+    }
+
     // Unlock any flocks
     RWLock(info, 'UNLOCK')
 

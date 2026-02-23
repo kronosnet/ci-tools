@@ -1,0 +1,38 @@
+@Library(['GlobalLib@cc-devel', 'VaporLib@cc-devel', 'ProjectLib@cc-devel']) _
+
+// Globals
+def project = 'global'
+def info = ['project': project, 'branch': 'main']
+
+pipeline {
+    agent { label 'built-in' }
+
+    parameters {
+        string(name: 'project', defaultValue: 'copy-job-logs', description: 'Name of project to copy the log files for')
+    }
+
+    stages {
+        stage('copy') {
+            steps {
+                script {
+                    getBuildInfoCommon(info)
+                    sh "sh ~jenkins/ci-tools/copy-logs-to-staging.sh ${env.project}"
+                }
+            }
+        }
+    }
+    post {
+	success {
+	    script {
+		info['state'] = 'success'
+		projectFinishUp(info)
+	    }
+	}
+	failure {
+	    script {
+		info['state'] = 'failed'
+		projectFinishUp(info)
+	    }
+	}
+    }
+}

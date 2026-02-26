@@ -12,17 +12,24 @@ def call(Map info)
 	'pcs,cli,CVE-2018-1079',
 	'pcs,cli,CVE-2018-1086',
 	'pcs,cli,DaemonSanity',  // critical HTTP headers
+	'pcs,cli,export_config,alerts_export',
 	'pcs,cli,export_config,constraint_export',
+	'pcs,cli,export_config,nodes_attributes_export',
+	'pcs,cli,export_config,nodes_utilizations_export',
 	'pcs,cli,export_config,operation_defaults_export',
 	'pcs,cli,export_config,property_export',
 	'pcs,cli,export_config,resource_defaults_export',
 	'pcs,cli,export_config,resource_export',
 	'pcs,cli,export_config,stonith_export',
 	'pcs,cli,export_config,tags_export',
+	'pcs,cli,meta_validation,create_meta_primitive_resources',
+	'pcs,cli,meta_validation,resource_meta',
 	'pcs,cli,NodeAddRemove',
 	'pcs,cli,NodeMaintenance',
 	'pcs,cli,NodeStandby',
 	'pcs,cli,OperationDefaults',  // resource create with default operations
+	'pcs,cli,pqc,pqc_certificates',
+	'pcs,cli,pqc,pqc_pcsd_server',
 	'pcs,cli,Properties',
 	'pcs,cli,ResourceCreate',
 	'pcs,cli,ResourceManageUnmanageMonitor',
@@ -41,11 +48,19 @@ def call(Map info)
 
     def pcs_advanced_tests = [
 	'pcs,cli,BackupRestore', // cluster config backup + restore
+	'pcs,cli,CheckpointDiff',
 	'pcs,cli,ClusterAuthkey',  // change corosync authkey
 	'pcs,cli,ClusterConfigUpdate', // update corosync.conf
 	'pcs,cli,DefaultsSet',  // rsc and op defaults
+	'pcs,cli,meta_validation,defaults_set_meta',
+	'pcs,cli,meta_validation,remote_node_meta',
 	'pcs,cli,QuorumDevice',
 	'pcs,cli,RemoteGuestNodes',
+	'pcs,cli,remote_node,remote_node_add_remove',
+	'pcs,cli,remote_node,remote_node_invalid_cases',
+	'pcs,cli,remote_node,remote_node_valid_options',
+	'pcs,cli,rename,rename_cluster',
+	'pcs,cli,resource,description',
 	'pcs,cli,rhbz1328870',  // pcs command fails right after pcsd starts
 	'pcs,cli,rhbz1362493',  // location constraint with rsc-pattern
 	'pcs,cli,rhbz1419661',  // systemd services with @ and : in name

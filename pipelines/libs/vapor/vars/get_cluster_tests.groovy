@@ -12,6 +12,13 @@ def call(Map info)
 	'pcs,cli,CVE-2018-1079',
 	'pcs,cli,CVE-2018-1086',
 	'pcs,cli,DaemonSanity',  // critical HTTP headers
+	'pcs,cli,export_config,constraint_export',
+	'pcs,cli,export_config,operation_defaults_export',
+	'pcs,cli,export_config,property_export',
+	'pcs,cli,export_config,resource_defaults_export',
+	'pcs,cli,export_config,resource_export',
+	'pcs,cli,export_config,stonith_export',
+	'pcs,cli,export_config,tags_export',
 	'pcs,cli,NodeAddRemove',
 	'pcs,cli,NodeMaintenance',
 	'pcs,cli,NodeStandby',
@@ -37,13 +44,6 @@ def call(Map info)
 	'pcs,cli,ClusterAuthkey',  // change corosync authkey
 	'pcs,cli,ClusterConfigUpdate', // update corosync.conf
 	'pcs,cli,DefaultsSet',  // rsc and op defaults
-	'pcs,cli,export_config,constraint_export',
-	'pcs,cli,export_config,operation_defaults_export',
-	'pcs,cli,export_config,property_export',
-	'pcs,cli,export_config,resource_defaults_export',
-	'pcs,cli,export_config,resource_export',
-	'pcs,cli,export_config,stonith_export',
-	'pcs,cli,export_config,tags_export',
 	'pcs,cli,QuorumDevice',
 	'pcs,cli,RemoteGuestNodes',
 	'pcs,cli,rhbz1328870',  // pcs command fails right after pcsd starts

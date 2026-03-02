@@ -7,17 +7,20 @@ set -e
 source $CITHOME/ci-update-libs
 $CITHOME/ci-update-common
 
-# stable release update
-if [ -z "$1" ]; then
- freebsd-update --not-running-from-cron fetch
- freebsd-update --not-running-from-cron install || true
-else
- # devel does not have NODE_NAME set
- NODE_NAME=freebsd-devel-x86-64.ci.kronosnet.org
+if [ -n "$1" ]; then
+ NODE_NAME=freebsd-devel-x86-64
 fi
 
+# stable release update (old)
 case "${NODE_NAME}" in
- *13*|*14*|*devel*)
+ *13*|*14*)
+  freebsd-update --not-running-from-cron fetch
+  freebsd-update --not-running-from-cron install || true
+ ;;
+esac
+
+case "${NODE_NAME}" in
+ *13*|*14*|*15*|*devel*)
   pyver=311
   ;;
 esac

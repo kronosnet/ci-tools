@@ -34,6 +34,7 @@ def call()
     labels['fedora-rawhide-x86-64'] = ['fedora-rawhide','unstable','x86-64','nonvoting','rpm','yum','nonvoting-clang','buildrpms']
     labels['freebsd-13-x86-64'] = ['freebsd-13','stable','x86-64','voting','freebsd','nonvoting-clang']
     labels['freebsd-14-x86-64'] = ['freebsd-14','stable','x86-64','voting','freebsd','nonvoting-clang']
+    labels['freebsd-15-x86-64'] = ['freebsd-15','stable','x86-64','voting','freebsd','nonvoting-clang']
     labels['freebsd-devel-x86-64'] = ['freebsd-devel','unstable','x86-64','nonvoting','freebsd','nonvoting-clang']
     labels['openindiana-x86-64'] = ['openindiana','unstable','x86-64','nonvoting', 'nonvoting-clang']
     labels['rhel-8-ci-test-x86-64'] = ['rhel-8','stable','x86-64','rpm','yum','ci-test','test-voting','test-buildrpms']

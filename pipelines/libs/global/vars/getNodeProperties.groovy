@@ -66,7 +66,6 @@ def call(String node)
     node_env['rhel-10-power9-ppc64le'] = []
     node_env['rhel-10-s390x'] = []
     node_env['rhel-10-x86-64'] = []
-    node_env['ubuntu-20-04-lts-x86-64'] = []
     node_env['ubuntu-22-04-lts-x86-64'] = []
     node_env['ubuntu-24-04-lts-x86-64'] = []
     node_env['ubuntu-25-10-x86-64'] = []

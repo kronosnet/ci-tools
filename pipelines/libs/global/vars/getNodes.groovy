@@ -57,7 +57,6 @@ def call()
     labels['rhel-10-power9-ppc64le'] = ['rhel-10','stable','power9-ppc64le','voting','rpm','yum','nonvoting-clang','buildrpms']
     labels['rhel-10-s390x'] = ['rhel-10','stable','s390x','voting','rpm','yum','nonvoting-clang','buildrpms']
     labels['rhel-10-x86-64'] = ['rhel-10','stable','x86-64','voting','rpm','yum','nonvoting-clang','buildrpms']
-    labels['ubuntu-20-04-lts-x86-64'] = ['ubuntu20.04','stable','x86-64','voting','apt','nonvoting-clang']
     labels['ubuntu-22-04-lts-x86-64'] = ['ubuntu22.04','stable','x86-64','voting','apt','nonvoting-clang']
     labels['ubuntu-24-04-lts-x86-64'] = ['ubuntu24.04','stable','x86-64','voting','apt','nonvoting-clang']
     labels['ubuntu-25-10-x86-64'] = ['ubuntu25.10','stable','x86-64','voting','apt','nonvoting-clang']

@@ -50,7 +50,7 @@ pipeline {
 
 		    def nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
 									    'nodelabel': 'nonvoting-clang',
-									    'excludes': '(freebsd|ubuntu-20-04-lts).*',
+									    'excludes': '(freebsd).*',
 									    'extravars': ['compiler': 'clang',
 											  'install': 0]])
 

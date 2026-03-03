@@ -29,12 +29,12 @@ case $transferset in
 	;;
 esac
 
-ssh "$sourcenode".ci.kronosnet.org $preptar
+ssh "$sourcenode" $preptar
 
-scp "$sourcenode".ci.kronosnet.org:"$sourcedir"/ci-artifacts.tar .
+scp "$sourcenode":"$sourcedir"/ci-artifacts.tar .
 tar -xvpf ci-artifacts.tar
 rm -f ci-artifacts.tar
 
-ssh "$sourcenode".ci.kronosnet.org rm -f "$sourcedir"/ci-artifacts.tar
+ssh "$sourcenode" rm -f "$sourcedir"/ci-artifacts.tar
 
 exit 0

@@ -147,13 +147,22 @@ def call(Map info, String lockname, String mode, String stagename, Closure thing
 	log_lock('LOCKED', mode, lockname, stagename)
     }
 
-    // Run a thing inside the lock
-    thingtorun()
+    // Run a thing inside the lock, but catch any exceptions in case it fails
+    // as we always need to unlock
+    def e = null
+    try {
+	thingtorun()
+    } catch (exp) {
+	e = exp
+    }
 
     // Tidy up
     node('built-in') {
 	do_unlock_one(info, lockname_info)
 	info.remove(lockname_info)
+    }
+    if (e != null) {
+	throw(e)
     }
 
     return 0

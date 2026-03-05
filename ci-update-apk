@@ -1,0 +1,119 @@
+#!/bin/citbash
+
+# ENTRY POINT (old / done)
+
+set -e
+
+source $CITHOME/ci-update-libs
+$CITHOME/ci-update-common
+
+apk update
+apk upgrade
+
+required_pkg asciidoc
+required_pkg autoconf
+required_pkg automake
+required_pkg bison
+required_pkg check
+required_pkg chrpath
+required_pkg clang
+required_pkg cmocka
+required_pkg coreutils
+required_pkg curl
+required_pkg curl-dev
+required_pkg dbus-dev
+required_pkg docbook-xsl
+required_pkg doxygen
+required_pkg flex
+required_pkg gcc
+required_pkg gettext
+required_pkg git
+required_pkg glib-dev
+required_pkg gnutls-dev
+required_pkg groff
+required_pkg help2man
+required_pkg jq
+required_pkg libaio-dev
+required_pkg libblkid
+required_pkg libbz2
+required_pkg libcgroup-dev
+required_pkg libgcrypt-dev
+required_pkg libltdl
+required_pkg libltdl-static
+required_pkg libnl3-dev
+required_pkg libqb-dev
+required_pkg libssl3
+required_pkg libtool
+required_pkg libvirt-dev
+required_pkg libxml2-dev
+required_pkg libxml2-utils
+required_pkg libxslt-dev
+required_pkg linux-pam-dev
+required_pkg lksctp-tools-dev
+required_pkg lz4-dev
+required_pkg lzo-dev
+required_pkg make
+required_pkg ncurses-dev
+required_pkg net-snmp-dev
+required_pkg nss-dev
+required_pkg nspr-dev
+required_pkg openipmi-dev
+required_pkg openssl-dev
+required_pkg perl
+required_pkg pkgconf
+required_pkg psmisc
+required_pkg py3-boto3
+required_pkg py3-dateutil
+required_pkg py3-cryptography
+required_pkg python3-dev
+required_pkg py3-google-api-python-client
+required_pkg py3-lxml
+required_pkg py3-pexpect
+required_pkg py3-pip
+required_pkg py3-psutil
+required_pkg py3-curl
+required_pkg py3-parsing
+required_pkg py3-requests
+required_pkg py3-setuptools
+required_pkg py3-setuptools_scm
+required_pkg py3-suds-jurko
+required_pkg py3-tornado
+required_pkg py3-wheel
+required_pkg rsync
+required_pkg ruby
+required_pkg ruby-bundler
+required_pkg ruby-dev
+required_pkg ruby-eventmachine
+required_pkg ruby-ffi
+required_pkg ruby-json-schema
+required_pkg ruby-test-unit
+required_pkg shellcheck
+required_pkg sudo
+required_pkg time
+required_pkg util-linux-dev
+required_pkg uuidgen
+required_pkg wireshark-dev
+required_pkg xz-dev
+required_pkg zlib-dev
+required_pkg zstd-dev
+
+# rust bindings
+if [ -n "$RUSTBINDINGS" ] && [ "$RUSTBINDINGS" = yes ]; then
+  required_pkg rust
+  required_pkg rust-bindgen
+  required_pkg rust-clippy
+  required_pkg rustfmt
+fi
+
+optional_pkg inkscape
+optional_pkg llvm
+optional_pkg py3-dacite
+optional_pkg py3-distro
+optional_pkg valgrind
+
+apk add $REQUIRED_PKGS
+for PKG in $OPTIONAL_PKGS; do apk add $PKG || true; done
+
+apk cache clean
+getent group haclient >/dev/null || addgroup --system haclient
+getent passwd hacluster >/dev/null || adduser --system --ingroup haclient --gecos "cluster user" --no-create-home hacluster

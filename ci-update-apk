@@ -18,6 +18,7 @@ required_pkg bison
 required_pkg check
 required_pkg chrpath
 required_pkg clang
+required_pkg clang-libclang
 required_pkg cmocka
 required_pkg coreutils
 required_pkg curl
@@ -88,6 +89,7 @@ required_pkg ruby-eventmachine
 required_pkg ruby-ffi
 required_pkg ruby-json-schema
 required_pkg ruby-test-unit
+required_pkg sed
 required_pkg shellcheck
 required_pkg sudo
 required_pkg tar

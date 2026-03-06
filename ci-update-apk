@@ -60,6 +60,7 @@ required_pkg net-snmp-dev
 required_pkg nss-dev
 required_pkg nspr-dev
 required_pkg openipmi-dev
+required_pkg openrc-dev
 required_pkg openssl-dev
 required_pkg perl
 required_pkg pkgconf

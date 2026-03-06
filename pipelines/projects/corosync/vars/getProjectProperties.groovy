@@ -15,7 +15,7 @@ def call(Map localinfo, String agentName)
 	props['DISTROCONFOPTS'] += ' --enable-fatal-warnings'
     }
 
-    if (agentName.startsWith('freebsd')) {
+    if (agentName.startsWith('alpine') || agentName.startsWith('freebsd')) {
 	props['DISTROCONFOPTS'] += ' --disable-systemd'
     }
     if (agentName.startsWith('openindiana')) {

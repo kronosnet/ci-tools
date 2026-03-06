@@ -3,6 +3,10 @@ def call(Map localinfo)
     // var expansion here REQUIRES bash
     def os_info = sh(script: '''#!/bin/citbash -e
 	echo ===== PACKAGE LIST =====
+	# Alpine
+	if which apk > /dev/null 2>&1; then
+	    apk list --installed | awk '{print $1}'
+	fi
 	# BSD
 	if which pkg > /dev/null 2>&1; then
             if [ "$(uname -s)" = "SunOS" ]; then

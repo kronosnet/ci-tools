@@ -10,6 +10,7 @@ $CITHOME/ci-update-common
 apk update
 apk upgrade
 
+required_pkg alpine-sdk
 required_pkg asciidoc
 required_pkg autoconf
 required_pkg automake
@@ -89,6 +90,7 @@ required_pkg ruby-json-schema
 required_pkg ruby-test-unit
 required_pkg shellcheck
 required_pkg sudo
+required_pkg tar
 required_pkg time
 required_pkg util-linux-dev
 required_pkg uuidgen

@@ -8,7 +8,7 @@ source $CITHOME/ci-update-libs
 $CITHOME/ci-update-common
 
 case "${NODE_NAME}" in
- rhel*)
+ rhel*|vapor*)
   wget --no-check-certificate -O /etc/pki/ca-trust/source/anchors/RH-IT-Root-CA.crt https://certs.corp.redhat.com/certs/Current-IT-Root-CAs.pem
   update-ca-trust
  ;;
@@ -41,7 +41,7 @@ case "${NODE_NAME}" in
  anvil-*|centos-10-*|rhel-10*)
   EXTRAOPTS="--nobest"
  ;;
- rhel-9*)
+ rhel-9*|vapor*)
   yum -y module enable ruby:3.1
   required_pkg python3.12
   required_pkg python3.12-devel
@@ -61,7 +61,7 @@ optional_pkg libservicelog-devel
 optional_pkg python3-google-api-client
 
 case "${NODE_NAME}" in
- centos*|rhel*|anvil-ci-centos*|anvil-ci-rhel*|anvil-ci-alma*)
+ centos*|rhel*|anvil-ci-centos*|anvil-ci-rhel*|anvil-ci-alma*|vapor*)
   required_pkg platform-python-devel
  ;;
 esac
@@ -99,7 +99,7 @@ esac
 
 # rhel-9 language pack
 case "${NODE_NAME}" in
- *rhel-9*|*rhel-10*)
+ *rhel-9*|*rhel-10*|vapor*)
   required_pkg glibc-all-langpacks
  ;;
 esac

@@ -62,6 +62,7 @@ def call()
     labels['ubuntu-24-04-lts-x86-64'] = ['ubuntu24.04','stable','x86-64','voting','apt','nonvoting-clang']
     labels['ubuntu-25-10-x86-64'] = ['ubuntu25.10','stable','x86-64','voting','apt','nonvoting-clang']
     labels['ubuntu-devel-x86-64'] = ['ubuntu-devel','unstable','x86-64','nonvoting','apt','nonvoting-clang']
+    labels['vapor-driver-x86-64'] = ['rhel-9','stable','x86-64','yum']
 
     return labels
 }

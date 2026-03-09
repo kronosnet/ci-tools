@@ -172,5 +172,6 @@ esac
 
 rsync -av --delete-after $rpmdir/ jweb:$rpmdir/.
 rsync -av --delete-after $rpmdir/ black-magic:/var/www/html/builds/.
+rsync -av --delete-after $rpmdir/ vapor-driver-x86-64:/var/www/html/builds/.
 
 exit 0

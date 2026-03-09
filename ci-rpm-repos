@@ -24,9 +24,9 @@ fi
 rpmdir=/var/www/ci.kronosnet.org/builds
 
 retainbuilds=5
-if [ "$project" = "kernel" ]; then
-	retainbuilds=1
-fi
+#if [ "$project" = "kernel" ]; then
+#	retainbuilds=3
+#fi
 
 clean_dirs() {
 	echo "Purging 0 byte files"

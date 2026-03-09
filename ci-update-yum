@@ -25,7 +25,7 @@ case "${NODE_NAME}" in
    yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
   fi
  ;;
- rhel-9*|anvil-ci-rhel-9)
+ rhel-9*|anvil-ci-rhel-9|vapor-*)
   if ! rpm -qa | grep epel-release; then
    yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
   fi

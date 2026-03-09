@@ -12,3 +12,15 @@ rm -rf /tmp/libqb*
 rm -rf /tmp/booth-tests*
 
 $CITHOME/ci-generate-start-node
+
+# Make sure internal nodes use the internal repo
+INTERNALIP="10.6.126.250"
+HOSTNAME="ci.kronosnet.org"
+if [ "${NODE_NAME:0:5}" != "anvil" -a "${NODE_NAME}" != "built-in" ]
+then
+  grep -q "${INTERNALIP} ${HOSTNAME}" /etc/hosts 2>/dev/null
+  if [ "$?" != "0" ]
+  then
+    echo "${INTERNALIP} ${HOSTNAME}" >> /etc/hosts
+  fi
+fi

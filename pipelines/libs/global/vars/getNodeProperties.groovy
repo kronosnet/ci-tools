@@ -58,10 +58,6 @@ def call(String node)
     node_env['rhel-9-ci-test-x86-64'] = []
     node_env['rhel-9-coverity-x86-64'] = []
     node_env['rhel-9-vapor-rdu-2-x86-64'] = []
-    node_env['rhel-9-vapor-rdu-3-x86-64'] = []
-    node_env['rhel-9-vapor-rdu-4-x86-64'] = []
-    node_env['rhel-9-vapor-rdu-5-x86-64'] = []
-    node_env['rhel-9-vapor-rdu-6-x86-64'] = []
     node_env['rhel-10-coverity-x86-64'] = []
     node_env['rhel-10-power9-ppc64le'] = []
     node_env['rhel-10-s390x'] = []
@@ -71,6 +67,10 @@ def call(String node)
     node_env['ubuntu-25-10-x86-64'] = []
     node_env['ubuntu-devel-x86-64'] = []
     node_env['vapor-driver-x86-64'] = []
+    node_env['vapor-libvirt-1-x86-64'] = []
+    node_env['vapor-libvirt-2-x86-64'] = []
+    node_env['vapor-libvirt-3-x86-64'] = []
+    node_env['vapor-libvirt-4-x86-64'] = []
 
     if (node_env.containsKey(node)) {
 	// Add it to props[]

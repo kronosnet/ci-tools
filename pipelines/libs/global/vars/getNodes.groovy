@@ -47,8 +47,7 @@ def call()
     labels['rhel-9-coverity-x86-64'] = ['rhel-9','stable','x86-64','voting','rhel-9-coverity','yum','covscan','test-covscan']
     labels['rhel-9-power9-ppc64le'] = ['rhel-9','stable','power9-ppc64le','voting','rpm','yum','nonvoting-clang','buildrpms']
     labels['rhel-9-s390x'] = ['rhel-9','stable','s390x','voting','rpm','yum','nonvoting-clang','buildrpms']
-    labels['rhel-9-vapor-rdu-1-x86-64'] = ['rhel-9','stable','x86-64','yum','osp','aliyun','azure','aws','gcp','ocpv','ibmvpc']
-    labels['rhel-9-vapor-rdu-2-x86-64'] = ['rhel-9','stable','x86-64','yum','osp','aliyun','azure','aws','gcp','ocpv','ibmvpc','kbuild', 'kubesan-cache']
+    labels['rhel-9-vapor-rdu-2-x86-64'] = ['rhel-9','stable','x86-64','yum','kubesan-cache']
     labels['rhel-9-vapor-rdu-3-x86-64'] = ['rhel-9','stable','x86-64','yum','libvirt','kubesan']
     labels['rhel-9-vapor-rdu-4-x86-64'] = ['rhel-9','stable','x86-64','yum','libvirt','kubesan']
     labels['rhel-9-vapor-rdu-5-x86-64'] = ['rhel-9','stable','x86-64','yum','libvirt','kubesan']
@@ -62,7 +61,7 @@ def call()
     labels['ubuntu-24-04-lts-x86-64'] = ['ubuntu24.04','stable','x86-64','voting','apt','nonvoting-clang']
     labels['ubuntu-25-10-x86-64'] = ['ubuntu25.10','stable','x86-64','voting','apt','nonvoting-clang']
     labels['ubuntu-devel-x86-64'] = ['ubuntu-devel','unstable','x86-64','nonvoting','apt','nonvoting-clang']
-    labels['vapor-driver-x86-64'] = ['rhel-9','stable','x86-64','yum']
+    labels['vapor-driver-x86-64'] = ['rhel-9','stable','x86-64','yum', 'osp','aliyun','azure','aws','gcp','ocpv','ibmvpc','kbuild']
 
     return labels
 }

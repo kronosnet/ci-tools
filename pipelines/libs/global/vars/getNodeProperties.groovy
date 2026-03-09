@@ -57,7 +57,6 @@ def call(String node)
     node_env['rhel-9-x86-64'] = []
     node_env['rhel-9-ci-test-x86-64'] = []
     node_env['rhel-9-coverity-x86-64'] = []
-    node_env['rhel-9-vapor-rdu-1-x86-64'] = []
     node_env['rhel-9-vapor-rdu-2-x86-64'] = []
     node_env['rhel-9-vapor-rdu-3-x86-64'] = []
     node_env['rhel-9-vapor-rdu-4-x86-64'] = []

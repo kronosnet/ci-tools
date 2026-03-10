@@ -255,7 +255,7 @@ case "${NODE_NAME}" in
   dnf -y copr enable karmab/kcli
   # enable broken epel-9 builds on copr
   sed -i 's@epel@centos-stream@' /etc/yum.repos.d/_copr\:copr.fedorainfracloud.org\:karmab\:kcli.repo
-  dnf -y install kcli
+  dnf -y install kcli libvirt-daemon
   getent group kubesan >/dev/null || groupadd -r kubesan
   getent passwd kubesan >/dev/null || useradd -g kubesan -G libvirt -m kubesan
   setfacl -m u:kubesan:rwx /var/lib/libvirt/images

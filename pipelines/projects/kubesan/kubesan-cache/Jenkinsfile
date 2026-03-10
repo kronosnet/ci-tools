@@ -15,7 +15,7 @@ def updatekclicache(String agentName, Map info)
 	    userRemoteConfigs: [[name: 'origin', url: 'https://gitlab.com/kubesan/kubesan.git']]]
 	    sh (label: 'Update test env cache',
 		script: """
-		    su - kubesan /bin/bash -c "cd ${WORKSPACE}; ./tests/run.sh --external-registry 10.6.23.119:5000 create-cache"
+		    su - kubesan /bin/bash -c "cd ${WORKSPACE}; ./tests/run.sh --external-registry 10.6.126.249:5000 create-cache"
 		""")
     }
 }

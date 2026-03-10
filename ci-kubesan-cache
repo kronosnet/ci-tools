@@ -4,6 +4,8 @@ set -e
 
 rm -rf $WORKSPACE/ci-kubesan-cache
 
+export KCLI_CONFIG=$CITHOME/kcli-config.yml
+
 envsubst < $CITHOME/kubesan-registry.yaml > $WORKSPACE/kubesan-registry.yaml
 
 kcli list plan -o name | grep -q ksan && kcli delete plan ksan --yes

@@ -1,0 +1,8 @@
+kubevirt:
+  type: kubevirt
+  kubeconfig: /root/.kube/config
+  context: admin
+  namespace: kubesan-cache
+  pool: compass-san-linear
+  volume_mode: Block
+  volume_access: ReadWriteMany

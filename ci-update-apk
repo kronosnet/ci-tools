@@ -20,6 +20,7 @@ required_pkg chrpath
 required_pkg clang
 required_pkg clang-libclang
 required_pkg cmocka
+required_pkg cmocka-dev
 required_pkg coreutils
 required_pkg curl
 required_pkg curl-dev

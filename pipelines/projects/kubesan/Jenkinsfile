@@ -106,6 +106,8 @@ pipeline {
 			sh "$HOME/ci-tools/ci-wrap ci-gitlab-jenkins-gw completed ${ret}"
 		    }
 		}
+		// Copy logs
+		stagingCleanAndCopy(info)
 	    }
 	    RWLock(info, 'UNLOCK')
 	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)

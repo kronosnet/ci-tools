@@ -62,6 +62,9 @@ def call(Map info)
     def stage_s = makeSuffix('s', '', {stages_fail != 1} )
     def repo_end = makeSuffix('y', 'ies', {info['repo_urls'].size() == 1})
 
+    // Point emails to the external log host
+    def LOG_URL = env.BUILD_URL.replaceAll('haci.fast.eng.rdu2.dc.redhat.com', 'ci.kronosnet.org')
+
     if (state == 'build-ignored') {
 	println('build has been ignored, not sending emails')
 	return
@@ -146,16 +149,16 @@ def call(Map info)
     // Not everyone generates split logs */
     def split_logs = ''
     if (info.containsKey('have_split_logs')) {
-	split_logs = "\nSplit logs: ${env.BUILD_URL}artifact/"
+	split_logs = "\nSplit logs: ${LOG_URL}artifact/"
     }
 
     // Not everyone finds the consoleText useful
-    def console_log = "${env.BUILD_URL}consoleText"
+    def console_log = "${LOG_URL}consoleText"
     if (info.containsKey('emailOptions') && info['emailOptions'].contains('showConsole')) {
-	console_log = "${env.BUILD_URL}pipeline-console"
+	console_log = "${LOG_URL}pipeline-console"
     }
     if (info.containsKey('emailOptions') && info['emailOptions'].contains('showTop')) {
-	console_log = "${env.BUILD_URL}"
+	console_log = "${LOG_URL}"
     }
 
     // Show why we were initiated
@@ -176,7 +179,7 @@ def call(Map info)
     if (info.containsKey('failedlogs') && info['failedlogs'].size() < 10) {
 	failedlogs = '\nFailed logs:\n'
 	for (def fl in info['failedlogs']) {
-	    failedlogs += "${env.BUILD_URL}artifact/${fl}\n"
+	    failedlogs += "${LOG_URL}artifact/${fl}\n"
 	}
     }
     def email_trailer = """${runreason}

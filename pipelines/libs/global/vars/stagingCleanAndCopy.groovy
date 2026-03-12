@@ -37,7 +37,7 @@ def process_log_dirs(String staging_dir)
 def rsync_to_external(String staging_dir)
 {
     sh("""
-        rsync -av --delete-after ${staging_dir}/job jweb:${staging_dir}/job/.
+        rsync -av --delete-after ${staging_dir}/job/ jweb:${staging_dir}/job/.
        """)
 }
 

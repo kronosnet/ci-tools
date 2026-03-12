@@ -66,7 +66,7 @@ def copy_our_logs(Map info, String staging_dir)
     } else {
 	logsdir = "${env.JENKINS_HOME}/jobs/${job_bits[0]}/jobs/${job_bits[1]}/branches/${job_bits[2]}/builds/${env.BUILD_NUMBER}/"
 
-	target_logsdir="${staging_dir}/job/${job_bits[0]}/job/${job_bits[1]}/${job_bits[2]}/${env.BUILD_NUMBER}/"
+	target_logsdir="${staging_dir}/job/${job_bits[0]}/job/${job_bits[1]}/job/${job_bits[2]}/${env.BUILD_NUMBER}/"
 	}
 
     // Copy logs to the staging area

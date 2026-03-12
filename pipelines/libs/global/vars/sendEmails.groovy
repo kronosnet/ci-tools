@@ -152,14 +152,8 @@ def call(Map info)
 	split_logs = "\nSplit logs: ${LOG_URL}artifact/"
     }
 
-    // Not everyone finds the consoleText useful
+    // Console logs are always text
     def console_log = "${LOG_URL}consoleText"
-    if (info.containsKey('emailOptions') && info['emailOptions'].contains('showConsole')) {
-	console_log = "${LOG_URL}pipeline-console"
-    }
-    if (info.containsKey('emailOptions') && info['emailOptions'].contains('showTop')) {
-	console_log = "${LOG_URL}"
-    }
 
     // Show why we were initiated
     def runreason = ''

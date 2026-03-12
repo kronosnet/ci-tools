@@ -72,7 +72,7 @@ def copy_our_logs(Map info, String staging_dir)
     // Copy logs to the staging area
     println("Copying logs to ${target_logsdir}")
     sh("mkdir -p ${target_logsdir}")
-    sh("cp ${logsdir}/log ${target_logsdir}/console")
+    sh("cp ${logsdir}/log ${target_logsdir}/consoleText")
     def f = new File("${logsdir}/archive")
     if (f.exists()) {
 	sh("rsync -atr ${logsdir}/archive/* ${target_logsdir}/artifact/")

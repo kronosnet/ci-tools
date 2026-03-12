@@ -52,7 +52,7 @@ copy_if_needed()
     # Is is the main log or an artifact directory?
     if [ "${log_or_archive}" = "log" ]
     then
-        file="console"
+        file="consoleText"
         do_copy=1
     fi
     if [ "${log_or_archive:0:7}" = "archive" -a -f "$1" ]
@@ -61,11 +61,12 @@ copy_if_needed()
         mkdir -p ${target_dir}/artifact
         do_copy=1
     fi
-    if	[ "$do_copy" = "1" ]
+    if	[ "${do_copy}" = "1" ]
     then
+	mkdir -p ${target_dir}
         if [ ! -f "${target_dir}/${file}" ]
         then
-            cp $1 ${target_dir}/${file}
+            cp -p $1 ${target_dir}/${file}
         fi
     fi
 }

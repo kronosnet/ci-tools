@@ -47,7 +47,7 @@ pipeline {
 		    // Just update the jar file on built-in
 		    sh '''
                          rm -rf $HOME/ci-tools/jenkins-cli.jar
-                         wget -O $HOME/ci-tools/jenkins-cli.jar https://ci.kronosnet.org/jnlpJars/jenkins-cli.jar >/dev/null 2>&1
+                         wget -O $HOME/ci-tools/jenkins-cli.jar http://localhost:8080/jnlpJars/jenkins-cli.jar >/dev/null 2>&1
                        '''
 		    // Now do all of the other nodes
 		    def updates = buildFullRunMap(info)

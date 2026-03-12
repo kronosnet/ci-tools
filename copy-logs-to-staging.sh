@@ -38,6 +38,7 @@ copy_if_needed()
         build=${BITS[11]}
         log_or_archive=${BITS[12]}
         artifact=${BITS[13]}
+        target_path=${project}/job/${job}/job/${branch}/${build}
         target_dir=${TARGET}/${project}/job/${job}/job/${branch}/${build}
     else # non-multijob jobs
         project=${BITS[5]}
@@ -46,14 +47,18 @@ copy_if_needed()
         build=${BITS[9]}
         log_or_archive=${BITS[10]}
         artifact=${BITS[11]}
+        target_path=${project}/job/${job}/${build}
         target_dir=${TARGET}/${project}/job/${job}/${build}
     fi
 
     # Is is the main log or an artifact directory?
     if [ "${log_or_archive}" = "log" ]
     then
+        # Log files needs to be parsed by jenkins
+        mkdir -p ${target_dir}
         file="consoleText"
-        do_copy=1
+        curl http://localhost:8080/job/${target_path}/consoleText ${target_dir}/consoleText
+        do_copy=0
     fi
     if [ "${log_or_archive:0:7}" = "archive" -a -f "$1" ]
     then
@@ -63,9 +68,9 @@ copy_if_needed()
     fi
     if	[ "${do_copy}" = "1" ]
     then
-	mkdir -p ${target_dir}
         if [ ! -f "${target_dir}/${file}" ]
         then
+            mkdir -p ${target_dir}
             cp -p $1 ${target_dir}/${file}
         fi
     fi

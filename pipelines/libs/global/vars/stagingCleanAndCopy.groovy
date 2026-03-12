@@ -4,7 +4,7 @@ import java.io.File;
 def clean_dirs(String project, String staging_dir)
 {
     sh("""
-       cd ${staging_dir}
+       cd ${staging_dir}/job
        find . -type f -size 0 -print -delete
        find . -type d -empty -print -delete
     """)
@@ -14,7 +14,7 @@ def process_log_dirs(String staging_dir)
 {
     // Look for each build branch
     sh ("""
-        cd ${staging_dir}
+        cd ${staging_dir}/job
         for i in \$(find . -name branches -type d); do
           oldpwd=\$(pwd)
           cd \$i
@@ -37,7 +37,7 @@ def process_log_dirs(String staging_dir)
 def rsync_to_external(String staging_dir)
 {
     sh("""
-        rsync -av --delete-after ${staging_dir}/ jweb:${staging_dir}/.
+        rsync -av --delete-after ${staging_dir}/job jweb:${staging_dir}/job/.
        """)
 }
 

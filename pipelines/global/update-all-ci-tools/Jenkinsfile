@@ -10,11 +10,15 @@ def buildFullRunMap(Map info)
 {
     def collectBuildEnv = [:]
     def nodeList = getNodes()
+    def downnodes = getLabelledNodes('down')
+    println('"Down" nodes: '+downnodes)
 
     for (n in nodeList) {
 	def node = n.key
-	collectBuildEnv[node] = {
-	    updateCiNode(node, info)
+	if (!downnodes.contains(node)) {
+	    collectBuildEnv[node] = {
+		updateCiNode(node, info)
+	    }
 	}
     }
     // It also needs to run on the Jenkins node

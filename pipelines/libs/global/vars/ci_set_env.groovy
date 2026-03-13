@@ -217,43 +217,43 @@ def call(Map localinfo, String agentName)
 	cienv += get_build_info(ldmap, cienv)
     } else {
 	// same logic as above, for rpm builds
-	cienv['LIBQB_REPO'] = "https://ci.kronosnet.org/builds/libqb-main-" + agentName + ".repo"
-	cienv['LIBQB_REPO_PATH'] = "https://ci.kronosnet.org/builds/libqb/" + agentName + "/main/latest/"
-	cienv['KRONOSNET_REPO'] = "https://ci.kronosnet.org/builds/kronosnet-main-" + agentName + ".repo"
-	cienv['KRONOSNET_REPO_PATH'] = "https://ci.kronosnet.org/builds/kronosnet/" + agentName + "/main/latest/"
-	cienv['COROSYNC_REPO'] = "https://ci.kronosnet.org/builds/corosync-main-kronosnet-main-" + agentName + ".repo"
-	cienv['COROSYNC_REPO_PATH'] = "https://ci.kronosnet.org/builds/corosync/" + agentName + "/main-kronosnet-main/latest/"
-	cienv['COROSYNC_QDEVICE_REPO'] = "https://ci.kronosnet.org/builds/corosync-qdevice-main-" + agentName + ".repo"
-	cienv['COROSYNC_QDEVICE_REPO_PATH'] = "https://ci.kronosnet.org/builds/corosync-qdevice/" + agentName + "/main/latest/"
-	cienv['FENCE_AGENTS_REPO'] = "https://ci.kronosnet.org/builds/fence-agents-main-" + agentName + ".repo"
-	cienv['FENCE_AGENTS_REPO_PATH'] = "https://ci.kronosnet.org/builds/fence-agents/" + agentName + "/main/latest/"
-	cienv['RESOURCE_AGENTS_REPO'] = "https://ci.kronosnet.org/builds/resource-agents-main-" + agentName + ".repo"
-	cienv['RESOURCE_AGENTS_REPO_PATH'] = "https://ci.kronosnet.org/builds/resource-agents/" + agentName + "/main/latest/"
-	cienv['PACEMAKER_REPO'] = "https://ci.kronosnet.org/builds/pacemaker-" + cienv['pacemakerver'] + "-" + agentName + ".repo"
-	cienv['PACEMAKER_REPO_PATH'] = "https://ci.kronosnet.org/builds/pacemaker/" + agentName + "/" + cienv['pacemakerver'] + "/latest/"
-	cienv['BOOTH_REPO'] = "https://ci.kronosnet.org/builds/booth-main-pacemaker-" + cienv['pacemakerver'] + "-" + agentName + ".repo"
-	cienv['BOOTH_REPO_PATH'] = "https://ci.kronosnet.org/builds/booth/" + agentName + "/main-pacemaker-" + cienv['pacemakerver'] + "/latest/"
-	cienv['SBD_REPO'] = "https://ci.kronosnet.org/builds/sbd-main-pacemaker-" + cienv['pacemakerver'] + "-" + agentName + ".repo"
-	cienv['SBD_REPO_PATH'] = "https://ci.kronosnet.org/builds/sbd/" + agentName + "/main-pacemaker-" + cienv['pacemakerver'] + "/latest/"
-	cienv['DLM_REPO'] = "https://ci.kronosnet.org/builds/dlm-main-" + agentName + ".repo"
-	cienv['DLM_REPO_PATH'] = "https://ci.kronosnet.org/builds/dlm/" + agentName + "/main/latest/"
-	cienv['GFS2UTILS_REPO'] = "https://ci.kronosnet.org/builds/gfs2-utils-main-" + agentName + ".repo"
-	cienv['GFS2UTILS_REPO_PATH'] = "https://ci.kronosnet.org/builds/gfs2-utils/" + agentName + "/main/latest/"
+	cienv['LIBQB_REPO'] = "http://ci.kronosnet.org/builds/libqb-main-" + agentName + ".repo"
+	cienv['LIBQB_REPO_PATH'] = "http://ci.kronosnet.org/builds/libqb/" + agentName + "/main/latest/"
+	cienv['KRONOSNET_REPO'] = "http://ci.kronosnet.org/builds/kronosnet-main-" + agentName + ".repo"
+	cienv['KRONOSNET_REPO_PATH'] = "http://ci.kronosnet.org/builds/kronosnet/" + agentName + "/main/latest/"
+	cienv['COROSYNC_REPO'] = "http://ci.kronosnet.org/builds/corosync-main-kronosnet-main-" + agentName + ".repo"
+	cienv['COROSYNC_REPO_PATH'] = "http://ci.kronosnet.org/builds/corosync/" + agentName + "/main-kronosnet-main/latest/"
+	cienv['COROSYNC_QDEVICE_REPO'] = "http://ci.kronosnet.org/builds/corosync-qdevice-main-" + agentName + ".repo"
+	cienv['COROSYNC_QDEVICE_REPO_PATH'] = "http://ci.kronosnet.org/builds/corosync-qdevice/" + agentName + "/main/latest/"
+	cienv['FENCE_AGENTS_REPO'] = "http://ci.kronosnet.org/builds/fence-agents-main-" + agentName + ".repo"
+	cienv['FENCE_AGENTS_REPO_PATH'] = "http://ci.kronosnet.org/builds/fence-agents/" + agentName + "/main/latest/"
+	cienv['RESOURCE_AGENTS_REPO'] = "http://ci.kronosnet.org/builds/resource-agents-main-" + agentName + ".repo"
+	cienv['RESOURCE_AGENTS_REPO_PATH'] = "http://ci.kronosnet.org/builds/resource-agents/" + agentName + "/main/latest/"
+	cienv['PACEMAKER_REPO'] = "http://ci.kronosnet.org/builds/pacemaker-" + cienv['pacemakerver'] + "-" + agentName + ".repo"
+	cienv['PACEMAKER_REPO_PATH'] = "http://ci.kronosnet.org/builds/pacemaker/" + agentName + "/" + cienv['pacemakerver'] + "/latest/"
+	cienv['BOOTH_REPO'] = "http://ci.kronosnet.org/builds/booth-main-pacemaker-" + cienv['pacemakerver'] + "-" + agentName + ".repo"
+	cienv['BOOTH_REPO_PATH'] = "http://ci.kronosnet.org/builds/booth/" + agentName + "/main-pacemaker-" + cienv['pacemakerver'] + "/latest/"
+	cienv['SBD_REPO'] = "http://ci.kronosnet.org/builds/sbd-main-pacemaker-" + cienv['pacemakerver'] + "-" + agentName + ".repo"
+	cienv['SBD_REPO_PATH'] = "http://ci.kronosnet.org/builds/sbd/" + agentName + "/main-pacemaker-" + cienv['pacemakerver'] + "/latest/"
+	cienv['DLM_REPO'] = "http://ci.kronosnet.org/builds/dlm-main-" + agentName + ".repo"
+	cienv['DLM_REPO_PATH'] = "http://ci.kronosnet.org/builds/dlm/" + agentName + "/main/latest/"
+	cienv['GFS2UTILS_REPO'] = "http://ci.kronosnet.org/builds/gfs2-utils-main-" + agentName + ".repo"
+	cienv['GFS2UTILS_REPO_PATH'] = "http://ci.kronosnet.org/builds/gfs2-utils/" + agentName + "/main/latest/"
 
 	if ((localinfo['target'] != 'main') ||
 	    (cienv['pacemakerver'] != 'main')) {
-	    cienv['KRONOSNET_REPO'] = "https://ci.kronosnet.org/builds/kronosnet-stable1-proposed-" + agentName + ".repo"
-	    cienv['KRONOSNET_REPO_PATH'] = "https://ci.kronosnet.org/builds/kronosnet/" + agentName + "/stable1-proposed/latest/"
-	    cienv['COROSYNC_REPO'] = "https://ci.kronosnet.org/builds/corosync-camelback-kronosnet-stable1-proposed-" + agentName + ".repo"
-	    cienv['COROSYNC_REPO_PATH'] = "https://ci.kronosnet.org/builds/corosync/" + agentName + "/camelback-kronosnet-stable1-proposed/latest/"
+	    cienv['KRONOSNET_REPO'] = "http://ci.kronosnet.org/builds/kronosnet-stable1-proposed-" + agentName + ".repo"
+	    cienv['KRONOSNET_REPO_PATH'] = "http://ci.kronosnet.org/builds/kronosnet/" + agentName + "/stable1-proposed/latest/"
+	    cienv['COROSYNC_REPO'] = "http://ci.kronosnet.org/builds/corosync-camelback-kronosnet-stable1-proposed-" + agentName + ".repo"
+	    cienv['COROSYNC_REPO_PATH'] = "http://ci.kronosnet.org/builds/corosync/" + agentName + "/camelback-kronosnet-stable1-proposed/latest/"
 	}
 
 	// corosync supports both kronosnet stable and main
 	// we need to test build both
 	if ((localinfo['project'] == 'corosync') &&
 	    (cienv.containsKey('kronosnetver'))) {
-	    cienv['KRONOSNET_REPO'] = "https://ci.kronosnet.org/builds/kronosnet-" + cienv['kronosnetver'] + "-" + agentName + ".repo"
-	    cienv['KRONOSNET_REPO_PATH'] = "https://ci.kronosnet.org/builds/kronosnet/" + agentName + "/" + cienv['kronosnetver'] + "/latest/"
+	    cienv['KRONOSNET_REPO'] = "http://ci.kronosnet.org/builds/kronosnet-" + cienv['kronosnetver'] + "-" + agentName + ".repo"
+	    cienv['KRONOSNET_REPO_PATH'] = "http://ci.kronosnet.org/builds/kronosnet/" + agentName + "/" + cienv['kronosnetver'] + "/latest/"
 	}
     }
 

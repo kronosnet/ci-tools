@@ -10,27 +10,47 @@ def clean_dirs(String project, String staging_dir)
     """)
 }
 
-def process_log_dirs(String staging_dir)
+
+def recurse_branches(String staging_dir, String jenkins_dir)
 {
-    // Look for each build branch
-    sh ("""
-        cd ${staging_dir}/job
-        for i in \$(find . -name branches -type d); do
-          oldpwd=\$(pwd)
-          cd \$i
-          builds="\$(ls -1 | sort -n)"
-          numbuilds="\$(echo "\$builds" | wc -l)"
-          if [ "\$numbuilds" -gt 200 ]; then
-                purgenum=\$((numbuilds - 200))
-                candidates="\$(echo "\$builds" | head -n \$purgenum)"
-                for candidate in \$candidates; do
-                        echo "Removing old build: \$candidate"
-                        echo rm -rf \$candidate
-                done
-          fi
-          cd \$oldpwd
-        done
-    """)
+    def staging_paths = new File(staging_dir).list()
+    def jenkins_paths = new File(jenkins_dir).list()
+
+    // First remove missing branches
+    remove_old_job_logs(staging_dir, jenkins_dir)
+
+    // Loop through the job branches, anything jobs
+    // in the Jenkins dir gets removed
+    for (String spath:staging_paths) {
+	remove_old_job_logs("${staging_dir}/${spath}/builds",
+			    "${jenkins_dir}/${spath}")
+    }
+}
+
+
+// Removes old jobs from the staging area
+// when all the jobs from a branch have been deleted
+// then clean_dirs() above will remove the empty directory
+def remove_old_job_logs(String staging_dir, String jenkins_dir)
+{
+    def staging_paths = new File(staging_dir).list()
+    def jenkins_paths = new File(jenkins_dir).list()
+
+    // Loop through the staging paths, anything not
+    // in the Jenkins dir gets removed
+    for (String spath:staging_paths) {
+	def found = 0
+	for (String jpath:jenkins_paths) {
+	    if (jpath == spath) {
+		found = 1
+	    }
+	}
+	// Make sure %{staging_dir} has something in it before
+	// we do rm -rf
+	if (found == 0 && staging_dir.length() > 12) {
+	    sh("echo rm -rfv ${staging_dir}/${spath}")
+	}
+    }
 }
 
 // Rsync everything to the external logs node
@@ -59,15 +79,24 @@ def copy_our_logs(Map info, String staging_dir)
     def job_bits = env.JOB_NAME.split("/")
     def logsdir = ''
     def target_logsdir = ''
+    def jobsdir = ''
+    def target_jobsdir = ''
+    def recurse = 0
     if (job_bits.size() == 2) {
 	logsdir = "${env.JENKINS_HOME}/jobs/${job_bits[0]}/jobs/${job_bits[1]}/builds/${env.BUILD_NUMBER}/"
 
 	target_logsdir="${staging_dir}/job/${job_bits[0]}/job/${job_bits[1]}/${env.BUILD_NUMBER}/"
+	jobsdir = "${env.JENKINS_HOME}/jobs/${job_bits[0]}/jobs/${job_bits[1]}/builds"
+	target_jobsdir="${staging_dir}/job/${job_bits[0]}/job/${job_bits[1]}"
     } else {
 	logsdir = "${env.JENKINS_HOME}/jobs/${job_bits[0]}/jobs/${job_bits[1]}/branches/${job_bits[2]}/builds/${env.BUILD_NUMBER}/"
 
 	target_logsdir="${staging_dir}/job/${job_bits[0]}/job/${job_bits[1]}/job/${job_bits[2]}/${env.BUILD_NUMBER}/"
-	}
+	jobsdir = "${env.JENKINS_HOME}/jobs/${job_bits[0]}/jobs/${job_bits[1]}/branches"
+
+	target_jobsdir="${staging_dir}/job/${job_bits[0]}/job/${job_bits[1]}/job"
+	recurse = 1
+    }
 
     // Copy logs to the staging area
     println("Copying logs to ${target_logsdir}")
@@ -81,23 +110,25 @@ def copy_our_logs(Map info, String staging_dir)
     if (f.exists()) {
 	sh("rsync -atr ${logsdir}/archive/* ${target_logsdir}/artifact/")
     }
+    return new Tuple(target_jobsdir, jobsdir, recurse)
 }
 
 // Called from projectFinishUp() (or other) to clean up
 //   old logs and copy them to the external access system.
-// We do this for ALL jobs, so that if one rsync fails
-//   (eg network issues) the next job will copy those logs too
+// We do the remote rsync for ALL jobs, so that if one fails
+//   (eg network issues) the next job will copy those logs too.
 def call(Map info)
 {
     node('built-in') {
-	def staging_dir = "/var/www/ci.kronosnet.org"
+	def staging_dir = '/var/www/ci.kronosnet.org'
 	RWLock(info, "log_archive", "WRITE", "projectFinishUp",
 	       {
-
-		copy_our_logs(info, staging_dir)
+		def (job_staging_dir, job_jenkins_dir, recurse) = copy_our_logs(info, staging_dir)
+		if (recurse) {
+		    recurse_branches(job_staging_dir, job_jenkins_dir)
+		} else
+		    remove_old_job_logs(job_staging_dir, job_jenkins_dir)
 		clean_dirs(info['project'], staging_dir)
-		process_log_dirs(staging_dir)
-
 		rsync_to_external(staging_dir)
 	    })
     }

@@ -57,7 +57,7 @@ copy_if_needed()
         # Log files needs to be parsed by jenkins
         mkdir -p ${target_dir}
         file="consoleText"
-        curl http://localhost:8080/job/${target_path}/consoleText ${target_dir}/consoleText
+        curl http://localhost:8080/job/${target_path}/consoleText >${target_dir}/consoleText
         do_copy=0
     fi
     if [ "${log_or_archive:0:7}" = "archive" -a -f "$1" ]

@@ -81,6 +81,10 @@ pipeline {
     }
     post {
 	always {
+	    node('built-in') {
+		// Copy logs
+		stagingCleanAndCopy(info)
+	    }
 	    RWLock(info, 'UNLOCK')
 	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 	}

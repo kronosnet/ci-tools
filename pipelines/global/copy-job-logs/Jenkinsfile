@@ -1,4 +1,4 @@
-@Library(['GlobalLib@cc-devel', 'VaporLib@cc-devel', 'ProjectLib@cc-devel']) _
+@Library(['GlobalLib', 'ProjectLib']) _
 
 // Globals
 def project = 'global'
@@ -16,7 +16,7 @@ pipeline {
             steps {
                 script {
                     getBuildInfoCommon(info)
-                    sh "sh ~jenkins/ci-tools/copy-logs-to-staging.sh ${env.project}"
+                    sh "~/ci-tools/copy-logs-to-staging.sh ${env.project}"
                 }
             }
         }

@@ -74,9 +74,12 @@ def doRunStage(String agentName, Map info, Map localinfo)
 	// This is the log file we will add to the artifacts
 	stagestate['logfile'] = "${localinfo['stageName']}-${agentName}.log"
 
+	// Tell rWA that we are handling exceptions in callbacks
+	info['runWithArtifactsDontRethrow'] = 1
+
 	// Keep the logs in separate files per node/function so they are easy to find
 	stage("Build for ${stageTitle} on ${agentName}") {
-	    tee (stagestate['logfile']) {
+	    runWithArtifacts(info, stagestate['logfile'], {
 		stagestate['runstage'] = 'checkout'
 		def rc = runWithTimeout(collect_timeout, { getSCM(info) }, stagestate,
 					{ processRunSuccess(info, localinfo, stagestate) },
@@ -135,6 +138,10 @@ def doRunStage(String agentName, Map info, Map localinfo)
 			    // Don't run any more stages if one fails
 			    running = false
 			}
+			// Rethrow any exception so that runWithArtifacts() catches it
+			if (stagestate.containsKey('EXP')) {
+			    throw (stagestate['EXP'])
+			}
 		    }
 		}
 
@@ -162,37 +169,17 @@ def doRunStage(String agentName, Map info, Map localinfo)
 			    }
 			    // Don't run any more stages if one fails
 			    running = false
+			    // Rethrow any exception so that runWithArtifacts() catches it
+			    if (stagestate.containsKey('EXP')) {
+				throw (stagestate['EXP'])
+			    }
 			}
 		    }
 		}
-	    }
+	    })
 	}
 
-	// Save the log (if it exists)
-	if (stagestate.containsKey('logfile')) {
-	    info['have_split_logs'] = true
-	    dir (env.WORKSPACE) {
-		// This sed removes the 'bold' links which look a bit like an exposed encrypted thing (but aren't)
-		sh """#!/bin/citbash -e
-                   sed \$'s/\\033\\\\[8m.*\\033\\\\[0m//' <${stagestate['logfile']} >TMP_${stagestate['logfile']}"""
-
-		if (stagestate['failed']) {
-		    // Rename the log so we know it all went badly
-		    sh "mv TMP_${stagestate['logfile']} FAILED_${stagestate['logfile']}"
-		    archiveArtifacts artifacts: "FAILED_${stagestate['logfile']}", fingerprint: false
-		    // Save it for the email
-		    if (!info.containsKey('failedlogs')) {
-			info['failedlogs'] = []
-		    }
-		    info['failedlogs'] += "FAILED_${stagestate['logfile']}"
-		} else {
-		    // Rename the log so we know it all went fine
-		    sh "mv TMP_${stagestate['logfile']} SUCCESS_${stagestate['logfile']}"
-		    archiveArtifacts artifacts: "SUCCESS_${stagestate['logfile']}", fingerprint: false
-		}
-	    }
-	}
-
+	info['have_split_logs'] = true
 	println('STAGESTATE: '+stagestate)
 	def lockstagename = "${localinfo['stageName']}-${agentName}"
 

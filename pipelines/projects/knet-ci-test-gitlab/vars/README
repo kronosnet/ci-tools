@@ -1,0 +1,9 @@
+Functions in here are specific to this project
+the directory containing this one (ie projects/<project-name>)
+should be added as a shared lib to the project under
+"Pipeline Libraries".
+
+For some features it might be worthwhile sharing this
+code in the main sharedlib ~/vars or in a common library.
+Bear in mind that the main ~/vars is the global shared
+library for Jenkins and code in there is unsandboxed.

@@ -1,0 +1,136 @@
+// Jenkinsfile for the knet CI (github) project
+//  1-May-2023    Chrissie Caulfield    original version for running 'old-style' jobs
+// 16-Jun-2023    me again              Move a lot of stuff into getBuildInfo() for tidiness
+// 13-Jul-2023    guess who?            Make it fully pipelined
+
+@Library(['GlobalLib@fab-devel', 'GitlabLib@fab-devel', 'ProjectLib@fab-devel']) _
+
+// Who we are
+def project = 'ci-test'
+def info = [:]
+
+def withinlock()
+{
+    sh "date; sleep 60; date"
+    println("Called with locking test on ${env.NODE_NAME}");
+}
+
+// Pipeline code starts here
+pipeline {
+    // Start on the main Jenkins node. Build jobs are distributed inside 'parallel' below
+    agent { label 'built-in' }
+
+    options {
+	gitLabConnection('gitlab-knet-ci-bot')
+	gitlabBuilds(builds: ['build'])
+    }
+
+    triggers {
+	gitlab(triggerOnPush: true, triggerOnMergeRequest: true)
+    }
+
+    // Things that external jobs might want to influence
+    parameters {
+	string(name: 'bootstrap',   defaultValue: '0', description: 'Bootstrap the RPM repos')
+	string(name: 'fullrebuild', defaultValue: '0', description: 'This is a full rebuild - do not publish RPM and do NOT update build code on the nodes')
+    }
+
+    stages {
+	// First check we are allowed to run, then set some params for that run
+	stage('Setup build env') {
+	    steps {
+		script {
+		    getBuildInfo(project, info)
+		    //withEnv(["BRANCH_NAME=${info['source']}"]) {
+			println("DEBUG ${env.BRANCH_NAME}")
+			updateGitlabCommitStatus name: 'build', state: 'running'
+		    //}
+		}
+	    }
+	}
+
+        // This is the main stage - building and testing
+	stage('Main stage') {
+	    when {
+		// getAuthCheck (in getBuildInfo) will usually abort the job if permission is denied,
+		// but this is an extra check.
+		expression { info['authcheck'] == true && info['is_draft'] == false }
+	    }
+
+	    // All of the stages that actually do stuff
+	    steps {
+		script {
+
+		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+
+		    RWLock(info, 'testlock', 'WRITE', 'jenkinsfile', { withinlock() } )
+
+		    // The 'short' test list
+		    def voting = buildRunMap('voting', info, ['voting': true,
+							  'nodelabel': 'test-voting',
+							  'extravars': ['justforfun': 'BOO',
+									'depbuildname': 'kronosnet',
+									'depbuildversion': 'main',
+									'install': 0]])
+
+		    def nonvoting = buildRunMap('nonvoting', info, ['voting': false,
+								'nodelabel': 'test-nonvoting',
+								'extravars': ['depbuildname': 'kronosnet',
+									      'depbuildversion': 'stable1-proposed']])
+
+		    def nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
+									    'nodelabel': 'test-nonvoting',
+									    'extravars': ['compiler': 'clang',
+											  'depbuildname': 'kronosnet',
+											  'depbuildversion': 'main',
+											  'install': 0,
+											  'title': 'CLANG test']])
+
+		    def buildrpms = buildRunMap('buildrpms', info, ['voting': false,
+								'nodelabel': 'test-buildrpms'])
+
+
+		    // Run them (errors are caught in info[:])
+		    try {
+			parallel voting + nonvoting + nonvoting_clang + buildrpms
+		    } catch (err) {
+			println("Jenkinsfile caught "+err)
+			info['exception_text'] += "\nparallel error caught: {$err}\n"
+		    }
+		}
+	    }
+	}
+
+        // Build the RPM/Coverity repos etc. If the job failed, this is what tells Jenkins
+	stage('Post Stage') {
+	    when {
+		expression { info['authcheck'] == true && info['is_draft'] == false }
+	    }
+	    steps {
+		postStage(info)
+	    }
+	}
+    }
+
+    // Finish up and send emails
+    post {
+	failure {
+	    //withEnv(["BRANCH_NAME=${info['target']}"]) {
+		updateGitlabCommitStatus name: 'build', state: 'failed'
+	    //}
+	}
+	success {
+	    //withEnv(["BRANCH_NAME=${info['target']}"]) {
+		updateGitlabCommitStatus name: 'build', state: 'success'
+	    //}
+	}
+	aborted {
+	    //withEnv(["BRANCH_NAME=${info['target']}"]) {
+		updateGitlabCommitStatus name: 'build', state: 'canceled'
+	    //}
+	}
+	always {
+	    projectFinishUp(info)
+	}
+    }
+}

@@ -9,12 +9,16 @@ def project = 'update-all-openindiana'
 def buildFullRunMap(Map info)
 {
     def collectBuildEnv = [:]
-    def nodeList = getUpNodesByLabel(info['packager'])
+    def nodeList = getLabelledNodes(info['packager'])
+    def downnodes = getLabelledNodes('down')
+    println('"Down" nodes: '+downnodes)
 
     for (def n in nodeList) {
 	def node = n
-	collectBuildEnv[node] = {
-	    updateOSNode(node, info)
+	if (!downnodes.contains(node)) {
+	    collectBuildEnv[node] = {
+		updateOSNode(node, info)
+	    }
 	}
     }
 

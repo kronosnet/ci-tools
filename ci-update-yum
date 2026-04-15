@@ -247,6 +247,7 @@ for PKG in $OPTIONAL_PKGS; do yum -y install $PKG || true; done
 
 case "${NODE_NAME}" in
  *vapor*)
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/aliyun/aliyun-cli/HEAD/install.sh)"
   if ! which ibmcloud > /dev/null 2>&1; then
    curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
   else

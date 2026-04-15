@@ -9,9 +9,7 @@ def project = 'update-all-freebsd'
 def buildFullRunMap(Map info)
 {
     def collectBuildEnv = [:]
-    def nodeList = getLabelledNodes(info['packager'])
-    def downnodes = getLabelledNodes('down')
-    println('"Down" nodes: '+downnodes)
+    def nodeList = getUpNodesByLabel(info['packager'])
 
     for (def n in nodeList) {
 	def node = n
@@ -20,10 +18,8 @@ def buildFullRunMap(Map info)
 	if (node == 'freebsd-devel-x86-64') {
 	    node = 'built-in'
 	}
-	if (!downnodes.contains(node)) {
-	    collectBuildEnv[node] = {
-		updateOSNode(node, info, realnode)
-	    }
+	collectBuildEnv[node] = {
+	    updateOSNode(node, info, realnode)
 	}
     }
 

@@ -9,16 +9,12 @@ def project = 'update-all-yum'
 def buildFullRunMap(Map info)
 {
     def collectBuildEnv = [:]
-    def nodeList = getLabelledNodes(info['packager'])
-    def downnodes = getLabelledNodes('down')
-    println('"Down" nodes: '+downnodes)
+    def nodeList = getUpNodesByLabel(info['packager'])
 
     for (def n in nodeList) {
 	def node = n
-	if (!downnodes.contains(node)) {
-	    collectBuildEnv[node] = {
-		updateOSNode(node, info)
-	    }
+	collectBuildEnv[node] = {
+	    updateOSNode(node, info)
 	}
     }
 

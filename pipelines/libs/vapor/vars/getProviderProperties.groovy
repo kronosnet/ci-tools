@@ -14,8 +14,8 @@ def call()
     // Cloud providers and their limits & params.
     def providers = [:]
 
-    providers['libvirt'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9', 'rhel10', 'centos10'],
-			    'has_watchdog': true, 'has_storage': true, 'has_network': true, 'weekly': true,
+    providers['libvirt'] = ['maxjobs_smoke': 4, 'maxjobs_all': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9', 'rhel10', 'centos10'],
+			    'has_watchdog': true, 'has_storage': true, 'has_network': true, 'weekly': true, 'allprio': 1,
 			    'api_rate_limit': false,
 			    'defaultiscsi': '10',
 			    'defaultuseiscsi': 'no',
@@ -38,7 +38,7 @@ def call()
 					 'testopts': '',
 					 'setup_fn': {libvirt10_setup()} ]]
 
-    providers['osp'] = ['maxjobs': 4, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9'],
+    providers['osp'] = ['maxjobs_smoke': 8, 'maxjobs_all': 8, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9'],
 			'has_watchdog': true, 'has_storage': true, 'has_network': true, 'weekly': true,
 			'api_rate_limit': true,
 			'defaultiscsi': '200',
@@ -54,8 +54,8 @@ def call()
 				  'testopts': '',
 				  'setup_fn': {}]]
 
-    providers['azure'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9', 'rhel10'],
-			  'has_watchdog': false, 'has_storage': true, 'has_network': true, 'weekly': true,
+    providers['azure'] = ['maxjobs_smoke': 4, 'maxjobs_all': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9', 'rhel10'],
+			  'has_watchdog': false, 'has_storage': true, 'has_network': true, 'weekly': true, 'allprio': 1,
 			  'api_rate_limit': true,
 			  'defaultiscsi': '',
 			  'defaultuseiscsi': 'no',
@@ -74,8 +74,8 @@ def call()
 				     'testopts': '',
 				     'setup_fn': {}]]
 
-    providers['aws'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9', 'rhel10'],
-			'has_watchdog': false, 'has_storage': true, 'has_network': true, 'weekly': true,
+    providers['aws'] = ['maxjobs_smoke': 4, 'maxjobs_all': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9', 'rhel10'],
+			'has_watchdog': false, 'has_storage': true, 'has_network': true, 'weekly': true, 'allprio': 1,
 			'api_rate_limit': true,
 			'defaultiscsi': '',
 			'defaultuseiscsi': 'no',
@@ -94,8 +94,8 @@ def call()
 				   'testopts': '',
 				   'setup_fn': {}]]
 
-    providers['gcp'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9', 'rhel10'],
-			'has_watchdog': false, 'has_storage': true, 'has_network': true, 'weekly': true,
+    providers['gcp'] = ['maxjobs_smoke': 4, 'maxjobs_all': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9', 'rhel10'],
+			'has_watchdog': false, 'has_storage': true, 'has_network': true, 'weekly': true, 'allprio': 1,
 			'api_rate_limit': true,
 			'defaultiscsi': '200',
 			'defaultuseiscsi': 'yes',
@@ -114,8 +114,8 @@ def call()
 				  'testopts': '',
 				  'setup_fn': {}]]
 
-    providers['aliyun'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9', 'rhel10'],
-			   'has_watchdog': false, 'has_storage': true, 'has_network': true, 'weekly': true,
+    providers['aliyun'] = ['maxjobs_smoke': 4, 'maxjobs_all': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9', 'rhel10'],
+			   'has_watchdog': false, 'has_storage': true, 'has_network': true, 'weekly': true, 'allprio': 1,
 			   'api_rate_limit': true,
 			   'defaultiscsi': '200',
 			   'defaultuseiscsi': 'no',
@@ -134,8 +134,8 @@ def call()
 				      'testopts': '',
 				      'setup_fn': {}]]
 
-    providers['ocpv'] = ['maxjobs': 4, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9', 'rhel10', 'centos10'],
-			 'has_watchdog': true, 'has_storage': true, 'has_network': true, 'weekly': true,
+    providers['ocpv'] = ['maxjobs_smoke': 4, 'maxjobs_all': 0, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9', 'rhel10', 'centos10'],
+			 'has_watchdog': true, 'has_storage': true, 'has_network': true, 'weekly': true, 'allprio': 0,
 			 'api_rate_limit': false,
 			 'defaultiscsi': '10',
 			 'defaultuseiscsi': 'no',
@@ -158,8 +158,8 @@ def call()
 				      'testopts': '',
 				      'setup_fn': {}]]
 
-    providers['ibmvpc'] = ['maxjobs': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
-			   'has_watchdog': false, 'has_storage': false, 'has_network': false, 'weekly': true,
+    providers['ibmvpc'] = ['maxjobs_smoke': 4, 'maxjobs_all': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
+			   'has_watchdog': false, 'has_storage': false, 'has_network': false, 'weekly': true, 'allprio': 1,
 			   'api_rate_limit': true,
 			   'defaultiscsi': '200',
 			   'defaultuseiscsi': 'yes',

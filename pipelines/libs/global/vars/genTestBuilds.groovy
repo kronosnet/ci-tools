@@ -99,7 +99,7 @@ def genSmokeJobs(String dryrun, String provider_param, Map info)
 
 	    // If 'maxjobs' is set to 0 then that means we can run as many instances
 	    // as we like, so schedule as many jobs as there are 'smoke' tests
-	    def maxjobs = pinfo['maxjobs']
+	    def maxjobs = pinfo['maxjobs_smoke']
 	    if (maxjobs == 0) {
 		maxjobs = provider_smokejobs.size()
 	    }
@@ -136,7 +136,7 @@ def genAllJobs(String dryrun, String provider_param, Map info, Map prov_failflag
     def all_matrix = [:]
 
     // Work out how many providers each job can run on.
-    // schedule them (1...<n>) on to the least busy suitable provider
+    // schedule them (1...<n>) on to the highest priority provider
     def alljobs = buildJobList('all')
     def providers = limitProviders(provider_param, getProviderProperties())
 
@@ -166,9 +166,9 @@ def genAllJobs(String dryrun, String provider_param, Map info, Map prov_failflag
     def sorted_jobs = sort_jobs(alljobs)
     for (def job in sorted_jobs) {
 	def stagename = mkstagename(job)
-	def least_busy = null
+	def highest_prio = null
 
-	// Find the least busy provider that can run this job
+	// Find the highest prio provider that can run this job
 	for (def p in providers) {
 	    def provider = p.key
 	    def pinfo = p.value
@@ -177,17 +177,17 @@ def genAllJobs(String dryrun, String provider_param, Map info, Map prov_failflag
 		prov_failflags[provider][stagename] == false &&
 		pinfo['vers'].contains(job['osver'])) {
 
-		if (least_busy == null ||
-		    pinfo['numjobs'] < providers[least_busy]['numjobs']) {
-		    least_busy = p.key
+		if (highest_prio == null ||
+		    pinfo['allprio'] < providers[highest_prio]['allprio']) {
+		    highest_prio = p.key
 		    println("${provider} eligible for job ${stagename}")
 		}
 	    }
 	}
-	// Give this job to the least busy, eligible, provider
-	if (least_busy != null) {
-	    providers[least_busy]['alljobs'] += job
-	    providers[least_busy]['numjobs'] += 1
+	// Give this job to the eligible provider
+	if (highest_prio != null) {
+	    providers[highest_prio]['alljobs'] += job
+	    providers[highest_prio]['numjobs'] += 1
 	}
     }
 
@@ -203,7 +203,7 @@ def genAllJobs(String dryrun, String provider_param, Map info, Map prov_failflag
 	    provider_jobs['alljobs'] = pinfo['alljobs']
 
 	    // Don't start more runners than we really need (or are allowed)
-	    def maxjobs = Math.min(pinfo['maxjobs'], pinfo['numjobs'])
+	    def maxjobs = Math.min(pinfo['maxjobs_all'], pinfo['numjobs'])
 	    if (maxjobs == 0) {
 		maxjobs = pinfo['alljobs'].size()
 	    }

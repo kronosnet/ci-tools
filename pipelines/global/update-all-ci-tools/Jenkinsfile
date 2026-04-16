@@ -9,21 +9,15 @@ def project = 'update-all-ci-tools'
 def buildFullRunMap(Map info)
 {
     def collectBuildEnv = [:]
-    def nodeList = getNodes()
-    def downnodes = getLabelledNodes('down')
-    println('"Down" nodes: '+downnodes)
+    def nodeList = getUpNodesByLabel('')
 
-    for (n in nodeList) {
-	def node = n.key
-	if (!downnodes.contains(node)) {
-	    collectBuildEnv[node] = {
-		updateCiNode(node, info)
-	    }
-	}
-    }
     // It also needs to run on the Jenkins node
-    collectBuildEnv['built-in'] = {
-	updateCiNode('built-in', info)
+    nodeList += 'built-in'
+    for (def n in nodeList) {
+	def node = n
+	collectBuildEnv[node] = {
+	    updateCiNode(node, info)
+	}
     }
 
     return collectBuildEnv

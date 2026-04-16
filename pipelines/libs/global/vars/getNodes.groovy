@@ -69,7 +69,7 @@ def call(String target)
 
     def nodelist = []
     for (i in labels) {
-	if (labels[i.key].contains(target)) {
+	if (target == '' || labels[i.key].contains(target)) {
 	    nodelist += i.key
 	}
     }

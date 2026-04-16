@@ -9,16 +9,12 @@ def project = 'anvil-build-cache'
 def buildFullRunMap(Map info)
 {
     def collectBuildEnv = [:]
-    def nodeList = getLabelledNodes('anvil-bm')
-    def downnodes = getLabelledNodes('down')
-    println('"Down" nodes: '+downnodes)
+    def nodeList = getUpNodesByLabel('anvil-bm')
 
-    for (n in nodeList) {
+    for (def n in nodeList) {
 	def node = n
-	if (!downnodes.contains(node)) {
-	    collectBuildEnv[node] = {
-		anvil_update_node_cache(node, info)
-	    }
+	collectBuildEnv[node] = {
+	    anvil_update_node_cache(node, info)
 	}
     }
 

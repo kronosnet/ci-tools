@@ -9,16 +9,12 @@ def project = 'anvil-build-dep-repos'
 def buildFullRunMap(Map info)
 {
     def collectBuildEnv = [:]
-    def nodeList = getLabelledNodes('anvil')
-    def downnodes = getLabelledNodes('down')
-    println('"Down" nodes: '+downnodes)
+    def nodeList = getUpNodesByLabel('anvil-bm')
 
-    for (n in nodeList) {
+    for (def n in nodeList) {
 	def node = n
-	if (!downnodes.contains(node)) {
-	    collectBuildEnv[node] = {
-		anvil_build_dep_repos(node, info)
-	    }
+	collectBuildEnv[node] = {
+	    anvil_build_dep_repos(node, info)
 	}
     }
 

@@ -17,6 +17,7 @@ required_pkg gnu-binutils
 required_pkg gnu-coreutils
 required_pkg gnu-make
 required_pkg header-tun
+required_pkg icu
 required_pkg libtool
 required_pkg system/mozilla-nss
 required_pkg tun

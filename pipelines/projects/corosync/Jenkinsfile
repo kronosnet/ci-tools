@@ -100,7 +100,8 @@ pipeline {
 			parallel voting_kmain + voting_kstable +
 			    nonvoting_kmain + nonvoting_kstable +
 			    nonvoting_clang_kmain + nonvoting_clang_kstable +
-			    buildrpms_kmain + buildrpms_kstable
+			    buildrpms_kmain + buildrpms_kstable +
+			    covscan_kmain + covscan_kstable
 		    } catch (err) {
 			println("Jenkinsfile caught "+err)
 			info['exception_text'] += "\nparallel error caught: {$err}\n"

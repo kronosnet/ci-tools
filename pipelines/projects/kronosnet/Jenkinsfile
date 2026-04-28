@@ -65,7 +65,7 @@ pipeline {
 
 		    // Run them (errors are caught in info[:])
 		    try {
-			parallel voting + nonvoting + nonvoting_clang + buildrpms + voting_arm_cross
+			parallel voting + nonvoting + nonvoting_clang + buildrpms + covscan + voting_arm_cross
 		    } catch (err) {
 			println("Jenkinsfile caught "+err)
 			info['exception_text'] += "\nparallel error caught: {$err}\n"

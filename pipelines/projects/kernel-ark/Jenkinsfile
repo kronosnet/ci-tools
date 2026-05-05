@@ -122,8 +122,8 @@ pipeline {
 				echo == fetch \$remote ==
 				git fetch \$remote
 			    done
-			    echo == reset tree to origin/os-build ==
-			    git reset --hard origin/os-build
+			    echo == reset tree to origin/ark-latest ==
+			    git reset --hard origin/ark-latest
 			    echo == clean tree ==
 			    git clean -dfx
 			"""

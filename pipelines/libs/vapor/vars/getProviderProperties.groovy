@@ -39,7 +39,7 @@ def call()
 					 'setup_fn': {libvirt10_setup()} ]]
 
     providers['osp'] = ['maxjobs_smoke': 8, 'maxjobs_all': 8, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9'],
-			'has_watchdog': true, 'has_storage': true, 'has_network': true, 'weekly': true,
+			'has_watchdog': true, 'has_storage': true, 'has_network': true, 'weekly': true, 'allprio': 1,
 			'api_rate_limit': true,
 			'defaultiscsi': '200',
 			'defaultuseiscsi': 'yes',

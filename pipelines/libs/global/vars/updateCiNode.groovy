@@ -7,6 +7,7 @@ def call(String agentName, Map info)
     println("Running updateCiNode on ${agentName}")
 
     node("${agentName}") {
+	cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 
 	try {
 	    runWithArtifacts(info, "update-ci-tools_${agentName}.log", {

@@ -9,7 +9,7 @@ def update_node(String agentName, Map info, String realNode)
     println("Running updateOSNode on ${realNode}")
 
     node("${agentName}") {
-
+	cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 	mark_node_offline(realNode)
 
 	try {

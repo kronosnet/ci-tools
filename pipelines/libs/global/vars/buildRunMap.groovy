@@ -97,7 +97,7 @@ def buildTheRunMap(List nodeList, String label, Map info, Boolean voting, Map ex
             }
 	    // Do we also want to run a debug build for this target?
 	    if (enable_debug) {
-		def debug_extras = extravars + ['debug': project_opts['DEBUGOPTS']]
+		def debug_extras = extravars + ['debug': 'yes']
 		debug_extras['CHECKS'] = 'check'
 		debug_extras['install'] = '0'
 		collectBuildEnv[label + '_debug_' + agentName] = {

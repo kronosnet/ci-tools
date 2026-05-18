@@ -8,7 +8,11 @@ def call(Map localinfo, String agentName)
 {
     def props = [:]
 
-    props['PARALLELTEST'] = 'no'
+    // knet main branch can now do parallel testing
+    if (localinfo['target'] != 'main') {
+	props['PARALLELTEST'] = 'no'
+    }
+
     props['RPMDEPS'] = 'libqb-devel doxygen2man'
     props['DISTROCONFOPTS'] = ''
     props['DISTCHECK_CONFIGURE_FLAGS'] = ''

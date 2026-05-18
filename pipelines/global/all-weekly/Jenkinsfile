@@ -34,7 +34,7 @@ def joblist = [
 		 'pcs/pcs-pipeline/pcs-0.11;fullrebuild=1',
 		 'resource-agents/resource-agents-pipeline/main;fullrebuild=1',
 		 'sbd/sbd-pipeline/main;fullrebuild=1',
-		 'global/ha-functional-testing-weekly;tests=smoke'
+		 'global/ha-functional-testing-weekly;tests=all'
     ]
 ]
 

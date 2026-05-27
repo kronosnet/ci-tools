@@ -34,7 +34,22 @@ pipeline {
 			    info['exception_text'] += "\nparallel error caught in smoke tests: {$err}\n"
 			}
 		    }
+
 		    if (params.tests == 'all') {
+			// Send interim email with just the smoke results in
+			info['branch'] = 'Smoke tests only'
+
+			// 'sortTestReports' actually formats them so we need to save the 'raw' data
+			// for when we finally 'sort' the smoke+full results
+			def saved_smoke_fails = info['stages_fail_nodes']
+			info['stages_fail_nodes'] = sortTestReports(info['stages_fail_nodes'])
+			sendEmails(info)
+
+			// Put things back
+			info['stages_fail_nodes'] = saved_smoke_fails
+			info['branch'] = 'Smoke+All tests'
+
+			// Now prepare to run the 'All' tests
 			def (Map allruns, Map _notused) = genTestBuilds('all', params.provider, params.dryrun, info, faillist)
 			stage('All tests') {
 			    try {

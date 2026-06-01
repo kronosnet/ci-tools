@@ -38,7 +38,7 @@ def call(String project, String projectid, Map info)
     if (env.testtimeout) {
 	info['testtimeout'] = "${env.testtimeout}" as int
     } else {
-	info['testtimeout'] = 180
+	info['testtimeout'] = 70
     }
     if (env.tagtimeout) {
 	info['tagtimeout'] = "${env.tagtimeout}" as int

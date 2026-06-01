@@ -66,6 +66,9 @@ def call(Map info)
     // keep this for debugging
     if (info['dryrun'] == '1') {
 	info['runtesttimeout'] = 2
+    } else {
+	// Calculate optimal timeout based on test name and type
+	info['runtesttimeout'] = getTestTimeout(info)
     }
 
     // define log source

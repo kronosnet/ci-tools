@@ -8,8 +8,8 @@ def call(Map localinfo, String agentName)
 {
     def props = [:]
 
-    // knet main branch can now do parallel testing
-    if (localinfo['target'] != 'main') {
+    // drop after next stable release
+    if (localinfo['target'] == 'stable1') {
 	props['PARALLELTEST'] = 'no'
     }
 
@@ -24,8 +24,8 @@ def call(Map localinfo, String agentName)
 	}
     }
     if (agentName.startsWith("openindiana")) {
-	props['DISTROCONFOPTS'] += ' --disable-crypto-nss --disable-wireshark-dissector'
-	props['DISTCHECK_CONFIGURE_FLAGS'] += ' --disable-crypto-nss --disable-wireshark-dissector'
+	props['DISTROCONFOPTS'] += ' --disable-crypto-nss'
+	props['DISTCHECK_CONFIGURE_FLAGS'] += ' --disable-crypto-nss'
     }
 
     // Check wireshark version - it needs >= 4.6.0

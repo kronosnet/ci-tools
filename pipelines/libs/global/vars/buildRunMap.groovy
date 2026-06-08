@@ -9,7 +9,7 @@ def nodeRestrictions(ArrayList nodeList, String project)
     // If a node is in this list then it should only be used for
     // the listed projects
     def restrict = [:]
-    restrict['openindiana-x86-64'] = ['libqb', 'corosync', 'kronosnet', 'ci-test']
+    restrict['openindiana-x86-64'] = ['libqb', 'corosync', 'corosync-qdevice', 'kronosnet', 'ci-test']
 
     def removelist = []
     for (def n in nodeList) {

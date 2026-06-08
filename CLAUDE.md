@@ -413,7 +413,7 @@ Properties can be node-specific:
 Some nodes are reserved for specific projects (defined in `buildRunMap.nodeRestrictions`):
 
 ```groovy
-restrict['openindiana-x86-64'] = ['libqb', 'corosync', 'kronosnet', 'ci-test']
+restrict['openindiana-x86-64'] = ['libqb', 'corosync', 'corosync-qdevice', 'kronosnet', 'ci-test']
 ```
 
 Other projects will skip these nodes even if they match the label.

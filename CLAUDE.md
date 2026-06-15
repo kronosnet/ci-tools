@@ -21,8 +21,9 @@ The infrastructure consists of:
 │   ├── libs/                         # Shared pipeline libraries
 │   │   ├── global/vars/              # Core Jenkins utilities (RWLock, shNoTrace, etc.)
 │   │   ├── vapor/vars/               # Cloud cluster testing (create, deploy, test)
-│   │   ├── pagure/vars/              # Pagure integration (PR comments, auth, SCM)
-│   │   └── github/vars/              # GitHub integration
+│   │   ├── github/vars/              # GitHub integration
+│   │   ├── gitlab/vars/              # GitLab integration
+│   │   └── pagure/vars/              # Pagure integration (PR comments, auth, SCM)
 │   └── projects/                     # Per-project Jenkinsfiles and libraries
 │       ├── kronosnet/
 │       │   ├── Jenkinsfile           # Project pipeline definition
@@ -80,17 +81,29 @@ Used primarily by `pipelines/global/ha-functional-testing*` pipelines.
 
 **GitHub Library (`pipelines/libs/github/vars/`):**
 - `getBuildInfo` - determines build parameters from GitHub webhooks
-- `getAuthCheck` - verifies PR author permissions
+- `getAuthCheck` - verifies PR author permissions (checks authorization for both new PRs and re-index events)
 - `postPRcomment` - posts comments on pull requests
 - `getSCM` - configures git checkout from GitHub
 - `getCollaborators`, `getGlobalAdminUsers` - authorization lists
 - Used by most projects in this infrastructure (GitHub is the primary SCM)
 
+**GitLab Library (`pipelines/libs/gitlab/vars/`):**
+- `getBuildInfo` - determines build parameters from GitLab webhooks and environment variables
+- `getAuthCheck` - verifies MR author permissions (checks authorization for both new MRs and re-index events)
+- `postPRcomment` - posts comments on merge requests
+- `updateGitlabStatus` - unified status update function (posts to both branch ref and MR ref for visibility)
+- `getSCM` - configures git checkout from GitLab
+- `getCollaborators` - fetches project members via GitLab API (Developer+ access level)
+- `getGlobalAdminUsers` - global admin users list
+- `getCredUUID` - returns Jenkins credential ID for GitLab API (Secret text credential)
+- `killDuplicateJobs` - kills duplicate running builds
+- Used for GitLab.com hosted repositories
+
 **Pagure Library (`pipelines/libs/pagure/vars/`):**
 - Similar functions adapted for Pagure-hosted repositories
 - `getCredUUID` - credential lookup (Pagure-specific)
 
-Imported as: `@Library('GithubLib') _` or `@Library('PagureLib') _`
+Imported as: `@Library('GithubLib') _`, `@Library('GitlabLib') _`, or `@Library('PagureLib') _`
 
 ### Groovy Sandbox and Library Execution
 
@@ -548,11 +561,43 @@ For Pagure-based projects, the flow is similar with Pagure-specific webhook para
 
 ### Authorization
 
-`getAuthCheck` verifies PR authors against:
+`getAuthCheck` verifies PR/MR authors against:
 1. Project collaborators (`getCollaborators()`)
 2. Global admin users (`getGlobalAdminUsers()`)
 
-Unauthorized PRs are rejected before any build starts.
+Unauthorized PRs/MRs are rejected before any build starts.
+
+**Important**: Both GitHub and GitLab libraries check authorization even during re-index events for PRs/MRs. Branch re-index events bypass authorization checks (safe), but MR/PR re-index events continue to the normal authorization flow. This prevents unauthorized users from submitting MRs/PRs while Jenkins is down and having them build automatically during re-index.
+
+### GitLab-Specific Integration
+
+The GitLab library integrates with GitLab.com via the Jenkins GitLab Branch Source plugin and GitLab API v4.
+
+**Status Reporting:**
+- `updateGitlabStatus` is a unified function that posts status to both:
+  1. Branch ref via `updateGitlabCommitStatus` (GitLab plugin)
+  2. MR ref (`refs/merge-requests/:iid/head`) via GitLab API for UI visibility
+- This dual posting fixes a visibility issue where statuses posted only to branch refs don't appear in GitLab MR UI
+
+**Environment Variables:**
+- MR builds: Uses `CHANGE_ID`, `CHANGE_TARGET`, `CHANGE_BRANCH`, `CHANGE_AUTHOR`, `CHANGE_URL` from GitLab Branch Source plugin
+- Branch builds: Uses `BRANCH_NAME`, `GIT_COMMIT`
+- Draft detection: Uses `GITLAB_OA_WIP` environment variable (`'true'` or `'false'`)
+
+**API Integration:**
+- Uses Secret text credential (not GitLab API token type for `withCredentials` compatibility)
+- Credential ID returned by `getCredUUID()`
+- API calls wrapped in `withCredentials([string(credentialsId: cred_uuid, variable: 'GIT_PASSWORD')])`
+- Project members API: `/api/v4/projects/:id/members/all` (filters by access_level >= 30)
+- MR comments API: `/api/v4/projects/:id/merge_requests/:iid/notes`
+- Commit status API: `/api/v4/projects/:id/statuses/:sha`
+
+**GitLab CI Integration:**
+- GitLab CI monitors Jenkins external status via `.gitlab-ci.yml` in the project repository
+- Separate jobs for internal MRs (`monitor-jenkins`) and fork MRs (`monitor-jenkins-fork`)
+- Internal MRs use `jenkins-waiter` runner with 23h timeout
+- Fork MRs exit immediately (no access to API token or long-running runners)
+- Fork detection: `CI_MERGE_REQUEST_SOURCE_PROJECT_ID != CI_MERGE_REQUEST_PROJECT_ID`
 
 ## Agent Node Startup
 

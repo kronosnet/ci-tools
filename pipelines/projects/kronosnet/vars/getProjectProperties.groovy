@@ -23,10 +23,6 @@ def call(Map localinfo, String agentName)
 	    props['DISTROCONFOPTS'] += ' --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf --disable-wireshark-dissector'
 	}
     }
-    if (agentName.startsWith("openindiana")) {
-	props['DISTROCONFOPTS'] += ' --disable-crypto-nss'
-	props['DISTCHECK_CONFIGURE_FLAGS'] += ' --disable-crypto-nss'
-    }
 
     // Check wireshark version - it needs >= 4.6.0
     def String ws_ver_check = sh(returnStatus: true, script: '''

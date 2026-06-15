@@ -17,19 +17,26 @@ def call(Map params) {
 	return true
     }
 
-    // Triggered by Jenkins reindex event
-    userEvent = currentBuild.getBuildCauses('jenkins.branch.BranchIndexingCause')
-    if (!userEvent.size().equals(0)) {
-	println("Build Triggered from re-index event")
-	return true
-    }
-
     if (isPullRequest == false) {
+	// Triggered by Jenkins reindex event for branches - allow
+	userEvent = currentBuild.getBuildCauses('jenkins.branch.BranchIndexingCause')
+	if (!userEvent.size().equals(0)) {
+	    println("Build Triggered from re-index event for branch")
+	    return true
+	}
+
 	println("Build Triggered by merge into branch")
 	// This is a merge into main, so allowed.
 	// Note that this still works if the user's branch is called "main" because
 	// Jenkins creates its own branch named after the PR
 	return true
+    }
+
+    // For PRs, check authorization even during re-index events
+    userEvent = currentBuild.getBuildCauses('jenkins.branch.BranchIndexingCause')
+    if (!userEvent.size().equals(0)) {
+	println("Build Triggered from re-index event for PR - checking authorization")
+	// Continue to authorization check below
     }
 
     // Triggered by admin comment in the PR

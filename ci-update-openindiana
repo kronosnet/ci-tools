@@ -20,7 +20,8 @@ required_pkg header-tun
 required_pkg icu
 required_pkg libtool
 required_pkg system/mozilla-nss
-required_pkg system/mozilla-nss/header-nss
+required_pkg system/library/mozilla-nss
+required_pkg system/library/mozilla-nss/header-nss
 required_pkg tun
 required_pkg wireshark
 

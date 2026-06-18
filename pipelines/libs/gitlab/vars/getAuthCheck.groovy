@@ -1,4 +1,4 @@
-// Check if a PR has been submitted by an authorized user
+// Check if an MR has been submitted by an authorized user
 def call(Map params) {
     // requirered param
     def isPullRequest = params['isPullRequest']
@@ -75,7 +75,7 @@ def call(Map params) {
 	timeoutInMinutes = 4320 // 72 hours
     }
 
-    // Put a message in github/pagure that links to this job run
+    // Put a message in GitLab that links to this job run
     postPRcomment("Can one of the project admins check and authorise this run please: ${env.BUILD_URL}input")
 
     // Ask for approval

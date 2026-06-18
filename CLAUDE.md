@@ -22,8 +22,7 @@ The infrastructure consists of:
 │   │   ├── global/vars/              # Core Jenkins utilities (RWLock, shNoTrace, etc.)
 │   │   ├── vapor/vars/               # Cloud cluster testing (create, deploy, test)
 │   │   ├── github/vars/              # GitHub integration
-│   │   ├── gitlab/vars/              # GitLab integration
-│   │   └── pagure/vars/              # Pagure integration (PR comments, auth, SCM)
+│   │   └── gitlab/vars/              # GitLab integration
 │   └── projects/                     # Per-project Jenkinsfiles and libraries
 │       ├── kronosnet/
 │       │   ├── Jenkinsfile           # Project pipeline definition
@@ -99,11 +98,7 @@ Used primarily by `pipelines/global/ha-functional-testing*` pipelines.
 - `killDuplicateJobs` - kills duplicate running builds
 - Used for GitLab.com hosted repositories
 
-**Pagure Library (`pipelines/libs/pagure/vars/`):**
-- Similar functions adapted for Pagure-hosted repositories
-- `getCredUUID` - credential lookup (Pagure-specific)
-
-Imported as: `@Library('GithubLib') _`, `@Library('GitlabLib') _`, or `@Library('PagureLib') _`
+Imported as: `@Library('GithubLib') _` or `@Library('GitlabLib') _`
 
 ### Groovy Sandbox and Library Execution
 
@@ -293,10 +288,6 @@ Libraries in `pipelines/libs/github/vars/`:
 - `getSCM`: Configure git checkout
 
 Most projects in this infrastructure are hosted on GitHub.
-
-### Pagure (pagure.io, src.fedoraproject.org)
-
-Libraries in `pipelines/libs/pagure/vars/` provide similar functionality for Pagure-hosted repositories.
 
 ## Notable Patterns
 
@@ -554,10 +545,6 @@ For GitHub-based projects (most projects in this infrastructure), `getBuildInfo`
   - `main` branch: `maininstall=1, stableinstall=0`
   - Stable branches: `maininstall=0, stableinstall=1`
 - `publishrpm`: Always 1 for installable branches
-
-### Pagure getBuildInfo Flow
-
-For Pagure-based projects, the flow is similar with Pagure-specific webhook parameters (`BRANCH_TO != 'None'` indicates a PR).
 
 ### Authorization
 

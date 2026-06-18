@@ -1,31 +1,35 @@
 // Jenkinsfile for the gfs2-utils project
 
-@Library(['GlobalLib', 'PagureLib', 'ProjectLib']) _
+@Library(['GlobalLib', 'GitlabLib', 'ProjectLib']) _
 
 // Globals
 def project = 'gfs2-utils'
-def upstream_repo = "https://pagure.io/${project}.git"
 def info = [:]
 
 pipeline {
     agent { label 'built-in' }
+
+    options {
+	gitLabConnection('gitlab-knet-ci-bot')
+	gitlabBuilds(builds: ['jenkins-ci'])
+    }
+
+    triggers {
+	gitlab(triggerOnPush: true, triggerOnMergeRequest: true)
+    }
 
     parameters {
 	string(name: 'bootstrap',   defaultValue: '0', description: 'Bootstrap the RPM repos')
 	string(name: 'fullrebuild', defaultValue: '0', description: 'This is a full rebuild - do not publish RPM and do NOT update build code on the nodes')
     }
 
-    options {
-	skipDefaultCheckout(true)
-    }
-
     stages {
 	// First check we are allowed to run, then set some params for that run
-	stage('Validate build env') {
+	stage('Setup build env') {
 	    steps {
 		script {
-		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
-		    getBuildInfo(project, upstream_repo, info)
+		    getBuildInfo(project, info)
+		    updateGitlabStatus(info, [state: 'running', description: 'Jenkins build started'])
 		}
 	    }
 	}
@@ -34,7 +38,7 @@ pipeline {
 	    when {
 		// getAuthCheck will usually abort the job if permission is denied
 		// but this is an extra check!
-		expression { info['authcheck'] == true && info['tracking'] == true }
+		expression { info['authcheck'] == true && info['is_draft'] == false }
 	    }
 	    steps {
 		script {
@@ -73,7 +77,7 @@ pipeline {
 	    when {
 		// getAuthCheck will usually abort the job if permission is denied
 		// but this is an extra check!
-		expression { info['authcheck'] == true && info['tracking'] == true }
+		expression { info['authcheck'] == true && info['is_draft'] == false }
 	    }
 	    steps {
 		postStage(info)
@@ -81,6 +85,21 @@ pipeline {
 	}
     }
     post {
+	failure {
+	    script {
+		updateGitlabStatus(info, [state: 'failed', description: 'Jenkins build failed'])
+	    }
+	}
+	success {
+	    script {
+		updateGitlabStatus(info, [state: 'success', description: 'Jenkins build succeeded'])
+	    }
+	}
+	aborted {
+	    script {
+		updateGitlabStatus(info, [state: 'canceled', description: 'Jenkins build was canceled'])
+	    }
+	}
 	always {
 	    projectFinishUp(info)
 	}

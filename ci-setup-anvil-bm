@@ -50,6 +50,18 @@ fi
 tmpfile=$(mktemp)
 macbase=0
 ifnbase=122
+
+# Extract hypervisor ID from hostname (an-phy## format)
+hostname_short=$(hostname -s)
+if [[ $hostname_short =~ an-phy([0-9]{2}) ]]; then
+ hypervisor_id="${BASH_REMATCH[1]}"
+ tnf_subnet=$((200 + 10#$hypervisor_id))
+else
+ echo "ERROR: Hostname '$hostname_short' does not match expected format 'an-phy##'"
+ echo "Expected format: an-phy01, an-phy02, etc."
+ exit 1
+fi
+
 for i in ifn1 ifn2 bcn1 bcn2 sn1 sn2; do
  if [ -z "$(virsh net-list --all --name | grep ${i}_bridge1)" ]; then
   echo "Creating libvirt network interface ${i}_bridge1"
@@ -94,6 +106,34 @@ EOF
  macbase=$((macbase + 1))
  ifnbase=$((ifnbase + 100))
 done
+
+# Create anvil-tnf network (no _bridge1 suffix)
+if [ -z "$(virsh net-list --all --name | grep ^anvil-tnf$)" ]; then
+ echo "Creating libvirt network anvil-tnf"
+ uuid=$(uuidgen)
+ cat > $tmpfile << EOF
+<network>
+ <name>anvil-tnf</name>
+ <uuid>${uuid}</uuid>
+ <forward mode='nat'>
+  <nat>
+   <port start='1024' end='65535'/>
+  </nat>
+ </forward>
+ <bridge name='anvil-tnf' stp='on' delay='0'/>
+ <domain name='tnf${hypervisor_id}.ci.alteeve.com'/>
+ <ip address='192.168.${tnf_subnet}.1' netmask='255.255.255.0'>
+  <dhcp>
+   <range start='192.168.${tnf_subnet}.128' end='192.168.${tnf_subnet}.254'/>
+  </dhcp>
+ </ip>
+</network>
+EOF
+ virsh net-define $tmpfile
+ virsh net-autostart anvil-tnf
+ virsh net-start anvil-tnf
+fi
+
 rm -f $tmpfile
 
 # fence_virtd

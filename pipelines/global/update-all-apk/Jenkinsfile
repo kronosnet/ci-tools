@@ -13,8 +13,13 @@ def buildFullRunMap(Map info)
 
     for (def n in nodeList) {
 	def node = n
+	def realnode = n
+	// add exception for alpine-x86-64 that needs to run on built-in node via ansible
+	if (node == 'alpine-x86-64') {
+	    node = 'built-in'
+	}
 	collectBuildEnv[node] = {
-	    updateOSNode(node, info)
+	    updateOSNode(node, info, realnode)
 	}
     }
 

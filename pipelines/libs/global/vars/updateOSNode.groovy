@@ -25,6 +25,13 @@ def update_node(String agentName, Map info, String realNode)
 		     cd $HOME/ci-tools/bsd-update
 		     ${exports} ./run-update -d
 		    """
+		} else if (info['packager'] == 'apk') {
+			localinfo = getNodeProperties(realNode)
+			exports = getShellVariables(localinfo)
+		    sh """
+		     cd $HOME/ci-tools/ansible/
+		     ${exports} ansible-playbook update.yml --limit ${realNode}
+		    """
 		} else {
 		    sh """
 		     ${exports} $HOME/ci-tools/ci-wrap ci-update-${info['packager']}
@@ -75,9 +82,10 @@ def mark_node_offline(String nodeName)
 	    println("Waiting for node ${nodeName} to be offline")
 	    computer.waitUntilOffline()
 	    println("${nodeName} is now offline")
-	    // special case freebsd devel
+	    // special case for ansible managed nodes
+	    // once the transition is done then workers should be set to 0 for all
 	    def workers = 1
-	    if (nodeName == 'freebsd-devel-x86-64') {
+	    if (nodeName in ['freebsd-devel-x86-64', 'alpine-x86-64']) {
 		workers = 0
 	    }
 	    while (computer.countBusy() != workers) {

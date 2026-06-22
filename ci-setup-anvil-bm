@@ -104,6 +104,9 @@ firewall-cmd --zone=libvirt --add-port=161/udp
 firewall-cmd --zone=libvirt --permanent --add-port=161/udp
 firewall-cmd --zone=libvirt --add-port=623/udp
 firewall-cmd --zone=libvirt --permanent --add-port=623/udp
+# required by ksushy
+firewall-cmd --zone=libvirt --add-port=9000/tcp
+firewall-cmd --zone=libvirt --permanent --add-port=9000/tcp
 firewall-cmd --reload
 
 if ! grep -q ifn1 /etc/fence_virt.conf; then
@@ -121,3 +124,8 @@ fi
 
 systemctl start fence_virtd
 systemctl enable fence_virtd
+
+kcli create sushy-service
+systemctl daemon-reload
+systemctl enable --now ksushy.service
+systemctl restart ksushy

@@ -246,6 +246,15 @@ yum -y install $REQUIRED_PKGS
 for PKG in $OPTIONAL_PKGS; do yum -y install $PKG || true; done
 
 case "${NODE_NAME}" in
+ *vapor*|anvil-ci*)
+  dnf -y copr enable karmab/kcli
+  # enable broken epel-9 builds on copr
+  sed -i 's@epel@centos-stream@' /etc/yum.repos.d/_copr\:copr.fedorainfracloud.org\:karmab\:kcli.repo
+  dnf -y install kcli
+ ;;
+esac
+
+case "${NODE_NAME}" in
  *vapor*)
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/aliyun/aliyun-cli/HEAD/install.sh)"
   if ! which ibmcloud > /dev/null 2>&1; then
@@ -253,10 +262,7 @@ case "${NODE_NAME}" in
   else
    ibmcloud update -f
   fi
-  dnf -y copr enable karmab/kcli
-  # enable broken epel-9 builds on copr
-  sed -i 's@epel@centos-stream@' /etc/yum.repos.d/_copr\:copr.fedorainfracloud.org\:karmab\:kcli.repo
-  dnf -y install kcli libvirt-daemon
+  dnf -y install libvirt-daemon
   getent group kubesan >/dev/null || groupadd -r kubesan
   getent passwd kubesan >/dev/null || useradd -g kubesan -G libvirt -m kubesan
   setfacl -m u:kubesan:rwx /var/lib/libvirt/images

@@ -68,7 +68,7 @@ def update_node(String agentName, Map info, String realNode)
 			def cithome = setupCITHOME()
 		    sh """
 		     cd ${cithome}/ansible/
-		     ${exports} ansible-playbook -v update.yml --limit ${realNode}
+		     ${exports} ansible-playbook -v update.yml --limit ${realNode} --check --diff
 		    """
 		} else {
 		    sh """

@@ -75,7 +75,7 @@ def update_node(String agentName, Map info, String realNode)
 		    sh """
 		     cat ${inventoryPath}
 		     cd ${cithome}/ansible/
-		     ${exports} ansible-playbook -v update.yml -i ${inventoryPath} --limit ${realNode}
+		     ${exports} ansible-playbook -v update.yml -i ${inventoryPath} --limit ${realNode} --check --diff
 		    """
 		} else {
 		    sh """

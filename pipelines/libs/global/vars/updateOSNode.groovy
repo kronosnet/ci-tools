@@ -27,8 +27,8 @@ def update_node(String agentName, Map info, String realNode)
 		    """
 		} else if (agentName == 'built-in' && info['packager'] == 'apk') {
 		    sh """
-		     cd $HOME/ci-tools/ansible/
-		     ${exports} ansible-playbook update.yml --limit ${realNode}
+		     cd ${env.WORKSPACE}/../update-all-apk/ansible
+		     ${exports} ansible-playbook update.yml -i testing --limit ${realNode}
 		    """
 		} else {
 		    sh """
@@ -82,7 +82,7 @@ def mark_node_offline(String nodeName)
 	    println("${nodeName} is now offline")
 	    // special case freebsd devel
 	    def workers = 1
-	    if (nodeName in ['freebsd-devel-x86-64', 'alpine-x86-64']) {
+	    if (nodeName in ['freebsd-devel-x86-64', 'tb-alpine-x86-64']) {
 		workers = 0
 	    }
 	    while (computer.countBusy() != workers) {

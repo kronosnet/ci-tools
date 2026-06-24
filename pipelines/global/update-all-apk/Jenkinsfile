@@ -15,7 +15,7 @@ def buildFullRunMap(Map info)
 	def node = n
 	def realnode = n
 	// add exception for alpine-x86-64 that needs to run on built-in node via ansible
-	if (node == 'alpine-x86-64') {
+	if (node == 'tb-alpine-x86-64') {
 	    node = 'built-in'
 	}
 	collectBuildEnv[node] = {

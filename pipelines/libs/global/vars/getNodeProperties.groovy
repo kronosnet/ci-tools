@@ -12,7 +12,7 @@ def call(String node)
 {
     def node_env=[:]
     def props = [:]
-    node_env['alpine-x86-64'] = ['RUSTBINDINGS=yes']
+    node_env['tb-alpine-x86-64'] = ['RUSTBINDINGS=yes']
     node_env['anvil-ci-almalinux-9'] = []
     node_env['anvil-ci-bm-phy01'] = []
     node_env['anvil-ci-bm-phy02'] = []
@@ -43,7 +43,7 @@ def call(String node)
     node_env['freebsd-14-x86-64'] = ['RUSTBINDINGS=yes', 'MAKE=gmake', 'PYTHON=/usr/local/bin/python3.12']
     node_env['freebsd-15-x86-64'] = ['RUSTBINDINGS=yes', 'MAKE=gmake', 'PYTHON=/usr/local/bin/python3.12']
     node_env['freebsd-devel-x86-64'] = ['RUSTBINDINGS=yes', 'MAKE=gmake', 'PYTHON=/usr/local/bin/python3.12']
-    node_env['openindiana-x86-64'] = []
+    node_env['tb-openindiana-x86-64'] = []
     node_env['rhel-8-power9-ppc64le'] = []
     node_env['rhel-8-s390x'] = []
     node_env['rhel-8-x86-64'] = []

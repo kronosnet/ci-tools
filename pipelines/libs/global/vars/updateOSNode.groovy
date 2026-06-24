@@ -31,8 +31,8 @@ def update_node(String agentName, Map info, String realNode)
 			localinfo = getNodeProperties(realNode)
 			exports = getShellVariables(localinfo)
 		    sh """
-		     cd $HOME/ci-tools/ansible/
-		     ${exports} ansible-playbook update.yml --limit ${realNode}
+		     cd ${env.WORKSPACE}/../update-all-apk/ansible
+		     ${exports} ansible-playbook update.yml -i testing --limit ${realNode}
 		    """
 		} else {
 		    sh """

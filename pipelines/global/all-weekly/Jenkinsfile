@@ -21,7 +21,7 @@ def joblist = [
 		 'dlm/dlm-pipeline;fullrebuild=1',
 		 'fence-agents/fence-agents-pipeline/main;fullrebuild=1',
 		 'gfs2-utils/gfs2-utils-pipeline;fullrebuild=1',
-		 'kernel-ark/kernel-ark-pipeline/os-build',
+		 'kernel-ark/kernel-ark-pipeline/ark-latest',
 		 'kronosnet/kronosnet-pipeline/main;fullrebuild=1',
 		 'kronosnet/kronosnet-pipeline/stable1;fullrebuild=1',
 		 'kronosnet/kronosnet-pipeline/stable1-proposed;fullrebuild=1',

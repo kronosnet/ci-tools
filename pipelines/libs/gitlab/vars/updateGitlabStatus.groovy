@@ -9,7 +9,7 @@ def call(Map info, Map params) {
     // Always call the plugin's updateGitlabCommitStatus for branch ref
     updateGitlabCommitStatus name: name, state: state
 
-    // For MR builds, also post to the correct MR ref to fix visibility issue
+    //For MR builds, also post to the correct MR ref to fix visibility issue
     if (info['isPullRequest']) {
         def cred_uuid = getCredUUID()
         withCredentials([string(credentialsId: cred_uuid, variable: 'GIT_PASSWORD')]) {

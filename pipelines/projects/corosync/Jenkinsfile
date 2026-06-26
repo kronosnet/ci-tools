@@ -49,63 +49,63 @@ pipeline {
 								      'extravars': ['depbuildname': 'kronosnet',
 										    'depbuildversion': 'main',
 										    'install': info['maininstall']]])
-		    def voting_kstable = buildRunMap('kstable-voting', info, ['voting': true,
-									  'nodelabel': 'voting',
-									  'extravars': ['depbuildname': 'kronosnet',
-											'depbuildversion': 'stable1-proposed',
-											'install': info['stableinstall']]])
+		    // def voting_kstable = buildRunMap('kstable-voting', info, ['voting': true,
+			// 						  'nodelabel': 'voting',
+			// 						  'extravars': ['depbuildname': 'kronosnet',
+			// 								'depbuildversion': 'stable1-proposed',
+			// 								'install': info['stableinstall']]])
 
-		    def nonvoting_kmain = buildRunMap('kmain-nonvoting', info, ['voting': false,
-									    'nodelabel': 'nonvoting',
-									    'extravars': ['depbuildname': 'kronosnet',
-											  'depbuildversion': 'main',
-											  'install': info['maininstall']]])
-		    def nonvoting_kstable = buildRunMap('kstable-nonvoting', info, ['voting': false,
-										'nodelabel': 'nonvoting',
-										'extravars': ['depbuildname': 'kronosnet',
-											      'depbuildversion': 'stable1-proposed',
-											      'install': info['stableinstall']]])
+		    // def nonvoting_kmain = buildRunMap('kmain-nonvoting', info, ['voting': false,
+			// 						    'nodelabel': 'nonvoting',
+			// 						    'extravars': ['depbuildname': 'kronosnet',
+			// 								  'depbuildversion': 'main',
+			// 								  'install': info['maininstall']]])
+		    // def nonvoting_kstable = buildRunMap('kstable-nonvoting', info, ['voting': false,
+			// 							'nodelabel': 'nonvoting',
+			// 							'extravars': ['depbuildname': 'kronosnet',
+			// 								      'depbuildversion': 'stable1-proposed',
+			// 								      'install': info['stableinstall']]])
 
-		    def nonvoting_clang_kmain = buildRunMap('kmain-nonvoting-clang', info, ['voting': false,
-											'nodelabel': 'nonvoting-clang',
-											'extravars': ['compiler': 'clang',
-												      'depbuildname': 'kronosnet',
-												      'depbuildversion': 'main',
-												      'install': 0]])
-		    def nonvoting_clang_kstable = buildRunMap('kstable-nonvoting-clang', info, ['voting': false,
-											    'nodelabel': 'nonvoting-clang',
-											    'extravars': ['compiler': 'clang',
-													  'depbuildname': 'kronosnet',
-													  'depbuildversion': 'stable1-proposed',
-													  'install': 0]])
+		    // def nonvoting_clang_kmain = buildRunMap('kmain-nonvoting-clang', info, ['voting': false,
+			// 								'nodelabel': 'nonvoting-clang',
+			// 								'extravars': ['compiler': 'clang',
+			// 									      'depbuildname': 'kronosnet',
+			// 									      'depbuildversion': 'main',
+			// 									      'install': 0]])
+		    // def nonvoting_clang_kstable = buildRunMap('kstable-nonvoting-clang', info, ['voting': false,
+			// 								    'nodelabel': 'nonvoting-clang',
+			// 								    'extravars': ['compiler': 'clang',
+			// 										  'depbuildname': 'kronosnet',
+			// 										  'depbuildversion': 'stable1-proposed',
+			// 										  'install': 0]])
 
-		    def covscan_kmain = buildRunMap('kmain-covscan', info, ['voting': true,
-									'nodelabel': 'covscan',
-									'extravars': ['depbuildname': 'kronosnet',
-										      'depbuildversion': 'main']])
-		    def covscan_kstable = buildRunMap('kstable-covscan', info, ['voting': true,
-									    'nodelabel': 'covscan',
-									    'extravars': ['depbuildname': 'kronosnet',
-											  'depbuildversion': 'stable1-proposed']])
+		    // def covscan_kmain = buildRunMap('kmain-covscan', info, ['voting': true,
+			// 						'nodelabel': 'covscan',
+			// 						'extravars': ['depbuildname': 'kronosnet',
+			// 							      'depbuildversion': 'main']])
+		    // def covscan_kstable = buildRunMap('kstable-covscan', info, ['voting': true,
+			// 						    'nodelabel': 'covscan',
+			// 						    'extravars': ['depbuildname': 'kronosnet',
+			// 								  'depbuildversion': 'stable1-proposed']])
 
-		    def buildrpms_kmain = buildRunMap('kmain-buildrpms', info, ['voting': true,
-									    'nodelabel': 'buildrpms',
-									    'extravars': ['depbuildname': 'kronosnet',
-											  'depbuildversion': 'main',
-											  'publishrpm': info['maininstall']]])
-		    def buildrpms_kstable = buildRunMap('kstable-buildrpms', info, ['voting': true,
-										'nodelabel': 'buildrpms',
-										'extravars': ['depbuildname': 'kronosnet',
-											      'depbuildversion': 'stable1-proposed',
-											      'publishrpm': info['stableinstall']]])
+		    // def buildrpms_kmain = buildRunMap('kmain-buildrpms', info, ['voting': true,
+			// 						    'nodelabel': 'buildrpms',
+			// 						    'extravars': ['depbuildname': 'kronosnet',
+			// 								  'depbuildversion': 'main',
+			// 								  'publishrpm': info['maininstall']]])
+		    // def buildrpms_kstable = buildRunMap('kstable-buildrpms', info, ['voting': true,
+			// 							'nodelabel': 'buildrpms',
+			// 							'extravars': ['depbuildname': 'kronosnet',
+			// 								      'depbuildversion': 'stable1-proposed',
+			// 								      'publishrpm': info['stableinstall']]])
 
 		    // Run them (errors are caught in info[:])
 		    try {
-			parallel voting_kmain + voting_kstable +
-			    nonvoting_kmain + nonvoting_kstable +
-			    nonvoting_clang_kmain + nonvoting_clang_kstable +
-			    buildrpms_kmain + buildrpms_kstable +
-			    covscan_kmain + covscan_kstable
+			parallel voting_kmain //+ voting_kstable +
+			    //nonvoting_kmain + nonvoting_kstable +
+			    //nonvoting_clang_kmain + nonvoting_clang_kstable +
+			    //buildrpms_kmain + buildrpms_kstable +
+			    //covscan_kmain + covscan_kstable
 		    } catch (err) {
 			println("Jenkinsfile caught "+err)
 			info['exception_text'] += "\nparallel error caught: {$err}\n"

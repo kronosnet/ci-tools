@@ -26,9 +26,11 @@ def update_node(String agentName, Map info, String realNode)
 		     ${exports} ./run-update -d
 		    """
 		} else if (agentName == 'built-in' && info['packager'] == 'apk') {
+		    def localinfo2 = getNodeProperties(realNode)
+		    def exports2 = getShellVariables(localinfo2)
 		    sh """
 		     cd ${env.WORKSPACE}/../update-all-apk/ansible
-		     RUSTBINDINGS=yes ansible-playbook update.yml -i testing --limit ${realNode}
+		     ${exports2} ansible-playbook update.yml -i testing --limit ${realNode}
 		    """
 		} else {
 		    sh """

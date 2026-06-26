@@ -15,7 +15,11 @@ pipeline {
     parameters {
 	string(name: 'bootstrap',   defaultValue: '0', description: 'Bootstrap the RPM repos')
 	string(name: 'fullrebuild', defaultValue: '0', description: 'This is a full rebuild - do not publish RPM and do NOT update build code on the nodes')
-    }
+    string(name: 'BRANCH',      defaultValue: 'main', description: 'Branch to build')
+    string(name: 'BRANCH_TO',   defaultValue: 'None', description: 'Target branch (PR only)')
+    string(name: 'cause',       defaultValue: '', description: 'Commit SHA or PR number')
+	string(name: 'REPO',        defaultValue: '', description: 'Fork repo URL (PR only)')
+	}
 
     stages {
 	// First check we are allowed to run, then set some params for that run

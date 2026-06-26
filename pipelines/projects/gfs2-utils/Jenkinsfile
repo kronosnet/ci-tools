@@ -21,7 +21,12 @@ pipeline {
     parameters {
 	string(name: 'bootstrap',   defaultValue: '0', description: 'Bootstrap the RPM repos')
 	string(name: 'fullrebuild', defaultValue: '0', description: 'This is a full rebuild - do not publish RPM and do NOT update build code on the nodes')
-    }
+    string(name: 'BRANCH',      defaultValue: 'main', description: 'Branch to build')
+    string(name: 'BRANCH_TO',   defaultValue: 'None', description: 'Target branch (PR only)')
+    string(name: 'cause',       defaultValue: '', description: 'Commit SHA or PR number')
+	string(name: 'REPO',        defaultValue: '', description: 'Fork repo URL (PR only)')
+	}
+
 
     stages {
 	// First check we are allowed to run, then set some params for that run
@@ -48,24 +53,24 @@ pipeline {
 							  'nodelabel': 'voting',
 							  'excludes': 'freebsd.*'])
 
-		    def nonvoting = buildRunMap('nonvoting', info, ['voting': false,
-								'nodelabel': 'nonvoting',
-								'excludes': 'freebsd.*'])
+		    // def nonvoting = buildRunMap('nonvoting', info, ['voting': false,
+			// 					'nodelabel': 'nonvoting',
+			// 					'excludes': 'freebsd.*'])
 
-		    def nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
-									    'nodelabel': 'nonvoting-clang',
-									    'excludes': 'freebsd.*',
-									    'extravars': ['compiler': 'clang',
-											  'install': 0]])
+		    // def nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
+			// 						    'nodelabel': 'nonvoting-clang',
+			// 						    'excludes': 'freebsd.*',
+			// 						    'extravars': ['compiler': 'clang',
+			// 								  'install': 0]])
 
-		    def covscan = buildRunMap('covscan', info, ['voting': true,
-							    'nodelabel': 'covscan'])
+		    // def covscan = buildRunMap('covscan', info, ['voting': true,
+			// 				    'nodelabel': 'covscan'])
 
-		    def buildrpms = buildRunMap('buildrpms', info, ['voting': true,
-								'nodelabel': 'buildrpms'])
+		    // def buildrpms = buildRunMap('buildrpms', info, ['voting': true,
+			// 					'nodelabel': 'buildrpms'])
 
 		    try {
-			parallel voting + nonvoting + nonvoting_clang + buildrpms + covscan
+			parallel voting //+ nonvoting + nonvoting_clang + buildrpms + covscan
 		    } catch (err) {
 			println("Jenkinsfile caught "+err)
 			info['exception_text'] += "\nparallel error caught: {$err}\n"

@@ -127,7 +127,7 @@ def copy_our_logs(Map info, String staging_dir)
     if (f != null && f.exists()) {
 	sh("rsync -atr ${f}/* ${target_logsdir}/artifact/")
     }
-    return new Tuple(target_jobsdir, jobsdir, recurse)
+    return new Tuple3(target_jobsdir, jobsdir, recurse)
 }
 
 // Called from projectFinishUp() (or other) to clean up

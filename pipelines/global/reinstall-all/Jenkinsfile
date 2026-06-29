@@ -34,7 +34,7 @@ def joblist = [
     'dlm': ['dlm/dlm-pipeline;bootstrap=1'],
     'gfs2-utils': ['gfs2-utils/gfs2-utils-pipeline;bootstrap=1'],
     'anvil': ['anvil/anvil-pipeline/main;bootstrap=1'],
-    'kernel-ark': ['kernel-ark/kernel-ark-pipeline/os-build']
+    'kernel-ark': ['kernel-ark/kernel-ark-pipeline/ark-latest']
 ]
 
 pipeline {

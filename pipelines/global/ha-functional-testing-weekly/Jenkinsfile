@@ -36,15 +36,17 @@ pipeline {
 		    }
 
 		    if (params.tests == 'all') {
-			// Send interim email with just the smoke results in
-			info['branch'] = 'Smoke tests only'
+			stage('Interim email') {
+			    // Send interim email with just the smoke results in
+			    info['branch'] = 'Smoke tests only'
 
-			info['stages_fail_nodes'] = sortTestReports(info['stages_fail_nodes'])
-			sendEmails(info)
+			    info['stages_fail_nodes'] = sortTestReports(info['stages_fail_nodes'])
+			    sendEmails(info)
 
-			// Reset for All tests
-			info['stages_fail_nodes'] = ''
-			info['branch'] = 'All tests'
+			    // Reset for All tests
+			    info['stages_fail_nodes'] = ''
+			    info['branch'] = 'All tests'
+			}
 
 			// Now prepare to run the 'All' tests
 			def (Map allruns, Map _notused) = genTestBuilds('all', params.provider, params.dryrun, info, faillist)

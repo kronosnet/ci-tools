@@ -8,11 +8,6 @@ def call(Map localinfo, String agentName)
 {
     def props = [:]
 
-    // drop after next stable release
-    if (localinfo['target'] == 'stable1') {
-	props['PARALLELTEST'] = 'no'
-    }
-
     props['RPMDEPS'] = 'libqb-devel doxygen2man'
     props['DISTROCONFOPTS'] = ''
     props['DISTCHECK_CONFIGURE_FLAGS'] = ''

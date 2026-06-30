@@ -13,7 +13,7 @@ def update_node(String agentName, Map info, String realNode)
 	mark_node_offline(realNode, agentName)
 
 	try {
-	    runWithArtifacts(info, "update_${agentName}.log", {
+	    runWithArtifacts(info, "update_${realNode}.log", {
 		info['stages_run']++;
 
 		def localinfo = getNodeProperties(agentName)

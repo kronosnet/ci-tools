@@ -117,9 +117,11 @@ def doRunStage(String agentName, Map info, Map localinfo)
 		}
 
 		// Run all converted groovy stages first
+		echo "DEBUG: Starting groovy stages loop, stages=${stages}"
 		for (stageinfo in stages) {
 		    if (running) { // break does weird shit
 			stagestate['runstage'] = stageinfo.key
+			echo "DEBUG: Running groovy stage '${stageinfo.key}' = '${stageinfo.value}'"
 
 			// Run everything in the checked-out directory
 			dir (localinfo['project']) {
@@ -129,6 +131,8 @@ def doRunStage(String agentName, Map info, Map localinfo)
 					   { processRunSuccess(info, localinfo, stagestate) },
 					   { processRunException(info, localinfo, stagestate) })
 			}
+
+			echo "DEBUG: Completed groovy stage '${stageinfo.key}', failed=${stagestate['failed']}"
 
 			// This marks it red in the graph view if it failed
 			if (stagestate['failed']) {
@@ -144,11 +148,14 @@ def doRunStage(String agentName, Map info, Map localinfo)
 			}
 		    }
 		}
+		echo "DEBUG: Finished groovy stages loop"
 
 		// Convert localinfo map into shell variables
+		echo "DEBUG: Converting localinfo to shell variables"
 		def exports = getShellVariables(localinfo)
 
 		// Run all the shell stages (will disappear)
+		echo "DEBUG: Starting shell stages loop, shell_stages=${shell_stages}"
 		for (stageinfo in shell_stages) {
 		    if (running) { // break does weird shit
 			stagestate['runstage'] = stageinfo.key
@@ -176,7 +183,10 @@ def doRunStage(String agentName, Map info, Map localinfo)
 			}
 		    }
 		}
+		echo "DEBUG: Finished shell stages loop"
+		echo "DEBUG: About to exit runWithArtifacts closure"
 	    })
+	    echo "DEBUG: Exited runWithArtifacts - back in runStage"
 	}
 
 	info['have_split_logs'] = true

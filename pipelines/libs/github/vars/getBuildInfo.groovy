@@ -18,6 +18,9 @@ def call(String project, Map info)
     def isPullRequest = env.CHANGE_ID ? true : false
     def is_draft = false
 
+    echo "DEBUG getBuildInfo: CHANGE_ID=${env.CHANGE_ID}, isPullRequest=${isPullRequest}"
+    echo "DEBUG getBuildInfo: CHANGE_TARGET=${env.CHANGE_TARGET}, BRANCH_NAME=${env.BRANCH_NAME}"
+
     // Create the main dictionary
     info['isPullRequest'] =isPullRequest
     info['project'] = project
@@ -33,6 +36,7 @@ def call(String project, Map info)
     // Display/kill any old duplicates of this job that are running
     killDuplicateJobs(info)
 
+    echo "DEBUG getBuildInfo: About to set parameters, isPullRequest=${isPullRequest}"
     // Set parameters for the sub-jobs.
     if (isPullRequest) {
 	info['target'] = env.CHANGE_TARGET
@@ -60,10 +64,13 @@ def call(String project, Map info)
 	    is_draft = false
 	}
     } else {
+	echo "DEBUG getBuildInfo: Branch build (not PR)"
 	info['target'] = env.BRANCH_NAME
+	echo "DEBUG getBuildInfo: Set target=${info['target']} from BRANCH_NAME=${env.BRANCH_NAME}"
 	info['pull_id'] = 1
 	info['publishrpm'] = 1
 	info['install'] = isThisAnInstallBranch(info['target'])
+	echo "DEBUG getBuildInfo: install=${info['install']} from isThisAnInstallBranch(${info['target']})"
 	if ("${info['install']}" == '1') {
 	    if ("${info['target']}" == 'main') {
 		info['maininstall'] = 1
@@ -77,6 +84,7 @@ def call(String project, Map info)
     }
     info['is_draft'] = is_draft
     info['covopts'] = getCovOpts(info['target'])
+    echo "DEBUG getBuildInfo: Final values - target=${info['target']}, pull_id=${info['pull_id']}, install=${info['install']}"
 
     // Copy the SCM into artifacts so that other nodes can use them.
     // catchError makes sure that info[:] is returned even if it fails,

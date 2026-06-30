@@ -65,8 +65,9 @@ def call(String project, Map info)
 	}
     } else {
 	echo "DEBUG getBuildInfo: Branch build (not PR)"
-	info['target'] = env.BRANCH_NAME
-	echo "DEBUG getBuildInfo: Set target=${info['target']} from BRANCH_NAME=${env.BRANCH_NAME}"
+	def branch = env.BRANCH_NAME ?: params.BRANCH_PROJECT
+	info['target'] = branch
+	echo "DEBUG getBuildInfo: Set target=${info['target']} from BRANCH_NAME=${env.BRANCH_NAME} or params.BRANCH_PROJECT=${params.BRANCH_PROJECT}"
 	info['pull_id'] = 1
 	info['publishrpm'] = 1
 	info['install'] = isThisAnInstallBranch(info['target'])

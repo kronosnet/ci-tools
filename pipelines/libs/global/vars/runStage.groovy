@@ -118,21 +118,21 @@ def doRunStage(String agentName, Map info, Map localinfo)
 
 		// Run all converted groovy stages first
 		echo "DEBUG: Starting groovy stages loop, stages=${stages}"
-		stages.entrySet().each { stageinfo
+		stages.each { stageName, stageFunc ->
 		    if (running) { // break does weird shit
-			stagestate['runstage'] = stageinfo.key
-			echo "DEBUG: Running groovy stage '${stageinfo.key}' = '${stageinfo.value}'"
+			stagestate['runstage'] = stageName
+			echo "DEBUG: Running groovy stage '${stageName}' = '${stageFunc}'"
 
 			// Run everything in the checked-out directory
 			dir (localinfo['project']) {
 			    runWithTimeout(build_timeout,
-					   { "${stageinfo.value}"(localinfo) },
+					   { "${stageFunc}"(localinfo) },
 					   stagestate,
 					   { processRunSuccess(info, localinfo, stagestate) },
 					   { processRunException(info, localinfo, stagestate) })
 			}
 
-			echo "DEBUG: Completed groovy stage '${stageinfo.key}', failed=${stagestate['failed']}"
+			echo "DEBUG: Completed groovy stage '${stageName}', failed=${stagestate['failed']}"
 
 			// This marks it red in the graph view if it failed
 			if (stagestate['failed']) {
@@ -156,14 +156,14 @@ def doRunStage(String agentName, Map info, Map localinfo)
 
 		// Run all the shell stages (will disappear)
 		echo "DEBUG: Starting shell stages loop, shell_stages=${shell_stages}"
-		stageinfo.entrySet().each { stageinfo
+		shell_stages.each { stageName, stageScript ->
 		    if (running) { // break does weird shit
-			stagestate['runstage'] = stageinfo.key
+			stagestate['runstage'] = stageName
 
 			// Run everything in the checked-out directory
 			dir (localinfo['project']) {
 			    cmdWithTimeout(build_timeout,
-					   "${exports} $HOME/ci-tools/ci-wrap ${stageinfo.value}",
+					   "${exports} $HOME/ci-tools/ci-wrap ${stageScript}",
 					   stagestate,
 					   { processRunSuccess(info, localinfo, stagestate) },
 					   { processRunException(info, localinfo, stagestate) })

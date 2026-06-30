@@ -21,6 +21,8 @@ def update_node(String agentName, Map info, String realNode)
 
 		// special case freebsd devel that needs ansible from built-in node
 		if (agentName == 'built-in' && info['packager'] == 'freebsd') {
+			localinfo = getNodeProperties(realNode)
+			exports = getShellVariables(localinfo)
 		    sh """
 		     cd $HOME/ci-tools/bsd-update
 		     ${exports} ./run-update -d

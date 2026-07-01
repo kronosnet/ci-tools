@@ -60,3 +60,9 @@
         group: haclient
         comment: "cluster user"
         create_home: false
+
+    - name: Reboot system after updates
+      ansible.builtin.reboot:
+        reboot_timeout: 900
+        post_reboot_delay: 120
+      when: not inventory_hostname.startswith('anvil-')

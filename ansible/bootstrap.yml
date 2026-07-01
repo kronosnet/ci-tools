@@ -1,0 +1,7 @@
+---
+- name: Bootstrap the servers
+  hosts: all
+
+  tasks:
+    - ansible.builtin.debug:
+        msg: This is a placeholder message. We'll get here, eventually.

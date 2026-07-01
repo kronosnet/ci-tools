@@ -10,10 +10,10 @@ def update_node(String agentName, Map info, String realNode)
 
     node("${agentName}") {
 	cleanWs(disableDeferredWipeout: true, deleteDirs: true)
-	mark_node_offline(realNode)
+	mark_node_offline(realNode, agentName)
 
 	try {
-	    runWithArtifacts(info, "update_${agentName}.log", {
+	    runWithArtifacts(info, "update_${realNode}.log", {
 		info['stages_run']++;
 
 		def localinfo = getNodeProperties(agentName)
@@ -21,9 +21,18 @@ def update_node(String agentName, Map info, String realNode)
 
 		// special case freebsd devel that needs ansible from built-in node
 		if (agentName == 'built-in' && info['packager'] == 'freebsd') {
+			localinfo = getNodeProperties(realNode)
+			exports = getShellVariables(localinfo)
 		    sh """
 		     cd $HOME/ci-tools/bsd-update
 		     ${exports} ./run-update -d
+		    """
+		} else if (info['packager'] == 'apk') {
+			localinfo = getNodeProperties(realNode)
+			exports = getShellVariables(localinfo)
+		    sh """
+		     cd $HOME/ci-tools/ansible/
+		     ${exports} ansible-playbook update.yml --limit ${realNode}
 		    """
 		} else {
 		    sh """
@@ -64,7 +73,7 @@ def call(String agentName, Map info, String realNode)
     update_node(agentName, info, realNode)
 }
 
-def mark_node_offline(String nodeName)
+def mark_node_offline(String nodeName, String agentName)
 {
     for (aSlave in hudson.model.Hudson.instance.slaves) {
 	def computer = aSlave.getComputer();
@@ -75,11 +84,7 @@ def mark_node_offline(String nodeName)
 	    println("Waiting for node ${nodeName} to be offline")
 	    computer.waitUntilOffline()
 	    println("${nodeName} is now offline")
-	    // special case freebsd devel
-	    def workers = 1
-	    if (nodeName == 'freebsd-devel-x86-64') {
-		workers = 0
-	    }
+	    def workers = (nodeName == agentName) ? 1 : 0
 	    while (computer.countBusy() != workers) {
 		println("Waiting 300 seconds for node ${nodeName} to be idle")
 		sleep(300)

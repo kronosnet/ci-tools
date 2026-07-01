@@ -1,0 +1,62 @@
+---
+- name: Update the servers
+  hosts: all
+
+  tasks:
+    - name: Remove build directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ ansible_env.HOME }}/rpmbuild"
+        - "/usr/src/packages/BUILDROOT"
+      ignore_errors: yes
+
+    - name: Clean shared memory and temp files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      with_fileglob:
+        - "/dev/shm/qb*"
+        - "/dev/shm/testvol*"
+        - "/tmp/libqb*"
+        - "/tmp/booth-tests*"
+      ignore_errors: yes
+
+    - name: Generate the start_node script
+      ansible.builtin.command:
+      args:
+        chdir: "{{ ansible_env.HOME }}/ci-tools/"
+        cmd: "./ci-generate-start-node"
+      environment:
+        CITHOME: "{{ ansible_env.HOME }}/ci-tools/"
+      changed_when: false
+
+    - name: Configure internal host mapping for non-build nodes
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "10.6.126.250 ci.kronosnet.org"
+        state: present
+      when:
+        - not (env_node_name is match('^anvil'))
+        - env_node_name != 'built-in'
+      vars:
+        env_node_name: "{{ ansible_env.NODE_NAME | default('') }}"
+
+    - name: Include distro-specific tasks
+      include_tasks: "tasks/update-{{ ansible_distribution | lower }}.yml"
+
+    - name: Ensure the system group 'haclient' exists
+      ansible.builtin.group:
+        name: haclient
+        state: present
+        system: true
+
+    - name: Ensure the system user 'hacluster' exists
+      ansible.builtin.user:
+        name: hacluster
+        state: present
+        system: true
+        group: haclient
+        comment: "cluster user"
+        create_home: false

@@ -1,0 +1,5 @@
+# The community.general collection has deprecated Ansible 2.14, that the control node has installed, since v10.0.0.
+# https://github.com/ansible-collections/community.general/blob/stable-10/CHANGELOG.md#breaking-changes--porting-guide
+collections:
+  - name: community.general
+    version: "<10"

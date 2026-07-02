@@ -1,6 +1,6 @@
 // Jenkinsfile for building anvil kmods
 
-@Library(['GlobalLib', 'ProjectLib']) _
+@Library(['GlobalLib@ilias-testing', 'ProjectLib@ilias-testing']) _
 
 // Globals
 def project = 'anvil'

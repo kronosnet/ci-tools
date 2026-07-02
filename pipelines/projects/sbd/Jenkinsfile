@@ -1,6 +1,6 @@
 // Jenkinsfile for the sbd project
 
-@Library(['GlobalLib', 'GithubLib', 'ProjectLib']) _
+@Library(['GlobalLib@ilias-devel', 'GithubLib@ilias-devel', 'ProjectLib@ilias-devel']) _
 
 // Who we are
 def project = 'sbd'

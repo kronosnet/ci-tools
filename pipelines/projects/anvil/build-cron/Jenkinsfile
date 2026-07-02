@@ -1,6 +1,6 @@
 // anvil cron daily
 
-@Library(['GlobalLib', 'ProjectLib']) _
+@Library(['GlobalLib@ilias-devel', 'ProjectLib@ilias-devel']) _
 
 def project = 'anvil-build-cron'
 def info = ['project': project, 'branch': 'cron']

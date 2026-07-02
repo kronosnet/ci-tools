@@ -1,6 +1,6 @@
 // Jenkinsfile for the dlm project
 
-@Library(['GlobalLib', 'GitlabLib', 'ProjectLib']) _
+@Library(['GlobalLib@ilias-devel', 'GitlabLib@ilias-devel', 'ProjectLib@ilias-devel']) _
 
 // Globals
 def project = 'dlm'

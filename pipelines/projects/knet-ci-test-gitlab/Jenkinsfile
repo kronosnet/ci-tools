@@ -1,6 +1,6 @@
 // Jenkinsfile for the knet CI (gitlab) project
 
-@Library(['GlobalLib', 'GitlabLib', 'ProjectLib']) _
+@Library(['GlobalLib@ilias-devel', 'GitlabLib@ilias-devel', 'ProjectLib@ilias-devel']) _
 
 // Who we are
 def project = 'ci-test'

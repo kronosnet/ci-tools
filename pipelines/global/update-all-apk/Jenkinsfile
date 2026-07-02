@@ -1,6 +1,6 @@
 // Update BaseOS on all apk nodes
 
-@Library(['GlobalLib', 'ProjectLib']) _
+@Library(['GlobalLib@ilias-devel', 'ProjectLib@ilias-devel']) _
 
 def info = [:]
 def project = 'update-all-apk'

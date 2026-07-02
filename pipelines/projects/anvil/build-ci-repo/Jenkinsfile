@@ -1,6 +1,6 @@
 // Jenkinsfile for building anvil ci tools repo
 
-@Library(['GlobalLib', 'ProjectLib']) _
+@Library(['GlobalLib@ilias-devel', 'ProjectLib@ilias-devel']) _
 
 // Globals
 def project = 'anvil'

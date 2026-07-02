@@ -1,0 +1,11 @@
+---
+- name: Update all packages  # RHELHA-1234
+  ansible.builtin.command: pkg update
+  ignore_errors: true
+  changed_when: false
+
+- name: Install required packages
+  community.general.pkg5:
+    name: "{{ required_packages }}"
+    state: present
+  ignore_errors: true

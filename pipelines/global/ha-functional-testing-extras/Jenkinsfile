@@ -1,6 +1,6 @@
 // Jenkinsfile for updating ha-fn-testing dummy RPMs
 
-@Library(['GlobalLib', 'GithubLib', 'ProjectLib']) _
+@Library(['GlobalLib@ilias-testing', 'GithubLib@ilias-testing', 'ProjectLib@ilias-testing']) _
 
 // Who we are
 def project = 'ha-functional-testing-extras'

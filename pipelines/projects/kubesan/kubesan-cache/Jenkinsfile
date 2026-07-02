@@ -1,4 +1,4 @@
-@Library(['GlobalLib', 'ProjectLib']) _
+@Library(['GlobalLib@ilias-testing', 'ProjectLib@ilias-testing']) _
 
 def info = [:]
 def project = 'kubesan-cache'

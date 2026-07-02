@@ -1,7 +1,7 @@
 // Run all the weekly jobs
 // ...and others if asked nicely
 
-@Library(['GlobalLib', 'ProjectLib']) _
+@Library(['GlobalLib@ilias-devel', 'ProjectLib@ilias-devel']) _
 
 def info = [:]
 def project = 'all-weekly'

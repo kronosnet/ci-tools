@@ -70,6 +70,7 @@ def call(String project, Map info)
 	echo "DEBUG getBuildInfo: Set target=${info['target']} from BRANCH_NAME=${env.BRANCH_NAME} or params.BRANCH_PROJECT=${params.BRANCH_PROJECT}"
 	info['pull_id'] = 1
 	info['publishrpm'] = 1
+	echo "DEBUG getBuildInfo: Is this an install branch? Branch ${info['target']}, is install branch ${isThisAnInstallBranch(info['target'])}"
 	info['install'] = isThisAnInstallBranch(info['target'])
 	echo "DEBUG getBuildInfo: install=${info['install']} from isThisAnInstallBranch(${info['target']})"
 	if ("${info['install']}" == '1') {

@@ -69,7 +69,7 @@ def call(String project, Map info)
 	info['target'] = branch
 	echo "DEBUG getBuildInfo: Set target=${info['target']} from BRANCH_NAME=${env.BRANCH_NAME} or params.BRANCH_PROJECT=${params.BRANCH_PROJECT}"
 	info['pull_id'] = 1
-	info['publishrpm'] = 1
+	info['publishrpm'] = isThisAPublishBranch(info['target'])
 	echo "DEBUG getBuildInfo: Is this an install branch? Branch ${info['target']}, is install branch ${isThisAnInstallBranch(info['target'])}"
 	info['install'] = isThisAnInstallBranch(info['target'])
 	echo "DEBUG getBuildInfo: install=${info['install']} from isThisAnInstallBranch(${info['target']})"
@@ -82,7 +82,7 @@ def call(String project, Map info)
 		info['stableinstall'] = 1
 	    }
 	}
-	info['covinstall'] = 1
+	info['covinstall'] = isThisAPublishBranch(info['target'])
     }
     info['is_draft'] = is_draft
     info['covopts'] = getCovOpts(info['target'])

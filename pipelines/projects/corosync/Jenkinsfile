@@ -95,7 +95,7 @@ pipeline {
 											      'depbuildversion': 'stable1-proposed',
 											      'publishrpm': info['stableinstall']]])
 
-		    //Run them (errors are caught in info[:])
+		    // Run them (errors are caught in info[:])
 		    try {
 			parallel voting_kmain + voting_kstable +
 			    nonvoting_kmain + nonvoting_kstable +

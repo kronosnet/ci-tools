@@ -23,7 +23,6 @@ pipeline {
 	string(name: 'fullrebuild', defaultValue: '0', description: 'This is a full rebuild - do not publish RPM and do NOT update build code on the nodes')
 	}
 
-
     stages {
 	// First check we are allowed to run, then set some params for that run
 	stage('Setup build env') {

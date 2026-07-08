@@ -59,8 +59,7 @@ def call(String project, Map info)
 	}
     } else {
 
-	def branch = env.BRANCH_NAME ?: params.BRANCH_PROJECT
-	info['target'] = branch
+	info['target'] = env.BRANCH_NAME
 	info['pull_id'] = 1
 	info['publishrpm'] = isThisAPublishBranch(info['target'])
 	info['install'] = isThisAnInstallBranch(info['target'])

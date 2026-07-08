@@ -116,6 +116,7 @@ def doRunStage(String agentName, Map info, Map localinfo)
 		    return false
 		}
 
+		echo "------------------- DEBUG running the stages --------------------------"
 		// Run all converted groovy stages first
 		stages.entrySet().each { stageinfo ->
 		    if (running) { // break does weird shit
@@ -150,6 +151,7 @@ def doRunStage(String agentName, Map info, Map localinfo)
 		def exports = getShellVariables(localinfo)
 
 		// Run all the shell stages (will disappear)
+		echo "------------------- DEBUG running the shell stages --------------------------"
 		shell_stages.entrySet().each { stageinfo ->
 		    if (running) { // break does weird shit
 			stagestate['runstage'] = stageinfo.key

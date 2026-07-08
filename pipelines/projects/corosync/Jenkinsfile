@@ -13,8 +13,8 @@ pipeline {
 
     // Things that external jobs might want to influence
     parameters {
-	string(name: 'bootstrap',   	defaultValue: '0', description: 'Bootstrap the RPM repos')
-	string(name: 'fullrebuild', 	defaultValue: '0', description: 'This is a full rebuild - do not publish RPM and do NOT update build code on the nodes')
+	string(name: 'bootstrap',   defaultValue: '0', description: 'Bootstrap the RPM repos')
+	string(name: 'fullrebuild', defaultValue: '0', description: 'This is a full rebuild - do not publish RPM and do NOT update build code on the nodes')
 	}
 
     stages {
@@ -95,7 +95,7 @@ pipeline {
 											      'depbuildversion': 'stable1-proposed',
 											      'publishrpm': info['stableinstall']]])
 
-		    Run them (errors are caught in info[:])
+		    //Run them (errors are caught in info[:])
 		    try {
 			parallel voting_kmain + voting_kstable +
 			    nonvoting_kmain + nonvoting_kstable +

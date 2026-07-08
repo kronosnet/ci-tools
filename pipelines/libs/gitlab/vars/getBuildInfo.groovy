@@ -22,12 +22,10 @@ def call(String project, Map info)
     info['project'] = project
 
     // Validate the user. This should Abort if disallowed.
-    // def cred_uuid = getCredUUID()
-    // withCredentials([string(credentialsId: cred_uuid, variable: 'GIT_PASSWORD')]) {
-    //     info['authcheck'] = getAuthCheck(['isPullRequest': isPullRequest])
-    // }
-
-	info['authcheck'] = true
+    def cred_uuid = getCredUUID()
+    withCredentials([string(credentialsId: cred_uuid, variable: 'GIT_PASSWORD')]) {
+        info['authcheck'] = getAuthCheck(['isPullRequest': isPullRequest])
+    }
 
     // Display/kill any old duplicates of this job that are running
     killDuplicateJobs(info)
@@ -63,7 +61,7 @@ def call(String project, Map info)
 	info['target'] = env.BRANCH_NAME
 	info['source'] = env.BRANCH_NAME
 	info['pull_id'] = 1
-	info['publishrpm'] = 1
+	info['publishrpm'] = isThisAPublishBranch(info['target'])
 	info['install'] = isThisAnInstallBranch(info['target'])
 	if ("${info['install']}" == '1') {
 	    if ("${info['target']}" == 'main') {

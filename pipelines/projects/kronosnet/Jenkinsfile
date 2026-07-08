@@ -14,7 +14,7 @@ pipeline {
     // Things that external jobs might want to influence
     parameters {
 	string(name: 'bootstrap',   defaultValue: '0', description: 'Bootstrap the RPM repos')
-	string(name: 'fullrebuild', defaultValue: '1', description: 'This is a full rebuild - do not publish RPM and do NOT update build code on the nodes')
+	string(name: 'fullrebuild', defaultValue: '0', description: 'This is a full rebuild - do not publish RPM and do NOT update build code on the nodes')
 	}
 
     stages {

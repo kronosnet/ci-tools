@@ -28,8 +28,6 @@ def call(String project, Map info)
 	info['authcheck'] = getAuthCheck(['isPullRequest': isPullRequest])
     }
 
-	info['authcheck'] = true
-
     // Display/kill any old duplicates of this job that are running
     killDuplicateJobs(info)
 

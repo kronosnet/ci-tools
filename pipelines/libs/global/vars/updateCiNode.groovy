@@ -46,6 +46,8 @@ def call(String agentName, Map info)
 		if (agentName == 'built-in') {
 		    sh '''
                          cp $HOME/ci-tools/init.groovy $HOME
+                         cd $HOME/ci-tools/ansible/
+                         ansible-galaxy collection install -r requirements.yml
                        '''
 		} else {
 		    // built-in runs as Jenkins user so can't write to /bin (see also above)

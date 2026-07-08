@@ -1,0 +1,8 @@
+# This is the main playbook. It executes all other playbooks to bring the fleet to its desired state.
+#
+
+- name: Bootstrap the servers
+  import_playbook: bootstrap.yml
+
+- name: Update the servers
+  import_playbook: update.yml

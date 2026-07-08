@@ -1,0 +1,29 @@
+---
+- name: Update apk cache and upgrade all packages
+  community.general.apk:
+    update_cache: true
+    upgrade: true
+
+- name: Install required packages
+  community.general.apk:
+    name: "{{ required_packages }}"
+    state: present
+
+- name: Install optional packages
+  community.general.apk:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ optional_packages }}"
+  ignore_errors: true
+
+- name: Install Rust bindings (conditional)
+  community.general.apk:
+    name: "{{ rust_bindings }}"
+    state: present
+  when: lookup('ansible.builtin.env', 'RUSTBINDINGS') == 'yes'
+
+# The community.general.apk module doesn't currently support the `clean` parameter, like
+# other packager modules do.
+- name: Clean apk cache
+  ansible.builtin.command: "apk cache clean"
+  changed_when: false

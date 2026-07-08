@@ -18,25 +18,21 @@ def call(String project, Map info)
     def isPullRequest = env.CHANGE_ID ? true : false
     def is_draft = false
 
-    echo "DEBUG getBuildInfo: CHANGE_ID=${env.CHANGE_ID}, isPullRequest=${isPullRequest}"
-    echo "DEBUG getBuildInfo: CHANGE_TARGET=${env.CHANGE_TARGET}, BRANCH_NAME=${env.BRANCH_NAME}"
-
     // Create the main dictionary
     info['isPullRequest'] =isPullRequest
     info['project'] = project
 
     // Validate the user. This should Abort if disallowed.
-    // def cred_uuid = getCredUUID()
-    // withCredentials([gitUsernamePassword(credentialsId: cred_uuid, gitToolName: 'Default')]) {
-	// info['authcheck'] = getAuthCheck(['isPullRequest': isPullRequest])
-    // }
+    def cred_uuid = getCredUUID()
+    withCredentials([gitUsernamePassword(credentialsId: cred_uuid, gitToolName: 'Default')]) {
+	info['authcheck'] = getAuthCheck(['isPullRequest': isPullRequest])
+    }
 
 	info['authcheck'] = true
 
     // Display/kill any old duplicates of this job that are running
     killDuplicateJobs(info)
 
-    echo "DEBUG getBuildInfo: About to set parameters, isPullRequest=${isPullRequest}"
     // Set parameters for the sub-jobs.
     if (isPullRequest) {
 	info['target'] = env.CHANGE_TARGET
@@ -64,15 +60,12 @@ def call(String project, Map info)
 	    is_draft = false
 	}
     } else {
-	echo "DEBUG getBuildInfo: Branch build (not PR)"
+
 	def branch = env.BRANCH_NAME ?: params.BRANCH_PROJECT
 	info['target'] = branch
-	echo "DEBUG getBuildInfo: Set target=${info['target']} from BRANCH_NAME=${env.BRANCH_NAME} or params.BRANCH_PROJECT=${params.BRANCH_PROJECT}"
 	info['pull_id'] = 1
 	info['publishrpm'] = isThisAPublishBranch(info['target'])
-	echo "DEBUG getBuildInfo: Is this an install branch? Branch ${info['target']}, is install branch ${isThisAnInstallBranch(info['target'])}"
 	info['install'] = isThisAnInstallBranch(info['target'])
-	echo "DEBUG getBuildInfo: install=${info['install']} from isThisAnInstallBranch(${info['target']})"
 	if ("${info['install']}" == '1') {
 	    if ("${info['target']}" == 'main') {
 		info['maininstall'] = 1
@@ -86,7 +79,6 @@ def call(String project, Map info)
     }
     info['is_draft'] = is_draft
     info['covopts'] = getCovOpts(info['target'])
-    echo "DEBUG getBuildInfo: Final values - target=${info['target']}, pull_id=${info['pull_id']}, install=${info['install']}"
 
     // Copy the SCM into artifacts so that other nodes can use them.
     // catchError makes sure that info[:] is returned even if it fails,

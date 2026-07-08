@@ -117,22 +117,18 @@ def doRunStage(String agentName, Map info, Map localinfo)
 		}
 
 		// Run all converted groovy stages first
-		echo "DEBUG: Starting groovy stages loop, stages=${stages}"
-		stages.each { stageName, stageFunc ->
+		stages.entrySet().each { stageinfo ->
 		    if (running) { // break does weird shit
-			stagestate['runstage'] = stageName
-			echo "DEBUG: Running groovy stage '${stageName}' = '${stageFunc}'"
+			stagestate['runstage'] = stageinfo.key
 
 			// Run everything in the checked-out directory
 			dir (localinfo['project']) {
 			    runWithTimeout(build_timeout,
-					   { "${stageFunc}"(localinfo) },
+					   { "${stageinfo.value}"(localinfo) },
 					   stagestate,
 					   { processRunSuccess(info, localinfo, stagestate) },
 					   { processRunException(info, localinfo, stagestate) })
 			}
-
-			echo "DEBUG: Completed groovy stage '${stageName}', failed=${stagestate['failed']}"
 
 			// This marks it red in the graph view if it failed
 			if (stagestate['failed']) {
@@ -148,22 +144,20 @@ def doRunStage(String agentName, Map info, Map localinfo)
 			}
 		    }
 		}
-		echo "DEBUG: Finished groovy stages loop"
+
 
 		// Convert localinfo map into shell variables
-		echo "DEBUG: Converting localinfo to shell variables"
 		def exports = getShellVariables(localinfo)
 
 		// Run all the shell stages (will disappear)
-		echo "DEBUG: Starting shell stages loop, shell_stages=${shell_stages}"
-		shell_stages.each { stageName, stageScript ->
+		shell_stages.entrySet().each { stageinfo ->
 		    if (running) { // break does weird shit
-			stagestate['runstage'] = stageName
+			stagestate['runstage'] = stageinfo.key
 
 			// Run everything in the checked-out directory
 			dir (localinfo['project']) {
 			    cmdWithTimeout(build_timeout,
-					   "${exports} $HOME/ci-tools/ci-wrap ${stageScript}",
+					   "${exports} $HOME/ci-tools/ci-wrap ${stageinfo.value}",
 					   stagestate,
 					   { processRunSuccess(info, localinfo, stagestate) },
 					   { processRunException(info, localinfo, stagestate) })
@@ -183,10 +177,7 @@ def doRunStage(String agentName, Map info, Map localinfo)
 			}
 		    }
 		}
-		echo "DEBUG: Finished shell stages loop"
-		echo "DEBUG: About to exit runWithArtifacts closure"
 	    })
-	    echo "DEBUG: Exited runWithArtifacts - back in runStage"
 	}
 
 	info['have_split_logs'] = true

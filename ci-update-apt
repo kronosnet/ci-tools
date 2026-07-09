@@ -98,6 +98,7 @@ required_pkg ruby
 required_pkg ruby-backports
 required_pkg ruby-bundler
 required_pkg ruby-childprocess
+required_pkg ruby-curb
 required_pkg ruby-daemons
 required_pkg ruby-dev
 required_pkg ruby-ethon

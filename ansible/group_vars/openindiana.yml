@@ -17,3 +17,6 @@ required_packages:
   - system/library/mozilla-nss/header-nss
   - tun
   - wireshark
+
+boot_environments_to_keep: 4
+boot_environments_cleanup_script: /root/bin/cleanup-boot-envs

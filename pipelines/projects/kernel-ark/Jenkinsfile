@@ -142,12 +142,20 @@ pipeline {
 		    steps {
 			sh '''
 			    cd $BUILDDIR/kernel-ark
-			    for branch in gfs2/for-next dlm/next kernel-ark-config/ci_test_config; do
+			    for branch in gfs2/for-next dlm/next; do
 				if ! git merge-base --is-ancestor "$branch" HEAD; then
 				    git merge --log=999 --no-ff -m "Automatic merge of $branch" $branch
 				    git show --no-patch
 				fi
 			    done
+			'''
+		    }
+		}
+		stage('Cherry-pick config changes') {
+		    steps {
+			sh '''
+			    cd $BUILDDIR/kernel-ark
+			    git cherry-pick 4195c83be5416..kernel-ark-config/ci_test_config
 			'''
 		    }
 		}

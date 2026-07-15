@@ -61,7 +61,7 @@ def call(String project, Map info)
 	info['target'] = env.BRANCH_NAME
 	info['source'] = env.BRANCH_NAME
 	info['pull_id'] = 1
-	info['publishrpm'] = 1
+	info['publishrpm'] = isThisAPublishBranch(info['target'])
 	info['install'] = isThisAnInstallBranch(info['target'])
 	if ("${info['install']}" == '1') {
 	    if ("${info['target']}" == 'main') {

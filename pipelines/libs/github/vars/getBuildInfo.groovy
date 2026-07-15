@@ -58,9 +58,10 @@ def call(String project, Map info)
 	    is_draft = false
 	}
     } else {
+
 	info['target'] = env.BRANCH_NAME
 	info['pull_id'] = 1
-	info['publishrpm'] = 1
+	info['publishrpm'] = isThisAPublishBranch(info['target'])
 	info['install'] = isThisAnInstallBranch(info['target'])
 	if ("${info['install']}" == '1') {
 	    if ("${info['target']}" == 'main') {
@@ -71,7 +72,7 @@ def call(String project, Map info)
 		info['stableinstall'] = 1
 	    }
 	}
-	info['covinstall'] = 1
+	info['covinstall'] = isThisAPublishBranch(info['target'])
     }
     info['is_draft'] = is_draft
     info['covopts'] = getCovOpts(info['target'])

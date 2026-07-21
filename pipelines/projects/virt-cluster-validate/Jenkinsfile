@@ -1,0 +1,75 @@
+// Jenkinsfile for the virt-cluster-validate project
+
+@Library(['GlobalLib@fab-devel', 'GithubLib@fab-devel', 'ProjectLib@fab-devel']) _
+
+// Who we are
+def project = 'virt-cluster-validate'
+def info = [:]
+
+// Pipeline code starts here
+pipeline {
+    // Start on the main Jenkins node. Build jobs are distributed inside 'parallel' below
+    agent { label 'built-in' }
+
+    // Things that external jobs might want to influence
+    parameters {
+	string(name: 'bootstrap',   defaultValue: '0', description: 'Bootstrap the RPM repos')
+	string(name: 'fullrebuild', defaultValue: '0', description: 'This is a full rebuild - do not publish RPM and do NOT update build code on the nodes')
+    }
+
+    stages {
+	// First check we are allowed to run, then set some params for that run
+	stage('Setup build env') {
+	    steps {
+		script {
+		    getBuildInfo(project, info)
+		}
+	    }
+	}
+
+        // This is the main stage - building and testing
+	stage('Main stage') {
+	    when {
+		// getAuthCheck (in getBuildInfo) will usually abort the job if permission is denied,
+		// but this is an extra check.
+		expression { info['authcheck'] == true && info['is_draft'] == false }
+	    }
+
+	    // All of the stages that actually do stuff
+	    steps {
+		script {
+		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+
+		    // Run them (errors are caught in info[:])
+		    try {
+			//parallel 
+			sh (label: 'test',
+			    script: """
+				echo this is just a test
+			    """)
+		    } catch (err) {
+			println("Jenkinsfile caught "+err)
+			info['exception_text'] += "\nparallel error caught: {$err}\n"
+		    }
+		}
+	    }
+	}
+
+        // Build the RPM/Coverity repos etc. If the job failed, this is what tells Jenkins
+	stage('Post Stage') {
+	    when {
+		expression { info['authcheck'] == true && info['is_draft'] == false }
+	    }
+	    steps {
+		postStage(info)
+	    }
+	}
+    }
+
+    // Finish up and send emails
+    post {
+	always {
+	    projectFinishUp(info)
+	}
+    }
+}

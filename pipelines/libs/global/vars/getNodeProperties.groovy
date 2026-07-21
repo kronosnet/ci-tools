@@ -68,6 +68,7 @@ def call(String node)
     node_env['vapor-libvirt-2-x86-64'] = []
     node_env['vapor-libvirt-3-x86-64'] = []
     node_env['vapor-libvirt-4-x86-64'] = []
+    node_env['vapor-vcv-x86-64'] = []
 
     if (node_env.containsKey(node)) {
 	// Add it to props[]

@@ -59,6 +59,7 @@ def call()
     labels['vapor-libvirt-2-x86-64'] = ['rhel-9','stable','x86-64','yum','libvirt','kubesan']
     labels['vapor-libvirt-3-x86-64'] = ['rhel-9','stable','x86-64','yum','libvirt','kubesan']
     labels['vapor-libvirt-4-x86-64'] = ['rhel-9','stable','x86-64','yum','libvirt','kubesan']
+    labels['vapor-vcv-x86-64'] = ['rhel-9','stable','x86-64','yum','vcv']
 
     return labels
 }

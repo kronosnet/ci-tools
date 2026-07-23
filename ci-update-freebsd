@@ -13,15 +13,15 @@ fi
 
 # stable release update (old)
 case "${NODE_NAME}" in
- *13*|*14*)
+ *14*)
   freebsd-update --not-running-from-cron fetch
   freebsd-update --not-running-from-cron install || true
  ;;
 esac
 
 case "${NODE_NAME}" in
- *13*|*14*|*15*|*devel*)
-  pyver=311
+ *14*|*15*|*devel*)
+  pyver=312
   ;;
 esac
 

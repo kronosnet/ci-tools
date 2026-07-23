@@ -45,6 +45,8 @@ pipeline {
 
 			    // Reset for All tests
 			    info['stages_fail_nodes'] = ''
+			    info['stages_fail'] = 0
+			    info['stages_run'] = 0
 			    info['branch'] = 'All tests'
 			}
 

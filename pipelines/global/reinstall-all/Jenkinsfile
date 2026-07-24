@@ -31,8 +31,8 @@ def joblist = [
     'pcs': ['pcs/pcs-pipeline/main;bootstrap=1',
 	    'pcs/pcs-pipeline/pcs-0.11;bootstrap=1',
 	    'pcs/pcs-pipeline/pcs-0.10;bootstrap=1'],
-    'dlm': ['dlm/dlm-pipeline;bootstrap=1'],
-    'gfs2-utils': ['gfs2-utils/gfs2-utils-pipeline;bootstrap=1'],
+    'dlm': ['dlm/dlm-pipeline/main;bootstrap=1'],
+    'gfs2-utils': ['gfs2-utils/gfs2-utils-pipeline/main;bootstrap=1'],
     'anvil': ['anvil/anvil-pipeline/main;bootstrap=1'],
     'kernel-ark': ['kernel-ark/kernel-ark-pipeline/ark-latest']
 ]

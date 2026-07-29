@@ -50,7 +50,7 @@ pipeline {
 		script {
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 
-			RWLock(info, 'testlock', 'WRITE', 'jenkinsfile', { withinlock() } )
+			Semaphore(info, 'testlock', 'WRITE', 'jenkinsfile', { withinlock() } )
 
 		    // def voting_kmain = buildRunMap('kmain-voting', info, ['voting': true,
 			// 					      'nodelabel': 'voting',

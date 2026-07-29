@@ -22,7 +22,10 @@ pipeline {
     parameters {
 	string(name: 'bootstrap',   defaultValue: '0', description: 'Bootstrap the RPM repos')
 	string(name: 'fullrebuild', defaultValue: '0', description: 'This is a full rebuild - do not publish RPM and do NOT update build code on the nodes')
-    }
+    string(name: 'BRANCH', defaultValue: 'main', description: 'branch to build')
+    string(name: 'BRANCH_TARGET', defaultValue: 'None', description: 'Target branch')
+	
+	}
 
     stages {
 	// First check we are allowed to run, then set some params for that run
@@ -47,7 +50,7 @@ pipeline {
 		script {
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 
-			Semaphor(info, 2, 'testlock', 'WRITE', 'jenkinsfile', { withinlock() } )
+			Semaphore(info, 2, 'testlock', 'WRITE', 'jenkinsfile', { withinlock() } )
 
 		    // def voting_kmain = buildRunMap('kmain-voting', info, ['voting': true,
 			// 					      'nodelabel': 'voting',

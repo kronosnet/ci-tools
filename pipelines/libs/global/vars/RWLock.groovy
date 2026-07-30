@@ -164,7 +164,7 @@ def call(Map info, String lockname, String mode, String stagename, Closure thing
 	println("RWLock: ${lockname} in stage ${stagename} locked for ${mode}")
 	log_lock('LOCKED', mode, lockname, stagename)
 	if (thingtorun == null) {
-	    busy = true
+	    busy = false
 	}
     }
 

@@ -122,7 +122,7 @@ def call(Map info, String lockname, String mode, String stagename, Closure thing
     }
 
     // This MUST run on the Jenkins host, that's where the flocks are
-    def result = null
+    def busy = false
     node('built-in') {
 	sh "mkdir -p ${lockdir}"
 	lockmode |= 4 // LOCK_NB (no blocking - so the job doesn't seem to "die" according to jenkins
@@ -143,7 +143,7 @@ def call(Map info, String lockname, String mode, String stagename, Closure thing
 		if (e == 11) { // 11 = EAGAIN
 		    if (thingtorun == null) {
 			jnaflock.CLibrary.INSTANCE.close(lockfd)
-			result = [status: 'busy']
+			busy = true
 			return
 		    }
 		    wait_time = 60
@@ -164,12 +164,12 @@ def call(Map info, String lockname, String mode, String stagename, Closure thing
 	println("RWLock: ${lockname} in stage ${stagename} locked for ${mode}")
 	log_lock('LOCKED', mode, lockname, stagename)
 	if (thingtorun == null) {
-	    result = [status: 'ok']
+	    busy = true
 	}
     }
 
     if (thingtorun == null) {
-	return result
+	return busy
     }
 
     // Run a thing inside the lock, but catch any exceptions in case it fails

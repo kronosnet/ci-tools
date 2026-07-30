@@ -11,13 +11,9 @@ def call(Map info, int permits, String lockname, String mode, String stagename, 
 
             //Polymorph for trying to lock the specific slotLock 
             // one time and return the result to act upon it
-            def rc = RWLock(info, slotLock, mode, stagename)
+            def busy = RWLock(info, slotLock, mode, stagename)
 
-            if (rc.status == 'error') { 
-                throw (new Exception(rc.reason)) 
-            }
-
-            if (rc.status == 'ok') {
+            if (!busy) {
                 acquired = true
                 def e = null
                 try {

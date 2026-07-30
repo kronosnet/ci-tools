@@ -49,7 +49,7 @@ pipeline {
 	    steps {
 		script {
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
-			RWLock(info, 'UNLOCK')
+			//RWLock(info, 'UNLOCK')
 			Semaphore(info,2, 'testlock', 'WRITE', 'jenkinsfile', { withinlock() } )
 
 		    // def voting_kmain = buildRunMap('kmain-voting', info, ['voting': true,

@@ -75,6 +75,18 @@ def call(Map info, String mode)
     }
 }
 
+def call(Map info, String lockname, String stagename) {
+    def lockname_info = "lockfd_${stagename}_${lockname}".replace('-', '_')
+    node('built-in') {
+        do_unlock_one(info, lockname_info)
+        info.remove(lockname_info)
+    }
+}
+
+def call(Map info, String lockname, String mode, String stagename) {
+    call(info, lockname, mode,stagename, null)
+}
+
 // info       - the global info[:] array of the job - we store the lock FDs in here
 // lockname   - name of the lock to get (a file in $JENKINS_HOME/locks/)
 // mode       - READ or WRITE
@@ -110,6 +122,7 @@ def call(Map info, String lockname, String mode, String stagename, Closure thing
     }
 
     // This MUST run on the Jenkins host, that's where the flocks are
+    def busy = false
     node('built-in') {
 	sh "mkdir -p ${lockdir}"
 	lockmode |= 4 // LOCK_NB (no blocking - so the job doesn't seem to "die" according to jenkins
@@ -128,6 +141,11 @@ def call(Map info, String lockname, String mode, String stagename, Closure thing
 	    if (jnaflock.CLibrary.INSTANCE.flock(lockfd, lockmode) == -1) {
 		def e = Native.getLastError()
 		if (e == 11) { // 11 = EAGAIN
+		    if (thingtorun == null) {
+			jnaflock.CLibrary.INSTANCE.close(lockfd)
+			busy = true
+			return
+		    }
 		    wait_time = 60
 		    println("Waiting for lock ${lockname}")
 		} else {
@@ -145,6 +163,13 @@ def call(Map info, String lockname, String mode, String stagename, Closure thing
 	info[lockname_info]['mode'] = mode
 	println("RWLock: ${lockname} in stage ${stagename} locked for ${mode}")
 	log_lock('LOCKED', mode, lockname, stagename)
+	if (thingtorun == null) {
+	    busy = false
+	}
+    }
+
+    if (thingtorun == null) {
+	return busy
     }
 
     // Run a thing inside the lock, but catch any exceptions in case it fails

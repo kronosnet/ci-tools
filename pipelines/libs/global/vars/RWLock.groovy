@@ -75,71 +75,6 @@ def call(Map info, String mode)
     }
 }
 
-def call (Map info, String lockname, String mode, String stagename) {
-    def lockdir = "${JENKINS_HOME}/locks"
-    def lockmode = 0
-    def lockname_info = "lockfd_${stagename}_${lockname}".replace('-','_')
-
-    if (mode == 'READ') {
-	lockmode = 1 // LOCK_SH
-    }
-    if (mode == 'WRITE') {
-	lockmode = 2 // LOCK_EX
-    }
-    // Normally this doesn't need to be called as the closure in 'thingtorun' is
-    // run then the lock is cleared. This is for post{always{}} to tidy up
-    // in case of 'accidents'
-    if (mode == 'UNLOCK') {
-	    return do_unlock_all(info)
-    }
-    if (lockmode == 0) {
-	    return [status: 'error', reason: "RWLock: Unknown lock mode ${mode}"]
-    }
-
-    // Of course, this needs to be after the UNLOCK check
-    if (info.containsKey(lockname_info) && info[lockname_info]['fd'] >= 0) {
-	    return [status: 'error', reason: "RWLock: Request in stage ${stagename} for lock ${lockname}, while lock on fd ${info[lockname_info]['fd']} already held (only 1 lock allowed at a time)"]
-    }
-
-    // This MUST run on the Jenkins host, that's where the flocks are
-
-    def result = [status: 'error']
-
-    node('built-in') {
-        sh "mkdir -p ${lockdir}"
-        lockmode |= 4 // LOCK_NB (no blocking - so the job doesn't seem to "die" according to jenkins
-
-        def lockfd = jnaflock.CLibrary.INSTANCE.creat("${lockdir}/${lockname}.lock", 0666)
-        if (lockfd == -1) {
-            result = [status: 'error', reason: "RWLock: Failed to 'creat' file for lock ${lockdir}/${lockname}"]
-            return
-        }
-        println("RWLock: FD for lock ${lockname} in stage ${stagename} is ${lockfd}")
-
-        
-        if (jnaflock.CLibrary.INSTANCE.flock(lockfd, lockmode) == -1) {
-            def e = Native.getLastError()
-            jnaflock.CLibrary.INSTANCE.close(lockfd)
-            if (e == 11) { // 11 = EAGAIN
-                result = [status: 'busy']
-                return
-            } else {
-                result = [status: 'error', reason: "flock failed for ${lockname}, errno ${e}"]
-                return
-            }
-        } 
-        info[lockname_info] = [:]
-        info[lockname_info]['fd'] = lockfd
-        info[lockname_info]['name'] = lockname
-        info[lockname_info]['stage'] = stagename
-        info[lockname_info]['mode'] = mode
-        println("RWLock: ${lockname} in stage ${stagename} locked for ${mode}")
-        log_lock('LOCKED', mode, lockname, stagename)
-        result = [status: 'ok', fd: lockfd]
-        }
-    return result
-}
-
 def call(Map info, String lockname, String stagename) {
     def lockname_info = "lockfd_${stagename}_${lockname}".replace('-', '_')
     node('built-in') {
@@ -148,6 +83,9 @@ def call(Map info, String lockname, String stagename) {
     }
 }
 
+def call(Map info, String lockname, String mode, String stagename) {
+    call(info, lockname, mode,stagename, null)
+}
 
 // info       - the global info[:] array of the job - we store the lock FDs in here
 // lockname   - name of the lock to get (a file in $JENKINS_HOME/locks/)
@@ -184,6 +122,7 @@ def call(Map info, String lockname, String mode, String stagename, Closure thing
     }
 
     // This MUST run on the Jenkins host, that's where the flocks are
+    def result = null
     node('built-in') {
 	sh "mkdir -p ${lockdir}"
 	lockmode |= 4 // LOCK_NB (no blocking - so the job doesn't seem to "die" according to jenkins
@@ -202,6 +141,11 @@ def call(Map info, String lockname, String mode, String stagename, Closure thing
 	    if (jnaflock.CLibrary.INSTANCE.flock(lockfd, lockmode) == -1) {
 		def e = Native.getLastError()
 		if (e == 11) { // 11 = EAGAIN
+		    if (thingtorun == null) {
+			jnaflock.CLibrary.INSTANCE.close(lockfd)
+			result = [status: 'busy']
+			return
+		    }
 		    wait_time = 60
 		    println("Waiting for lock ${lockname}")
 		} else {
@@ -219,6 +163,13 @@ def call(Map info, String lockname, String mode, String stagename, Closure thing
 	info[lockname_info]['mode'] = mode
 	println("RWLock: ${lockname} in stage ${stagename} locked for ${mode}")
 	log_lock('LOCKED', mode, lockname, stagename)
+	if (thingtorun == null) {
+	    result = [status: 'ok']
+	}
+    }
+
+    if (thingtorun == null) {
+	return result
     }
 
     // Run a thing inside the lock, but catch any exceptions in case it fails

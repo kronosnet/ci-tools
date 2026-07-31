@@ -27,7 +27,7 @@ def update_node(String agentName, Map info, String realNode)
 		     cd $HOME/ci-tools/bsd-update
 		     ${exports} ./run-update -d
 		    """
-		} else if (info['packager'] == 'apk') {
+		} else if (info['packager'] in ['apk', 'openindiana']) {
 			localinfo = getNodeProperties(realNode)
 			exports = getShellVariables(localinfo)
 		    sh """

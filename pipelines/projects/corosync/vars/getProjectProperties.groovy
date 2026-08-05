@@ -9,7 +9,7 @@ def call(Map localinfo, String agentName)
     def props = [:]
 
     props['RPMDEPS'] = 'libnozzle1-devel libknet1-devel libqb-devel'
-    props['DISTROCONFOPTS'] = '--enable-snmp --enable-dbus --enable-systemd --enable-nozzle'
+    props['DISTROCONFOPTS'] = '--enable-snmp --enable-dbus --enable-systemd --enable-nozzle --enable-udpu --enable-unencrypted'
 
     if (!localinfo.containsKey('compiler') || localinfo['compiler'] == 'gcc') {
 	props['DISTROCONFOPTS'] += ' --enable-fatal-warnings'

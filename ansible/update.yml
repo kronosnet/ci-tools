@@ -43,7 +43,7 @@
       vars:
         env_node_name: "{{ ansible_env.NODE_NAME | default('') }}"
 
-    - name: Include distro-specific tasks
+    - name: Include distro-specific update tasks
       include_tasks: "tasks/update-{{ ansible_distribution | lower }}.yml"
 
     - name: Ensure the system group 'haclient' exists
@@ -66,3 +66,11 @@
         reboot_timeout: 900
         post_reboot_delay: 120
       when: not inventory_hostname.startswith('anvil-')
+
+    - name: Include distro-specific post-update tasks (if exists)
+      ansible.builtin.include_tasks:
+        file: "{{ item }}"
+      with_first_found:
+        - files:
+          - "tasks/post-update-{{ ansible_distribution | lower }}.yml"
+          skip: True

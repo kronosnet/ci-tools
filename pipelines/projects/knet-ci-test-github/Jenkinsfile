@@ -13,7 +13,7 @@ def testlock(Map info)
 {
     sh "date"
     Semaphore(info, 3, "CCTestLock", "WRITE", "testStage", {
-	sh "echo running under CCTestLock at $(date)"} )
+	sh "echo running under CCTestLock at \$(date)"} )
 }
 
 // Pipeline code starts here

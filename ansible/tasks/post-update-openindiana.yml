@@ -1,0 +1,12 @@
+---
+- name: Copy cleanup boot env script
+  ansible.builtin.template:
+    src: templates/openindiana-cleanup-boot-envs.sh.j2
+    dest: "{{ boot_environments_cleanup_script }}"
+    owner: root
+    group: sys
+    mode: '0750'
+
+- name: Run cleanup boot env script
+  ansible.builtin.command: "{{ boot_environments_cleanup_script }}"
+  changed_when: false

@@ -9,6 +9,21 @@
 def project = 'ci-test'
 def info = [:]
 
+
+
+def buildTestMap(Map info)
+{
+    def collectBuildEnv = [:]
+
+    for (def n=0; n<7; n++) {
+	collectBuildEnv[node] = {
+	    testlock(info)
+	}
+    }
+    return collectBuildEnv
+}
+
+
 def testlock(Map info)
 {
     sh "date"
@@ -51,21 +66,7 @@ pipeline {
 
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 
-
-		    testlock(info)
-		    println("CC: 1")
-		    testlock(info)
-		    println("CC: 2")
-		    testlock(info)
-		    println("CC: 3")
-		    testlock(info)
-		    println("CC: 4")
-		    testlock(info)
-		    println("CC: 5")
-		    testlock(info)
-		    println("CC: 6")
-		    testlock(info)
-		    println("CC: 7")
+		    def tm = buildTestMap(info)
 
 		    // The 'short' test list
 		    def voting = buildRunMap('voting', info, ['voting': true,
@@ -102,7 +103,7 @@ pipeline {
 
 		    // Run them (errors are caught in info[:])
 		    try {
-			parallel voting + nonvoting + nonvoting_clang + buildrpms //+ covscan_kmain + covscan_kstable
+			parallel tm + voting + nonvoting + nonvoting_clang + buildrpms //+ covscan_kmain + covscan_kstable
 		    } catch (err) {
 			println("Jenkinsfile caught "+err)
 			info['exception_text'] += "\nparallel error caught: {$err}\n"

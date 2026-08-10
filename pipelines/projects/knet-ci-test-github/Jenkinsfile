@@ -15,7 +15,7 @@ def buildTestMap(Map info)
 {
     def collectBuildEnv = [:]
 
-    for (def n=0; n<7; n++) {
+    for (def n=0; n<3; n++) {
 	collectBuildEnv["${n}"] = {
 	    testlock(info)
 	}
@@ -27,7 +27,7 @@ def buildTestMap(Map info)
 def testlock(Map info)
 {
     sh "date"
-    Semaphore(info, 3, "CCTestLock", "WRITE", "testStage", {
+    Semaphore(info, 1, "CCTestLock", "WRITE", "testStage", {
 	sh "echo running under CCTestLock at \$(date)"} )
 }
 

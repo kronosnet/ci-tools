@@ -9,10 +9,12 @@
 def project = 'ci-test'
 def info = [:]
 
-def withinlock()
+def testlock(Map info)
 {
     sh "date; sleep 60; date"
-    println("Called with locking test on ${env.NODE_NAME}");
+    Semaphore(info, 3, "CCTestLock", "WRITE", "testStage") {
+	sh "running under CCTestLock"
+    }
 }
 
 // Pipeline code starts here
@@ -50,7 +52,21 @@ pipeline {
 
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 
-		    RWLock(info, 'testlock', 'WRITE', 'jenkinsfile', { withinlock() } )
+
+		    testlock(info)
+		    println("CC: 1")
+		    testlock(info)
+		    println("CC: 2")
+		    testlock(info)
+		    println("CC: 3")
+		    testlock(info)
+		    println("CC: 4")
+		    testlock(info)
+		    println("CC: 5")
+		    testlock(info)
+		    println("CC: 6")
+		    testlock(info)
+		    println("CC: 7")
 
 		    // The 'short' test list
 		    def voting = buildRunMap('voting', info, ['voting': true,

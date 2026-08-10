@@ -11,7 +11,7 @@ def info = [:]
 
 def testlock(Map info)
 {
-    sh "date; sleep 60; date"
+    sh "date"
     Semaphore(info, 3, "CCTestLock", "WRITE", "testStage") {
 	sh "running under CCTestLock"
     }

@@ -16,7 +16,7 @@ def buildTestMap(Map info)
     def collectBuildEnv = [:]
 
     for (def n=0; n<7; n++) {
-	collectBuildEnv[node] = {
+	collectBuildEnv["${n}"] = {
 	    testlock(info)
 	}
     }
@@ -66,7 +66,7 @@ pipeline {
 
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 
-		    def tm = buildTestMap(info)
+		    def tests = buildTestMap(info)
 
 		    // The 'short' test list
 		    def voting = buildRunMap('voting', info, ['voting': true,
@@ -103,7 +103,7 @@ pipeline {
 
 		    // Run them (errors are caught in info[:])
 		    try {
-			parallel tm + voting + nonvoting + nonvoting_clang + buildrpms //+ covscan_kmain + covscan_kstable
+			parallel tests + voting + nonvoting + nonvoting_clang + buildrpms //+ covscan_kmain + covscan_kstable
 		    } catch (err) {
 			println("Jenkinsfile caught "+err)
 			info['exception_text'] += "\nparallel error caught: {$err}\n"

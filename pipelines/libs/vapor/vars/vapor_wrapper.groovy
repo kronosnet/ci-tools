@@ -82,6 +82,7 @@ def cloud_create(Map p, Map info, Integer timeout_minutes)
 	    if (p['api_rate_limit'] == true) {
 		res = sh(returnStatus: true, script: create_script)
 	    } else {
+            sleep(60)
 		res =  sh(returnStatus: true, script: create_script)
 	    }
 	}

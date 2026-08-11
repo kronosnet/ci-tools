@@ -74,7 +74,7 @@ def cloud_create(Map p, Map info, Integer timeout_minutes)
     def res = 0
     def create_script =
        """
-         ${p['echorun']} vapor ${p['vaporopts']} create ${p['clusteropts']} ${p['createbaseopts']} ${p['createopts']} ${p['extraopts']} ${p['provideropts']}
+         echo "sleeping"; sleep 20; ${p['echorun']} vapor ${p['vaporopts']} create ${p['clusteropts']} ${p['createbaseopts']} ${p['createopts']} ${p['extraopts']} ${p['provideropts']}
        """
 
     Semaphore(info, p['api_creates'], "${p['provider']}_api_create", 'WRITE', 'create_stage', {
@@ -82,7 +82,8 @@ def cloud_create(Map p, Map info, Integer timeout_minutes)
 	    if (p['api_rate_limit'] == true) {
 		res = sh(returnStatus: true, script: create_script)
 	    } else {
-            sleep(60)
+        echo
+        sleep(60)
 		res =  sh(returnStatus: true, script: create_script)
 	    }
 	}

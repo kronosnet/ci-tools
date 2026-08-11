@@ -4,6 +4,41 @@
 // a parallel Map
 // realNode might not match agentName if the node is updated using ansible
 //    on built-in, but we still need to know it
+
+// Determine CITHOME based on CITBRANCH
+// For non-main branches, checkout ci-tools to workspace
+// Based on `ci-wrap` logic
+def setupCITHOME() {
+    def cithome = env.HOME + '/ci-tools'
+    def citbranch = env.CITBRANCH ?: 'main'
+    def workspace = env.WORKSPACE ?: error("WORKSPACE not set by Jenkins")
+
+    if (citbranch != 'main') {
+        cithome = workspace + '/ci-tools'
+
+        echo "Using CITBRANCH: ${citbranch}"
+        echo "Using WORKSPACE: ${workspace}"
+        echo "Using CITHOME: ${cithome}"
+
+        // Use Jenkins lock to prevent concurrent checkout conflicts
+        lock('ci-tools-checkout') {
+            sh """
+                rm -rf ${cithome}
+                echo "Copy HOME/ci-tools to WORKSPACE"
+                cp -rp \$HOME/ci-tools ${workspace}/
+                echo "Updating WORKSPACE copy of ci-tools"
+                cd ${cithome}
+                git pull
+                echo "Switching WORKSPACE/ci-tools to ${citbranch}"
+                git checkout ${citbranch}
+                cd - > /dev/null
+            """
+        }
+    }
+
+    return cithome
+}
+
 def update_node(String agentName, Map info, String realNode)
 {
     println("Running updateOSNode on ${realNode}")
@@ -30,8 +65,9 @@ def update_node(String agentName, Map info, String realNode)
 		} else if (info['packager'] in ['apk', 'openindiana']) {
 			localinfo = getNodeProperties(realNode)
 			exports = getShellVariables(localinfo)
+			def cithome = setupCITHOME()
 		    sh """
-		     cd $HOME/ci-tools/ansible/
+		     cd ${cithome}/ansible/
 		     ${exports} ansible-playbook -v update.yml --limit ${realNode}
 		    """
 		} else {

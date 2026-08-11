@@ -143,7 +143,7 @@ def call()
     providers['ocpv'] = ['maxjobs_smoke': 4, 'maxjobs_all': 0, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9', 'rhel10', 'centos10'],
 			 'has_watchdog': true, 'has_storage': true, 'has_network': true, 'weekly': true, 'allprio': 0,
 			 'api_rate_limit': false,
-			 'api_creates': 1,
+			 'api_creates': 2,
 			 'defaultiscsi': '10',
 			 'defaultuseiscsi': 'no',
 			 'defaultblocksize': '200',

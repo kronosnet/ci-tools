@@ -77,7 +77,7 @@ def cloud_create(Map p, Map info, Integer timeout_minutes)
          ${p['echorun']} vapor ${p['vaporopts']} create ${p['clusteropts']} ${p['createbaseopts']} ${p['createopts']} ${p['extraopts']} ${p['provideropts']}
        """
 
-    RWLock(info, "${p['provider']}_api_create", 'WRITE', 'create_stage', {
+    Semaphore(info, p['api_creates'], "${p['provider']}_api_create", 'WRITE', 'create_stage', {
 	timeout(time: timeout_minutes, unit: 'MINUTES') {
 	    if (p['api_rate_limit'] == true) {
 		res = sh(returnStatus: true, script: create_script)

@@ -42,7 +42,7 @@ def call()
     providers['osp'] = ['maxjobs_smoke': 4, 'maxjobs_all': 8, 'testlevel': 'all', 'vers': ['rhel8', 'rhel9'],
 			'has_watchdog': true, 'has_storage': true, 'has_network': true, 'weekly': true, 'allprio': 1,
 			'api_rate_limit': true,
-			'api_creates': 1,
+			'api_creates': 4,
 			'defaultiscsi': '200',
 			'defaultuseiscsi': 'yes',
 			'defaultblocksize': '10',

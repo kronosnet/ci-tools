@@ -216,7 +216,7 @@ pipeline {
 
 		    def voting = buildRunMap('voting', info, ['voting': true,
 									 'nodelabel': 'voting',
-									 'excludes': '(freebsd|rhel-8|centos-9|ubuntu-22-04).*',
+									 'excludes': '(freebsd|rhel-8|rhel-9|centos-9|ubuntu-22-04).*',
 									 'extravars': ['depbuildname': 'pacemaker',
 												   'depbuildversion': 'main']])
 
@@ -228,13 +228,13 @@ pipeline {
 
 		    def covscan = buildRunMap('covscan', info, ['voting': true,
 									  'nodelabel': 'covscan',
-									  'excludes': 'rhel-8.*',
+									  'excludes': '(rhel-8|rhel-9).*',
 									  'extravars': ['depbuildname': 'pacemaker',
 												    'depbuildversion': 'main']])
 
 		    def buildrpms = buildRunMap('buildrpms', info, ['voting': true,
 										'nodelabel': 'buildrpms',
-										'excludes': '(rhel-8|centos-9).*',
+										'excludes': '(rhel-8|rhel-9|centos-9).*',
 										'extravars': ['depbuildname': 'pacemaker',
 													  'depbuildversion': 'main']])
 

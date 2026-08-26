@@ -28,6 +28,19 @@ pipeline {
 
     stages {
 	// First check we are allowed to run, then set some params for that run
+
+	stage('Build and Test') {
+            when {
+                // This stage runs ONLY if a file matching this pattern was changed
+                // You can also use: not { changeset "**/*.md" }
+                changeset "**/*.sh"
+            }
+            steps {
+                echo "Bash files were changed, running tests..."
+                sh 'echo Hello'
+            }
+        }
+
 	stage('Setup build env') {
 	    steps {
 		script {

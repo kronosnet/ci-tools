@@ -76,7 +76,7 @@ pipeline {
 
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 
-		    RWLock(info, 'testlock', 'WRITE', 'jenkinsfile', { withinlock() } )
+		    RWLock(info, 'artem_testlock_5', 'WRITE', 'jenkinsfile', { withinlock() } )
 
 		    // The 'short' test list
 		    def voting = buildRunMap('voting', info, ['voting': true,

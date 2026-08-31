@@ -40,13 +40,23 @@ pipeline {
 
 		    if (runreason.contains('skip ci') || runreason.contains('ci skip')) {
 			currentBuild.result = 'ABORTED'
-			env.COMMIT_CI_SKIP = 'true'
+			env.PR_CI_SKIP = 'true'
 		    } else {
-			env.COMMIT_CI_SKIP = 'false'
+			env.PR_CI_SKIP = 'false'
 		    }
 		}
 		}
 	}
+
+	stage('skip comment') {
+            when {
+                expression { env.PR_CI_SKIP == 'true' }
+            }
+            steps {
+                echo "SKIP PR comment was here"
+                sh 'echo PR_SKIP'
+            }
+        }
 
 	stage('Detect commit comment') {
 		steps {

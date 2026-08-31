@@ -48,7 +48,7 @@ pipeline {
 		}
 	}
 
-	stage('skip comment') {
+	stage('skip PR comment') {
             when {
                 expression { env.PR_CI_SKIP == 'true' }
             }

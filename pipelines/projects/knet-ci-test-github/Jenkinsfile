@@ -29,6 +29,49 @@ pipeline {
     stages {
 	// First check we are allowed to run, then set some params for that run
 
+	stage('Detect PR comment') {
+		steps {
+			script {
+		    def runreason = ''
+		    if (currentBuild.getBuildCauses().shortDescription.size() > 0) {
+			runreason = currentBuild.getBuildCauses().shortDescription[0]
+		    }
+		    echo "Build cause: ${runreason}"
+
+		    if (runreason.contains('skip ci') || runreason.contains('ci skip')) {
+			currentBuild.result = 'ABORTED'
+			env.COMMIT_CI_SKIP = 'true'
+		    } else {
+			env.COMMIT_CI_SKIP = 'false'
+		    }
+		}
+		}
+	}
+
+	stage('Detect commit comment') {
+		steps {
+			script {
+		    def lastCommit = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
+			if (lastCommit.contains('[ci skip]') || lastCommit.contains('[skip ci]')) {
+				currentBuild.result = 'ABORTED'
+				env.COMMIT_CI_SKIP = 'true'
+			}else{
+				env.COMMIT_CI_SKIP = 'false'
+			}
+		}
+		}
+	}
+
+	stage('skip comment') {
+            when {
+                expression { env.COMMIT_CI_SKIP == 'true' }
+            }
+            steps {
+                echo "SKIP comment was here"
+                sh 'echo SKIP'
+            }
+        }
+
 	stage('Detect changes') {
 	    steps {
 		script {

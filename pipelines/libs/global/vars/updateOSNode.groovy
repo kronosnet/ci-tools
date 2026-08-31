@@ -32,7 +32,7 @@ def update_node(String agentName, Map info, String realNode)
 			exports = getShellVariables(localinfo)
 		    sh """
 		     cd $HOME/ci-tools/ansible/
-		     ${exports} ansible-playbook update.yml --limit ${realNode}
+		     ${exports} ansible-playbook -v update.yml --limit ${realNode}
 		    """
 		} else {
 		    sh """

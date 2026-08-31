@@ -39,6 +39,8 @@ pipeline {
                 echo "Bash files were changed, running tests..."
                 sh 'echo Hello'
             }
+			echo "End of the build stage"
+            sh 'echo Bye'
         }
 
 	stage('Setup build env') {

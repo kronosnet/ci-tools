@@ -28,7 +28,7 @@ pipeline {
 	}
 
         // This is the main stage - building and testing
-	stage('Main stage for branch pcs-0.10') {
+	stage('pcs-0.10 - main stage') {
 	    when {
 		// getAuthCheck (in getBuildInfo) will usually abort the job if permission is denied,
 		// but this is an extra check.
@@ -61,7 +61,7 @@ pipeline {
 	    }
 	}
 
-	stage('Main stage for branch pcs-0.11') {
+	stage('pcs-0.11 - main stage') {
 	    when {
 		// getAuthCheck (in getBuildInfo) will usually abort the job if permission is denied,
 		// but this is an extra check.
@@ -108,7 +108,7 @@ pipeline {
 	    }
 	}
 
-	stage('Main stage for branch pcs-0.12') {
+	stage('pcs-0.12 - main stage') {
 	    when {
 		// getAuthCheck (in getBuildInfo) will usually abort the job if permission is denied,
 		// but this is an extra check.
@@ -155,7 +155,7 @@ pipeline {
 	    }
 	}
 
-	stage('Main stage for branch pcs-1.x') {
+	stage('pcs-1.x - main stage') {
 	    when {
 		// getAuthCheck (in getBuildInfo) will usually abort the job if permission is denied,
 		// but this is an extra check.
@@ -202,7 +202,7 @@ pipeline {
 	    }
 	}
 
-	stage('Main stage for branch main') {
+	stage('pcs-main - main stage') {
 	    when {
 		// getAuthCheck (in getBuildInfo) will usually abort the job if permission is denied,
 		// but this is an extra check.

@@ -93,7 +93,7 @@ pipeline {
 
 		    def buildrpms = buildRunMap('buildrpms', info, ['voting': true,
 								'nodelabel': 'buildrpms',
-								'excludes': '(rhel-8|rhel-10|centos-10|fedora|debian|ubuntu-22-04|ubuntu-26-04).*',
+								'excludes': '(rhel-8|rhel-10|centos-10|fedora).*',
 								'extravars': ['depbuildname': 'pacemaker',
 									      'depbuildversion': '2.1']])
 

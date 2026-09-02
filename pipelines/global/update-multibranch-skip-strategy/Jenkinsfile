@@ -1,0 +1,39 @@
+// Add a commit-message "CI skip" build strategy to existing multibranch jobs.
+//
+// This is a maintenance job: it edits existing multibranch pipeline jobs in
+// place (adds ExcludeMessageBranchBuildStrategy) and does not create or
+// re-generate any jobs. Re-runnable - jobs that already have the strategy are
+// left untouched.
+//
+// Defaults to a DRY RUN. Set dryrun=false to actually save.
+
+@Library('GlobalLib') _
+
+pipeline {
+    agent { label 'built-in' }
+
+    parameters {
+        string(name: 'regex',
+               defaultValue: '\\[(ci skip|skip ci)\\]',
+               description: 'Commit-message regex that suppresses a build (matched with find())')
+        booleanParam(name: 'dryrun',
+                     defaultValue: true,
+                     description: 'Report what would change without saving')
+        string(name: 'jobs',
+               defaultValue: '',
+               description: 'Comma-separated multibranch job names to update (blank = all)')
+    }
+
+    stages {
+        stage('Update multibranch skip strategy') {
+            steps {
+                script {
+                    def only = params.jobs.trim() ? params.jobs.split(',').collect { it.trim() } : []
+                    setMultibranchSkipStrategy(regex: params.regex,
+                                               dryrun: params.dryrun,
+                                               jobs: only)
+                }
+            }
+        }
+    }
+}

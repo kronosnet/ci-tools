@@ -7,7 +7,7 @@
 //
 // Defaults to a DRY RUN. Set dryrun=false to actually save.
 
-@Library('GlobalLib') _
+@Library(['GlobalLib']) _
 
 pipeline {
     agent { label 'built-in' }

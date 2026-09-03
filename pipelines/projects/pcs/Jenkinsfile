@@ -187,7 +187,7 @@ pipeline {
 
 		    def buildrpms = buildRunMap('buildrpms', info, ['voting': true,
 										'nodelabel': 'buildrpms',
-										'excludes': '(rhel-8|rhel-9|centos|fedora-43).*',
+										'excludes': '(rhel-8|rhel-9|centos-9|fedora-43).*',
 										'extravars': ['depbuildname': 'pacemaker',
 													  'depbuildversion': 'main']])
 

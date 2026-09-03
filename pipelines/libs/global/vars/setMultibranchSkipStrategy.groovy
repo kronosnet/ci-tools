@@ -36,7 +36,7 @@ def applyStrategy(String regex, boolean dryrun, List only) {
             def strategies = new ArrayList(bs.buildStrategies)
             strategies.add(new ExcludeMessageBranchBuildStrategy(regex))
             bs.setBuildStrategies(strategies)
-            dchanged = true
+            changed = true
         }
 
         if (changed) {

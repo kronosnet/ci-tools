@@ -2,6 +2,8 @@
 // This is called at the end of a provider-specific getBuildInfo.groovy
 def call(Map info)
 {
+
+
     // Clear things out ready for adding to by our groovy scripts
     info['nonvoting_fail'] = 0
     info['nonvoting_fail_nodes'] = ''
@@ -62,5 +64,5 @@ def call(Map info)
 	}
     }
 
-    setMultibranchSkipStrategy(regex: getProjectSkipRegex(), dryrun: false, jobs: [])
+
 }

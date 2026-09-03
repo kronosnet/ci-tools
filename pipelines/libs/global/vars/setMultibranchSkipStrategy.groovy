@@ -22,7 +22,7 @@ import com.igalg.jenkins.plugins.multibranch.buildstrategy.ExcludeMessageBranchB
 // The heavy lifting runs outside CPS: it iterates non-serializable Jenkins
 // model objects and uses closures, which the CPS transform can't handle.
 @NonCPS
-def applyStrategy(String commit_regex, String file_regex, boolean dryrun, List only) {
+def applyStrategy(String regex, boolean dryrun, List only) {
     def updated = []
     def skipped = []
 
@@ -33,11 +33,10 @@ def applyStrategy(String commit_regex, String file_regex, boolean dryrun, List o
 
         boolean changed = false
         for (BranchSource bs in mbp.sources) {
-
-                def strategies = new ArrayList(bs.buildStrategies)
-                strategies.add(new ExcludeMessageBranchBuildStrategy(regex))
-                bs.setBuildStrategies(strategies)
-                changed = true
+            def strategies = new ArrayList(bs.buildStrategies)
+            strategies.add(new ExcludeMessageBranchBuildStrategy(regex))
+            bs.setBuildStrategies(strategies)
+            dchanged = true
         }
 
         if (changed) {

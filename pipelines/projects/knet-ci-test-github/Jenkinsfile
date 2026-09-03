@@ -29,6 +29,13 @@ pipeline {
     stages {
 	// First check we are allowed to run, then set some params for that run
 
+	stage('Setup build env') {
+	    steps {
+		script {
+		    getBuildInfo(project, info)
+		}
+	    }
+	}
 
         // This is the main stage - building and testing
 	stage('Main stage') {

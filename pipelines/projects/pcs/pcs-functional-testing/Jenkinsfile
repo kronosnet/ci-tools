@@ -19,7 +19,7 @@ pipeline {
 	string(name: 'osver', defaultValue: 'rhel10', description: 'rhel8, rhel9, rhel10, centos10 etc (depending on cloud provider)')
 	string(name: 'zstream', defaultValue: 'no', description: 'yes / no')
 	string(name: 'brewbuild', defaultValue: '', description: 'updated brew build to use in tests <n-v-r | build_id | package>')
-	string(name: 'upstream', defaultValue: 'next-stable', description: 'use none / next-stable / next-stable-kernel / main or main-kernel repository')
+	string(name: 'upstream', defaultValue: 'next-stable', description: 'use none / next-stable / main repository')
 	string(name: 'tests', defaultValue: 'all', description: 'all / smoke')
 	string(name: 'testlist', defaultValue: 'auto', description: 'override auto generated test list. Set to empty to skip running tests')
 	string(name: 'taglist', defaultValue: 'auto', description: 'override auto generated tag list. Set to empty to skip running tags')

@@ -169,7 +169,7 @@ pipeline {
 
 		    def voting = buildRunMap('voting', info, ['voting': true,
 									 'nodelabel': 'voting',
-									 'excludes': '(freebsd|rhel-8|rhel-9|centos|debian-13|fedora-43|ubuntu).*',
+									 'excludes': '(freebsd|rhel-8|rhel-9|centos-9|debian-13|fedora-43|ubuntu).*',
 									 'extravars': ['depbuildname': 'pacemaker',
 												   'depbuildversion': 'main']])
 

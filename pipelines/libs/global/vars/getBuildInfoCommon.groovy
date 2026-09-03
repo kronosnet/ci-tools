@@ -61,4 +61,6 @@ def call(Map info)
 	    // We don't need to do anything here. just know that we're not locked out
 	}
     }
+
+    setMultibranchSkipStrategy(regex: getProjectSkipRegex(), dryrun: false, jobs: [])
 }

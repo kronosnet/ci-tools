@@ -35,15 +35,10 @@ def applyStrategy(String regex, boolean dryrun, List only) {
         for (BranchSource bs in mbp.sources) {
             def strategies = new ArrayList(bs.buildStrategies)
 
-            // Find the commit-message strategies we manage (if any)
             def existing = strategies.findAll { it instanceof ExcludeMessageBranchBuildStrategy }
 
-            // Nothing to do when there is exactly one and its regex already matches
             boolean alreadyCorrect = existing.size() == 1 && existing[0].excludedMessages == regex
             if (!alreadyCorrect) {
-                // Remove any existing instance(s): this UPDATES the regex when it
-                // changed and collapses accidental duplicates - it does not add a
-                // second condition alongside the old one.
                 strategies.removeAll(existing)
                 strategies.add(new ExcludeMessageBranchBuildStrategy(regex))
                 bs.setBuildStrategies(strategies)

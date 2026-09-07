@@ -1,14 +1,3 @@
-// setMultibranchSkipStrategy - add a commit-message "CI skip" build strategy
-// to existing multibranch pipeline jobs, in place, without touching any other
-// configuration.
-//
-// Lives in GlobalLib because it mutates live Jenkins model objects
-// (WorkflowMultiBranchProject / BranchSource) with full permissions - this is
-// NOT allowed in a sandboxed pipeline or Job DSL script.
-//
-// Requires the "Pipeline: Multibranch build strategy extension" plugin
-// (multibranch-build-strategy-extension).
-//
 // Usage from a pipeline:
 //   setMultibranchSkipStrategy(regex: '\\[(ci skip|skip ci)\\]',
 //                              dryrun: true,
@@ -19,30 +8,58 @@ import jenkins.branch.BranchSource
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
 import com.igalg.jenkins.plugins.multibranch.buildstrategy.ExcludeMessageBranchBuildStrategy
 
-// The heavy lifting runs outside CPS: it iterates non-serializable Jenkins
-// model objects and uses closures, which the CPS transform can't handle.
 @NonCPS
-def applyStrategy(String regex, boolean dryrun, List only) {
+private boolean reconcileStrategy(BranchSource bs, Class type, def desired, Closure sameValue) {
+    def strategies = new ArrayList(bs.buildStrategies)
+    def existing = strategies.findAll { type.isInstance(it) }
+
+    if (desired == null) {
+        if (existing.isEmpty()) {
+            return false
+        }
+        strategies.removeAll(existing)
+        bs.setBuildStrategies(strategies)
+        return true
+    }
+
+    if (existing.size() == 1 && sameValue(existing[0])) {
+        return false
+    }
+
+    strategies.removeAll(existing)
+    strategies.add(desired)
+    bs.setBuildStrategies(strategies)
+    return true
+}
+
+@NonCPS
+def applyStrategy(String regex, String regions, boolean dryrun, String project) {
     def updated = []
     def skipped = []
 
     for (mbp in Jenkins.instance.getAllItems(WorkflowMultiBranchProject)) {
-        if (only && !only.contains(mbp.fullName)) {
+        if (project != mbp.fullName) {
+            echo "MBP name is : ${mbp.fullName}"
+            echo "Looking for : ${project}"
             continue
         }
 
         boolean changed = false
         for (BranchSource bs in mbp.sources) {
-            def strategies = new ArrayList(bs.buildStrategies)
 
-            def existing = strategies.findAll { it instanceof ExcludeMessageBranchBuildStrategy }
+            if (regex != null) {
+                changed |= reconcileStrategy(bs,
+                    ExcludeMessageBranchBuildStrategy,
+                    new ExcludeMessageBranchBuildStrategy(regex),
+                    { it.excludedMessages == regex })
+            }
 
-            boolean alreadyCorrect = existing.size() == 1 && existing[0].excludedMessages == regex
-            if (!alreadyCorrect) {
-                strategies.removeAll(existing)
-                strategies.add(new ExcludeMessageBranchBuildStrategy(regex))
-                bs.setBuildStrategies(strategies)
-                changed = true
+            if (regions != null) {
+                def desired = regions.trim() ? new ExcludeRegionByFieldBranchBuildStrategy(regions) : null
+                changed |= reconcileStrategy(bs,
+                    ExcludeRegionByFieldBranchBuildStrategy,
+                    desired,
+                    { it.excludedRegions == regions })
             }
         }
 
@@ -59,14 +76,23 @@ def applyStrategy(String regex, boolean dryrun, List only) {
     return [updated: updated, skipped: skipped]
 }
 
-def call(Map args = [:]) {
-    def regex  = args.get('regex', '\\[(ci skip|skip ci)\\]')
-    def dryrun = args.get('dryrun', false)
-    def only   = args.get('jobs', [])
+@NonCPS
+private String normalizeRegions(def regions) {
+    if (regions == null) {
+        return null
+    }
+    if (regions instanceof List) {
+        return regions.join('\n')
+    }
+    return regions.toString()
+}
 
-    def res = applyStrategy(regex, dryrun, only)
+def call(String project, String regex = '\\[(ci skip|skip ci)\\]', String repo_files, boolean dryrun) {
+
+    def res = applyStrategy(project, regex, normalizeRegions(repo_files), dryrun)
 
     echo "Commit-skip regex: ${regex}"
+    echo "Changed-file skip regions: ${regions == null ? '(unchanged)' : (regions.trim() ?: '(cleared)')}"
     echo(dryrun ? "DRY RUN - no jobs were saved" : "Changes saved")
     echo "Updated (${res['updated'].size()}): ${res['updated'].join(', ')}"
     echo "Already set / skipped (${res['skipped'].size()}): ${res['skipped'].join(', ')}"

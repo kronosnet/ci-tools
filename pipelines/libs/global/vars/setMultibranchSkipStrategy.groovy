@@ -1,15 +1,23 @@
-// Usage from a pipeline:
-//   setMultibranchSkipStrategy(regex: '\\[(ci skip|skip ci)\\]',
-//                              dryrun: true,
-//                              jobs: ['kronosnet', 'corosync'])   // [] = all
+// Configure the "skip build" strategies on the multibranch project that owns
+// the CURRENT build. Safe to call on every run: it only saves when something
+// actually changes, and it only ever touches this build's own multibranch job.
+//
+// Usage from a project pipeline (e.g. from getBuildInfo):
+//   setMultibranchSkipStrategy(getProjectSkipRegex(), getProjectSkipFiles(), false)
+//
+//   regex  - commit-message regex that suppresses a build (matched with find());
+//            null leaves the commit-message strategy untouched
+//   files  - newline-separated String or List of file globs; a change touching
+//            only these paths is skipped. null leaves it untouched, '' clears it.
+//   dryrun - true reports what would change without saving
 
-import jenkins.model.Jenkins
 import jenkins.branch.BranchSource
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
 import com.igalg.jenkins.plugins.multibranch.buildstrategy.ExcludeMessageBranchBuildStrategy
+import com.igalg.jenkins.plugins.multibranch.buildstrategy.ExcludeRegionByFieldBranchBuildStrategy
 
 @NonCPS
-private boolean reconcileStrategy(BranchSource bs, Class type, def desired, Closure sameValue) {
+boolean reconcileStrategy(BranchSource bs, Class type, def desired, Closure sameValue) {
     def strategies = new ArrayList(bs.buildStrategies)
     def existing = strategies.findAll { type.isInstance(it) }
 
@@ -33,51 +41,34 @@ private boolean reconcileStrategy(BranchSource bs, Class type, def desired, Clos
 }
 
 @NonCPS
-def applyStrategy(String regex, String regions, boolean dryrun, String project) {
-    def updated = []
-    def skipped = []
+boolean applyStrategy(WorkflowMultiBranchProject mbp, String regex, String regions, boolean dryrun) {
+    boolean changed = false
 
-    for (mbp in Jenkins.instance.getAllItems(WorkflowMultiBranchProject)) {
-        if (project != mbp.fullName) {
-            echo "MBP name is : ${mbp.fullName}"
-            echo "Looking for : ${project}"
-            continue
+    for (BranchSource bs in mbp.sources) {
+        if (regex != null) {
+            changed |= reconcileStrategy(bs,
+                ExcludeMessageBranchBuildStrategy,
+                new ExcludeMessageBranchBuildStrategy(regex),
+                { it.excludedMessages == regex })
         }
 
-        boolean changed = false
-        for (BranchSource bs in mbp.sources) {
-
-            if (regex != null) {
-                changed |= reconcileStrategy(bs,
-                    ExcludeMessageBranchBuildStrategy,
-                    new ExcludeMessageBranchBuildStrategy(regex),
-                    { it.excludedMessages == regex })
-            }
-
-            if (regions != null) {
-                def desired = regions.trim() ? new ExcludeRegionByFieldBranchBuildStrategy(regions) : null
-                changed |= reconcileStrategy(bs,
-                    ExcludeRegionByFieldBranchBuildStrategy,
-                    desired,
-                    { it.excludedRegions == regions })
-            }
-        }
-
-        if (changed) {
-            if (!dryrun) {
-                mbp.save()
-            }
-            updated << mbp.fullName
-        } else {
-            skipped << mbp.fullName
+        if (regions != null) {
+            def desired = regions.trim() ? new ExcludeRegionByFieldBranchBuildStrategy(regions) : null
+            changed |= reconcileStrategy(bs,
+                ExcludeRegionByFieldBranchBuildStrategy,
+                desired,
+                { it.excludedRegions == regions })
         }
     }
 
-    return [updated: updated, skipped: skipped]
+    if (changed && !dryrun) {
+        mbp.save()
+    }
+    return changed
 }
 
 @NonCPS
-private String normalizeRegions(def regions) {
+String normalizeRegions(def regions) {
     if (regions == null) {
         return null
     }
@@ -87,15 +78,18 @@ private String normalizeRegions(def regions) {
     return regions.toString()
 }
 
-def call(String project, String regex = '\\[(ci skip|skip ci)\\]', String repo_files, boolean dryrun) {
+def call(String regex = '\\[(ci skip|skip ci)\\]', String files = null, boolean dryrun = false) {
+    def owner = currentBuild.rawBuild.getParent().getParent()
+    if (!(owner instanceof WorkflowMultiBranchProject)) {
+        echo "setMultibranchSkipStrategy: this build is not part of a multibranch project - nothing to do"
+        return
+    }
 
-    def res = applyStrategy(project, regex, normalizeRegions(repo_files), dryrun)
+    String regions = normalizeRegions(files)
+    boolean changed = applyStrategy((WorkflowMultiBranchProject) owner, regex, regions, dryrun)
 
-    echo "Commit-skip regex: ${regex}"
-    echo "Changed-file skip regions: ${regions == null ? '(unchanged)' : (regions.trim() ?: '(cleared)')}"
-    echo(dryrun ? "DRY RUN - no jobs were saved" : "Changes saved")
-    echo "Updated (${res['updated'].size()}): ${res['updated'].join(', ')}"
-    echo "Already set / skipped (${res['skipped'].size()}): ${res['skipped'].join(', ')}"
-
-    return res['updated']
+    echo "setMultibranchSkipStrategy for ${owner.fullName}:"
+    echo "  commit-skip regex:    ${regex == null ? '(unchanged)' : regex}"
+    echo "  changed-file regions: ${regions == null ? '(unchanged)' : (regions.trim() ?: '(cleared)')}"
+    echo "  result:               ${changed ? (dryrun ? 'would change (dry run)' : 'saved') : 'already up to date'}"
 }

@@ -13,7 +13,7 @@ def call(String project, Map info)
     sh 'env|sort'
 
     getBuildInfoCommon(info)
-	setMultibranchSkipStrategy(project, getProjectSkipRegex(), getProjectSkipFiles(), false)
+	setMultibranchSkipStrategy(getProjectSkipRegex(), getProjectSkipFiles(), false)
     // Github specific
     def isPullRequest = env.CHANGE_ID ? true : false
     def is_draft = false

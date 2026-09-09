@@ -1,6 +1,5 @@
 // Configure the "skip build" strategies on the multibranch project that owns
-// the CURRENT build. Safe to call on every run: it only saves when something
-// actually changes, and it only ever touches this build's own multibranch job.
+// the CURRENT build.
 //
 // Usage from a project pipeline (e.g. from getBuildInfo):
 //   setMultibranchSkipStrategy(getProjectSkipRegex(), getProjectSkipFiles(), false)

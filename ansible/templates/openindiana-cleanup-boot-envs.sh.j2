@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# 0. Ensure this script is run as root / via pfexec
+# 1. Get a list of boot environment names, sorted oldest-to-newest by their creation date.
+#    We explicitly exclude the currently active (N) and next-reboot (R) environments so we NEVER accidentally delete them.
+# 2. Count total boot environments installed
+# 3. Define our retention threshold
+# 4. Calculate how many old environments we need to prune
+# 5. Loop through and destroy only the excess oldest environments
+
+if [ "$(id -u)" -ne 0 ]; then
+   echo "This script must be run with root privileges (or via pfexec)."
+   exit 1
+fi
+
+BOOT_ENVIRONMENTS_LIST=$(beadm list -H -k date | grep -v -E ";N;|;R;|;NR;" | awk -F';' '{print $1}')
+TOTAL_BOOT_ENVIRONMENTS=$(beadm list -H | wc -l)
+BOOT_ENVIRONMENTS_TO_KEEP={{ boot_environments_to_keep }}
+
+if [ "$TOTAL_BOOT_ENVIRONMENTS" -le "$BOOT_ENVIRONMENTS_TO_KEEP" ]; then
+    echo "Total boot environments ($TOTAL_BOOT_ENVIRONMENTS) is less than or equal to $BOOT_ENVIRONMENTS_TO_KEEP. No cleanup needed."
+    exit 0
+fi
+
+REMOVE_COUNT=$((TOTAL_BOOT_ENVIRONMENTS - BOOT_ENVIRONMENTS_TO_KEEP))
+
+echo "Found $TOTAL_BOOT_ENVIRONMENTS boot environments. Keeping the $BOOT_ENVIRONMENTS_TO_KEEP newest. Purging $REMOVE_COUNT oldest..."
+
+echo "$BOOT_ENVIRONMENTS_LIST" | head -n "$REMOVE_COUNT" | while read -r be; do
+    if [ -n "$be" ]; then
+        echo "Destroying old boot environment: $be"
+        beadm destroy -F "$be"
+    fi
+done
+
+echo "Cleanup complete."

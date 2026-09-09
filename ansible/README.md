@@ -25,6 +25,7 @@ bootstrap.yml            # playbook for bootstrapping the servers
 update.yml               # playbook for updateing the servers
 tasks/                   # task files included from playbooks
     update-alpine.yml    # <-- avoids confusing playbook with task files. Use inventory group name.
+templates/               # jinja template files used in playbooks. Use inventory group name as prefix.
 ```
 
 ## Examples

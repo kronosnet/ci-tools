@@ -18,7 +18,8 @@ def runParameterisedJob(String job, Map info)
 	if (info['email_extra_text'] == '') {
 	    info['email_extra_text'] = "Failed jobs:"
 	}
-	info['email_extra_text'] += "\n${thisJob.absoluteUrl}"
+	def LOG_URL = thisJob.absoluteUrl.replaceAll('haci.fast.eng.rdu2.dc.redhat.com', 'ci.kronosnet.org')
+	info['email_extra_text'] += "\n${LOG_URL}"
     }
 }
 

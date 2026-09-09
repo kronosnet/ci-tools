@@ -3,7 +3,7 @@ required_packages:
   - autoconf
   - automake
   - check
-  - developer/clang-20
+  - developer/clang-21
   - doxygen
   - gcc-14
   - gnu-binutils

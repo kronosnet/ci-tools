@@ -3,5 +3,5 @@
 // If '' is returned then a default will be supplied
 def call()
 {
-    return 'ccaulfie@redhat.com'
+    return 'fdinitto@redhat.com'
 }

@@ -127,7 +127,7 @@ def call(Map info)
     } else {
 	// Don't spam everybody with our test results
 	email_title = "[jenkins][cidev] ${info['project']} ${branch} (build ${env.BUILD_ID})"
-	email_addrs = "fdinitto@redhat.com, ccaulfie@redhat.com"
+	email_addrs = "fdinitto@redhat.com"
     }
 
     // Add links to coverity scans

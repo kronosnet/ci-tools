@@ -1,4 +1,4 @@
 def call()
 {
-    return '\\[(ci skip|skip ci)\\]'
+    return '.*\[ci\-skip\].*'
 }

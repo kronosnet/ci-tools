@@ -235,8 +235,8 @@ def call(Map localinfo, String agentName)
 	cienv['BOOTH_REPO_PATH'] = "http://ci.kronosnet.org/builds/booth/" + agentName + "/main-pacemaker-" + cienv['pacemakerver'] + "/latest/"
 	cienv['SBD_REPO'] = "http://ci.kronosnet.org/builds/sbd-main-pacemaker-" + cienv['pacemakerver'] + "-" + agentName + ".repo"
 	cienv['SBD_REPO_PATH'] = "http://ci.kronosnet.org/builds/sbd/" + agentName + "/main-pacemaker-" + cienv['pacemakerver'] + "/latest/"
-	cienv['DLM_REPO'] = "http://ci.kronosnet.org/builds/dlm-main-" + agentName + ".repo"
-	cienv['DLM_REPO_PATH'] = "http://ci.kronosnet.org/builds/dlm/" + agentName + "/main/latest/"
+	cienv['DLM_REPO'] = "http://ci.kronosnet.org/builds/dlm-main-pacemaker-" + cienv['pacemakerver'] + "-" + agentName + ".repo"
+	cienv['DLM_REPO_PATH'] = "http://ci.kronosnet.org/builds/dlm/" + agentName + "/main-pacemaker-" + cienv['pacemakerver'] + "/latest/"
 	cienv['GFS2UTILS_REPO'] = "http://ci.kronosnet.org/builds/gfs2-utils-main-" + agentName + ".repo"
 	cienv['GFS2UTILS_REPO_PATH'] = "http://ci.kronosnet.org/builds/gfs2-utils/" + agentName + "/main/latest/"
 

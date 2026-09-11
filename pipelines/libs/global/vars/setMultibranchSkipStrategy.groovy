@@ -67,24 +67,24 @@ boolean applyStrategy(WorkflowMultiBranchProject mbp, String regex, String regio
 }
 
 @NonCPS
-String normalizeRegions(def regions) {
-    if (regions == null) {
+String normalizeFiles(def files) {
+    if (files == null) {
         return null
     }
-    if (regions instanceof List) {
-        return regions.join('\n')
+    if (files instanceof List) {
+        return files.join('\n')
     }
-    return regions.toString()
+    return files.toString()
 }
 
-def call(String regex = '\\[(ci skip|skip ci)\\]', String files = null, boolean dryrun = false) {
+def call(String regex = '\\[(ci skip|skip ci)\\]', def files = null, boolean dryrun = false) {
     def owner = currentBuild.rawBuild.getParent().getParent()
     if (!(owner instanceof WorkflowMultiBranchProject)) {
         echo "setMultibranchSkipStrategy: this build is not part of a multibranch project - nothing to do"
         return
     }
 
-    String regions = normalizeRegions(files)
+    String regions = normalizeFiles(files)
     boolean changed = applyStrategy((WorkflowMultiBranchProject) owner, regex, regions, dryrun)
 
     echo "setMultibranchSkipStrategy for ${owner.fullName}:"

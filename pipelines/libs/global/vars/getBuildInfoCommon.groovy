@@ -3,7 +3,7 @@
 def call(Map info)
 {
 
-
+    setMultibranchSkipStrategy(getProjectSkipRegex(), getProjectSkipFiles())
     // Clear things out ready for adding to by our groovy scripts
     info['nonvoting_fail'] = 0
     info['nonvoting_fail_nodes'] = ''

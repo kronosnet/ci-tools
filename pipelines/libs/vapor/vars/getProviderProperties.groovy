@@ -165,7 +165,7 @@ def call()
 				      'testopts': '',
 				      'setup_fn': {}]]
 
-    providers['ibmvpc'] = ['maxjobs_smoke': 4, 'maxjobs_all': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9'],
+    providers['ibmvpc'] = ['maxjobs_smoke': 4, 'maxjobs_all': 4, 'testlevel': 'smoke', 'vers': ['rhel8', 'rhel9', 'rhel10'],
 			   'has_watchdog': false, 'has_storage': false, 'has_network': false, 'weekly': true, 'allprio': 1,
 			   'api_rate_limit': true,
 			   'api_creates': 1,
@@ -177,7 +177,11 @@ def call()
 				     'deployopts':  '',
 				     'testopts': '',
 				     'setup_fn': {}],
-			   'rhel9': ['createopts': '--image $(vapor get-images ibmvpc --region us-east | jq --raw-output \'.[] | select ( .name | contains("ibm-redhat-9-6-minimal-amd64") ).name\' | sort -V | tail -n 1)',
+			   'rhel9': ['createopts': '--image $(vapor get-images ibmvpc --region us-east | jq --raw-output \'.[] | select ( .name | contains("ibm-redhat-9-8-minimal-amd64") ).name\' | sort -V | tail -n 1)',
+				     'deployopts':  '',
+				     'testopts': '',
+				     'setup_fn': {}],
+			   'rhel10': ['createopts': '--image $(vapor get-images ibmvpc --region us-east | jq --raw-output \'.[] | select ( .name | contains("ibm-redhat-10-0-minimal-amd64") ).name\' | sort -V | tail -n 1)',
 				     'deployopts':  '',
 				     'testopts': '',
 				     'setup_fn': {}]]

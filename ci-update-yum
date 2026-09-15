@@ -171,6 +171,7 @@ required_pkg openwsman-python3
 required_pkg overpass-fonts
 required_pkg pam-devel
 required_pkg perl
+required_pkg pyproject-rpm-macros
 required_pkg python3-cryptography
 required_pkg python3-pycurl
 required_pkg python3-dateutil

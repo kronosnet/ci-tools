@@ -11,6 +11,7 @@
 def call(String project, Map info)
 {
     getBuildInfoCommon(info)
+	setMultibranchSkipStrategy(getProjectSkipRegex(), getProjectSkipFiles())
     sh "env|sort"
 
     // GitLab specific

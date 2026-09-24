@@ -51,6 +51,13 @@ pipeline {
 		}
 	    }
 	}
+	stage('Set skip strategy') {
+	    steps {
+		script {
+		    setMultibranchSkipStrategy(getProjectSkipRegex(), getProjectSkipFiles())
+		}
+	    }
+	}
 	stage('Build kubesan registry cache') {
 	    steps {
 		script {

@@ -9,7 +9,7 @@ def info = [:]
 def withinlock()
 {
 	println("Doing work after obtaining the lock on ${env.NODE_NAME}");
-    sh "date; sleep 60; date"
+    sh "date; sleep 20; date"
     println("Called with locking test on ${env.NODE_NAME}");
 }
 
@@ -24,7 +24,7 @@ pipeline {
 	string(name: 'fullrebuild', defaultValue: '0', description: 'This is a full rebuild - do not publish RPM and do NOT update build code on the nodes')
     string(name: 'BRANCH', defaultValue: 'main', description: 'branch to build')
     string(name: 'BRANCH_TARGET', defaultValue: 'None', description: 'Target branch')
-	
+
 	}
 
     stages {
@@ -50,7 +50,7 @@ pipeline {
 		script {
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 			//RWLock(info, 'UNLOCK')
-			Semaphore(info,2, 'semaphore_testlock', 'WRITE', 'jenkinsfile', { withinlock() } )
+			Semaphore(info,1, 'semaphore_testlock', 'WRITE', 'jenkinsfile', { withinlock() } )
 
 		    // def voting_kmain = buildRunMap('kmain-voting', info, ['voting': true,
 			// 					      'nodelabel': 'voting',

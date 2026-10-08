@@ -66,9 +66,16 @@ def update_node(String agentName, Map info, String realNode)
 			localinfo = getNodeProperties(realNode)
 			exports = getShellVariables(localinfo)
 			def cithome = setupCITHOME()
+
+			// Generate dynamic inventory
+			def inventoryContent ="[${info['packager']}]\n${realNode}\n"
+			def inventoryPath = "${env.WORKSPACE}/ansible-inventory-${info['packager']}-${env.BUILD_ID}.ini"
+			writeFile file: inventoryPath, text: inventoryContent
+
 		    sh """
+		     cat ${inventoryPath}
 		     cd ${cithome}/ansible/
-		     ${exports} ansible-playbook -v update.yml --limit ${realNode}
+		     ${exports} ansible-playbook -v update.yml -i ${inventoryPath} --limit ${realNode}
 		    """
 		} else {
 		    sh """

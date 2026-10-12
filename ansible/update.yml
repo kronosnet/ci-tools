@@ -4,6 +4,14 @@
 
   tasks:
 
+    - name: Include distro-specific pre-update tasks (if exists)
+      ansible.builtin.include_tasks:
+        file: "{{ item }}"
+      with_first_found:
+        - files:
+            - "tasks/pre-update-{{ ansible_os_family | lower }}.yml"
+          skip: true
+
     - name: Include common pre-update tasks
       ansible.builtin.include_tasks: "tasks/pre-update-common.yml"
 

@@ -14,7 +14,7 @@
     name: "{{ item }}"
     state: present
   loop: "{{ optional_packages }}"
-  ignore_errors: true
+  failed_when: false
 
 - name: Install Rust bindings (conditional)
   community.general.apk:

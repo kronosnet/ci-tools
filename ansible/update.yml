@@ -10,7 +10,7 @@
       loop:
         - "{{ ansible_env.HOME }}/rpmbuild"
         - "/usr/src/packages/BUILDROOT"
-      ignore_errors: yes
+      failed_when: false
 
     - name: Clean shared memory and temp files
       ansible.builtin.file:
@@ -21,7 +21,7 @@
         - "/dev/shm/testvol*"
         - "/tmp/libqb*"
         - "/tmp/booth-tests*"
-      ignore_errors: yes
+      failed_when: false
 
     - name: Generate the start_node script
       ansible.builtin.command:
@@ -44,7 +44,7 @@
         env_node_name: "{{ ansible_env.NODE_NAME | default('') }}"
 
     - name: Include distro-specific update tasks
-      include_tasks: "tasks/update-{{ ansible_distribution | lower }}.yml"
+      ansible.builtin.include_tasks: "tasks/update-{{ ansible_distribution | lower }}.yml"
 
     - name: Ensure the system group 'haclient' exists
       ansible.builtin.group:
@@ -72,5 +72,5 @@
         file: "{{ item }}"
       with_first_found:
         - files:
-          - "tasks/post-update-{{ ansible_distribution | lower }}.yml"
-          skip: True
+            - "tasks/post-update-{{ ansible_distribution | lower }}.yml"
+          skip: true

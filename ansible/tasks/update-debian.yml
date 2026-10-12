@@ -1,0 +1,70 @@
+---
+# Ansble's apt module doesn't have a way to pass or configure `--allow-releaseinfo-change`.
+# We need that to handle repository metadata changes between updates on testing/unstable/experimental.
+- name: Allow release info changes in testing/unstable/experimental machines
+  ansible.builtin.copy:
+    content: 'Acquire::AllowReleaseInfoChange "true";\n'
+    dest: /etc/apt/apt.conf.d/99allow-releaseinfo-change
+    mode: '0644'
+  when:
+    - inventory_hostname is search('testing|unstable|experimental', ignorecase=True)
+
+- name: Manage packages
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+  block:
+    - name: Upgrade all packages
+      ansible.builtin.apt:
+        upgrade: dist
+        autoremove: true
+        update_cache: true
+
+    - name: Install required packages
+      ansible.builtin.apt:
+        name: "{{ required_packages }}"
+        state: present
+
+    - name: Install optional packages
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ optional_packages }}"
+      failed_when: false
+
+- name: Cross-compilation architecture setup
+  when: extra_arch is defined
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+  block:
+    - name: Add architecture for cross-compilation
+      ansible.builtin.command: "dpkg --add-architecture {{ extra_arch }}"
+      changed_when: false
+
+    - name: Update apt cache after adding architecture
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Install cross-compilation packages
+      ansible.builtin.apt:
+        name:
+          - "crossbuild-essential-{{ extra_arch }}"
+          - "libbz2-dev:{{ extra_arch }}"
+          - "libgcrypt-dev:{{ extra_arch }}"
+          - "liblz4-dev:{{ extra_arch }}"
+          - "liblzma-dev:{{ extra_arch }}"
+          - "liblzo2-dev:{{ extra_arch }}"
+          - "libnl-3-dev:{{ extra_arch }}"
+          - "libnl-route-3-dev:{{ extra_arch }}"
+          - "libnspr4-dev:{{ extra_arch }}"
+          - "libnss3-dev:{{ extra_arch }}"
+          - "libsctp-dev:{{ extra_arch }}"
+          - "libssl-dev:{{ extra_arch }}"
+          - "libzstd-dev:{{ extra_arch }}"
+          - "pkg-config:{{ extra_arch }}"
+          - "pkgconf:{{ extra_arch }}"
+          - "zlib1g-dev:{{ extra_arch }}"
+        state: present
+
+- name: Clean apt cache
+  ansible.builtin.apt:
+    clean: true

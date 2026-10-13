@@ -2,6 +2,8 @@
 
 @Library(['GlobalLib', 'GithubLib', 'ProjectLib']) _
 
+import org.kronosnet.ci.Project
+
 // Who we are
 def project = 'corosync'
 def info = [:]
@@ -33,6 +35,8 @@ pipeline {
 	    steps {
 		script {
 		    getBuildInfo(project, info)
+			    def p = new Project(this, info, env.NODE_NAME)
+			    echo "Project class instantiated OK: ${p}"
 		}
 	    }
 	}

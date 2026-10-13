@@ -14,7 +14,8 @@ def buildFullRunMap(Map info)
     for (def n in nodeList) {
 	def node = n
 	collectBuildEnv[node] = {
-	    updateOSNode(node, info)
+	    // Once transition is done, we can stop passing 'built-in' completely here
+	    updateOSNode('built-in', info, node)
 	}
     }
 

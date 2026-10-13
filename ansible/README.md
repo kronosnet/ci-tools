@@ -5,12 +5,9 @@
 This layout organizes most tasks in roles, with a single inventory file for each environment and a few playbooks in the top-level directory:
 
 ```
-production               # inventory file for production servers
-testing                  # inventory file for testing servers
-
 group_vars/
-   alpine.yml            # here we assign variables to particular groups
-   freebsd.yml
+   apk.yml               # here we assign variables to particular groups
+   openindiana.yml
 host_vars/
    hostname1.yml         # here we assign variables to particular systems
    hostname2.yml
@@ -24,13 +21,14 @@ site.yml                 # main playbook
 bootstrap.yml            # playbook for bootstrapping the servers
 update.yml               # playbook for updateing the servers
 tasks/                   # task files included from playbooks
-    update-alpine.yml    # <-- avoids confusing playbook with task files. Use inventory group name.
-templates/               # jinja template files used in playbooks. Use inventory group name as prefix.
+    update-alpine.yml    # <-- avoids confusing playbook with task files. Use ansible_distribution name.
+templates/               # jinja template files used in playbooks. Use ansible_distribution name as prefix.
 ```
 
 ## Examples
 
+__Please note that we do not ship an inventory, as one is generated dynamically by the Jenkins pipelines.__
+
 * Install required collections with `ansible-galaxy collection install -r requirements.yml`
-* Run all playbooks on all **production** servers: `ansible-playbook site.yml`
-* Run all playbooks on all **testing** servers: `ansible-playbook -i testing site.yml`
-* Run the `update.yml` playbook on a specific **production** server: `ansible-playbook update.yml --limit alpine-x86-64`
+* Run all playbooks: `ansible-playbook -i my-manual-inventory site.yml`
+* Run the `update.yml` playbook on a specific server: `ansible-playbook update.yml -i my-manual-inventory --limit alpine-x86-64`

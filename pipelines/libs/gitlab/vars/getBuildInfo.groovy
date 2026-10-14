@@ -11,7 +11,6 @@
 def call(String project, Map info)
 {
     getBuildInfoCommon(info)
-	setMultibranchSkipStrategy(getProjectSkipRegex(), getProjectSkipFiles())
     sh "env|sort"
 
     // GitLab specific
@@ -23,10 +22,12 @@ def call(String project, Map info)
     info['project'] = project
 
     // Validate the user. This should Abort if disallowed.
-    def cred_uuid = getCredUUID()
-    withCredentials([string(credentialsId: cred_uuid, variable: 'GIT_PASSWORD')]) {
-        info['authcheck'] = getAuthCheck(['isPullRequest': isPullRequest])
-    }
+    // def cred_uuid = getCredUUID()
+    // withCredentials([string(credentialsId: cred_uuid, variable: 'GIT_PASSWORD')]) {
+    //     info['authcheck'] = getAuthCheck(['isPullRequest': isPullRequest])
+    // }
+
+	info['authcheck'] = true
 
     // Display/kill any old duplicates of this job that are running
     killDuplicateJobs(info)
@@ -39,7 +40,6 @@ def call(String project, Map info)
 	info['install'] = 0
 	info['maininstall'] = 0
 	info['stableinstall'] = 0
-	info['covinstall'] = 0
 	info['publishrpm'] = buildPRRPMs(['isPullRequest': isPullRequest, 'branch': info['target']])
 
 	// Draft MRs can be forced to run with a GitLab comment
@@ -74,10 +74,8 @@ def call(String project, Map info)
 		info['stableinstall'] = 1
 	    }
 	}
-	info['covinstall'] = isThisAPublishBranch(info['target'])
     }
     info['is_draft'] = is_draft
-    info['covopts'] = getCovOpts(info['target'])
 
     // Copy the SCM into artifacts so that other nodes can use them.
     // catchError makes sure that info[:] is returned even if it fails,

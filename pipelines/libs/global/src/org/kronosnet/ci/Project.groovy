@@ -12,7 +12,9 @@ class Project implements Serializable {
         phase('Setup src') { setupSrc() }
         phase('Build src') { buildSrc() }
         phase('Test src')  { testSrc() }
-        if (generalInfo['install'] == 1) phase('Install') { install() }
+        if (generalInfo['install'] == 1) {
+            phase('Install') { install() }
+        }
     }
 
     // wraps every phase with timeout + stage (preserves runStage behaviour)
@@ -20,17 +22,22 @@ class Project implements Serializable {
         steps.timeout(time: steps.getBuildTimeout()) { steps.stage(name) { body() } }
     }
 
-    // ---- shared helpers ----
-    protected String make()         { generalInfo['MAKE'] ?: 'make' }
-    protected String parallelMake() { generalInfo['PARALLELMAKE'] ?: '' }
-    protected String pkgConfig()    { generalInfo['EXTERNAL_CONFIG_PATH'] ?: '' }
-
     // ---- phases (defaults = the generic `*)` case) ----
-    void setupRpm() { }   // TODO: ciRpmCommon().installrpmdeps when build=='rpm' && RPMDEPS
+    void setupRpm() {
+        if (this.generalInfo['build'] == "rpm" && generalInfo['RPMDEPS']){
+            new RpmCommon(steps).installRpmDeps(generalInfo)
+        }
+    }
 
     void setupSrc() {
-        sharedSetupPre()
-        configure()        // the seam projects override
+        if (steps.fileExists('autogen.sh')) {
+            steps.sh './autogen.sh'
+        }
+
+        if (steps.fileExists('configure')) {
+            configure()
+        }
+
         sharedSetupPost()
     }
 
@@ -38,13 +45,38 @@ class Project implements Serializable {
     void testSrc()  { steps.sh "${make()} ${parallelMake()} check" }
     void install()  { steps.sh "${make()} install" }
 
+    // ---- shared helpers ----
+    protected String make()         { return generalInfo['MAKE'] ?: 'make' }
+    protected String parallelMake() { return generalInfo['PARALLELMAKE'] ?: '' }
+    protected String pkgConfig()    { return generalInfo['EXTERNAL_CONFIG_PATH'] ?: '' }
+
+    // default install prefix = the shell `*)` case: /srv/<project>/origin/<target>/
+    protected String installPath() {
+        return "/srv/${generalInfo['project']}/origin/${generalInfo['target']}/"
+    }
+
+    // extra ./configure opts (debug build adds DEBUGOPTS)
+    protected String extraOpts() {
+        def o = ''
+        if (generalInfo['debug'] == 'yes') {
+            o += " ${generalInfo['DEBUGOPTS'] ?: ''}"
+        }
+        return o.trim()
+    }
+
     // ---- setup seams (default; subclasses override) ----
     protected void sharedSetupPre() {
-        if (steps.fileExists('autogen.sh')) steps.sh './autogen.sh'
+        if (steps.fileExists('autogen.sh')) {
+            steps.sh './autogen.sh'
+        }
     }
+
+    // default ./configure (generic `*)` branch of ci-setup-src)
     protected void configure() {
-        if (steps.fileExists('configure'))
-            steps.sh "./configure ${generalInfo['DISTROCONFOPTS'] ?: ''} PKG_CONFIG_PATH=${pkgConfig()}"
+        steps.sh "./configure --prefix=${installPath()} --exec-prefix=${installPath()} " +
+                 "${extraOpts()} ${generalInfo['DISTROCONFOPTS'] ?: ''} PKG_CONFIG_PATH=${pkgConfig()}"
     }
+
+    @Override
     protected void sharedSetupPost() { }
 }

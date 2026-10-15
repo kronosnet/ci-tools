@@ -77,6 +77,5 @@ class Project implements Serializable {
                  "${extraOpts()} ${generalInfo['DISTROCONFOPTS'] ?: ''} PKG_CONFIG_PATH=${pkgConfig()}"
     }
 
-    @Override
-    protected void sharedSetupPost() { }
+    protected void sharedSetupPost() { return }
 }

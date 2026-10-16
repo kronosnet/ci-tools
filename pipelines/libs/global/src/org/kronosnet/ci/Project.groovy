@@ -5,16 +5,21 @@ class Project implements Serializable {
     protected final def steps
     protected final Map generalInfo
     protected final String agentName
-    Project(steps, info, node) { this.steps = steps; this.generalInfo = info; this.agentName = node }
+    protected final RpmCommon rpmHelper
+
+    Project(steps, info, node) {
+        this.steps = steps
+        this.generalInfo = info
+        this.agentName = node
+        this.rpmHelper = new RpmCommon(this.steps)
+    }
 
     void performSteps() {
         phase('Setup rpm') { setupRpm() }
         phase('Setup src') { setupSrc() }
         phase('Build src') { buildSrc() }
         phase('Test src')  { testSrc() }
-        if (generalInfo['install'] == 1) {
-            phase('Install') { install() }
-        }
+        phase('Install')   { install() }
     }
 
     // wraps every phase with timeout + stage (preserves runStage behaviour)
@@ -25,7 +30,7 @@ class Project implements Serializable {
     // ---- phases (defaults = the generic `*)` case) ----
     void setupRpm() {
         if (this.generalInfo['build'] == "rpm" && generalInfo['RPMDEPS']){
-            new RpmCommon(steps).installRpmDeps(generalInfo)
+            this.rpmHelper.installRpmDeps(generalInfo)
         }
     }
 
@@ -41,11 +46,20 @@ class Project implements Serializable {
         sharedSetupPost()
     }
 
-    void buildSrc() { steps.sh "${make()} ${parallelMake()}" }
+    void buildSrc() {
+        if (generalInfo["build"] == "rpm"){
+            build_rpm()
+            rpmHelper.general_rpm_remove(generalInfo['MAKE'], generalInfo['MAKERPMOPTS'], generalInfo['RPMDEPS'])
+        }else if (generalInfo["build"] == "coverity"){
+            build_coverity()
+            new Coverity(steps).general_coverity(generalInfo["covopts"])
+        } else {
+            steps.sh "${make()} ${parallelMake()} ${generalInfo['MAKEOPTS'] ?: ''}"
+        }
+    }
     void testSrc()  { steps.sh "${make()} ${parallelMake()} check" }
     void install()  { steps.sh "${make()} install" }
 
-    // ---- shared helpers ----
     protected String make()         { return generalInfo['MAKE'] ?: 'make' }
     protected String parallelMake() { return generalInfo['PARALLELMAKE'] ?: '' }
     protected String pkgConfig()    { return generalInfo['EXTERNAL_CONFIG_PATH'] ?: '' }
@@ -75,6 +89,13 @@ class Project implements Serializable {
     protected void configure() {
         steps.sh "./configure --prefix=${installPath()} --exec-prefix=${installPath()} " +
                  "${extraOpts()} ${generalInfo['DISTROCONFOPTS'] ?: ''} PKG_CONFIG_PATH=${pkgConfig()}"
+    }
+
+    protected void build_rpm() {return}
+    protected void build_coverity () {
+        String shell = "cov-build --dir=./cov ${make()} ${parallelMake()} ${generalInfo['MAKECOVOPTS'] ?: ''}"
+        println(shell)
+        steps.sh shell
     }
 
     protected void sharedSetupPost() { return }

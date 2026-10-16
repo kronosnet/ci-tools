@@ -50,6 +50,18 @@ void installRpmDeps(Map info) {
     if (rc != 0) { removeRpmDeps(); steps.error("yum install failed") }
 }
 
+void general_rpm_remove(String make, String makerpmopts, String rpmdeps){
+    println("${make} ${makerpmopts} rpm")
+    if (rpmdeps?.trim()) {
+        int rc = steps.sh (returnStatus: true, script: "${make} ${makerpmopts} rpm")
+        removeRpmDeps()
+        if (rc != 0 ) {steps.error('make rpm failed')}
+    } else {
+        steps.sh "${make} ${makerpmopts} rpm"
+    }
+
+}
+
 private boolean hasYum() { return steps.sh(returnStatus: true, script: 'which yum >/dev/null 2>&1') == 0 }
 
 }

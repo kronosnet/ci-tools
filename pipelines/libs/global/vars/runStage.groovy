@@ -1,3 +1,5 @@
+import org.kronosnet.ci.Pacemaker
+
 // Run a generic CI stage with the right params and record success/failure
 // This is here most of the main gubbins happens
 def call(Map info, String agentName, String stageName, Boolean voting, Map extravars)

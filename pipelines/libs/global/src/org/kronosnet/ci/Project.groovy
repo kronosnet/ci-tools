@@ -92,7 +92,23 @@ class Project implements Serializable {
         post_test(generalInfo['extraopts'])
     }
 
-    void install()  { steps.sh "${make()} install" }
+    void install()  {
+        if (generalInfo.containsKey['build']){
+            println("${generalInfo['build']} detected, nothing to do here")
+            return
+        }
+
+        String installPath = getInstallPath()
+
+        println("rm -rf ${installPath}")
+        steps.dir(installPath) { steps.deleteDir() }
+        additionalCleaning(generalInfo)
+
+        steps.sh "${make()} ${generalInfo['MAKEINSTALLOPTS'] ?: ''} install"
+        steps.sh "echo '${steps.env.JOB_URL}/${steps.env.BUILD_NUMBER}/' > ${installPath}/.build-info"
+
+        createSymlinks(generalInfo)
+    }
 
     protected String make()         { return generalInfo['MAKE'] ?: 'make' }
     protected String parallelMake() { return generalInfo['PARALLELMAKE'] ?: '' }
@@ -131,7 +147,7 @@ class Project implements Serializable {
         List env = []
         if (generalInfo['TESTUSELDPATH'] == 'yes') {
             steps.echo "export LD_LIBRARY_PATH=${generalInfo['EXTERNAL_LD_LIBRARY_PATH']}"
-            env << "LD_LIBRARY_PATH=${generalInfo['EXTERNAL_LD_LIBRARY_PATH'] ?: ''}"
+            generalInfo['LD_LIBRARY_PATH']=${generalInfo['EXTERNAL_LD_LIBRARY_PATH'] ?: ''}
         }
 
         steps.withEnv(env) {
@@ -166,6 +182,39 @@ class Project implements Serializable {
         steps.sh './cts/cts-regression -V'
     }
 
+    //overwrite
+    protected void createSymlinks(Map generalInfo){
+        return
+        // println('Creating cross projects symlinks hacks for pcs testing')
+        //     if (generalInfo['project'] == 'pacemaker') {
+        //         String boothSite = (generalInfo['target'] == 'main') ?
+        //             '/srv/booth/origin/main-pacemaker-main/lib/ocf/resource.d/pacemaker/booth-site' :
+        //             "/srv/booth/origin/main-pacemaker-${generalInfo['PACEMAKER_RELEASE']}/lib/ocf/resource.d/pacemaker/booth-site"
+        //         steps.sh """
+        //             cd ${installPath}/lib/ocf
+        //             rm -f lib
+        //             ln -sf /srv/resource-agents/origin/main/lib/ocf/lib
+        //             cd resource.d
+        //             rm -f heartbeat
+        //             ln -sf /srv/resource-agents/origin/main/lib/ocf/resource.d/heartbeat
+        //             cd pacemaker
+        //             rm -f booth-site
+        //             ln -sf ${boothSite}
+        //         """
+        // }
+    }
+
+    //oberwrite
+    protected void additionalCleaning(Map generalInfo){
+        return
+    }
+
+    //overwrite
+    protected String getInstallPath(Map generalInfo){
+        return installpath="/srv/${generalInfo['project']}/origin/${generalInfo['target']}"
+    }
+
+    //overwrite
     protected void test(Map generalInfo) {return}
 
     //overwrite

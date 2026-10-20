@@ -151,8 +151,12 @@ def doRunStage(String agentName, Map info, Map localinfo)
 		// Run all the shell stages (will disappear)
 
 		if (localinfo['project'] == 'pacemaker'){
+			println("_________________________RUNNING PACEMAKER _______________________________________\n")
 			def p = new Pacemaker(this, localinfo, env.NODE_NAME)
+			println("_________________________Performing steps_______________________________________\n")
+
 			p.performSteps()
+
 		}else {
 			shell_stages.each { stageinfo ->
 				if (running) { // break does weird shit

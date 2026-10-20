@@ -149,33 +149,40 @@ def doRunStage(String agentName, Map info, Map localinfo)
 		def exports = getShellVariables(localinfo)
 
 		// Run all the shell stages (will disappear)
-		shell_stages.each { stageinfo ->
-		    if (running) { // break does weird shit
-			stagestate['runstage'] = stageinfo.key
 
-			// Run everything in the checked-out directory
-			dir (localinfo['project']) {
-			    cmdWithTimeout(build_timeout,
-					   "${exports} $HOME/ci-tools/ci-wrap ${stageinfo.value}",
-					   stagestate,
-					   { processRunSuccess(info, localinfo, stagestate) },
-					   { processRunException(info, localinfo, stagestate) })
-			}
+		if (localinfo['project'] == 'pacemaker'){
+			def p = new Pacemaker(this, localinfo, env.NODE_NAME)
+			p.performSteps()
+		}else {
+			shell_stages.each { stageinfo ->
+				if (running) { // break does weird shit
+				stagestate['runstage'] = stageinfo.key
 
-			// This marks it red in the graph view if it failed
-			if (stagestate['failed']) {
-			    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-				shNoTrace("exit 1", "Marking this stage as a failure")
-			    }
-			    // Don't run any more stages if one fails
-			    running = false
-			    // Rethrow any exception so that runWithArtifacts() catches it
-			    if (stagestate.containsKey('EXP')) {
-				throw (stagestate['EXP'])
-			    }
+				// Run everything in the checked-out directory
+				dir (localinfo['project']) {
+					cmdWithTimeout(build_timeout,
+						"${exports} $HOME/ci-tools/ci-wrap ${stageinfo.value}",
+						stagestate,
+						{ processRunSuccess(info, localinfo, stagestate) },
+						{ processRunException(info, localinfo, stagestate) })
+				}
+
+				// This marks it red in the graph view if it failed
+				if (stagestate['failed']) {
+					catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+					shNoTrace("exit 1", "Marking this stage as a failure")
+					}
+					// Don't run any more stages if one fails
+					running = false
+					// Rethrow any exception so that runWithArtifacts() catches it
+					if (stagestate.containsKey('EXP')) {
+					throw (stagestate['EXP'])
+					}
+				}
+				}
 			}
-		    }
 		}
+
 	    })
 	}
 

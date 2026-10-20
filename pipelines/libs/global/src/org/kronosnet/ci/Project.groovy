@@ -54,13 +54,13 @@ class Project implements Serializable {
 
     void buildSrc() {
         if (generalInfo["build"] == "rpm"){
-            build_rpm()
-            rpmHelper.general_rpm_remove(generalInfo['MAKE'], generalInfo['MAKERPMOPTS'], generalInfo['RPMDEPS'])
+            buildRpm()
+            rpmHelper.generalRpmBuild(generalInfo['MAKE'], generalInfo['MAKERPMOPTS'], generalInfo['RPMDEPS'])
         }else if (generalInfo["build"] == "coverity"){
-            build_coverity()
-            coverityHelper.general_coverity(generalInfo["covopts"])
+            buildCoverity()
+            coverityHelper.generalCoverity(generalInfo["covopts"])
         } else {
-            steps.sh "${make()} ${parallelMake()} ${generalInfo['MAKEOPTS'] ?: ''}"
+            build_general()
         }
     }
 
@@ -68,7 +68,7 @@ class Project implements Serializable {
         if (generalInfo["build"] == "rpm"){
             return
         }else if (generalInfo["build"] == "coverity"){
-            coverityHelper.test_coverity(generalInfo)
+            coverityHelper.testCoverity(generalInfo)
             return
         }else if (generalInfo["build"] == "crosscompile"){
             int rc = steps.sh(returnStatus: true,
@@ -98,10 +98,11 @@ class Project implements Serializable {
             return
         }
 
-        String installPath = getInstallPath()
+        String installPath = installPath()
 
         println("rm -rf ${installPath}")
         steps.dir(installPath) { steps.deleteDir() }
+
         additionalCleaning(generalInfo)
 
         steps.sh "${make()} ${generalInfo['MAKEINSTALLOPTS'] ?: ''} install"
@@ -115,6 +116,7 @@ class Project implements Serializable {
     protected String pkgConfig()    { return generalInfo['EXTERNAL_CONFIG_PATH'] ?: '' }
 
     // default install prefix = the shell `*)` case: /srv/<project>/origin/<target>/
+    //overwrite
     protected String installPath() {
         return "/srv/${generalInfo['project']}/origin/${generalInfo['target']}/"
     }
@@ -135,6 +137,8 @@ class Project implements Serializable {
         }
     }
 
+
+    //overwrite
     // default ./configure (generic `*)` branch of ci-setup-src) //overwrite
     protected void configure() {
         steps.sh "./configure --prefix=${installPath()} --exec-prefix=${installPath()} " +
@@ -204,23 +208,25 @@ class Project implements Serializable {
         // }
     }
 
+    //overwrite
+    protected void build_general(){
+        String cmd = "${make()} ${parallelMake()} ${generalInfo['MAKEOPTS'] ?: ''}"
+        println(cmd)
+        steps.sh cmd
+    }
+
     //oberwrite
     protected void additionalCleaning(Map generalInfo){
         return
     }
 
     //overwrite
-    protected String getInstallPath(Map generalInfo){
-        return installpath="/srv/${generalInfo['project']}/origin/${generalInfo['target']}"
-    }
-
-    //overwrite
     protected void test(Map generalInfo) {return}
 
     //overwrite
-    protected void build_rpm() {return}
+    protected void buildRpm() {return}
     //overwrite
-    protected void build_coverity () {
+    protected void buildCoverity () {
         String shell = "cov-build --dir=./cov ${make()} ${parallelMake()} ${generalInfo['MAKECOVOPTS'] ?: ''}"
         println(shell)
         steps.sh shell

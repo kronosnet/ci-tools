@@ -50,7 +50,7 @@ void installRpmDeps(Map info) {
     if (rc != 0) { removeRpmDeps(); steps.error("yum install failed") }
 }
 
-void general_rpm_remove(String make, String makerpmopts, String rpmdeps){
+void generalRpmBuild(String make, String makerpmopts, String rpmdeps){
     println("${make} ${makerpmopts} rpm")
     if (rpmdeps?.trim()) {
         int rc = steps.sh (returnStatus: true, script: "${make} ${makerpmopts} rpm")

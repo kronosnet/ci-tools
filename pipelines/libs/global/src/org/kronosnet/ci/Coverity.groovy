@@ -4,7 +4,7 @@ class Coverity implements Serializable {
     private final def steps
     Coverity(steps) { this.steps = steps }
 
-    protected void general_coverity(String covopts) {
+    protected void generalCoverity(String covopts) {
         def ws = steps.env.WORKSPACE
         steps.sh """
             cov-analyze --dir=./cov --wait-for-license ${covopts}
@@ -18,7 +18,7 @@ class Coverity implements Serializable {
         """
     }
 
-    protected void test_coverity(Map generalInfo) {
+    protected void testCoverity(Map generalInfo) {
         String covroot  = "/srv/covscan/${generalInfo['project']}/origin/${generalInfo['target']}"
         String extraver = generalInfo['extraver'] ?: ''
         String publish  = (generalInfo['install'] == 1 || generalInfo['covinstall'] == 1) ? '1' : '0'

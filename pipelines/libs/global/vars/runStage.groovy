@@ -157,7 +157,9 @@ def doRunStage(String agentName, Map info, Map localinfo)
 			def p = new Pacemaker(this, localinfo, env.NODE_NAME)
 			println("_________________________Performing steps_______________________________________\n")
 
-			p.performSteps()
+			dir(localinfo['project']) {
+				p.performSteps()
+			}
 
 		}else {
 			shell_stages.each { stageinfo ->

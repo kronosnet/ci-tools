@@ -44,7 +44,7 @@
         env_node_name: "{{ ansible_env.NODE_NAME | default('') }}"
 
     - name: Include distro-specific update tasks
-      ansible.builtin.include_tasks: "tasks/update-{{ ansible_distribution | lower }}.yml"
+      ansible.builtin.include_tasks: "tasks/update-{{ ansible_os_family | lower }}.yml"
 
     - name: Ensure the system group 'haclient' exists
       ansible.builtin.group:
@@ -72,5 +72,5 @@
         file: "{{ item }}"
       with_first_found:
         - files:
-            - "tasks/post-update-{{ ansible_distribution | lower }}.yml"
+            - "tasks/post-update-{{ ansible_os_family | lower }}.yml"
           skip: true

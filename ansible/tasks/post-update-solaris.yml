@@ -1,7 +1,7 @@
 ---
 - name: Copy cleanup boot env script
   ansible.builtin.template:
-    src: templates/openindiana-cleanup-boot-envs.sh.j2
+    src: templates/solaris-cleanup-boot-envs.sh.j2
     dest: "{{ boot_environments_cleanup_script }}"
     owner: root
     group: sys

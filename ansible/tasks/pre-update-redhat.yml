@@ -1,0 +1,16 @@
+---
+- name: Install Red Hat IT Root CA certificate where needed
+  when:
+    - inventory_hostname.startswith('rhel-') or
+      inventory_hostname.startswith('vapor-')
+  block:
+    - name: Download RH IT Root CA certificate
+      ansible.builtin.get_url:
+        url: https://certs.corp.redhat.com/certs/Current-IT-Root-CAs.pem
+        dest: /etc/pki/ca-trust/source/anchors/RH-IT-Root-CA.crt
+        validate_certs: false
+        mode: '0644'
+
+    - name: Update CA trust store
+      ansible.builtin.command: update-ca-trust
+      changed_when: false

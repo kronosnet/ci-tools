@@ -1,0 +1,134 @@
+---
+# The ansible.builtin.dnf module doesn't currently support the `clean` parameter.
+# https://github.com/ansible/ansible/issues/83313
+- name: Clean yum cache
+  ansible.builtin.command: yum clean all
+  changed_when: false
+
+# case "${NODE_NAME}" in
+#  centos-*|anvil-ci-centos-*|anvil-ci-almalinux-*|anvil-ci-bm*)
+#   yum -y install epel-release
+#  ;;
+#  rhel-8*)
+#   if ! rpm -qa | grep epel-release; then
+#    yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+#   fi
+#  ;;
+#  rhel-9*|anvil-ci-rhel-9|vapor-*)
+#   if ! rpm -qa | grep epel-release; then
+#    yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+#   fi
+#  ;;
+#  rhel-10*|anvil-ci-rhel-10)
+#   if ! rpm -qa | grep epel-release; then
+#    yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
+#   fi
+#  ;;
+# esac
+
+- name: Enable --nobest for Anvil, CentOS 10 and RHEL 10
+  when: inventory_hostname.startswith('anvil-') or
+        inventory_hostname.startswith('centos-10-') or
+        inventory_hostname.startswith('rhel-10-')
+  ansible.builtin.set_fact:
+    use_no_best: true
+
+- name: Handle RHEL 9 quirks
+  when: inventory_hostname.startswith('rhel-9-') or
+        inventory_hostname.startswith('vapor-')
+  block:
+    # The ansible.builtin.dnf module doesn't currently support managing module streams.
+    - name: Enable ruby 3.1
+      ansible.builtin.command: yum -y module enable ruby:3.1
+      changed_when: false
+
+    - name: Expand requred_packages variable with RHEL 9 extras
+      ansible.builtin.set_fact:
+        required_packages: "{{ required_packages + rhel_9_extra_required_packages }}"
+
+# yum -y $EXTRAOPTS update $POSTOPTS
+
+# case "${NODE_NAME}" in
+#  centos*|rhel*|anvil-ci-centos*|anvil-ci-rhel*|anvil-ci-alma*|vapor*)
+#   required_pkg platform-python-devel
+#  ;;
+# esac
+
+# case "${NODE_NAME}" in
+#  anvil-ci*)
+#   required_pkg fence-agents-common
+#   required_pkg resource-agents
+#   required_pkg selinux-policy-devel
+#  ;;
+# esac
+
+- name: Add rust bindings
+  when: lookup('ansible.builtin.env', 'RUSTBINDINGS') == 'yes'
+  ansible.builtin.set_fact:
+    required_packages: "{{ required_packages + rust_bindings }}"
+
+- name: Add shellcheck for resource-agents ci/build.sh
+  when: inventory_hostname.startswith('fedora-')
+  ansible.builtin.set_fact:
+    required_packages: "{{ required_packages + 'ShellCheck' }}"
+
+# annobin-annocheck is off sync on rhel-8 power
+- name: Add annobin-annocheck for non-power machines
+  when: "'power' not in inventory_hostname"
+  ansible.builtin.set_fact:
+    required_packages: "{{ required_packages + 'annobin-annocheck' }}"
+
+# # rhel-9 language pack
+# case "${NODE_NAME}" in
+#  *rhel-9*|*rhel-10*|vapor*)
+#   required_pkg glibc-all-langpacks
+#  ;;
+# esac
+
+# # rhel-9 boto3
+# case "${NODE_NAME}" in
+#  *rhel-9*|*rhel-10*)
+#  ;;
+#  *)
+#   required_pkg python3-boto3
+#  ;;
+# esac
+
+# yum -y install $REQUIRED_PKGS
+# for PKG in $OPTIONAL_PKGS; do yum -y install $PKG || true; done
+
+# case "${NODE_NAME}" in
+#  *vapor*|anvil-ci*)
+#   dnf -y copr enable karmab/kcli
+#   # enable broken epel-9 builds on copr
+#   sed -i 's@epel@centos-stream@' /etc/yum.repos.d/_copr\:copr.fedorainfracloud.org\:karmab\:kcli.repo
+#   dnf -y install kcli
+#  ;;
+# esac
+
+# case "${NODE_NAME}" in
+#  *vapor*)
+#   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/aliyun/aliyun-cli/HEAD/install.sh)"
+#   if ! which ibmcloud > /dev/null 2>&1; then
+#    curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+#   else
+#    ibmcloud update -f
+#   fi
+#   dnf -y install libvirt-daemon
+#   getent group kubesan >/dev/null || groupadd -r kubesan
+#   getent passwd kubesan >/dev/null || useradd -g kubesan -G libvirt -m kubesan
+#   setfacl -m u:kubesan:rwx /var/lib/libvirt/images
+#   if ! grep -q enable-linger /home/kubesan/.bashrc; then
+#    echo 'loginctl enable-linger $UID' >> /home/kubesan/.bashrc
+#   fi
+#   if [ ! -d /home/kubesan/.ssh ]; then
+#     su - kubesan /bin/bash -c "mkdir -p /home/kubesan/.ssh && chmod 700 /home/kubesan/.ssh"
+#   fi
+#   if [ ! -f /home/kubesan/.ssh/id_rsa.pub ]; then
+#     su - kubesan /bin/bash -c 'ssh-keygen -t rsa -b 4096 -f /home/kubesan/.ssh/id_rsa -C testing-key -N "" -q'
+#   fi
+#   ;;
+# esac
+
+# getent group haclient >/dev/null || groupadd -r haclient -g 189
+# getent passwd hacluster >/dev/null || useradd -r -g haclient -u 189 -s /sbin/nologin -c "cluster user" hacluster

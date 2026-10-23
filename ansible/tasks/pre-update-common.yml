@@ -34,7 +34,5 @@
     line: "10.6.126.250 ci.kronosnet.org"
     state: present
   when:
-    - not (env_node_name is match('^anvil'))
-    - env_node_name != 'built-in'
-  vars:
-    env_node_name: "{{ ansible_env.NODE_NAME | default('') }}"
+    - not inventory_hostname.startswith('anvil-')
+    - inventory_hostname != 'built-in'  # This will probably never trigger as we don't manage Jenkins w/ ansible

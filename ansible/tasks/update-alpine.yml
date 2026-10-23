@@ -17,10 +17,10 @@
   failed_when: false
 
 - name: Install Rust bindings (conditional)
+  when: lookup('ansible.builtin.env', 'RUSTBINDINGS') == 'yes'
   community.general.apk:
     name: "{{ rust_bindings }}"
     state: present
-  when: lookup('ansible.builtin.env', 'RUSTBINDINGS') == 'yes'
 
 # The community.general.apk module doesn't currently support the `clean` parameter, like
 # other packager modules do.

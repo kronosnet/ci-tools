@@ -1,0 +1,27 @@
+---
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        files: ^ansible/
+      - id: end-of-file-fixer
+        files: ^ansible/
+      - id: check-yaml
+        files: ^ansible/
+
+  - repo: https://github.com/ansible/ansible-lint
+    rev: v26.10.1
+    hooks:
+      - id: ansible-lint
+        files: ^ansible/
+        args: [-i, ansible/.ansible-lint-ignore]
+        # Optional: specify which files ansible-lint should check
+        # types: [yaml]
+
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.38.0
+    hooks:
+      - id: yamllint
+        files: ^ansible/.*\.(yaml|yml)$
+        args: [-c, ansible/.yamllint.yml]

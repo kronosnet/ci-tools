@@ -1,0 +1,217 @@
+---
+# The ansible.builtin.dnf module doesn't currently support the `clean` parameter.
+# https://github.com/ansible/ansible/issues/83313
+- name: Clean yum cache
+  ansible.builtin.command: yum clean all
+  changed_when: false
+
+- name: Install EPEL
+  block:
+    - name: Install EPEL via dnf
+      ansible.builtin.dnf:
+        name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
+        state: present
+
+  # Rescue block for urllib3 compatibility issue on control node (RHEL 9 Python 3.9).
+  # Else tasks on RHEL 10 targets will fail with:
+  #   An unknown error occurred: HTTPSConnection.__init__() got an unexpected keyword argument 'cert_file'"
+  # See https://github.com/ansible/ansible/issues/80490
+  # Safe to remove when: control node upgraded to RHEL 10+ OR ansible/urllib3 packages updated
+  rescue:
+    - name: Download and install EPEL via wget and rpm (urllib3 workaround)
+      ansible.builtin.shell:
+        cmd: |
+          wget -q -O /tmp/epel-release.rpm https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
+          rpm -ivh /tmp/epel-release.rpm || true
+          rm -f /tmp/epel-release.rpm
+
+- name: Handle RHEL 9 quirks
+  when: inventory_hostname.startswith('rhel-9-') or
+        inventory_hostname.startswith('vapor-')
+  block:
+    - name: Enable ruby 3.1
+      ansible.builtin.dnf:
+        name: '@ruby:3.1'
+        state: present
+
+    - name: Expand requred_packages variable with RHEL 9 extras
+      ansible.builtin.set_fact:
+        required_packages: "{{ required_packages + rhel_9_required_packages }}"
+
+- name: Enable --nobest for Anvil, CentOS 10 and RHEL 10 machines
+  when: inventory_hostname.startswith('anvil-') or
+        inventory_hostname.startswith('centos-10-') or
+        inventory_hostname.startswith('rhel-10-')
+  ansible.builtin.set_fact:
+    use_no_best: true
+
+- name: Upgrade all packages
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+    update_only: true
+    nobest: "{{ use_no_best | default(false) }}"
+
+- name: Add platform-python-devel as a required package
+  when: inventory_hostname.startswith('centos-') or
+        inventory_hostname.startswith('rhel-') or
+        inventory_hostname.startswith('anvil-ci-centos-') or
+        inventory_hostname.startswith('anvil-ci-rhel-') or
+        inventory_hostname.startswith('anvil-ci-alma-') or
+        inventory_hostname.startswith('vapor-')
+  ansible.builtin.set_fact:
+    required_packages: "{{ required_packages + ['platform-python-devel'] }}"
+
+- name: Add anvil CI required packages
+  when: inventory_hostname.startswith('anvil-ci-')
+  ansible.builtin.set_fact:
+    required_packages: "{{ required_packages + anvil_ci_required_packages }}"
+
+- name: Add rust bindings
+  when: lookup('ansible.builtin.env', 'RUSTBINDINGS') == 'yes'
+  ansible.builtin.set_fact:
+    required_packages: "{{ required_packages + rust_bindings }}"
+
+- name: Add shellcheck for resource-agents ci/build.sh
+  when: inventory_hostname.startswith('fedora-')
+  ansible.builtin.set_fact:
+    required_packages: "{{ required_packages + ['ShellCheck'] }}"
+
+# annobin-annocheck is off sync on rhel-8 power.
+- name: Add annobin-annocheck for non-power machines
+  when: "'power' not in inventory_hostname"
+  ansible.builtin.set_fact:
+    required_packages: "{{ required_packages + ['annobin-annocheck'] }}"
+
+- name: Add glibc language pack as a required package
+  when: "'rhel-9' in inventory_hostname or
+        'rhel-10' in inventory_hostname or
+        inventory_hostname.startswith('vapor-')"
+  ansible.builtin.set_fact:
+    required_packages: "{{ required_packages + ['glibc-all-langpacks'] }}"
+
+- name: Add python3-boto3 for non-RHEL 9/10 nodes
+  when: "'rhel-9' not in inventory_hostname and
+        'rhel-10' not in inventory_hostname"
+  ansible.builtin.set_fact:
+    required_packages: "{{ required_packages + ['python3-boto3'] }}"
+
+- name: Append the vapor required packages
+  when: "'vapor' in inventory_hostname"
+  ansible.builtin.set_fact:
+    required_packages: "{{ required_packages + vapor_required_packages }}"
+
+- name: Install required packages
+  ansible.builtin.dnf:
+    name: "{{ required_packages }}"
+    state: present
+
+- name: Install optional packages
+  ansible.builtin.dnf:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ optional_packages }}"
+  failed_when: false
+
+- name: Setup kcli
+  when: "'vapor' in inventory_hostname or
+        inventory_hostname.startswith('anvil-ci-')"
+  block:
+    - name: Enable karmab/kcli copr
+      community.general.copr:
+        host: copr.fedorainfracloud.org
+        name: karmab/kcli
+        chroot: centos-stream-9
+        state: enabled
+
+    - name: Install kcli
+      ansible.builtin.dnf:
+        name: kcli
+        state: present
+
+- name: Handle Vapor specific tasks
+  when: "'vapor' in inventory_hostname"
+  block:
+    # Download the aliyun installer script only if aliyun cli isn't already installed.
+    # The script will install the latest version if it runs.
+    - name: Install Aliyun CLI
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          curl -fsSL https://raw.githubusercontent.com/aliyun/aliyun-cli/HEAD/install.sh | bash
+        creates: /usr/local/bin/aliyun
+      register: aliyun_install
+
+    # Update the aliyun cli to its latest version if the install is skipped.
+    # If the install task was skiped, then a version of aliyun cli already exists.
+    - name: Update Aliyun CLI to latest version
+      when: aliyun_install is skipped
+      ansible.builtin.command: aliyun upgrade -y
+      changed_when: false  # Maybe parse the output of the command and look for words like upgrade?
+
+    # Next two tasks below work similar as Aliyun's.
+    - name: Install IBM Cloud CLI
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+        creates: /usr/local/bin/ibmcloud
+      register: ibmcloud_install
+
+    - name: Update IBM Cloud CLI to latest version
+      when: ibmcloud_install is skipped
+      ansible.builtin.command: ibmcloud update -f
+      changed_when: false  # Maybe parse the output of the command and look for words like upgrade?
+
+    - name: Install libvirt-daemon
+      ansible.builtin.dnf:
+        name: libvirt-daemon
+        state: present
+
+    - name: Ensure kubesan group exists
+      ansible.builtin.group:
+        name: kubesan
+        system: true
+        state: present
+
+    - name: Ensure kubesan user exists
+      ansible.builtin.user:
+        name: kubesan
+        group: kubesan
+        groups: libvirt
+        create_home: true
+        state: present
+
+    - name: Set ACL for kubesan on libvirt images directory
+      ansible.posix.acl:
+        path: /var/lib/libvirt/images
+        entity: kubesan
+        etype: user
+        permissions: rwx
+        state: present
+
+    # https://serverfault.com/a/849280
+    - name: Enable loginctl linger for kubesan user
+      ansible.builtin.command: loginctl enable-linger kubesan
+      args:
+        creates: /var/lib/systemd/linger/kubesan
+
+    - name: Create the .ssh directory for the kubesan user if it does not exist
+      ansible.builtin.file:
+        path: /home/kubesan/.ssh
+        state: directory
+        mode: '0700'
+
+    # On `regeneration: never`:
+    #   Keys existed prior to ansible managing them. We do not want to change existing keys.
+    - name: Generate SSH keypair for kubesan user
+      community.crypto.openssh_keypair:
+        path: /home/kubesan/.ssh/id_rsa
+        type: rsa
+        size: 4096
+        comment: testing-key
+        regenerate: never
+        owner: kubesan
+        group: kubesan
+        mode: '0600'
+      become: true

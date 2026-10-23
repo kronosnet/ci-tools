@@ -1,6 +1,17 @@
 ---
 # The community.general collection has deprecated Ansible 2.14, that the control node has installed, since v10.0.0.
 # https://github.com/ansible-collections/community.general/blob/stable-10/CHANGELOG.md#breaking-changes--porting-guide
+#
+# The community.crypto collection has dropped Ansible 2.14, that the control node has installed, since v3.0.0
+# https://github.com/ansible-collections/community.crypto/blob/main/CHANGELOG.rst#v300
+#
+# The ansible.posix collection has dropped Ansible 2.14, that the control node has installed, since v1.6.2.
+# https://github.com/ansible-collections/ansible.posix/blob/main/CHANGELOG.rst#v162
+#
 collections:
   - name: community.general
     version: "<10"
+  - name: community.crypto
+    version: "<3"
+  - name: ansible.posix
+    version: "<1.6.2"

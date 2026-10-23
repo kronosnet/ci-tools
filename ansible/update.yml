@@ -19,10 +19,10 @@
       ansible.builtin.include_tasks: "tasks/update-{{ ansible_os_family | lower }}.yml"
 
     - name: Reboot system after updates
+      when: not inventory_hostname.startswith('anvil-')
       ansible.builtin.reboot:
         reboot_timeout: 900
         post_reboot_delay: 120
-      when: not inventory_hostname.startswith('anvil-')
 
     - name: Include common post-update tasks
       ansible.builtin.include_tasks: "tasks/post-update-common.yml"

@@ -1,10 +1,9 @@
 ---
 # https://github.com/kronosnet/ci-tools/blob/ca139bd587a57862433bac98dc9d9ccbc6fa3fcc/ci-update-apt#L133-L139
 - name: Exclude systemd-dev from Ubuntu 22.04
+  when: ansible_distribution_version == '22.04'
   ansible.builtin.set_fact:
     required_packages: "{{ required_packages | reject('equalto', 'systemd-dev') | list }}"
-  when:
-    - ansible_distribution_version == '22.04'
 
 # Ansble's apt module (afaik) doesn't have a way to pass or configure `--allow-releaseinfo-change`.
 # We need that to handle repository metadata changes between updates on testing/unstable/experimental/ubuntu-devel

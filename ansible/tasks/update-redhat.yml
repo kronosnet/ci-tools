@@ -1,0 +1,209 @@
+---
+# The ansible.builtin.dnf module doesn't currently support the `clean` parameter.
+# https://github.com/ansible/ansible/issues/83313
+- name: Clean yum cache
+  ansible.builtin.command: yum clean all
+  changed_when: false
+
+# case "${NODE_NAME}" in
+#  centos-*|anvil-ci-centos-*|anvil-ci-almalinux-*|anvil-ci-bm*)
+#   yum -y install epel-release
+#  ;;
+#  rhel-8*)
+#   if ! rpm -qa | grep epel-release; then
+#    yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+#   fi
+#  ;;
+#  rhel-9*|anvil-ci-rhel-9|vapor-*)
+#   if ! rpm -qa | grep epel-release; then
+#    yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+#   fi
+#  ;;
+#  rhel-10*|anvil-ci-rhel-10)
+#   if ! rpm -qa | grep epel-release; then
+#    yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
+#   fi
+#  ;;
+# esac
+
+- name: Handle RHEL 9 quirks
+  when: inventory_hostname.startswith('rhel-9-') or
+        inventory_hostname.startswith('vapor-')
+  block:
+    # The ansible.builtin.dnf module doesn't currently support managing module streams.
+    - name: Enable ruby 3.1
+      ansible.builtin.command: yum -y module enable ruby:3.1
+      changed_when: false
+
+    - name: Expand requred_packages variable with RHEL 9 extras
+      ansible.builtin.set_fact:
+        required_packages: "{{ required_packages + rhel_9_extra_required_packages }}"
+
+- name: Enable --nobest for Anvil, CentOS 10 and RHEL 10
+  when: inventory_hostname.startswith('anvil-') or
+        inventory_hostname.startswith('centos-10-') or
+        inventory_hostname.startswith('rhel-10-')
+  ansible.builtin.set_fact:
+    use_no_best: true
+
+# Q: What does POSTOPTS do in `yum -y $EXTRAOPTS update $POSTOPTS`?
+- name: Upgrade all packages
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+    nobest: "{{ use_no_best | default(false) }}"
+
+# case "${NODE_NAME}" in
+#  centos*|rhel*|anvil-ci-centos*|anvil-ci-rhel*|anvil-ci-alma*|vapor*)
+#   required_pkg platform-python-devel
+#  ;;
+# esac
+
+- name: Add anvil CI required packages
+  when: inventory_hostname.startswith('anvil-ci-')
+  ansible.builtin.set_fact:
+    required_packages: "{{ required_packages + ['fence-agents-common', 'resource-agents', 'selinux-policy-devel'] }}"
+
+- name: Add rust bindings
+  when: lookup('ansible.builtin.env', 'RUSTBINDINGS') == 'yes'
+  ansible.builtin.set_fact:
+    required_packages: "{{ required_packages + rust_bindings }}"
+
+- name: Add shellcheck for resource-agents ci/build.sh
+  when: inventory_hostname.startswith('fedora-')
+  ansible.builtin.set_fact:
+    required_packages: "{{ required_packages + 'ShellCheck' }}"
+
+# annobin-annocheck is off sync on rhel-8 power
+- name: Add annobin-annocheck for non-power machines
+  when: "'power' not in inventory_hostname"
+  ansible.builtin.set_fact:
+    required_packages: "{{ required_packages + 'annobin-annocheck' }}"
+
+# # rhel-9 language pack
+# case "${NODE_NAME}" in
+#  *rhel-9*|*rhel-10*|vapor*)
+#   required_pkg glibc-all-langpacks
+#  ;;
+# esac
+
+# # rhel-9 boto3
+# case "${NODE_NAME}" in
+#  *rhel-9*|*rhel-10*)
+#  ;;
+#  *)
+#   required_pkg python3-boto3
+#  ;;
+# esac
+
+- name: Install required packages
+  ansible.builtin.dnf:
+    name: "{{ required_packages }}"
+    state: present
+
+- name: Install optional packages
+  ansible.builtin.dnf:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ optional_packages }}"
+  failed_when: false
+
+- name: Setup kcli
+  when: inventory_hostname.startswith('vapor-') or
+        inventory_hostname.startswith('anvil-ci-')
+  block:
+    - name: Enable karmab/kcli copr
+      community.general.copr:
+        host: copr.fedorainfracloud.org
+        name: karmab/kcli
+        state: enabled
+
+    - name: Enable broken epel-9 builds on copr
+      ansible.builtin.replace:
+        path: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:karmab:kcli.repo
+        regexp: 'epel'
+        replace: 'centos-stream'
+
+    - name: Install kcli
+      ansible.builtin.dnf:
+        name: kcli
+        state: present
+
+- name: Handle Vapor specific tasks
+  when: inventory_hostname.startswith('vapor-')
+  block:
+    # Split to 3 tasks?
+    # 1) fetch but it is ok to fail (in case github is down?)
+    # 2) store in a specific directory
+    # 3) run (either the new or the pre-existing if failed)
+    - name: Install Aliyun CLI  # or update if it exists - the script handles that
+      ansible.builtin.shell:
+        cmd: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/aliyun/aliyun-cli/HEAD/install.sh)"
+
+    - name: Check if ibmcloud is installed
+      ansible.builtin.command: which ibmcloud
+      register: ibmcloud_check
+      failed_when: false
+      changed_when: false
+
+    # Split this task the same as above with aliyun cli if ibmcloud doesn't exist?
+    - name: Install IBM Cloud CLI
+      when: ibmcloud_check.rc != 0
+      ansible.builtin.shell:
+        cmd: curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+
+    - name: Update IBM Cloud CLI
+      ansible.builtin.command: ibmcloud update -f
+
+    - name: Install libvirt-daemon
+      ansible.builtin.dnf:
+        name: libvirt-daemon
+        state: present
+
+    - name: Ensure kubesan group exists
+      ansible.builtin.group:
+        name: kubesan
+        system: true
+        state: present
+
+    - name: Ensure kubesan user exists
+      ansible.builtin.user:
+        name: kubesan
+        group: kubesan
+        groups: libvirt
+        create_home: true
+        state: present
+
+    - name: Set ACL for kubesan on libvirt images directory
+      ansible.posix.acl:
+        path: /var/lib/libvirt/images
+        entity: kubesan
+        etype: user
+        permissions: rwx
+        state: present
+
+# Isn't that an one time command? I don't think it needs to be run everytime a shell is started.
+#   if ! grep -q enable-linger /home/kubesan/.bashrc; then
+#    echo 'loginctl enable-linger $UID' >> /home/kubesan/.bashrc
+#   fi
+#
+# In which case the task should be something like:
+#
+    # - name: Enable loginctl linger for kubesan user
+    #   ansible.builtin.command: loginctl enable-linger kubesan
+    #   args:
+    #     creates: /var/lib/systemd/linger/kubesan
+
+    - name: Create the .ssh directory for the kubesan user if it does not exist
+      ansible.builtin.file:
+        path: /home/kubesan/.ssh
+        state: directory
+        mode: '0700'
+
+#   if [ ! -f /home/kubesan/.ssh/id_rsa.pub ]; then
+#     su - kubesan /bin/bash -c 'ssh-keygen -t rsa -b 4096 -f /home/kubesan/.ssh/id_rsa -C testing-key -N "" -q'
+#   fi
+
+# Q: Is group number 189 necessary? We do not require that on the other packager scripts.
+# getent group haclient >/dev/null || groupadd -r haclient -g 189
+# getent passwd hacluster >/dev/null || useradd -r -g haclient -u 189 -s /sbin/nologin -c "cluster user" hacluster

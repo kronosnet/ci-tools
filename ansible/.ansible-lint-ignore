@@ -1,1 +1,2 @@
 bootstrap.yml name[missing]  # File is a WIP
+tasks/update-redhat.yml command-instead-of-module  # dnf module doesn't currently support the clean parameter

@@ -29,10 +29,10 @@
   changed_when: false
 
 - name: Configure internal host mapping for non-build nodes
+  when:
+    - not inventory_hostname.startswith('anvil-')
+    - inventory_hostname != 'built-in'  # This will probably never trigger as we don't manage Jenkins w/ ansible
   ansible.builtin.lineinfile:
     path: /etc/hosts
     line: "10.6.126.250 ci.kronosnet.org"
     state: present
-  when:
-    - not inventory_hostname.startswith('anvil-')
-    - inventory_hostname != 'built-in'  # This will probably never trigger as we don't manage Jenkins w/ ansible

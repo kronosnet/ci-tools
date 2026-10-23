@@ -4,3 +4,4 @@
 collections:
   - name: community.general
     version: "<10"
+  - name: community.crypto

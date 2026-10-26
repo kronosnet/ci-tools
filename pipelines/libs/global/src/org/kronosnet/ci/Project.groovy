@@ -24,7 +24,7 @@ class Project implements Serializable {
         // phase('Test src')  { testSrc() }
 
         println("Trying to start install")
-        println("generalinfo['install'] is ${generalinfo['install']}")
+        println("generalInfo['install'] is ${generalInfo['install']}")
         if (generalInfo["install"] == '1') {
             println("Installing ${generalInfo['project']}")
             phase('Install')   { install() }
@@ -216,6 +216,7 @@ class Project implements Serializable {
         String cmd = "${make()} ${parallelMake()} ${generalInfo['MAKEOPTS'] ?: ''}"
         println(cmd)
         steps.sh cmd
+        println("_____________Finishing build____________")
     }
 
     //oberwrite

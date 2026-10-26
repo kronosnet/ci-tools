@@ -25,7 +25,7 @@ class Project implements Serializable {
 
         println("Trying to start install")
         println("generalinfo['install'] is ${generalinfo['install']}")
-        if (generalInfo["install"] == 1) {
+        if (generalInfo["install"] == '1') {
             println("Installing ${generalInfo['project']}")
             phase('Install')   { install() }
         }

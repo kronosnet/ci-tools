@@ -267,7 +267,7 @@ def doRunStage(String agentName, Map info, Map localinfo)
 
 	// Tidy the workspace (remember we are still on the build node here)
 	stage("Cleanup for ${stageTitle} on ${agentName}") {
-	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
+	    //cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 	}
     }
     return true

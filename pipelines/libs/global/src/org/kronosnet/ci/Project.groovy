@@ -96,7 +96,7 @@ class Project implements Serializable {
 
     void install()  {
         println("_____________Start the install____________")
-        if (generalInfo.containsKey['build']){
+        if (generalInfo.containsKey('build')){
             println("${generalInfo['build']} detected, nothing to do here")
             return
         }

@@ -213,6 +213,7 @@ class Project implements Serializable {
 
     //overwrite
     protected void build_general(){
+        println("_____________Starting build____________")
         String cmd = "${make()} ${parallelMake()} ${generalInfo['MAKEOPTS'] ?: ''}"
         println(cmd)
         steps.sh cmd

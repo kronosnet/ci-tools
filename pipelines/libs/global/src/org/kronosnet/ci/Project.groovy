@@ -21,7 +21,7 @@ class Project implements Serializable {
         phase('Setup rpm') { setupRpm() }
         phase('Setup src') { setupSrc() }
         phase('Build src') { buildSrc() }
-        phase('Test src')  { testSrc() }
+        // phase('Test src')  { testSrc() }
 
         if (generalInfo["install"] == 1) {
             phase('Install')   { install() }

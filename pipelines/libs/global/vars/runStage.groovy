@@ -154,6 +154,9 @@ def doRunStage(String agentName, Map info, Map localinfo)
 
 		if (localinfo['project'] == 'pacemaker'){
 			println("_________________________RUNNING PACEMAKER _______________________________________\n")
+
+			println(localinfo)
+
 			def p = new Pacemaker(this, localinfo, env.NODE_NAME)
 			println("_________________________Performing steps_______________________________________\n")
 

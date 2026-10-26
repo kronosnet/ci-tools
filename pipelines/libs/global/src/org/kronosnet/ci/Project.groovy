@@ -25,6 +25,7 @@ class Project implements Serializable {
 
         boolean shouldInstall = generalInfo["install"]?.toString() == '1'
         if (shouldInstall) {
+            println("Will start installing ")
             phase('Install')   { install() }
         }
     }

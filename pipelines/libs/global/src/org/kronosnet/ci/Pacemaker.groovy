@@ -18,6 +18,7 @@ class Pacemaker extends Project {
     @Override
     protected void additionalCleaning(Map generalInfo) {
         String installPath = installPath()
+        println("Additional cleaning pacemaker")
         steps.sh "${make()} clean"
         steps.sh "./configure --prefix=${installPath} --exec-prefix=${installPath} " +
                  "--sysconfdir=${installPath}/etc --with-initdir=${installPath}/etc/init.d " +
@@ -31,6 +32,7 @@ class Pacemaker extends Project {
     @Override
     protected void createSymlinks(Map generalInfo) {
         String installPath = installPath()
+        println("Create symlinks pacemaker, ${installPath}")
         String boothSite = (generalInfo['target'] == 'main') ?
             '/srv/booth/origin/main-pacemaker-main/lib/ocf/resource.d/pacemaker/booth-site' :
             "/srv/booth/origin/main-pacemaker-${generalInfo['PACEMAKER_RELEASE']}/lib/ocf/resource.d/pacemaker/booth-site"

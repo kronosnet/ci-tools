@@ -22,12 +22,11 @@ class Project implements Serializable {
         phase('Setup src') { setupSrc() }
         phase('Build src') { buildSrc() }
         // phase('Test src')  { testSrc() }
-        phase('Install')   { install() }
 
-        // if (generalInfo["install"] == '1') {
-        //     println("Installing ${generalInfo['project']}")
-        //     phase('Install')   { install() }
-        // }
+        boolean shouldInstall = generalInfo["install"]?.toString() == '1'
+        if (shouldInstall) {
+            phase('Install')   { install() }
+        }
     }
 
     // wraps every phase with timeout + stage (preserves runStage behaviour)

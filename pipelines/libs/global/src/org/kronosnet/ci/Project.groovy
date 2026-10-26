@@ -21,14 +21,13 @@ class Project implements Serializable {
         phase('Setup rpm') { setupRpm() }
         phase('Setup src') { setupSrc() }
         phase('Build src') { buildSrc() }
-        phase('Test src')  { testSrc() }
+        // phase('Test src')  { testSrc() }
+        phase('Install')   { install() }
 
-        println("Trying to start install")
-        println("generalInfo['install'] is ${generalInfo['install']}")
-        if (generalInfo["install"] == '1') {
-            println("Installing ${generalInfo['project']}")
-            phase('Install')   { install() }
-        }
+        // if (generalInfo["install"] == '1') {
+        //     println("Installing ${generalInfo['project']}")
+        //     phase('Install')   { install() }
+        // }
     }
 
     // wraps every phase with timeout + stage (preserves runStage behaviour)

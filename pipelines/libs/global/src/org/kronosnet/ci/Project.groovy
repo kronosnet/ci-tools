@@ -23,6 +23,8 @@ class Project implements Serializable {
         phase('Build src') { buildSrc() }
         // phase('Test src')  { testSrc() }
 
+        println("Trying to start install")
+        println("generalinfo['install'] is ${generalinfo['install']}")
         if (generalInfo["install"] == 1) {
             println("Installing ${generalInfo['project']}")
             phase('Install')   { install() }

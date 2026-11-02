@@ -1,4 +1,4 @@
-import org.kronosnet.ci.Pacemaker
+import org.kronosnet.ci.ProjectFactory
 
 // Run a generic CI stage with the right params and record success/failure
 // This is here most of the main gubbins happens
@@ -150,48 +150,15 @@ def doRunStage(String agentName, Map info, Map localinfo)
 		// Convert localinfo map into shell variables
 		def exports = getShellVariables(localinfo)
 
-		// Run all the shell stages (will disappear)
+		// Run project build phases using factory pattern
+		println("_________________________RUNNING ${localinfo['project'].toUpperCase()} _______________________________________\n")
+		println(localinfo)
 
-		if (localinfo['project'] == 'pacemaker'){
-			println("_________________________RUNNING PACEMAKER _______________________________________\n")
+		def project = ProjectFactory.create(localinfo['project'], this, localinfo, env.NODE_NAME)
+		println("_________________________Performing steps_______________________________________\n")
 
-			println(localinfo)
-
-			def p = new Pacemaker(this, localinfo, env.NODE_NAME)
-			println("_________________________Performing steps_______________________________________\n")
-
-			dir(localinfo['project']) {
-				p.performSteps()
-			}
-
-		}else {
-			shell_stages.each { stageinfo ->
-				if (running) { // break does weird shit
-				stagestate['runstage'] = stageinfo.key
-
-				// Run everything in the checked-out directory
-				dir (localinfo['project']) {
-					cmdWithTimeout(build_timeout,
-						"${exports} $HOME/ci-tools/ci-wrap ${stageinfo.value}",
-						stagestate,
-						{ processRunSuccess(info, localinfo, stagestate) },
-						{ processRunException(info, localinfo, stagestate) })
-				}
-
-				// This marks it red in the graph view if it failed
-				if (stagestate['failed']) {
-					catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-					shNoTrace("exit 1", "Marking this stage as a failure")
-					}
-					// Don't run any more stages if one fails
-					running = false
-					// Rethrow any exception so that runWithArtifacts() catches it
-					if (stagestate.containsKey('EXP')) {
-					throw (stagestate['EXP'])
-					}
-				}
-				}
-			}
+		dir(localinfo['project']) {
+			project.performSteps()
 		}
 
 	    })

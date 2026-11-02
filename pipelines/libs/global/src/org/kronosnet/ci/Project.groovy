@@ -113,6 +113,8 @@ class Project implements Serializable {
         createSymlinks(generalInfo)
     }
 
+    // HELPERS and function to overwrite
+
     protected String make()         { return generalInfo['MAKE'] ?: 'make' }
     protected String parallelMake() { return generalInfo['PARALLELMAKE'] ?: '' }
     protected String pkgConfig()    { return generalInfo['EXTERNAL_CONFIG_PATH'] ?: '' }

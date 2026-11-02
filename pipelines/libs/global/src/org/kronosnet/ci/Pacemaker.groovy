@@ -16,7 +16,7 @@ class Pacemaker extends Project {
 
     // pacemaker rebuilds with install-specific prefix before `make install`
     @Override
-    protected void additionalCleaning(Map generalInfo) {
+    protected void additionalInstall(Map generalInfo) {
         String installPath = installPath()
         println("Additional cleaning pacemaker")
         steps.sh "${make()} clean"

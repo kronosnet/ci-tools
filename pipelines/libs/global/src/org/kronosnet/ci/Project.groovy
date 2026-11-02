@@ -21,7 +21,7 @@ class Project implements Serializable {
         phase('Setup rpm') { setupRpm() }
         phase('Setup src') { setupSrc() }
         phase('Build src') { buildSrc() }
-        // phase('Test src')  { testSrc() }
+        phase('Test src')  { testSrc() }
 
         boolean shouldInstall = generalInfo["install"]?.toString() == '1'
         if (shouldInstall) {
@@ -95,7 +95,6 @@ class Project implements Serializable {
     }
 
     void install()  {
-        println("_____________Start the install____________")
         if (generalInfo['build'] != ''){
             println("${generalInfo['build']} detected, nothing to do here")
             return
@@ -106,7 +105,7 @@ class Project implements Serializable {
         println("rm -rf ${installPath}")
         steps.dir(installPath) { steps.deleteDir() }
 
-        additionalCleaning(generalInfo)
+        additionalInstall(generalInfo)
 
         steps.sh "${make()} ${generalInfo['MAKEINSTALLOPTS'] ?: ''} install"
         steps.sh "echo '${steps.env.JOB_URL}/${steps.env.BUILD_NUMBER}/' > ${installPath}/.build-info"
@@ -151,20 +150,17 @@ class Project implements Serializable {
     protected void post_test(String extraopts = '') {
         String checks = generalInfo['CHECKS'] ?: "check distcheck ${generalInfo['EXTRACHECKS'] ?: ''}".trim()
 
-        List env = []
         if (generalInfo['TESTUSELDPATH'] == 'yes') {
             steps.echo "export LD_LIBRARY_PATH=${generalInfo['EXTERNAL_LD_LIBRARY_PATH']}"
             generalInfo['LD_LIBRARY_PATH']=${generalInfo['EXTERNAL_LD_LIBRARY_PATH'] ?: ''}
         }
 
-        steps.withEnv(env) {
-            for (String i in checks.split()) {
-                cleanlibqb()
-                steps.sh "${make()} ${parallelMake()} ${generalInfo['MAKETESTOPTS'] ?: ''} ${i} " +
-                         "DISTCHECK_CONFIGURE_FLAGS=\"${extraopts} ${generalInfo['DISTROCONFOPTS'] ?: ''}\" " +
-                         "PKG_CONFIG_PATH=${pkgConfig()} " +
-                         "|| (find . -name '*test*suite.log' -exec cat {} \\; ; false)"
-            }
+        for (String i in checks.split()) {
+            cleanlibqb()
+            steps.sh "${make()} ${parallelMake()} ${generalInfo['MAKETESTOPTS'] ?: ''} ${i} " +
+                    "DISTCHECK_CONFIGURE_FLAGS=\"${extraopts} ${generalInfo['DISTROCONFOPTS'] ?: ''}\" " +
+                    "PKG_CONFIG_PATH=${pkgConfig()} " +
+                    "|| (find . -name '*test*suite.log' -exec cat {} \\; ; false)"
         }
 
         cleanlibqb()
@@ -213,7 +209,6 @@ class Project implements Serializable {
 
     //overwrite
     protected void build_general(){
-        println("_____________Starting build____________")
         String cmd = "${make()} ${parallelMake()} ${generalInfo['MAKEOPTS'] ?: ''}"
         println(cmd)
         steps.sh cmd
@@ -221,7 +216,7 @@ class Project implements Serializable {
     }
 
     //oberwrite
-    protected void additionalCleaning(Map generalInfo){
+    protected void additionalInstall(Map generalInfo){
         return
     }
 

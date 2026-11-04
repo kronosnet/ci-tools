@@ -35,7 +35,7 @@ void removeRpmDeps() {
 }
 
 void installRpmDeps(Map info) {
-    println("Installing rpm deps: ${info['RPMDEPS']}")
+    steps.echo("Installing rpm deps: ${info['RPMDEPS']}")
     cleanbr()
     if (!hasYum()) {return}
     boolean bootstrap = info['bootstrap']?.toString() == '1'
@@ -52,7 +52,7 @@ void installRpmDeps(Map info) {
 }
 
 void generalRpmBuild(String make, String makerpmopts, String rpmdeps){
-    println("${make} ${makerpmopts} rpm")
+    steps.echo("${make} ${makerpmopts} rpm")
     if (rpmdeps?.trim()) {
         int rc = steps.sh (returnStatus: true, script: "${make} ${makerpmopts} rpm")
         removeRpmDeps()

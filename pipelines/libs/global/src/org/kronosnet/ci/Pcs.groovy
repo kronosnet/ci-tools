@@ -7,7 +7,7 @@ class Pcs extends Project {
     protected void configure() {
         // Random sleep to avoid parallel pcs builds hitting resource limits
         int sleeptimer = (new Random().nextInt(240))
-        println("Random sleep: ${sleeptimer}")
+        steps.echo("Random sleep: ${sleeptimer}")
         steps.sleep(time: sleeptimer, unit: 'SECONDS')
 
         String pcspython = 'python3'
@@ -45,7 +45,7 @@ class Pcs extends Project {
             localbuild = '--enable-local-build'
         }
 
-        println("./configure --enable-destructive-tests --enable-parallel-tests ${localbuild} ${generalInfo['DISTROCONFOPTS']} PKG_CONFIG_PATH=${pkgConfig()}")
+        steps.echo("./configure --enable-destructive-tests --enable-parallel-tests ${localbuild} ${generalInfo['DISTROCONFOPTS']} PKG_CONFIG_PATH=${pkgConfig()}")
         steps.sh "./configure --enable-destructive-tests --enable-parallel-tests ${localbuild} ${generalInfo['DISTROCONFOPTS'] ?: ''} PKG_CONFIG_PATH=${pkgConfig()}"
     }
 
@@ -53,7 +53,7 @@ class Pcs extends Project {
     protected void buildCoverity() {
         // pcs requires separate coverity capture for pcs and pcs_test
         for (String dir : ['pcs', 'pcs_test']) {
-            println("cd ${dir} && coverity capture --dir ../cov && cd ..")
+            steps.echo("cd ${dir} && coverity capture --dir ../cov && cd ..")
             steps.sh """
                 cd ${dir}
                 coverity capture --dir ../cov
@@ -81,7 +81,7 @@ class Pcs extends Project {
         }
 
         String cmd = "${make()} ${parallelMake()} ${generalInfo['MAKEOPTS'] ?: ''}"
-        println(cmd)
+        steps.echo(cmd)
         steps.sh cmd
     }
 

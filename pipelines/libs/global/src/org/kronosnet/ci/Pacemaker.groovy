@@ -5,7 +5,7 @@ class Pacemaker extends Project {
 
     @Override
     protected void configure(){
-        println("./configure ${generalInfo['DISTROCONFOPTS']} PKG_CONFIG_PATH=${generalInfo['EXTERNAL_CONFIG_PATH']}")
+        steps.echo("./configure ${generalInfo['DISTROCONFOPTS']} PKG_CONFIG_PATH=${generalInfo['EXTERNAL_CONFIG_PATH']}")
         steps.sh "./configure ${generalInfo['DISTROCONFOPTS']} PKG_CONFIG_PATH=${generalInfo['EXTERNAL_CONFIG_PATH']} ${extraOptsConfigure()}"
     }
 
@@ -18,9 +18,9 @@ class Pacemaker extends Project {
     @Override
     protected void additionalInstall(Map generalInfo) {
         String installPath = installPath()
-        println("Additional cleaning pacemaker")
+        steps.echo("Additional cleaning pacemaker")
 
-        println("${make()} clean")
+        steps.echo("${make()} clean")
         steps.sh "${make()} clean"
 
         String configCmd = "./configure --prefix=${installPath} --exec-prefix=${installPath} " +
@@ -28,11 +28,11 @@ class Pacemaker extends Project {
                           "--with-ocfdir=${installPath}/lib/ocf " +
                           "--with-systemdsystemunitdir=${installPath}/usr/lib/systemd/system " +
                           "${generalInfo['DISTROCONFOPTS'] ?: ''} PKG_CONFIG_PATH=${pkgConfig()}"
-        println(configCmd)
+        steps.echo(configCmd)
         steps.sh configCmd
 
         String makeCmd = "${make()} ${parallelMake()} ${generalInfo['MAKEOPTS'] ?: ''}"
-        println(makeCmd)
+        steps.echo(makeCmd)
         steps.sh makeCmd
     }
 
@@ -40,7 +40,7 @@ class Pacemaker extends Project {
     @Override
     protected void createSymlinks(Map generalInfo) {
         String installPath = installPath()
-        println("Create symlinks pacemaker, ${installPath}")
+        steps.echo("Create symlinks pacemaker, ${installPath}")
         String boothSite = (generalInfo['target'] == 'main') ?
             '/srv/booth/origin/main-pacemaker-main/lib/ocf/resource.d/pacemaker/booth-site' :
             "/srv/booth/origin/main-pacemaker-${generalInfo['PACEMAKER_RELEASE']}/lib/ocf/resource.d/pacemaker/booth-site"

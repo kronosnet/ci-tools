@@ -25,7 +25,7 @@ class Project implements Serializable {
 
         boolean shouldInstall = generalInfo["install"]?.toString() == '1'
         if (shouldInstall) {
-            println("Will start installing ")
+            steps.echo("Will start installing ")
             phase('Install')   { install() }
         }
     }
@@ -40,13 +40,13 @@ class Project implements Serializable {
         if (this.generalInfo['build'] == "rpm" && generalInfo['RPMDEPS']){
             this.rpmHelper.installRpmDeps(generalInfo)
         } else if (this.generalInfo['build'] == "rpm") {
-            println("No rpm deps requested")
+            steps.echo("No rpm deps requested")
         }
     }
 
     void setupSrc() {
         if (steps.fileExists('autogen.sh')) {
-            println('./autogen.sh')
+            steps.echo('./autogen.sh')
             steps.sh './autogen.sh'
         }
 
@@ -86,7 +86,7 @@ class Project implements Serializable {
 
         if (generalInfo['CHECKS'] == 'nochecks') { return }
         if (generalInfo['PARALLELTEST'] == 'no') {
-            println("${generalInfo['project']} does not support parallel test. disabling PARALLELMAKE")
+            steps.echo("${generalInfo['project']} does not support parallel test. disabling PARALLELMAKE")
             generalInfo['PARALLELMAKE'] = ""
          }
 
@@ -99,19 +99,19 @@ class Project implements Serializable {
 
     void install()  {
         if (generalInfo['build'] != ''){
-            println("${generalInfo['build']} detected, nothing to do here")
+            steps.echo("${generalInfo['build']} detected, nothing to do here")
             return
         }
 
         String installPath = installPath()
 
-        println("rm -rf ${installPath}")
+        steps.echo("rm -rf ${installPath}")
         steps.dir(installPath) { steps.deleteDir() }
 
         additionalInstall(generalInfo)
 
         String installCmd = "${make()} ${generalInfo['MAKEINSTALLOPTS'] ?: ''} install"
-        println(installCmd)
+        steps.echo(installCmd)
         steps.sh installCmd
         steps.sh "echo '${steps.env.JOB_URL}/${steps.env.BUILD_NUMBER}/' > ${installPath}/.build-info"
 
@@ -152,7 +152,7 @@ class Project implements Serializable {
     protected void configure() {
         String cmd = "./configure --prefix=${installPath()} --exec-prefix=${installPath()} " +
                      "${extraOptsConfigure()} ${generalInfo['DISTROCONFOPTS'] ?: ''} PKG_CONFIG_PATH=${pkgConfig()}"
-        println(cmd)
+        steps.echo(cmd)
         steps.sh cmd
     }
 
@@ -170,7 +170,7 @@ class Project implements Serializable {
                             "DISTCHECK_CONFIGURE_FLAGS=\"${extraopts} ${generalInfo['DISTROCONFOPTS'] ?: ''}\" " +
                             "PKG_CONFIG_PATH=${pkgConfig()} " +
                             "|| (find . -name '*test*suite.log' -exec cat {} \\; ; false)"
-            println(testCmd)
+            steps.echo(testCmd)
             steps.sh testCmd
         }
 
@@ -198,7 +198,7 @@ class Project implements Serializable {
 
     //overwrite
     protected void createSymlinks(Map generalInfo){
-        println('Creating cross projects symlinks hacks for pcs testing')
+        steps.echo('Creating cross projects symlinks hacks for pcs testing')
         return
         //
         //     if (generalInfo['project'] == 'pacemaker') {
@@ -222,9 +222,9 @@ class Project implements Serializable {
     //overwrite
     protected void build_general(){
         String cmd = "${make()} ${parallelMake()} ${generalInfo['MAKEOPTS'] ?: ''}"
-        println(cmd)
+        steps.echo(cmd)
         steps.sh cmd
-        println("_____________Finishing build____________")
+        steps.echo("_____________Finishing build____________")
     }
 
     //oberwrite
@@ -240,7 +240,7 @@ class Project implements Serializable {
     //overwrite
     protected void buildCoverity () {
         String shell = "cov-build --dir=./cov ${make()} ${parallelMake()} ${generalInfo['MAKECOVOPTS'] ?: ''}"
-        println(shell)
+        steps.echo(shell)
         steps.sh shell
     }
 

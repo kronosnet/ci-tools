@@ -21,8 +21,8 @@ site.yml                 # main playbook
 bootstrap.yml            # playbook for bootstrapping the servers
 update.yml               # playbook for updateing the servers
 tasks/                   # task files included from playbooks
-    update-alpine.yml    # <-- avoids confusing playbook with task files. Use ansible_distribution name.
-templates/               # jinja template files used in playbooks. Use ansible_distribution name as prefix.
+    update-alpine.yml    # <-- avoids confusing playbook with task files. Use ansible_os_family name.
+templates/               # jinja template files used in playbooks. Use ansible_os_family name as prefix.
 ```
 
 ## Examples

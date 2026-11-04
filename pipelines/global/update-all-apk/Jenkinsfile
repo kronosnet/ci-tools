@@ -12,11 +12,10 @@ def buildFullRunMap(Map info)
     def nodeList = getUpNodesByLabel(info['packager'])
 
     for (def n in nodeList) {
-	def node = 'built-in'
-	def realnode = n
+	def node = n
 	collectBuildEnv[node] = {
 	    // Once transition is done, we can stop passing 'built-in' completely here
-	    updateOSNode(node, info, realnode)
+	    updateOSNode('built-in', info, node)
 	}
     }
 

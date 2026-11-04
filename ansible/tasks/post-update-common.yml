@@ -1,0 +1,15 @@
+---
+- name: Ensure the system group 'haclient' exists
+  ansible.builtin.group:
+    name: haclient
+    state: present
+    system: true
+
+- name: Ensure the system user 'hacluster' exists
+  ansible.builtin.user:
+    name: hacluster
+    state: present
+    system: true
+    group: haclient
+    comment: "cluster user"
+    create_home: false

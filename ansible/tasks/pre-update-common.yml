@@ -1,0 +1,40 @@
+---
+- name: Remove build directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ ansible_env.HOME }}/rpmbuild"
+    - "/usr/src/packages/BUILDROOT"
+  failed_when: false
+
+- name: Clean shared memory and temp files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_fileglob:
+    - "/dev/shm/qb*"
+    - "/dev/shm/testvol*"
+    - "/tmp/libqb*"
+    - "/tmp/booth-tests*"
+  failed_when: false
+
+- name: Generate the start_node script
+  ansible.builtin.command:
+  args:
+    chdir: "{{ ansible_env.HOME }}/ci-tools/"
+    cmd: "./ci-generate-start-node"
+  environment:
+    CITHOME: "{{ ansible_env.HOME }}/ci-tools/"
+  changed_when: false
+
+- name: Configure internal host mapping for non-build nodes
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: "10.6.126.250 ci.kronosnet.org"
+    state: present
+  when:
+    - not (env_node_name is match('^anvil'))
+    - env_node_name != 'built-in'
+  vars:
+    env_node_name: "{{ ansible_env.NODE_NAME | default('') }}"

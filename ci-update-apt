@@ -78,6 +78,7 @@ required_pkg python3-dateutil
 required_pkg python3-cryptography
 required_pkg python3-dev
 required_pkg python3-googleapi
+required_pkg python3-isodate
 required_pkg python3-lxml
 required_pkg python3-pexpect
 required_pkg python3-pip

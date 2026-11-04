@@ -5,7 +5,7 @@
 // avoiding multiple git calls.
 def call(Map info)
 {
-    def tarfile = "sources-${env.BUILD_TAG}.tar.gz"
+    def tarfile = "sources-${env.BUILD_TAG.replaceAll(' ', '-')}.tar.gz"
     println("tarfile = ${tarfile}, node=${env.NODE_NAME}")
 
     if (env.NODE_NAME == 'built-in') {

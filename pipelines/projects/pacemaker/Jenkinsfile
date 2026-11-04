@@ -1,6 +1,6 @@
 // Jenkinsfile for the pacemaker project
 
-@Library(['GlobalLib@artem-devel', 'GithubLib@artem-devel', 'ProjectLib@artem-devel']) _
+@Library(['GlobalLib', 'GithubLib', 'ProjectLib']) _
 
 // Who we are
 def project = 'pacemaker'

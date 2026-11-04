@@ -97,7 +97,7 @@ pipeline {
 
 		    // Run them (errors are caught in info[:])
 		    try {
-			// parallel voting_kmain + voting_kstable +
+			parallel voting_kmain //+ voting_kstable +
 			//     nonvoting_kmain + nonvoting_kstable +
 			//     nonvoting_clang_kmain + nonvoting_clang_kstable +
 			//     buildrpms_kmain + buildrpms_kstable +

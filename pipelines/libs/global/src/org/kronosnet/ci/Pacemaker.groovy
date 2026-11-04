@@ -19,13 +19,21 @@ class Pacemaker extends Project {
     protected void additionalInstall(Map generalInfo) {
         String installPath = installPath()
         println("Additional cleaning pacemaker")
+
+        println("${make()} clean")
         steps.sh "${make()} clean"
-        steps.sh "./configure --prefix=${installPath} --exec-prefix=${installPath} " +
-                 "--sysconfdir=${installPath}/etc --with-initdir=${installPath}/etc/init.d " +
-                 "--with-ocfdir=${installPath}/lib/ocf " +
-                 "--with-systemdsystemunitdir=${installPath}/usr/lib/systemd/system " +
-                 "${generalInfo['DISTROCONFOPTS'] ?: ''} PKG_CONFIG_PATH=${pkgConfig()}"
-        steps.sh "${make()} ${parallelMake()} ${generalInfo['MAKEOPTS'] ?: ''}"
+
+        String configCmd = "./configure --prefix=${installPath} --exec-prefix=${installPath} " +
+                          "--sysconfdir=${installPath}/etc --with-initdir=${installPath}/etc/init.d " +
+                          "--with-ocfdir=${installPath}/lib/ocf " +
+                          "--with-systemdsystemunitdir=${installPath}/usr/lib/systemd/system " +
+                          "${generalInfo['DISTROCONFOPTS'] ?: ''} PKG_CONFIG_PATH=${pkgConfig()}"
+        println(configCmd)
+        steps.sh configCmd
+
+        String makeCmd = "${make()} ${parallelMake()} ${generalInfo['MAKEOPTS'] ?: ''}"
+        println(makeCmd)
+        steps.sh makeCmd
     }
 
     // cross-project symlink hacks for pcs testing

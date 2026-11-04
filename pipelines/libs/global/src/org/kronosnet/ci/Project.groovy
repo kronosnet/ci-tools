@@ -39,11 +39,14 @@ class Project implements Serializable {
     void setupRpm() {
         if (this.generalInfo['build'] == "rpm" && generalInfo['RPMDEPS']){
             this.rpmHelper.installRpmDeps(generalInfo)
+        } else if (this.generalInfo['build'] == "rpm") {
+            println("No rpm deps requested")
         }
     }
 
     void setupSrc() {
         if (steps.fileExists('autogen.sh')) {
+            println('./autogen.sh')
             steps.sh './autogen.sh'
         }
 
@@ -107,7 +110,9 @@ class Project implements Serializable {
 
         additionalInstall(generalInfo)
 
-        steps.sh "${make()} ${generalInfo['MAKEINSTALLOPTS'] ?: ''} install"
+        String installCmd = "${make()} ${generalInfo['MAKEINSTALLOPTS'] ?: ''} install"
+        println(installCmd)
+        steps.sh installCmd
         steps.sh "echo '${steps.env.JOB_URL}/${steps.env.BUILD_NUMBER}/' > ${installPath}/.build-info"
 
         createSymlinks(generalInfo)
@@ -145,8 +150,10 @@ class Project implements Serializable {
     //overwrite
     // default ./configure (generic `*)` branch of ci-setup-src) //overwrite
     protected void configure() {
-        steps.sh "./configure --prefix=${installPath()} --exec-prefix=${installPath()} " +
-                 "${extraOptsConfigure()} ${generalInfo['DISTROCONFOPTS'] ?: ''} PKG_CONFIG_PATH=${pkgConfig()}"
+        String cmd = "./configure --prefix=${installPath()} --exec-prefix=${installPath()} " +
+                     "${extraOptsConfigure()} ${generalInfo['DISTROCONFOPTS'] ?: ''} PKG_CONFIG_PATH=${pkgConfig()}"
+        println(cmd)
+        steps.sh cmd
     }
 
     protected void post_test(String extraopts = '') {
@@ -159,10 +166,12 @@ class Project implements Serializable {
 
         for (String i in checks.split()) {
             cleanlibqb()
-            steps.sh "${make()} ${parallelMake()} ${generalInfo['MAKETESTOPTS'] ?: ''} ${i} " +
-                    "DISTCHECK_CONFIGURE_FLAGS=\"${extraopts} ${generalInfo['DISTROCONFOPTS'] ?: ''}\" " +
-                    "PKG_CONFIG_PATH=${pkgConfig()} " +
-                    "|| (find . -name '*test*suite.log' -exec cat {} \\; ; false)"
+            String testCmd = "${make()} ${parallelMake()} ${generalInfo['MAKETESTOPTS'] ?: ''} ${i} " +
+                            "DISTCHECK_CONFIGURE_FLAGS=\"${extraopts} ${generalInfo['DISTROCONFOPTS'] ?: ''}\" " +
+                            "PKG_CONFIG_PATH=${pkgConfig()} " +
+                            "|| (find . -name '*test*suite.log' -exec cat {} \\; ; false)"
+            println(testCmd)
+            steps.sh testCmd
         }
 
         cleanlibqb()
@@ -189,8 +198,9 @@ class Project implements Serializable {
 
     //overwrite
     protected void createSymlinks(Map generalInfo){
+        println('Creating cross projects symlinks hacks for pcs testing')
         return
-        // println('Creating cross projects symlinks hacks for pcs testing')
+        //
         //     if (generalInfo['project'] == 'pacemaker') {
         //         String boothSite = (generalInfo['target'] == 'main') ?
         //             '/srv/booth/origin/main-pacemaker-main/lib/ocf/resource.d/pacemaker/booth-site' :

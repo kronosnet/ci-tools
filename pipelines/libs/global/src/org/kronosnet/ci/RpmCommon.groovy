@@ -35,6 +35,7 @@ void removeRpmDeps() {
 }
 
 void installRpmDeps(Map info) {
+    println("Installing rpm deps: ${info['RPMDEPS']}")
     cleanbr()
     if (!hasYum()) {return}
     boolean bootstrap = info['bootstrap']?.toString() == '1'

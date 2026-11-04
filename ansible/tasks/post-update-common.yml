@@ -3,6 +3,7 @@
   ansible.builtin.group:
     name: haclient
     state: present
+    gid: "{{ haclient_group_id | default(omit) }}"
     system: true
 
 - name: Ensure the system user 'hacluster' exists
@@ -11,5 +12,6 @@
     state: present
     system: true
     group: haclient
+    uid: "{{ haclient_user_id | default(omit) }}"
     comment: "cluster user"
     create_home: false

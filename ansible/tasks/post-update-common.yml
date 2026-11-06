@@ -13,5 +13,6 @@
     system: true
     group: haclient
     uid: "{{ haclient_user_id | default(omit) }}"
+    shell: /sbin/nologin
     comment: "cluster user"
     create_home: false

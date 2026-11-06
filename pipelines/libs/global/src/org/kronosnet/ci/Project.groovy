@@ -30,16 +30,42 @@ class Project implements Serializable {
         }
     }
 
-    // wraps every phase with timeout + stage (preserves runStage behaviour)
+    // ============= Phase wrapper =============
     protected void phase(String name, Closure body) {
-        steps.timeout(time: steps.getBuildTimeout()) { steps.stage(name) { body() } }
+        steps.timeout(time: steps.getBuildTimeout()) {
+            steps.stage(name) { body() } }
     }
 
-    // ---- phases (defaults = the generic `*)` case) ----
+    // ============= Build Type Helpers =============
+    protected String buildType() {
+        return generalInfo['build'] ?: BUILD_STANDARD
+    }
+
+    protected boolean isRpmBuild()        { buildType() == BUILD_RPM }
+    protected boolean isCoverityBuild()   { buildType() == BUILD_COVERITY }
+    protected boolean isCrossBuild()      { buildType() == BUILD_CROSSCOMPILE }
+    protected boolean isStandardBuild()   { buildType() == BUILD_STANDARD }
+
+    protected boolean shouldInstall() {
+        return generalInfo["install"]?.toString() == '1'
+    }
+
+    protected boolean hasRpmDeps() {
+        return generalInfo['RPMDEPS']
+    }
+
+    protected boolean shouldSkipTests() {
+        return generalInfo['CHECKS'] == 'nochecks'
+    }
+
+
+        // ---- phases (defaults = the generic `*)` case) ----
     void setupRpm() {
-        if (this.generalInfo['build'] == "rpm" && generalInfo['RPMDEPS']){
-            this.rpmHelper.installRpmDeps(generalInfo)
-        } else if (this.generalInfo['build'] == "rpm") {
+        if (!isRpmBuild()) {return}
+
+        if (hasRpmDeps()) {
+            rpmHelper.installRpmDeps(generalInfo)
+        } else {
             steps.echo("No rpm deps requested")
         }
     }
@@ -58,10 +84,10 @@ class Project implements Serializable {
     }
 
     void buildSrc() {
-        if (generalInfo["build"] == "rpm"){
+        if (isRpmBuild()){
             buildRpm()
             rpmHelper.generalRpmBuild(generalInfo['MAKE'], generalInfo['MAKERPMOPTS'], generalInfo['RPMDEPS'])
-        }else if (generalInfo["build"] == "coverity"){
+        }else if (isCoverityBuild()){
             buildCoverity()
             coverityHelper.generalCoverity(generalInfo["covopts"])
         } else {
@@ -70,12 +96,11 @@ class Project implements Serializable {
     }
 
     void testSrc()  {
-        if (generalInfo["build"] == "rpm"){
-            return
-        }else if (generalInfo["build"] == "coverity"){
+        if (isRpmBuild()) {return}
+        else if (isCoverityBuild()){
             coverityHelper.testCoverity(generalInfo)
             return
-        }else if (generalInfo["build"] == "crosscompile"){
+        }else if (isCrossBuild()){
             int rc = steps.sh(returnStatus: true,
                 script: "[ \"\$(find . -print -type f -exec file {} \\; | grep ELF | grep ${generalInfo['ARCH']} | wc -l)\" != 0 ]")
             if (rc != 0) {
@@ -83,12 +108,12 @@ class Project implements Serializable {
             }
             return
         }
+        if(shouldSkipTests()) {return}
 
-        if (generalInfo['CHECKS'] == 'nochecks') { return }
         if (generalInfo['PARALLELTEST'] == 'no') {
             steps.echo("${generalInfo['project']} does not support parallel test. disabling PARALLELMAKE")
             generalInfo['PARALLELMAKE'] = ""
-         }
+        }
 
         generalInfo['extraopts'] = ''
 
@@ -118,19 +143,23 @@ class Project implements Serializable {
         createSymlinks(generalInfo)
     }
 
-    // HELPERS and function to overwrite
+    // ============= Common Helpers =============
 
     protected String make()         { return generalInfo['MAKE'] ?: 'make' }
     protected String parallelMake() { return generalInfo['PARALLELMAKE'] ?: '' }
     protected String pkgConfig()    { return generalInfo['EXTERNAL_CONFIG_PATH'] ?: '' }
 
-    // default install prefix = the shell `*)` case: /srv/<project>/origin/<target>/
-    //overwrite
+     /**
+     * Override in subclasses to customize install path.
+     * Default: /srv/<project>/origin/<target>/
+     */
     protected String installPath() {
         return "/srv/${generalInfo['project']}/origin/${generalInfo['target']}/"
     }
 
-    // extra ./configure opts (debug build adds DEBUGOPTS)
+    /**
+     * Extra ./configure options (debug build adds DEBUGOPTS).
+     */
     protected String extraOptsConfigure() {
         def o = ''
         if (generalInfo['debug'] == 'yes') {
@@ -147,8 +176,10 @@ class Project implements Serializable {
     }
 
 
-    //overwrite
-    // default ./configure (generic `*)` branch of ci-setup-src) //overwrite
+    /**
+     * Override to customize ./configure command.
+     * Default: generic configure with prefix, distro opts, pkg-config
+     */
     protected void configure() {
         String cmd = "./configure --prefix=${installPath()} --exec-prefix=${installPath()} " +
                      "${extraOptsConfigure()} ${generalInfo['DISTROCONFOPTS'] ?: ''} PKG_CONFIG_PATH=${pkgConfig()}"
@@ -161,7 +192,7 @@ class Project implements Serializable {
 
         if (generalInfo['TESTUSELDPATH'] == 'yes') {
             steps.echo "export LD_LIBRARY_PATH=${generalInfo['EXTERNAL_LD_LIBRARY_PATH']}"
-            generalInfo['LD_LIBRARY_PATH']=${generalInfo['EXTERNAL_LD_LIBRARY_PATH'] ?: ''}
+            generalInfo['LD_LIBRARY_PATH']=generalInfo['EXTERNAL_LD_LIBRARY_PATH'] ?: ''
         }
 
         for (String i in checks.split()) {
@@ -196,30 +227,21 @@ class Project implements Serializable {
         steps.sh './cts/cts-regression -V'
     }
 
-    //overwrite
+     // ============= Override Hooks (subclasses customize these) =============
+
+    /**
+     * Override to add project-specific symlinks after install.
+     * Default: only logs message for pcs testing
+     */
     protected void createSymlinks(Map generalInfo){
         steps.echo('Creating cross projects symlinks hacks for pcs testing')
         return
-        //
-        //     if (generalInfo['project'] == 'pacemaker') {
-        //         String boothSite = (generalInfo['target'] == 'main') ?
-        //             '/srv/booth/origin/main-pacemaker-main/lib/ocf/resource.d/pacemaker/booth-site' :
-        //             "/srv/booth/origin/main-pacemaker-${generalInfo['PACEMAKER_RELEASE']}/lib/ocf/resource.d/pacemaker/booth-site"
-        //         steps.sh """
-        //             cd ${installPath}/lib/ocf
-        //             rm -f lib
-        //             ln -sf /srv/resource-agents/origin/main/lib/ocf/lib
-        //             cd resource.d
-        //             rm -f heartbeat
-        //             ln -sf /srv/resource-agents/origin/main/lib/ocf/resource.d/heartbeat
-        //             cd pacemaker
-        //             rm -f booth-site
-        //             ln -sf ${boothSite}
-        //         """
-        // }
     }
 
-    //overwrite
+     /**
+     * Override for standard build customization.
+     * Default: make with parallel and custom opts
+     */
     protected void build_general(){
         String cmd = "${make()} ${parallelMake()} ${generalInfo['MAKEOPTS'] ?: ''}"
         steps.echo(cmd)
@@ -227,17 +249,26 @@ class Project implements Serializable {
         steps.echo("_____________Finishing build____________")
     }
 
-    //oberwrite
+    /**
+     * Override for additional install steps (e.g., pacemaker clean/reconfigure).
+     */
     protected void additionalInstall(Map generalInfo){
         return
     }
 
-    //overwrite
+    /**
+     * Override for project-specific test setup (e.g., kronosnet/corosync rust bindings).
+     */
     protected void test(Map generalInfo) {return}
 
-    //overwrite
+    /**
+     * Override for RPM-specific build steps (e.g., pacemaker SPECVERSION).
+     */
     protected void buildRpm() {return}
-    //overwrite
+
+    /**
+     * Override for Coverity-specific build steps (e.g., fence-agents/pcs multi-dir).
+     */
     protected void buildCoverity () {
         String shell = "cov-build --dir=./cov ${make()} ${parallelMake()} ${generalInfo['MAKECOVOPTS'] ?: ''}"
         steps.echo(shell)

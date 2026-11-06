@@ -2,6 +2,12 @@ package org.kronosnet.ci
 
 class Project implements Serializable {
 
+    // ============= Constants =============
+    protected static final String BUILD_RPM = 'rpm'
+    protected static final String BUILD_COVERITY = 'coverity'
+    protected static final String BUILD_CROSSCOMPILE = 'crosscompile'
+    protected static final String BUILD_STANDARD = ''
+
     protected final def steps
     protected final Map generalInfo
     protected final String agentName

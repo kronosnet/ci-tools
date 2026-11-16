@@ -20,3 +20,4 @@ required_packages:
 
 boot_environments_to_keep: 4
 boot_environments_cleanup_script: /root/bin/cleanup-boot-envs
+snapshots_to_keep: 5

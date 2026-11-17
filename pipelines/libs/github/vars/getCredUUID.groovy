@@ -1,5 +1,5 @@
 // Returns the Credentials UUID for getCollaborators()
 def call()
 {
-    return '93a393a1-7fe9-45ae-ade0-5a533c87d8d9'
+    return '3719e8ca-c88f-496f-97d5-ff9db69b6b42'
 }

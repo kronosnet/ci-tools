@@ -212,6 +212,7 @@ case "${NODE_NAME}" in
  *vapor*)
   required_pkg ansible
   required_pkg azure-cli
+  required_pkg awscli2
   required_pkg brewkoji
   required_pkg createrepo
   required_pkg crudini
@@ -223,6 +224,7 @@ case "${NODE_NAME}" in
   required_pkg jq
   required_pkg kubevirt-virtctl
   required_pkg libcurl-devel
+  required_pkg libvirt-daemon
   required_pkg libvirt-devel
   required_pkg libxml2
   required_pkg nmap-ncat
@@ -263,7 +265,6 @@ case "${NODE_NAME}" in
    ibmcloud update -f
    ibmcloud plugin update --all -f
   fi
-  dnf -y install libvirt-daemon
   getent group kubesan >/dev/null || groupadd -r kubesan
   getent passwd kubesan >/dev/null || useradd -g kubesan -G libvirt -m kubesan
   setfacl -m u:kubesan:rwx /var/lib/libvirt/images

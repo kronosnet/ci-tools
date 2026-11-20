@@ -31,10 +31,12 @@ pipeline {
 		    info['pull_id'] = env.CHANGE_ID
 
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
-		    checkout scm
+		    def scmVars = checkout scm
 
-		    // Must come after checkout scm: postMRRef() posts to
-		    // /statuses/$GIT_COMMIT, and GIT_COMMIT is only set by the checkout.
+		    // skipDefaultCheckout(true) means nothing populates env.GIT_COMMIT
+		    // for us, and the checkout step only returns it. postMRRef() posts
+		    // to /statuses/$GIT_COMMIT, so export it before reporting status.
+		    env.GIT_COMMIT = scmVars.GIT_COMMIT
 		    updateGitlabStatus(info, [state: 'running', description: 'Jenkins build started'])
 		    test_list = sh (label: 'Gather test list', returnStdout: true,
 			script: """

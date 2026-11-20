@@ -29,10 +29,13 @@ pipeline {
 		    // normally set by gitlab's getBuildInfo(), which kubesan does not call.
 		    info['isPullRequest'] = env.CHANGE_ID ? true : false
 		    info['pull_id'] = env.CHANGE_ID
-		    updateGitlabStatus(info, [state: 'running', description: 'Jenkins build started'])
 
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 		    checkout scm
+
+		    // Must come after checkout scm: postMRRef() posts to
+		    // /statuses/$GIT_COMMIT, and GIT_COMMIT is only set by the checkout.
+		    updateGitlabStatus(info, [state: 'running', description: 'Jenkins build started'])
 		    test_list = sh (label: 'Gather test list', returnStdout: true,
 			script: """
 			    grep ksan-supported-modes tests/t/*.sh | { while read line; do

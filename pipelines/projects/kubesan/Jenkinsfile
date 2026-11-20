@@ -1,4 +1,4 @@
-@Library(['GlobalLib', 'ProjectLib']) _
+@Library(['GlobalLib', 'GitlabLib', 'ProjectLib']) _
 
 def info = [:]
 def project = 'kubesan'
@@ -12,6 +12,7 @@ pipeline {
 
     options {
 	gitLabConnection('gitlab-knet-ci-bot')
+	gitlabBuilds(builds: ['jenkins-ci'])
 	skipDefaultCheckout(true)
     }
 
@@ -21,7 +22,15 @@ pipeline {
 		updateGitlabCommitStatus(name: 'Prep build env', state: 'running')
 		script {
 		    getBuildInfoCommon(info)
-			setMultibranchSkipStrategy(getProjectSkipRegex(), getProjectSkipFiles())
+
+		    setMultibranchSkipStrategy(getProjectSkipRegex(), getProjectSkipFiles())
+
+		    // GitlabLib's updateGitlabStatus()/postMRRef() expect these. They are
+		    // normally set by gitlab's getBuildInfo(), which kubesan does not call.
+		    info['isPullRequest'] = env.CHANGE_ID ? true : false
+		    info['pull_id'] = env.CHANGE_ID
+		    updateGitlabStatus(info, [state: 'running', description: 'Jenkins build started'])
+
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 		    checkout scm
 		    test_list = sh (label: 'Gather test list', returnStdout: true,
@@ -49,7 +58,7 @@ pipeline {
 			    """)
 		    } catch (err) {
 			updateGitlabCommitStatus(name: 'Build container', state: 'failed')
-			ret = 'FAILED'
+			ret = 'FAILURE'
 			catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
 			    shNoTrace("exit 1", "Marking this stage as a failure")
 			}
@@ -76,7 +85,7 @@ pipeline {
 				    su - kubesan /bin/bash -c "cd ${WORKSPACE}; ./tests/run.sh --use-cache --mode ${testmode} tests/t/${test[0]}.sh"
 				"""
 			   } catch (err) {
-				ret = 'FAILED'
+				ret = 'FAILURE'
 				testret = 'failed'
 				catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
 				    shNoTrace("exit 1", "Marking this stage as a failure")
@@ -99,6 +108,25 @@ pipeline {
 	    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 	    script {
 		currentBuild.result = ret
+	    }
+	}
+	// always{} runs first, so these see the result set above. Taking the
+	// state from Jenkins rather than from ret means an aborted build
+	// reports canceled instead of success: ret is only ever set to
+	// FAILURE by a catch block, and an abort runs neither of them.
+	success {
+	    script {
+		updateGitlabStatus(info, [state: 'success', description: 'Jenkins build succeeded'])
+	    }
+	}
+	failure {
+	    script {
+		updateGitlabStatus(info, [state: 'failed', description: 'Jenkins build failed'])
+	    }
+	}
+	aborted {
+	    script {
+		updateGitlabStatus(info, [state: 'canceled', description: 'Jenkins build was canceled'])
 	    }
 	}
     }

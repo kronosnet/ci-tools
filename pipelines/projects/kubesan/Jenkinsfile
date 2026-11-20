@@ -22,13 +22,6 @@ pipeline {
 		script {
 		    getBuildInfoCommon(info)
 			setMultibranchSkipStrategy(getProjectSkipRegex(), getProjectSkipFiles())
-		    node('built-in') {
-			lock('gitlab-jenkins-gw') {
-			    timeout (time: 60, unit: 'MINUTES') {
-				sh "$HOME/ci-tools/ci-wrap ci-gitlab-jenkins-gw started ${ret}"
-			    }
-			}
-		    }
 		    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
 		    checkout scm
 		    test_list = sh (label: 'Gather test list', returnStdout: true,
@@ -99,11 +92,6 @@ pipeline {
     post {
 	always {
 	    node('built-in') {
-		lock('gitlab-jenkins-gw') {
-		    timeout (time: 60, unit: 'MINUTES') {
-			sh "$HOME/ci-tools/ci-wrap ci-gitlab-jenkins-gw completed ${ret}"
-		    }
-		}
 		// Copy logs
 		stagingCleanAndCopy(info)
 	    }

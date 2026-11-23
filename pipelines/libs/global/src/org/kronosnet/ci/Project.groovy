@@ -92,7 +92,7 @@ class Project implements Serializable {
     void buildSrc() {
         if (isRpmBuild()){
             buildRpm()
-            rpmHelper.generalRpmBuild(generalInfo['MAKE'], generalInfo['MAKERPMOPTS'], generalInfo['RPMDEPS'])
+            rpmHelper.generalRpmBuild(generalInfo['MAKE'], generalInfo['MAKEOPTS'] ?: '', generalInfo['RPMDEPS'])
         }else if (isCoverityBuild()){
             buildCoverity()
             coverityHelper.generalCoverity(generalInfo["covopts"])

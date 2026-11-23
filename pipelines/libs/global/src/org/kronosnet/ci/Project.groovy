@@ -250,7 +250,15 @@ class Project implements Serializable {
      */
     protected void build_general(){
         String cmd = "${make()} ${parallelMake()} ${generalInfo['MAKEOPTS'] ?: ''}"
+
         steps.echo(cmd)
+        steps.echo("_____PARALLELMAKE_______")
+        steps.echo(parallelMake())
+
+        steps.echo("_____MAKEOPTS_______")
+        steps.echo(generalInfo['MAKEOPTS'] ?: '')
+
+
         steps.sh cmd
         steps.echo("_____________Finishing build____________")
     }

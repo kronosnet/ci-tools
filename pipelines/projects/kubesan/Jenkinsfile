@@ -37,6 +37,13 @@ pipeline {
 		    // for us, and the checkout step only returns it. postMRRef() posts
 		    // to /statuses/$GIT_COMMIT, so export it before reporting status.
 		    env.GIT_COMMIT = scmVars.GIT_COMMIT
+
+		    // Where the images are built and, on publish branches,
+		    // pushed. Exported into the environment rather than
+		    // interpolated into the shell snippets below, so that the
+		    // build and the push cannot disagree on the name.
+		    env.KSAN_IMAGE = 'quay.io/kubesan/kubesan'
+
 		    updateGitlabStatus(info, [state: 'running', description: 'Jenkins build started'])
 		    test_list = sh (label: 'Gather test list', returnStdout: true,
 			script: """
@@ -57,10 +64,16 @@ pipeline {
 		updateGitlabCommitStatus(name: 'Build container', state: 'running')
 		script {
 		    try {
+			// 'images-all' builds every image in dependency order:
+			// the two pre-built dependency images, then the lint
+			// image (which also verifies the generated files are up
+			// to date), the kubesan image and the e2e test image.
+			// The kubesan image is tagged with its final name here
+			// so that the push stage below has nothing left to build.
 			sh (label: 'Run local build',
-			    script: """
-				su - kubesan /bin/bash -c "cd ${WORKSPACE}; ./containerized-build.sh"
-			    """)
+			    script: '''
+				su - kubesan /bin/bash -c "cd $WORKSPACE; make images-all IMG=$KSAN_IMAGE:latest"
+			    ''')
 		    } catch (err) {
 			updateGitlabCommitStatus(name: 'Build container', state: 'failed')
 			ret = 'FAILURE'
@@ -102,9 +115,65 @@ pipeline {
 		}
 	    }
 	}
+	stage('Push images') {
+	    // Only publish from a branch listed in getPublishBranches(), and
+	    // only when every build and test stage passed: the test stages
+	    // swallow their failure through catchError() so that the whole
+	    // matrix still runs, and record it in ret.
+	    when {
+		beforeAgent true
+		expression {
+		    return ret == 'SUCCESS' &&
+			   !info['isPullRequest'] &&
+			   isThisAPublishBranch(env.BRANCH_NAME) == 1
+		}
+	    }
+	    steps {
+		updateGitlabCommitStatus(name: 'Push images', state: 'running')
+		script {
+		    try {
+			withCredentials([usernamePassword(credentialsId: 'kubesan-quay',
+							  usernameVariable: 'QUAY_USER',
+							  passwordVariable: 'QUAY_PASSWORD')]) {
+			    // Single quoted on purpose: the credentials must reach
+			    // the shell as environment variables rather than being
+			    // interpolated into the script by Groovy. The password
+			    // is fed to podman on stdin, so it never appears in a
+			    // command line.
+			    sh (label: 'Push images to quay.io',
+				script: '''
+				    set +x
+				    sha="$(echo "$GIT_COMMIT" | cut -c1-12)"
+				    printf '%s' "$QUAY_PASSWORD" |
+					su - kubesan /bin/bash -c "podman login --username $QUAY_USER --password-stdin quay.io"
+				    su - kubesan /bin/bash -c "podman tag $KSAN_IMAGE:latest $KSAN_IMAGE:$sha"
+				    su - kubesan /bin/bash -c "cd $WORKSPACE; make push IMG=$KSAN_IMAGE:latest"
+				    su - kubesan /bin/bash -c "cd $WORKSPACE; make push IMG=$KSAN_IMAGE:$sha"
+				    su - kubesan /bin/bash -c "cd $WORKSPACE; make push-test-image"
+				    su - kubesan /bin/bash -c "cd $WORKSPACE; make push-deps-images"
+				''')
+			}
+		    } catch (err) {
+			updateGitlabCommitStatus(name: 'Push images', state: 'failed')
+			ret = 'FAILURE'
+			catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+			    shNoTrace("exit 1", "Marking this stage as a failure")
+			}
+			error('Push failure')
+		    }
+		}
+		updateGitlabCommitStatus(name: 'Push images', state: 'success')
+	    }
+	}
     }
     post {
 	always {
+	    // Never leave registry credentials behind on the agent. This is a
+	    // no-op, and harmlessly non-zero, when the push stage did not run.
+	    sh (label: 'Log out of quay.io',
+		script: '''
+		    su - kubesan /bin/bash -c "podman logout quay.io" || true
+		''')
 	    node('built-in') {
 		// Copy logs
 		stagingCleanAndCopy(info)

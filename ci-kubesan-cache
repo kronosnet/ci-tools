@@ -10,4 +10,7 @@ envsubst < $CITHOME/kubesan-registry.yaml > $WORKSPACE/kubesan-registry.yaml
 
 kcli list plan -o name | grep -q ksan && kcli delete plan ksan --yes
 
+virsh vol-delete --pool default --vol kubesan-test-shared-1.img || true
+virsh vol-delete --pool default --vol kubesan-test-shared-2.img || true
+
 kcli create registry kubeadm --paramfile $WORKSPACE/kubesan-registry.yaml ksan

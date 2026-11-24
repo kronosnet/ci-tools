@@ -47,7 +47,7 @@ pipeline {
 							//   'nodelabel': 'voting',
 							//   'nodelist': ['debian-unstable-cross-x86-64']])
 		    //def nonvoting = buildRunMap('nonvoting', info, ['voting': false,
-								'nodelabel': 'nonvoting'])
+								// 'nodelabel': 'nonvoting'])
 		     def nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
 									    'nodelabel': 'nonvoting-clang',
 									    'extravars': ['compiler': 'clang',

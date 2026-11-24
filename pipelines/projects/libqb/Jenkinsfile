@@ -48,18 +48,18 @@ pipeline {
 							  'nodelist': ['debian-unstable-cross-x86-64']])
 		    def nonvoting = buildRunMap('nonvoting', info, ['voting': false,
 								'nodelabel': 'nonvoting'])
-		    // def nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
-			// 						    'nodelabel': 'nonvoting-clang',
-			// 						    'extravars': ['compiler': 'clang',
-			// 								  'install': 0]])
-		    // def covscan = buildRunMap('covscan', info, ['voting': true,
-			// 				    'nodelabel': 'covscan'])
+		    def nonvoting_clang = buildRunMap('nonvoting-clang', info, ['voting': false,
+									    'nodelabel': 'nonvoting-clang',
+									    'extravars': ['compiler': 'clang',
+											  'install': 0]])
+		    def covscan = buildRunMap('covscan', info, ['voting': true,
+							    'nodelabel': 'covscan'])
 		    def buildrpms = buildRunMap('buildrpms', info, ['voting': true,
 		                                                'nodelabel': 'buildrpms'])
 
 		    // Run them (errors are caught in info[:])
 		    try {
-			parallel buildrpms//voting + nonvoting + nonvoting_clang + buildrpms + covscan
+			parallel buildrpms + voting + nonvoting + nonvoting_clang + covscan
 		    } catch (err) {
 			println("Jenkinsfile caught "+err)
 			info['exception_text'] += "\nparallel error caught: {$err}\n"

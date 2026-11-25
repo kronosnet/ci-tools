@@ -16,6 +16,10 @@ pipeline {
 	skipDefaultCheckout(true)
     }
 
+    environment {
+	GOPROXY = 'https://nexus.corp.redhat.com/repository/go-all,direct'
+    }
+
     stages {
 	stage('Prep build env') {
 	    steps {

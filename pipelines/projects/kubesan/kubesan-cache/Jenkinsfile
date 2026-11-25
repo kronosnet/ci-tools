@@ -17,6 +17,14 @@ def updatekclicache(String agentName, Map info)
 		script: """
 		    su - kubesan /bin/bash -c "cd ${WORKSPACE}; ./tests/run.sh --external-registry 10.6.126.249:5000 create-cache"
 		""")
+	    sh (label: 'Warm Go module cache',
+		script: """
+		    for i in 1 2 3 4 5 6 7 8 9 10; do
+			echo "Pre-fetching Go build tools (attempt \$i/10)..."
+			su - kubesan /bin/bash -c "cd ${WORKSPACE}; make deps-images" && break
+			[ \$i -lt 10 ] && sleep 60 || exit 1
+		    done
+		""")
     }
 }
 

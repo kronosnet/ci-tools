@@ -95,7 +95,7 @@ case "${project}" in
     localbuild="--enable-local-build --enable-ci-rpm-workarounds"
     ;;
    *)
-    localbuild=--enable-local-build
+    localbuild="--enable-local-build --enable-individual-bundling"
     ;;
   esac
   if [ -f .venv/bin/activate ]; then

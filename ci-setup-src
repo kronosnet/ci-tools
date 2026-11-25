@@ -50,14 +50,14 @@ if [ -f ./configure ]; then
      localbuild="--enable-local-build --enable-ci-rpm-workarounds"
      ;;
     rhel-9*)
-     localbuild=--enable-local-build
+     localbuild="--enable-local-build --enable-individual-bundling"
      if [ "$pcspipinstall" = "yes" ]; then
        python3 -m pip install 'flit-core >= 3.11' pyparsing setuptools-scm six
        localbuild="$localbuild --with-python-version=3.12 --enable-ci-rpm-workarounds"
      fi
      ;;
     *)
-     localbuild=--enable-local-build
+     localbuild="--enable-local-build --enable-individual-bundling"
      ;;
    esac
 

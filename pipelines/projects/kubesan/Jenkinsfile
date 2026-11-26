@@ -100,11 +100,14 @@ pipeline {
 			    testmode = 'Thin'
 			}
 			testret = 'success'
+			def logsrc = "${test[0]}_${testmode}"
 			updateGitlabCommitStatus(name: "Test: ${test[0]} Mode: ${test[1]}", state: 'running')
 			stage("Test: ${test[0]} Mode: ${test[1]}") {
 			   try {
 				sh """
-				    su - kubesan /bin/bash -c "cd ${WORKSPACE}; ./tests/run.sh --use-cache --mode ${testmode} tests/t/${test[0]}.sh"
+				    mkdir -p ${WORKSPACE}/test_logs
+				    chown kubesan:kubesan ${WORKSPACE}/test_logs
+				    su - kubesan /bin/bash -c "cd ${WORKSPACE}; ./tests/run.sh --use-cache --collect-logs-always --collect-logs-to ${WORKSPACE}/test_logs/${logsrc}.tar.xz --mode ${testmode} tests/t/${test[0]}.sh"
 				"""
 			   } catch (err) {
 				ret = 'FAILURE'
@@ -113,6 +116,20 @@ pipeline {
 				    shNoTrace("exit 1", "Marking this stage as a failure")
 				}
 			   }
+			}
+			// Archive test logs
+			sh """
+			    if [ -f "${WORKSPACE}/test_logs/${logsrc}.tar.xz" ]; then
+				if [ "${testret}" = "success" ]; then
+				    mv "${WORKSPACE}/test_logs/${logsrc}.tar.xz" "${WORKSPACE}/test_logs/SUCCESS_${logsrc}.tar.xz"
+				else
+				    mv "${WORKSPACE}/test_logs/${logsrc}.tar.xz" "${WORKSPACE}/test_logs/FAILED_${logsrc}.tar.xz"
+				fi
+			    fi
+			"""
+			def logfile = (testret == 'success') ? "SUCCESS_${logsrc}.tar.xz" : "FAILED_${logsrc}.tar.xz"
+			if (fileExists("${WORKSPACE}/test_logs/${logfile}")) {
+			    archiveArtifacts artifacts: "test_logs/${logfile}", fingerprint: false
 			}
 			updateGitlabCommitStatus(name: "Test: ${test[0]} Mode: ${test[1]}", state: "${testret}")
 		    }
